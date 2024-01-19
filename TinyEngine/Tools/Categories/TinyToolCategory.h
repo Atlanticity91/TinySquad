@@ -1,0 +1,56 @@
+/******************************************************************************************
+ *
+ *   _______ _             __  __ _
+ *  |__   __(_)           |  \/  (_)
+ *     | |   _ _ __  _   _| \  / |_  ___ _ __ ___
+ *     | |  | | '_ \| | | | |\/| | |/ __| '__/ _ \
+ *     | |  | | | | | |_| | |  | | | (__| | | (_) |
+ *     |_|  |_|_| |_|\__, |_|  |_|_|\___|_|  \___/
+ *                    __/ |
+ *	                 |___/
+ *
+ * @author   : ALVES Quentin
+ * @creation : 19/01/2024
+ * @version  : 2024.1
+ * @licence  : MIT
+ * @project  : Micro library use for C++ basic game dev, produce for
+ *			   Tiny Squad team use originaly.
+ *
+ ******************************************************************************************/
+
+#pragma once
+
+#include <TinyEngine/Tools/UI/TinyToolboxImGui.h>
+
+te_class TinyToolCategory {
+
+private:
+	tiny_string _name;
+
+public:
+	TinyToolCategory( const tiny_string& name );
+
+	virtual ~TinyToolCategory( ) = default;
+
+	tiny_virtual( void Create( TinyGame* game, TinyEngine& engine,TinyToolbox& toolbox ) );
+
+	virtual bool Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox );
+
+	tiny_virtual( void Terminate( TinyGame* game, TinyEngine& engine ) );
+
+protected:
+	tiny_virtual( void OnTick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox ) );
+
+public:
+	template<typename Func, typename... Args>
+	void Collapsing( const tiny_string& name, Func&& draw, Args&... args ) { 
+		auto* name_str = name.as_chars( );
+
+		if ( ImGui::CollapsingHeader( name_str, IMGUI_NO_FLAGS ) ) {
+			draw( args... );
+
+			ImGui::Separator( );
+		}
+	};
+
+};

@@ -1,0 +1,331 @@
+/******************************************************************************************
+ *
+ *   _______ _             __  __ _
+ *  |__   __(_)           |  \/  (_)
+ *     | |   _ _ __  _   _| \  / |_  ___ _ __ ___
+ *     | |  | | '_ \| | | | |\/| | |/ __| '__/ _ \
+ *     | |  | | | | | |_| | |  | | | (__| | | (_) |
+ *     |_|  |_|_| |_|\__, |_|  |_|_|\___|_|  \___/
+ *                    __/ |
+ *	                 |___/
+ *
+ * @author   : ALVES Quentin
+ * @creation : 13/10/2023
+ * @version  : 2024.1
+ * @licence  : MIT
+ * @project  : Micro library use for C++ basic game dev, produce for
+ *			   Tiny Squad team use originaly.
+ *
+ ******************************************************************************************/
+
+#include <TinyEngine/__tiny_engine_pch.h>
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+TinyToolbox::TinyToolbox( ) 
+    : _is_in_use{ true },
+    _imgui{ nullptr },
+    _local_pools{ nullptr },
+    _fonts{ },
+    _tools{ }
+{ }
+
+bool TinyToolbox::Initialize( TinyGame* game ) {
+    auto& window   = game->GetWindow( );
+    auto& graphics = game->GetGraphics( );
+    auto state     = CreateImGui( )               && 
+                     CreateImGuiPools( graphics ) && 
+                     CreateImGuiContext( window, graphics );
+
+    if ( state ) {
+        CreateImGuiTheme( );
+
+        state = AddFont( "Caskaydia", TinyCaskaydia_length, TinyCaskaydia_data, 16.f ) && 
+                _tools.Initialize( game, tiny_self );
+
+        if ( state )
+            SetFont( "Caskaydia" );
+    }
+    
+    return state;
+}
+
+bool TinyToolbox::LoadFont(
+    TinyFilesystem& filesystem,
+    TinyGraphicManager& graphics,
+    const TinyToolboxFont& font 
+) {
+    auto state = filesystem.GetFileExist( font.Path );
+
+    if ( state ) {
+        auto& io = ImGui::GetIO( );
+        auto* _font = io.Fonts->AddFontFromFileTTF( tiny_cast( font.Path, c_str ), font.Size );
+
+        if ( _font ) {
+            _fonts.emplace( font.Alias, _font );
+
+            state = io.Fonts->Build( );
+        }
+    }
+
+    return state;
+}
+
+bool TinyToolbox::AddFont(
+    const tiny_string& alias, 
+    tiny_int length,
+    const tiny_uint* data,
+    float size 
+) {
+    auto& io   = ImGui::GetIO( );
+    auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, c_ptr ), length, size );
+
+    if ( font ) {
+        auto alias_str = alias.as_chars( );
+
+        _fonts.emplace( alias_str, font );
+    }
+
+    return io.Fonts->Build( );
+}
+
+bool TinyToolbox::LoadFonts(
+    TinyFilesystem& filesystem,
+    TinyGraphicManager& graphics,
+    tiny_init<TinyToolboxFont> fonts
+) {
+    auto state = fonts.size( ) > 0;
+
+    if ( state ) {
+        for ( auto& font : fonts ) {
+            state = LoadFont( filesystem, graphics, font );
+
+            if ( !state ) break;
+        }
+    }
+
+    return state;
+}
+
+void TinyToolbox::SetFont( const tiny_string& name ) {
+    auto* font = _fonts.get( name );
+
+    if ( font )
+        ImGui::SetCurrentFont( font );
+}
+
+void TinyToolbox::EnableNavigation( ) {
+    auto& io = ImGui::GetIO( );
+    
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+}
+
+void TinyToolbox::DisableNavigation( ) {
+    auto& io = ImGui::GetIO( );
+
+    io.ConfigFlags ^= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags ^= ImGuiConfigFlags_NavEnableGamepad;
+}
+
+void TinyToolbox::Show( ) { _is_in_use = true; }
+
+void TinyToolbox::Hide( ) { _is_in_use = false; }
+
+void TinyToolbox::Toggle( ) { _is_in_use = !_is_in_use; }
+
+void TinyToolbox::DisplayAsset(
+    TinyGame* game,
+    const tiny_string& label,
+    TinyAsset& asset 
+) {
+    auto& assets    = game->GetAssets( );
+    auto asset_list = assets.GetAssets( asset.Type );
+    auto context    = TinyImGui::DropdownContext{ asset_list, asset.Hash };
+
+    if ( TinyImGui::Dropdown( label, context ) ) {
+        assets.Release( game, asset );
+
+        if ( context.Index > 0 ) {
+            asset.Hash = tiny_hash{ context.Values[ context.Index ] };
+
+            if ( !assets.Acquire( game, asset ) )
+                asset.Hash = 0;
+        } else
+            asset.Hash = 0;
+    }
+}
+
+void TinyToolbox::Tick( TinyGame* game, TinyEngine& engine ) {
+    if ( engine.GetInputs( ).Evaluate( "Show Dev", true ) )
+        _is_in_use = !_is_in_use;
+
+    if ( _is_in_use ) {
+        ImGui_ImplVulkan_NewFrame( );
+        ImGui_ImplGlfw_NewFrame( );
+
+        ImGui::NewFrame( );
+
+        static bool show_demo_window = true;
+        ImGui::ShowDemoWindow( &show_demo_window );
+
+        _tools.Tick( game, engine, tiny_self );
+
+        ImGui::Render( );
+
+        auto* draw_data    = ImGui::GetDrawData( );
+        auto& work_context = engine.GetGraphics( ).GetWorkdContext( );
+
+        ImGui_ImplVulkan_RenderDrawData( draw_data, work_context.Queue->CommandBuffer );
+    }
+}
+
+void TinyToolbox::Terminate( TinyGame* game ) {
+    if ( _imgui ) {
+        _tools.Terminate( game );
+
+        ImGui_ImplVulkan_Shutdown( );
+        ImGui_ImplGlfw_Shutdown( );
+        ImGui::DestroyContext( );
+
+        if ( _local_pools ) {
+            auto& graphics = game->GetGraphics( );
+            auto& logical  = graphics.GetLogical( );
+
+            vkDestroyDescriptorPool( logical, _local_pools, VK_NULL_HANDLE );
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyToolbox::CreateImGui( ) {
+    IMGUI_CHECKVERSION( );
+
+    _imgui = ImGui::CreateContext( );
+
+    return _imgui != nullptr;
+}
+
+bool TinyToolbox::CreateImGuiPools( TinyGraphicManager& graphics ) {
+    VkDescriptorPoolSize pool_sizes[] = {
+        { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+        { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+        { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+        { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+        { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+    };
+
+    auto pool_info = VkDescriptorPoolCreateInfo{ VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO };
+    auto size      = tiny_cast( IM_ARRAYSIZE( pool_sizes ), tiny_uint );
+
+    pool_info.pNext         = VK_NULL_HANDLE;
+    pool_info.flags         = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    pool_info.maxSets       = 1000 * size;
+    pool_info.poolSizeCount = size;
+    pool_info.pPoolSizes    = pool_sizes;
+
+    return vk::Check( vkCreateDescriptorPool( graphics.GetLogical( ), &pool_info, VK_NULL_HANDLE, &_local_pools ) );
+}
+
+bool TinyToolbox::CreateImGuiContext( TinyWindow& window, TinyGraphicManager& graphics ) {
+    auto& queues      = graphics.GetQueues( );
+    auto* queue       = queues.Acquire( VK_QUEUE_TYPE_GRAPHIC );
+    auto queue_family = queues.GetPhysicalQueue( VK_QUEUE_TYPE_GRAPHIC ).Family;
+    auto init_info    = ImGui_ImplVulkan_InitInfo{ };
+
+    init_info.Instance        = graphics.GetInstance( );
+    init_info.PhysicalDevice  = graphics.GetPhysical( );
+    init_info.Device          = graphics.GetLogical( );
+    init_info.QueueFamily     = queue_family;
+    init_info.Queue           = queue->Queue;
+    init_info.PipelineCache   = graphics.GetPipelineCache( );
+    init_info.DescriptorPool  = _local_pools;
+    init_info.Subpass         = 1;
+    init_info.MinImageCount   = graphics.GetMinImageCount( );
+    init_info.ImageCount      = graphics.GetImageCount( );
+    init_info.MSAASamples     = graphics.GetMSAA( ).MinSamples;
+    init_info.Allocator       = VK_NULL_HANDLE;
+    init_info.CheckVkResultFn = nullptr;
+
+    auto state = ImGui_ImplGlfw_InitForVulkan( window, true ) &&
+                 ImGui_ImplVulkan_Init( &init_info, graphics.GetRenderPass( "OutTarget" ) );
+
+    queues.Release( VK_QUEUE_TYPE_GRAPHIC, queue );
+
+    return state;
+}
+
+void TinyToolbox::CreateImGuiTheme( ) {
+    ImGui::StyleColorsDark( );
+
+    auto* colors = ImGui::GetStyle( ).Colors;
+
+    colors[ ImGuiCol_Text                  ] = ImVec4( 1.00f, 1.00f, 1.00f, 1.00f );
+    colors[ ImGuiCol_TextDisabled          ] = ImVec4( 0.50f, 0.50f, 0.50f, 1.00f );
+    colors[ ImGuiCol_WindowBg              ] = ImVec4( 0.06f, 0.06f, 0.06f, 0.94f );
+    colors[ ImGuiCol_ChildBg               ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
+    colors[ ImGuiCol_PopupBg               ] = ImVec4( 0.08f, 0.08f, 0.08f, 0.94f );
+    colors[ ImGuiCol_Border                ] = ImVec4( 0.43f, 0.43f, 0.50f, 0.50f );
+    colors[ ImGuiCol_BorderShadow          ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
+    colors[ ImGuiCol_FrameBg               ] = ImVec4( 0.44f, 0.44f, 0.44f, 0.60f );
+    colors[ ImGuiCol_FrameBgHovered        ] = ImVec4( 0.57f, 0.57f, 0.57f, 0.70f );
+    colors[ ImGuiCol_FrameBgActive         ] = ImVec4( 0.76f, 0.76f, 0.76f, 0.80f );
+    colors[ ImGuiCol_TitleBg               ] = ImVec4( 0.04f, 0.04f, 0.04f, 1.00f );
+    colors[ ImGuiCol_TitleBgActive         ] = ImVec4( 0.16f, 0.16f, 0.16f, 1.00f );
+    colors[ ImGuiCol_TitleBgCollapsed      ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.60f );
+    colors[ ImGuiCol_MenuBarBg             ] = ImVec4( 0.14f, 0.14f, 0.14f, 1.00f );
+    colors[ ImGuiCol_ScrollbarBg           ] = ImVec4( 0.02f, 0.02f, 0.02f, 0.53f );
+    colors[ ImGuiCol_ScrollbarGrab         ] = ImVec4( 0.31f, 0.31f, 0.31f, 1.00f );
+    colors[ ImGuiCol_ScrollbarGrabHovered  ] = ImVec4( 0.41f, 0.41f, 0.41f, 1.00f );
+    colors[ ImGuiCol_ScrollbarGrabActive   ] = ImVec4( 0.51f, 0.51f, 0.51f, 1.00f );
+    colors[ ImGuiCol_CheckMark             ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.80f );
+    colors[ ImGuiCol_SliderGrab            ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.80f );
+    colors[ ImGuiCol_SliderGrabActive      ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
+    colors[ ImGuiCol_Button                ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.40f );
+    colors[ ImGuiCol_ButtonHovered         ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.60f );
+    colors[ ImGuiCol_ButtonActive          ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
+    colors[ ImGuiCol_Header                ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.40f );
+    colors[ ImGuiCol_HeaderHovered         ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.60f );
+    colors[ ImGuiCol_HeaderActive          ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
+    colors[ ImGuiCol_Separator             ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.40f );
+    colors[ ImGuiCol_SeparatorHovered      ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.60f );
+    colors[ ImGuiCol_SeparatorActive       ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
+    colors[ ImGuiCol_ResizeGrip            ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.40f );
+    colors[ ImGuiCol_ResizeGripHovered     ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.60f );
+    colors[ ImGuiCol_ResizeGripActive      ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
+    colors[ ImGuiCol_Tab                   ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.80f );
+    colors[ ImGuiCol_TabHovered            ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.80f );
+    colors[ ImGuiCol_TabActive             ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
+    colors[ ImGuiCol_TabUnfocused          ] = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
+    colors[ ImGuiCol_TabUnfocusedActive    ] = ImVec4( 0.36f, 0.36f, 0.36f, 0.54f );
+    //colors[ ImGuiCol_DockingPreview        ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.80f );
+    //colors[ ImGuiCol_DockingEmptyBg        ] = ImVec4( 0.13f, 0.13f, 0.13f, 0.80f );
+    colors[ ImGuiCol_PlotLines             ] = ImVec4( 0.61f, 0.61f, 0.61f, 1.00f );
+    colors[ ImGuiCol_PlotLinesHovered      ] = ImVec4( 1.00f, 0.43f, 0.35f, 1.00f );
+    colors[ ImGuiCol_PlotHistogram         ] = ImVec4( 0.90f, 0.70f, 0.00f, 1.00f );
+    colors[ ImGuiCol_PlotHistogramHovered  ] = ImVec4( 1.00f, 0.60f, 0.00f, 1.00f );
+    colors[ ImGuiCol_TableHeaderBg         ] = ImVec4( 0.19f, 0.19f, 0.20f, 1.00f );
+    colors[ ImGuiCol_TableBorderStrong     ] = ImVec4( 0.31f, 0.31f, 0.35f, 1.00f );
+    colors[ ImGuiCol_TableBorderLight      ] = ImVec4( 0.23f, 0.23f, 0.25f, 1.00f );
+    colors[ ImGuiCol_TableRowBg            ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
+    colors[ ImGuiCol_TableRowBgAlt         ] = ImVec4( 1.00f, 1.00f, 1.00f, 0.07f );
+    colors[ ImGuiCol_TextSelectedBg        ] = ImVec4( 0.26f, 0.59f, 0.98f, 0.35f );
+    colors[ ImGuiCol_DragDropTarget        ] = ImVec4( 1.00f, 1.00f, 0.00f, 0.90f );
+    colors[ ImGuiCol_NavHighlight          ] = ImVec4( 0.26f, 0.59f, 0.98f, 1.00f );
+    colors[ ImGuiCol_NavWindowingHighlight ] = ImVec4( 1.00f, 1.00f, 1.00f, 0.70f );
+    colors[ ImGuiCol_NavWindowingDimBg     ] = ImVec4( 0.80f, 0.80f, 0.80f, 0.20f );
+    colors[ ImGuiCol_ModalWindowDimBg      ] = ImVec4( 0.80f, 0.80f, 0.80f, 0.35f );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////

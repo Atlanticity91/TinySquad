@@ -1,0 +1,196 @@
+/******************************************************************************************
+ *
+ *   _______ _             __  __ _
+ *  |__   __(_)           |  \/  (_)
+ *     | |   _ _ __  _   _| \  / |_  ___ _ __ ___
+ *     | |  | | '_ \| | | | |\/| | |/ __| '__/ _ \
+ *     | |  | | | | | |_| | |  | | | (__| | | (_) |
+ *     |_|  |_|_| |_|\__, |_|  |_|_|\___|_|  \___/
+ *                    __/ |
+ *	                 |___/
+ *
+ * @author   : ALVES Quentin
+ * @creation : 16/10/2023
+ * @version  : 2024.1
+ * @licence  : MIT
+ * @project  : Micro library use for C++ basic game dev, produce for
+ *			   Tiny Squad team use originaly.
+ *
+ ******************************************************************************************/
+
+#include <TinyMicro/__tiny_micro_pch.h>
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+tiny_string::tiny_string( )
+	: _handle( "" ),
+	_length{ 0 }
+{ }
+
+tiny_string::tiny_string( under_layer string )
+	: tiny_string{ }
+{ 
+	asign( string );
+}
+
+tiny_string::tiny_string( const std::string& string )
+	: _handle( string.c_str( ) ),
+	_length{ (tiny_uint)string.length( ) }
+{ }
+
+tiny_string::tiny_string( const tiny_string& other )
+	: tiny_string{ }
+{
+	asign( other );
+}
+
+tiny_string::tiny_string( c_ptr address, tiny_uint length )
+	: _handle{ (under_layer)address },
+	_length{ length }
+{ }
+
+tiny_string& tiny_string::asign( under_layer string ) {
+	if ( string ) {
+		_length = (tiny_uint)strlen( string );
+
+		if ( _length > 0 )
+			_handle = string;
+	}
+
+	return tiny_self;
+}
+
+tiny_string& tiny_string::asign( const std::string& string ) {
+	_handle = string.c_str( );
+	_length = (tiny_uint)string.length( );
+
+	return tiny_self;
+}
+
+tiny_string& tiny_string::asign( const tiny_string& other ) {
+	auto* string = other.get( );
+
+	return asign( string );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool tiny_string::is_valid( ) const { return is_valid( _handle ); }
+
+tiny_string::under_layer tiny_string::get( ) const { return _handle; }
+
+char* tiny_string::as_chars( ) const { return (char*)_handle; }
+
+std::string tiny_string::as_string( ) const { return std::string{ _handle }; }
+
+char& tiny_string::at( tiny_uint char_id ) {
+	return *(char*)&( char_id < _length ? _handle[ char_id ] : _handle[ _length + 1 ] );
+}
+
+const char tiny_string::at( tiny_uint char_id ) const {
+	if ( char_id < length( ) )
+		return _handle[ char_id ];
+
+	return '\0';
+}
+
+std::string tiny_string::make_string( char start, char stop ) const {
+	auto string = std::string{ _handle };
+	auto str_start = string.find_last_of( start )+1;
+	auto str_stop = string.find_last_of( stop );
+
+	return string.substr( str_start, str_stop - str_start );
+}
+
+tiny_uint tiny_string::length( ) const { return _length; }
+
+bool tiny_string::is_empty( ) const { return is_valid( ) && length( ) == 0; }
+
+bool tiny_string::equal( under_layer string ) const {
+	auto state = is_valid( string ) && length( ) > 0;
+
+	if ( state )
+		state = strcmp( string, _handle ) == 0;
+
+	return state;
+}
+
+bool tiny_string::equal( const tiny_string& other ) const {
+	auto string = other.get( );
+
+	return equal( string );
+}
+
+bool tiny_string::equal( const std::string& other ) const {
+	auto string = other.c_str( );
+
+	return equal( string );
+}
+
+bool tiny_string::not_equal( under_layer string ) const {
+	return !equal( string );
+}
+
+bool tiny_string::not_equal( const tiny_string& other ) const {
+	return !equal( other );
+}
+
+bool tiny_string::not_equal( const std::string& other ) const {
+	return !equal( other );
+}
+
+tiny_string::iterator tiny_string::begin( ) { return { as_chars( ) }; }
+
+tiny_string::iterator tiny_string::end( ) { return { as_chars( ) + ( _length + 1 ) }; }
+
+const tiny_string::iterator tiny_string::begin( ) const { return { as_chars( ) }; }
+
+const tiny_string::iterator tiny_string::end( ) const { 
+	return { as_chars( ) + ( _length + 1 ) };
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool tiny_string::is_valid( under_layer string ) const { 
+	return string && strlen( string ) > 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	OPERATOR ===
+////////////////////////////////////////////////////////////////////////////////////////////
+tiny_string::operator bool( ) const { return is_valid( ); }
+
+tiny_string::operator under_layer ( ) const { return get( ); }
+
+tiny_string::operator std::string ( ) const { return as_chars( ); }
+
+tiny_string& tiny_string::operator=( under_layer string ) { return asign( string ); }
+
+tiny_string& tiny_string::operator=( const std::string string ) { return asign( string ); }
+
+tiny_string& tiny_string::operator=( const tiny_string& other ) { return asign( other ); }
+
+bool tiny_string::operator==( under_layer string ) const { return equal( string ); }
+
+bool tiny_string::operator==( const tiny_string& other ) const { return equal( other ); }
+
+bool tiny_string::operator==( const std::string& other ) const { return equal( other ); }
+
+bool tiny_string::operator!=( under_layer string ) const {
+	return not_equal( string );
+}
+
+bool tiny_string::operator!=( const tiny_string& other ) const {
+	return not_equal( other );
+}
+
+bool tiny_string:: operator!=( const std::string& other ) const { 
+	return not_equal( other );
+}
+
+char& tiny_string::operator[]( tiny_uint char_id ) { return at( char_id ); }
+
+const char tiny_string::operator[]( tiny_uint char_id ) const { return at( char_id ); }

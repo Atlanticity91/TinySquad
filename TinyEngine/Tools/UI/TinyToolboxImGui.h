@@ -1,0 +1,211 @@
+/******************************************************************************************
+ *
+ *   _______ _             __  __ _
+ *  |__   __(_)           |  \/  (_)
+ *     | |   _ _ __  _   _| \  / |_  ___ _ __ ___
+ *     | |  | | '_ \| | | | |\/| | |/ __| '__/ _ \
+ *     | |  | | | | | |_| | |  | | | (__| | | (_) |
+ *     |_|  |_|_| |_|\__, |_|  |_|_|\___|_|  \___/
+ *                    __/ |
+ *	                 |___/
+ *
+ * @author   : ALVES Quentin
+ * @creation : 18/10/2023
+ * @version  : 2024.1
+ * @licence  : MIT
+ * @project  : Micro library use for C++ basic game dev, produce for
+ *			   Tiny Squad team use originaly.
+ *
+ ******************************************************************************************/
+
+#pragma once
+
+#include "TinyToolboxImGuiScopeColors.h"
+
+#define IMGUI_NO_FLAGS 0 
+#define IMGUI_NO_LABEL "##imgui_no_label"
+#define IMGUI_FLOAT_FORMAT "%.2f"
+
+#define TINY_IMGUI_SCOPE_ID( ... )\
+    ImGui::PushID( static_cast<int>( ImGui::GetCursorPosX( ) + ImGui::GetCursorPosY( ) ) );\
+    __VA_ARGS__\
+    ImGui::PopID( )
+
+namespace TinyImGui {
+
+	te_struct DropdownContext {
+
+		tiny_int Index;
+		tiny_list<c_str> Values;
+
+		DropdownContext( );
+
+		DropdownContext( tiny_init<c_str> values );
+
+		DropdownContext( tiny_init<c_str> values, const tiny_string& value );
+
+		DropdownContext( tiny_init<c_str> values, const tiny_hash value );
+
+		DropdownContext( const tiny_list<tiny_string>& values );
+
+		DropdownContext( const tiny_list<tiny_string>& values, const tiny_string& value );
+
+		DropdownContext( const tiny_list<tiny_string>& values, const tiny_hash value );
+
+		void Find( const tiny_hash& hash );
+
+		DropdownContext& operator=( const tiny_list<tiny_string>& values );
+
+	};
+
+	template<typename Type>
+	struct DragContext {
+
+		Type Speed{ };
+		Type Min{ };
+		Type Max{ };
+
+	};
+	
+	tiny_enum( KnobTypes ) { 
+
+		TK_TYPE_WIPER   = ImGuiKnobVariant_WiperOnly,
+		TK_TYPE_DOT		= ImGuiKnobVariant_WiperDot,
+		TK_TYPE_STEPPED = ImGuiKnobVariant_Stepped
+
+	};
+
+	te_struct KnobContext {
+
+		KnobTypes Type = TK_TYPE_WIPER;
+		float Min = -6.f;
+		float Max =  6.f;
+
+	};
+
+	tiny_dll bool BeginModal( const tiny_string& label );
+
+	tiny_dll void EndModal( );
+
+	tiny_dll bool RightButton( const tiny_string& label );
+
+	tiny_dll void Text( const tiny_string& text );
+
+	tiny_dll void Text( const std::string_view& text );
+
+	tiny_dll void BeginVars( );
+
+	tiny_dll void EndVars( );
+
+	tiny_dll void InputBegin( const tiny_string& label );
+
+	tiny_dll void InputEnd( );
+
+	tiny_dll bool Checkbox( const tiny_string& label, bool& value );
+
+	tiny_dll bool InputText( const tiny_string& label, tiny_uint length, char* buffer );
+
+	tiny_dll bool InputScalar( const tiny_string& label, tiny_int& scalar );
+
+	tiny_dll bool InputScalar( const tiny_string& label, tiny_uint& scalar );
+
+	tiny_dll bool InputScalar( const tiny_string& label, float& scalar );
+
+	tiny_dll bool InputVector( const tiny_string& label, tiny_uint component, tiny_int* vector );
+
+	tiny_dll bool InputPoint( const tiny_string& label, tiny_point& point );
+
+	tiny_dll bool InputVector( const tiny_string& label, tiny_uint component, float* vector );
+
+	tiny_dll bool InputVec2( const tiny_string& label, tiny_vec2& vector );
+
+	tiny_dll bool InputVec3( const tiny_string& label, tiny_vec3& vector );
+
+	tiny_dll bool InputVec4( const tiny_string& label, tiny_vec4& vector );
+
+	tiny_dll bool InputDrag(
+		const tiny_string& label, 
+		tiny_uint component, 
+		float* vector, 
+		float speed, 
+		float min, 
+		float max 
+	);
+
+	tiny_dll bool InputDrag(
+		const tiny_string& label,
+		tiny_uint component, 
+		tiny_int* vector, 
+		tiny_int speed, 
+		tiny_int min, 
+		tiny_int max 
+	);
+
+	template<typename Type>
+	bool InputDrag( 
+		const tiny_string& label,
+		tiny_uint component, 
+		Type* vector, 
+		const DragContext<Type>& context 
+	) { return false; };
+
+	template<>
+	bool InputDrag<float>(
+		const tiny_string& label,
+		tiny_uint component,
+		float* vector,
+		const DragContext<float>& context
+	) {
+		return InputDrag( label, component, vector, context.Speed, context.Max, context.Max );
+	};
+
+	template<>
+	bool InputDrag<tiny_int>(
+		const tiny_string& label,
+		tiny_uint component,
+		tiny_int* vector,
+		const DragContext<tiny_int>& context
+	) {
+		return InputDrag( label, component, vector, context.Speed, context.Max, context.Max );
+	};
+
+	tiny_dll bool InputSlider( const tiny_string& label, float& scalar, float min, float max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, float* scalar, float min, float max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, tiny_uint component, float* values, float min, float max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, tiny_vec2& vector, float min, float max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, tiny_vec3& vector, float min, float max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, tiny_vec4& vector, float min, float max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, tiny_int* scalar, tiny_int min, tiny_int max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, tiny_int& scalar, tiny_int min, tiny_int max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, tiny_uint component, tiny_int* values, tiny_int min, tiny_int max );
+
+	tiny_dll bool InputSlider( const tiny_string& label, tiny_point& point, tiny_int min, tiny_int max );
+
+	tiny_dll bool InputColor( const tiny_string& label, float* color );
+
+	tiny_dll bool InputColor( const tiny_string& label, tiny_color& color );
+
+	template<typename... Args>
+	void TextVar( const tiny_string& label, const tiny_string& format, Args... args ) {
+		TinyImGui::InputBegin( label );
+
+		ImGui::Text( format.get( ), args... );
+
+		TinyImGui::InputEnd( );
+	};
+
+	tiny_dll bool Dropdown( const tiny_string& label, DropdownContext& context );
+
+	tiny_dll bool Knob( const tiny_string& label, float& scalar );
+
+	tiny_dll bool Knob( const tiny_string& label, float& scalar, const KnobContext& context );
+
+};

@@ -1,0 +1,69 @@
+/******************************************************************************************
+ *
+ *   _______ _             __  __ _
+ *  |__   __(_)           |  \/  (_)
+ *     | |   _ _ __  _   _| \  / |_  ___ _ __ ___
+ *     | |  | | '_ \| | | | |\/| | |/ __| '__/ _ \
+ *     | |  | | | | | |_| | |  | | | (__| | | (_) |
+ *     |_|  |_|_| |_|\__, |_|  |_|_|\___|_|  \___/
+ *                    __/ |
+ *	                 |___/
+ *
+ * @author   : ALVES Quentin
+ * @creation : 29/11/2023
+ * @version  : 2024.1
+ * @licence  : MIT
+ * @project  : Micro library use for C++ basic game dev, produce for
+ *			   Tiny Squad team use originaly.
+ *
+ ******************************************************************************************/
+
+#pragma once
+
+#include <TinyEngine/Framework/Transform2D/TinyTransform2D_System.h>
+
+tiny_enum( TinyAnimationFlags ) {
+
+	TA_FLAG_PLAYING = TINY_LEFT_SHIFT( 0 ),
+	TA_FLAG_LOOPING = TINY_LEFT_SHIFT( 1 ),
+	TA_FLAG_REVERSE = TINY_LEFT_SHIFT( 2 )
+
+};
+
+TINY_FRAMEWORK_COMP( TinyAnim2D ) {
+
+private:
+	TinyAsset _animation;
+	tiny_uint _flags;
+	tiny_uint _frame_id;
+	float	  _frame_time;
+
+public:
+	TinyAnim2D( );
+
+	TinyAnim2D( const tiny_hash entity_hash );
+
+	~TinyAnim2D( ) = default;
+
+	tiny_implement( bool Create( TinyGame* game, TinyEngine& engine ) );
+
+	tiny_implement( void Delete( TinyGame* game, TinyEngine& engine ) );
+
+	tiny_implement( void DisplayWidget(
+		TinyGame* game,
+		TinyEngine& engine,
+		TinyToolbox& toolbox
+	) );
+
+public:
+	TINY_COMP_NAME( TinyAnim2D );
+
+	TinyAsset& GetAnimation( );
+	
+	tiny_uint GetFlags( ) const;
+	
+	tiny_uint GetFrameID( ) const;
+	
+	float GetFrameTime( ) const;
+
+};
