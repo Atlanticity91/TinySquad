@@ -397,3 +397,19 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/TinyEngine/TinyEngine.vcxproj
+/TinyEngine/TinyEngine.vcxproj.filters
+/TinyMicro/TinyMicro.vcxproj
+/TinyMicro/TinyMicro.vcxproj.filters
+/TinyProduction/TinyProduction.vcxproj
+/TinySquad.sln
+/TinyThirdparty/TinyThirdparty.vcxproj
+/TinyThirdparty/TinyThirdparty.vcxproj.filters
+/bin/TinyEngine.dll
+/bin/TinyEngine.exp
+/bin/TinyEngine.lib
+/bin/TinyMicro.idb
+/bin/TinyMicro.lib
+/bin/TinyProduction.exe
+/bin/TinyThirdparty.idb
+/bin/TinyThirdparty.lib
