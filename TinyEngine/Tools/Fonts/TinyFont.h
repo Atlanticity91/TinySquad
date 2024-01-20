@@ -20,12 +20,21 @@
 
 #pragma once
 
-#include "TinyCaskaydia.h"
+#include "TinyFontIcon.h"
 
 te_struct TinyToolboxFont {
 
 	tiny_string Alias = "";
 	tiny_string Path  = "";
 	float Size		  = 16.f;
+
+};
+
+te_struct TinyToolboxFontEmbedded {
+
+	tiny_uint Length  = 0;
+	tiny_uint* Glyphs = nullptr;
+	tiny_uint Min	  = 0;
+	tiny_uint Max	  = 0;
 
 };

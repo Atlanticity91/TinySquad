@@ -57,6 +57,12 @@ public:
 		float size 
 	);
 
+	bool CreateFont(
+		const tiny_string& name,
+		float size,
+		tiny_init<TinyToolboxFontEmbedded> fonts
+	);
+
 	void SetFont( const tiny_string& name );
 
 	void EnableNavigation( );
@@ -83,5 +89,7 @@ private:
 	bool CreateImGuiContext( TinyWindow& window, TinyGraphicManager& graphics );
 
 	void CreateImGuiTheme( );
+
+	bool CreateImGuiFont( );
 
 };

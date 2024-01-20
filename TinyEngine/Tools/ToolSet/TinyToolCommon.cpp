@@ -112,7 +112,7 @@ void TinyToolCommon::OnTick(
 
             auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
             auto filters = "Tiny Inputs (*.tinyinputs)\0*.tinyinputs\0";
-
+            
             if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
                 if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, filters, buffer.length( ), buffer.as_chars( ) ) ) {
                 }
@@ -187,6 +187,27 @@ void TinyToolCommon::OnTick(
             TinyImGui::EndVars( );
         }
     );
+
+#   ifdef DEBUG
+    Collapsing( 
+        "Fonts",
+        [ & ]( ) {
+            auto& filesystem = engine.GetFilesystem( );
+            auto filters     = "TTF Fonts (*.ttf)\0*.ttf\0";
+
+            tiny_buffer<256> buffer;
+
+            if ( ImGui::Button( "Compress", { -1, 0.f } ) ) {
+                if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, filters, buffer.length( ), buffer.as_chars( ) ) ) {
+                    auto info = filesystem.GetInformation( buffer.as_chars( ) );
+                    auto path = info.Path + "\\" + info.Name + ".cpp";
+
+                    ImGui::CompressTTF( buffer.as_chars( ), path.c_str( ), false, true, true );
+                }
+            }
+        }
+    );
+#   endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

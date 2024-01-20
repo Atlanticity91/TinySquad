@@ -41,11 +41,7 @@ bool TinyToolbox::Initialize( TinyGame* game ) {
     if ( state ) {
         CreateImGuiTheme( );
 
-        state = AddFont( "Caskaydia", TinyCaskaydia_length, TinyCaskaydia_data, 16.f ) && 
-                _tools.Initialize( game, tiny_self );
-
-        if ( state )
-            SetFont( "Caskaydia" );
+        state = CreateImGuiFont( ) && _tools.Initialize( game, tiny_self );
     }
     
     return state;
@@ -72,24 +68,6 @@ bool TinyToolbox::LoadFont(
     return state;
 }
 
-bool TinyToolbox::AddFont(
-    const tiny_string& alias, 
-    tiny_int length,
-    const tiny_uint* data,
-    float size 
-) {
-    auto& io   = ImGui::GetIO( );
-    auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, c_ptr ), length, size );
-
-    if ( font ) {
-        auto alias_str = alias.as_chars( );
-
-        _fonts.emplace( alias_str, font );
-    }
-
-    return io.Fonts->Build( );
-}
-
 bool TinyToolbox::LoadFonts(
     TinyFilesystem& filesystem,
     TinyGraphicManager& graphics,
@@ -103,6 +81,52 @@ bool TinyToolbox::LoadFonts(
 
             if ( !state ) break;
         }
+    }
+
+    return state;
+}
+
+bool TinyToolbox::AddFont(
+    const tiny_string& alias,
+    tiny_int length,
+    const tiny_uint* data,
+    float size
+) {
+    auto& io = ImGui::GetIO( );
+    auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, c_ptr ), length, size );
+
+    if ( font ) {
+        auto alias_str = alias.as_chars( );
+
+        _fonts.emplace( alias_str, font );
+    }
+
+    return io.Fonts->Build( );
+}
+
+bool TinyToolbox::CreateFont(
+    const tiny_string& name,
+    float size,
+    tiny_init<TinyToolboxFontEmbedded> fonts
+) {
+    auto state = fonts.size( );
+
+    if ( state ) {
+        auto config = ImFontConfig{ };
+        auto& io    = ImGui::GetIO( );
+
+        config.MergeMode = true;
+
+        for ( auto& font : fonts ) {
+            ImWchar icons_ranges[] = { font.Min, font.Max, 0 };
+            
+            io.Fonts->AddFontFromMemoryCompressedTTF( font.Glyphs, font.Length, size, tiny_rvalue( config ), icons_ranges );
+        }
+
+        state = io.Fonts->Build( );
+
+        if ( state )
+            _fonts.emplace( name, ImGui::GetFont( ) );
     }
 
     return state;
@@ -324,6 +348,22 @@ void TinyToolbox::CreateImGuiTheme( ) {
     colors[ ImGuiCol_NavWindowingHighlight ] = ImVec4( 1.00f, 1.00f, 1.00f, 0.70f );
     colors[ ImGuiCol_NavWindowingDimBg     ] = ImVec4( 0.80f, 0.80f, 0.80f, 0.20f );
     colors[ ImGuiCol_ModalWindowDimBg      ] = ImVec4( 0.80f, 0.80f, 0.80f, 0.35f );
+}
+
+bool TinyToolbox::CreateImGuiFont( ) {
+    auto state = AddFont( "Caskaydia", TinyCaskaydia_length, TinyCaskaydia_data, 16.f );
+
+    if ( state ) {
+        state = CreateFont(
+            "Caskaydia",
+            16.f,
+            {
+                { TinyFontAwesome_900_length, tiny_cast( TinyFontAwesome_900_data, tiny_uint* ), TF_ICON_MIN, TF_ICON_MAX }
+            }
+        );
+    }
+
+    return state;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
