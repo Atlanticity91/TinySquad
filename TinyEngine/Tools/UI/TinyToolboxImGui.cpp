@@ -33,45 +33,61 @@ static ImU32 vec_colors[] = {
 
 };
 
-float Internal_CalcWith( c_str text ) { 
+ImVec2 Internal_CalcTextSize( c_str text ) { 
     auto& style = ImGui::GetStyle( );
+    auto size   = ImGui::CalcTextSize( text );
     
-    return ImGui::CalcTextSize( text ).x + style.FramePadding.x * 2.f + style.ItemSpacing.x;
+    size.x += style.FramePadding.x * 2.f;
+    size.y += style.FramePadding.y * 2.f;
+
+    return size;
 }
 
 template<typename ImFunc>
 void Internal_Input( tiny_uint axis, ImFunc&& im_function ) {
-    auto font_size = ImGui::GetFontSize( );
-    auto frame_padding = ImGui::GetStyle( ).FramePadding;
+    auto text_size = Internal_CalcTextSize( vec_axises[ axis ] );
+    auto style     = ImGui::GetStyle( );
 
     ImGui::AlignTextToFramePadding( );
     ImGui::TextUnformatted( vec_axises[ axis ] );
-    ImGui::SameLine( font_size );
+    ImGui::SameLine( text_size.x + style.ItemSpacing.x * 1.25f );
 
-    auto cursor = ImGui::GetCursorScreenPos( );
-    auto post_label = tiny_vec2{
+    auto cursor      = ImGui::GetCursorScreenPos( );
+    auto axis_offset = tiny_vec2{
 
-        cursor.x - 1.f,
-        cursor.y + frame_padding.y * .5f
+        cursor.x - style.FramePadding.x,
+        cursor.y
 
     };
+    auto axis_background = ImRect{
+
+       axis_offset.x,
+       axis_offset.y,
+       axis_offset.x + text_size.x * .25f,
+       axis_offset.y + text_size.y
+
+    };
+
+    ImGui::GetWindowDrawList( )->AddRectFilled( axis_background.Min, axis_background.Max, vec_colors[ axis ], style.FrameRounding );
 
     ImGui::PushItemWidth( -1 );
 
     TINY_IMGUI_SCOPE_ID( im_function( ); );
 
     ImGui::PopItemWidth( );
+}
 
-    auto axis_background = ImRect{
+void Internal_Separator( ) {
+    ImGui::NextColumn( );
+    ImGui::NextColumn( );
 
-        post_label.x,
-        post_label.y,
-        post_label.x + font_size * .25f,
-        post_label.y + ( font_size + frame_padding.y )
+    auto cursor = ImGui::GetCursorScreenPos( );
+    auto size   = ImGui::GetItemRectMax( );
+    auto min    = ImVec2{ cursor.x, cursor.y };
+    auto max    = ImVec2{ cursor.x + size.x, cursor.y + 1.f };
 
-    };
-
-    ImGui::GetWindowDrawList( )->AddRectFilled( axis_background.Min, axis_background.Max, vec_colors[ axis ] );
+    ImGui::GetWindowDrawList( )->AddRectFilled( min, max, ImGui::GetColorU32( ImGuiCol_Separator ) );
+    ImGui::Dummy( { 0.f, 2.f } );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +174,7 @@ bool TinyImGui::BeginModal( const tiny_string& label ) {
 void TinyImGui::EndModal( ) { ImGui::EndPopup( ); }
 
 bool TinyImGui::RightButton( const tiny_string& label ) {
-    auto offset = Internal_CalcWith( "------------" );
+    auto offset = Internal_CalcTextSize( "############" ).x;
     auto cursor = ImGui::GetCursorPosX( ) + ImGui::GetContentRegionAvail( ).x;
 
     ImGui::SetCursorPosX( cursor - offset );
@@ -171,7 +187,7 @@ void TinyImGui::Text( const tiny_string& text ) { ImGui::Text( text.get( ) ); }
 void TinyImGui::Text( const std::string_view& text ) { ImGui::Text( text.data( ) ); }
 
 void TinyImGui::BeginVars( ) {
-    auto size = Internal_CalcWith( "----------------" );
+    auto size = Internal_CalcTextSize( "################" ).x;
 
     ImGui::Columns( 2 );
     ImGui::SetColumnWidth( 0, size );
@@ -230,6 +246,17 @@ bool TinyImGui::InputScalar( const tiny_string& label, tiny_int& scalar ) {
     return state;
 }
 
+bool TinyImGui::InputScalar( const tiny_string& label, const tiny_int& scalar ) {
+    ImGui::BeginDisabled( );
+
+    auto value = tiny_cast( scalar, tiny_int );
+    auto state = InputScalar( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
 bool TinyImGui::InputScalar( const tiny_string& label, tiny_uint& scalar ) {
     TinyImGui::InputBegin( label );
 
@@ -240,6 +267,17 @@ bool TinyImGui::InputScalar( const tiny_string& label, tiny_uint& scalar ) {
     TinyImGui::InputEnd( );
 
     return false;
+}
+
+bool TinyImGui::InputScalar( const tiny_string& label, const tiny_uint& scalar ) {
+    ImGui::BeginDisabled( );
+
+    auto value = tiny_cast( scalar, tiny_uint );
+    auto state = InputScalar( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
 }
 
 bool TinyImGui::InputScalar( const tiny_string& label, float& scalar ) {
@@ -254,17 +292,31 @@ bool TinyImGui::InputScalar( const tiny_string& label, float& scalar ) {
     return state;
 }
 
+bool TinyImGui::InputScalar( const tiny_string& label, const float& scalar ) {
+    ImGui::BeginDisabled( );
+
+    auto value = tiny_cast( scalar, float );
+    auto state = InputScalar( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
 bool TinyImGui::InputVector( const tiny_string& label, tiny_uint component, tiny_int* vector ) {
     auto state = false;
 
     TinyImGui::InputBegin( label );
 
-    for ( auto i = (tiny_uint)0; i < component; i++ )         {
+    for ( auto i = tiny_cast( 0, tiny_uint ); i < component; i++ ) {
         Internal_Input(
             i,
             [ & ]( ) { state = ImGui::InputInt( IMGUI_NO_LABEL, &vector[ i ], 0, 0 ); }
         );
     }
+
+    if ( component > 1 )
+        Internal_Separator( );
 
     TinyImGui::InputEnd( );
 
@@ -280,12 +332,15 @@ bool TinyImGui::InputVector( const tiny_string& label, tiny_uint component, floa
 
     TinyImGui::InputBegin( label );
 
-    for ( auto i = (tiny_uint)0; i < component; i++ ) {
+    for ( auto i = tiny_cast( 0, tiny_uint ); i < component; i++ ) {
         Internal_Input(
             i,
             [ & ]( ) { state = ImGui::InputFloat( IMGUI_NO_LABEL, &vector[ i ], 0.f, 0.f, IMGUI_FLOAT_FORMAT ); }
         );
     }
+
+    if ( component > 1 )
+        Internal_Separator( );
     
     TinyImGui::InputEnd( );
 
@@ -316,12 +371,15 @@ bool TinyImGui::InputDrag(
 
     TinyImGui::InputBegin( label );
 
-    for ( auto i = (tiny_uint)0; i < component; i++ ) {
+    for ( auto i = tiny_cast( 0, tiny_uint ); i < component; i++ ) {
         Internal_Input(
             i,
             [ & ]( ) { state = ImGui::DragFloat( IMGUI_NO_LABEL, &vector[ i ], speed, min, max, IMGUI_FLOAT_FORMAT ); }
         );
     }
+
+    if ( component > 1 )
+        Internal_Separator( );
 
     TinyImGui::InputEnd( );
 
@@ -340,12 +398,15 @@ bool TinyImGui::InputDrag(
 
     TinyImGui::InputBegin( label );
 
-    for ( auto i = (tiny_uint)0; i < component; i++ ) {
+    for ( auto i = tiny_cast( 0, tiny_uint ); i < component; i++ ) {
         Internal_Input(
             i,
             [ & ]( ) { state = ImGui::DragInt( IMGUI_NO_LABEL, &vector[ i ], (float)speed, min, max ); }
         );
     }
+
+    if ( component > 1 )
+        Internal_Separator( );
 
     TinyImGui::InputEnd( );
 
@@ -373,12 +434,15 @@ bool TinyImGui::InputSlider( const tiny_string& label, tiny_uint component, floa
 
     TinyImGui::InputBegin( label );
 
-    for ( auto i = (tiny_uint)0; i < component; i++ ) {
+    for ( auto i = tiny_cast( 0, tiny_uint ); i < component; i++ ) {
         Internal_Input( 
             i,
             [ & ]( ) { state = ImGui::SliderFloat( IMGUI_NO_LABEL, &values[ i ], min, max, IMGUI_FLOAT_FORMAT ); }
         );
     }
+
+    if ( component > 1 )
+        Internal_Separator( );
     
     TinyImGui::InputEnd( );
 
@@ -418,12 +482,15 @@ bool TinyImGui::InputSlider( const tiny_string& label, tiny_uint component, tiny
 
     TinyImGui::InputBegin( label );
 
-    for ( auto i = (tiny_uint)0; i < component; i++ ) {
+    for ( auto i = tiny_cast( 0, tiny_uint ); i < component; i++ ) {
         Internal_Input(
             i,
             [ & ]( ) { state = ImGui::SliderInt( IMGUI_NO_LABEL, &values[ i ], min, max ); }
         );
     }
+
+    if ( component > 1 )
+        Internal_Separator( );
 
     TinyImGui::InputEnd( );
 

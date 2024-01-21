@@ -10,19 +10,33 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 06/01/2024
- * @version  : 2024.1
+ * @creation : 21/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
-#include <TinyEngine/__tiny_engine_pch.h>
+#pragma once
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-TinySoundSystem::TinySoundSystem( ) 
-	: TinySystem{ }
-{ }
+#include "TinyToolCommon.h"
+
+te_class TinyToolInputs final : tiny_inherit( TinyToolCategory ) {
+
+private:
+	tiny_buffer<256> _path;
+
+public:
+	TinyToolInputs( );
+
+	~TinyToolInputs( ) = default;
+
+protected:
+	tiny_implement( void OnTick(
+		TinyGame* game,
+		TinyEngine& engine,
+		TinyToolbox& toolbox
+	) );
+
+};

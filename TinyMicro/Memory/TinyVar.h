@@ -57,7 +57,7 @@ struct tiny_var {
 			auto* dst = Storage.As<c_ptr_base>( );
 
 			if ( dst )
-				Tiny::Memcpy( (const c_ptr)&data, dst, tiny_sizeof( Type ) );
+				Tiny::Memcpy( tiny_cast( tiny_rvalue( data ), const c_ptr ), dst, tiny_sizeof( Type ) );
 		}
 
 		return tiny_self;

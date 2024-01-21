@@ -3,7 +3,7 @@ project "TinyThirdparty"
    language "C++"
    cdialect "C17"
    cppdialect "C++20"
-   staticruntime "off"
+   staticruntime "on"
 
    files { "**.h", "**.cpp", "**.hpp", "**.c" }
 

@@ -20,18 +20,31 @@
 
 #pragma once
 
-#include "TinyToolRender.h"
+#include <TinyEngine/Tools/Editors/TinyToolTexture2D.h>
 
 te_class TinyToolContent final : tiny_inherit( TinyToolCategory ) {
 
+	typedef c_str ( *AssetTypeToString )( tiny_uint );
+
 private:
-	bool			 _has_changed;
-	tiny_buffer<256> _path_buffer;
+	bool							_has_changed;
+	tiny_uint						_type_count;
+	AssetTypeToString				_type_to_string;
+	tiny_list<TinyToolAssetEditor*> _type_editors;
+	tiny_buffer<256>				_path_buffer;
 
 public:
 	TinyToolContent( );
 
 	~TinyToolContent( ) = default;
+
+	tiny_implement( void Create( 
+		TinyGame* game, 
+		TinyEngine& engine, 
+		TinyToolbox& toolbox 
+	) );
+
+	bool OpenAssetEditor( TinyGame* game, tiny_uint type, TinyAssetMetadata& metadata );
 
 protected:
 	tiny_implement( void OnTick(
@@ -40,7 +53,17 @@ protected:
 		TinyToolbox& toolbox
 	) );
 
+public:
+	template<typename Type, tiny_uint AssetType>
+		requires tiny_is_child_of( Type, TinyToolAssetEditor )
+	void Register( ) { 
+		auto* editor = new Type{ };
+
+		if ( editor )
+			_type_editors.insert( AssetType, editor );
+	};
+
 private:
-	tiny_string ConvertType( TinyAssetTypes type ) const;
+	static c_str TypeToString( tiny_uint type );
 
 };

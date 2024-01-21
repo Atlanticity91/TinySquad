@@ -37,7 +37,7 @@ void TinyToolWorld::OnTick(
 ) {
 	auto& ecs = engine.GetECS( );
 
-	Collapsing( "Systems", DrawSystems, game, engine, ecs );
+	TinyImGui::Collapsing( "Systems", DrawSystems, game, engine, ecs );
 
 	ImGui::SeparatorText( "Entities" );
 

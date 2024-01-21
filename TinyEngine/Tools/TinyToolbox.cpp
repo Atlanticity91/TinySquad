@@ -264,6 +264,7 @@ bool TinyToolbox::CreateImGuiContext( TinyWindow& window, TinyGraphicManager& gr
     auto& queues      = graphics.GetQueues( );
     auto* queue       = queues.Acquire( VK_QUEUE_TYPE_GRAPHIC );
     auto queue_family = queues.GetPhysicalQueue( VK_QUEUE_TYPE_GRAPHIC ).Family;
+    auto& render_pass = graphics.GetRenderPass( "OutTarget" );
     auto init_info    = ImGui_ImplVulkan_InitInfo{ };
 
     init_info.Instance        = graphics.GetInstance( );
@@ -281,7 +282,7 @@ bool TinyToolbox::CreateImGuiContext( TinyWindow& window, TinyGraphicManager& gr
     init_info.CheckVkResultFn = nullptr;
 
     auto state = ImGui_ImplGlfw_InitForVulkan( window, true ) &&
-                 ImGui_ImplVulkan_Init( &init_info, graphics.GetRenderPass( "OutTarget" ) );
+                 ImGui_ImplVulkan_Init( tiny_rvalue( init_info ), render_pass );
 
     queues.Release( VK_QUEUE_TYPE_GRAPHIC, queue );
 

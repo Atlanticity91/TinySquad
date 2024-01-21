@@ -39,7 +39,7 @@ TinyMemoryManager::~TinyMemoryManager( ) {
 	tiny_dump_leaks( );
 }
 
-bool TinyMemoryManager::Initialize( tiny_uint capacity ) {
+bool TinyMemoryManager::Initialize( tiny_ulong capacity ) {
 	printf( "[ INFO ] TinyMemoryManager Initialization.\n" );
 
 	auto header_size = MAX_BLOCKS * tiny_sizeof( TinyMemoryBlock );
@@ -159,9 +159,9 @@ void TinyMemoryManager::DeAllocate( tiny_storage& storage ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_uint TinyMemoryManager::GetBlockCount( ) const { return _block_count; }
 
-tiny_uint TinyMemoryManager::GetOccupancy( ) const { return _occupancy; }
+tiny_ulong TinyMemoryManager::GetOccupancy( ) const { return _occupancy; }
 
-tiny_uint TinyMemoryManager::GetCapacity( ) const { return _capacity; }
+tiny_ulong TinyMemoryManager::GetCapacity( ) const { return _capacity; }
 
 TinyMemoryBlock* TinyMemoryManager::GetBlock( tiny_uint block ) const {
 	auto* blocks = tiny_cast( _block_storage, TinyMemoryBlock* );

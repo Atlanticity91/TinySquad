@@ -3,7 +3,7 @@ project "TinyMicro"
    language "C++"
    cdialect "C17"
    cppdialect "C++20"
-   staticruntime "off"
+   staticruntime "on"
 
    defines { "_CRT_SECURE_NO_WARNINGS", "TM_BUILD" }
 

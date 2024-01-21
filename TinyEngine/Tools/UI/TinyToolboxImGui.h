@@ -78,14 +78,36 @@ namespace TinyImGui {
 	te_struct KnobContext {
 
 		KnobTypes Type = TK_TYPE_WIPER;
-		float Min = -6.f;
-		float Max =  6.f;
+		float Min	   = -6.f;
+		float Max	   =  6.f;
 
 	};
 
 	tiny_dll bool BeginModal( const tiny_string& label );
 
 	tiny_dll void EndModal( );
+
+	template<typename Func, typename... Args>
+	void Collapsing( const tiny_string& name, Func&& draw, Args&... args ) {
+		auto* name_str = name.as_chars( );
+
+		if ( ImGui::CollapsingHeader( name_str, IMGUI_NO_FLAGS ) ) {
+			draw( args... );
+
+			ImGui::Separator( );
+		}
+	};
+
+	template<typename Func, typename... Args>
+	void CollapsingOpen( const tiny_string& name, Func&& draw, Args&... args ) {
+		auto* name_str = name.as_chars( );
+
+		if ( ImGui::CollapsingHeader( name_str, ImGuiTreeNodeFlags_DefaultOpen ) ) {
+			draw( args... );
+
+			ImGui::Separator( );
+		}
+	};
 
 	tiny_dll bool RightButton( const tiny_string& label );
 
@@ -107,9 +129,15 @@ namespace TinyImGui {
 
 	tiny_dll bool InputScalar( const tiny_string& label, tiny_int& scalar );
 
+	tiny_dll bool InputScalar( const tiny_string& label, const tiny_int& scalar );
+
 	tiny_dll bool InputScalar( const tiny_string& label, tiny_uint& scalar );
 
+	tiny_dll bool InputScalar( const tiny_string& label, const tiny_uint& scalar );
+
 	tiny_dll bool InputScalar( const tiny_string& label, float& scalar );
+
+	tiny_dll bool InputScalar( const tiny_string& label, const float& scalar );
 
 	tiny_dll bool InputVector( const tiny_string& label, tiny_uint component, tiny_int* vector );
 

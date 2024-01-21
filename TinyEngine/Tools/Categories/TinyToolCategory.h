@@ -41,16 +41,4 @@ public:
 protected:
 	tiny_virtual( void OnTick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox ) );
 
-public:
-	template<typename Func, typename... Args>
-	void Collapsing( const tiny_string& name, Func&& draw, Args&... args ) { 
-		auto* name_str = name.as_chars( );
-
-		if ( ImGui::CollapsingHeader( name_str, IMGUI_NO_FLAGS ) ) {
-			draw( args... );
-
-			ImGui::Separator( );
-		}
-	};
-
 };

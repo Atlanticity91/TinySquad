@@ -10,39 +10,38 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 23/10/2023
- * @version  : 2024.1
+ * @creation : 21/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
-#include <TinyMicro/__tiny_micro_pch.h>
+#include <TinyEngine/__tiny_engine_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyThreadManager::TinyThreadManager( ) 
-	: _threads{ }
+TinyToolAssetEditor::TinyToolAssetEditor( const tiny_string& name )
+	: _in_use{ false },
+	_asset{ nullptr },
+	_name{ name }
 { }
 
-bool TinyThreadManager::Create( TinyThreadRun thread_run, c_ptr data ) {
-	auto state = !FAILED( CoInitializeEx( nullptr, COINIT_MULTITHREADED ) );
+void TinyToolAssetEditor::Close( ) {
+	_in_use = false;
+	_asset  = nullptr;
 
-	if ( state ) {
-		_threads = tiny_cast( std::thread::hardware_concurrency( ) / 2, tiny_uint );
-
-		for ( auto& thread : _threads )
-			thread.Create( thread_run, data );
-	}
-
-	return state;
+	OnClose( );
 }
 
-void TinyThreadManager::Terminate( ) {
-	for ( auto& thread : _threads )
-		thread.Terminate( );
+void TinyToolAssetEditor::Tick( TinyGame* game ) {
+	auto* name_str = _name.as_chars( );
 
-	CoUninitialize( );
+	if ( _in_use && ImGui::Begin( name_str, tiny_rvalue( _in_use ) ) ) {
+		OnTick( game );
+
+		ImGui::End( );
+	}
 }

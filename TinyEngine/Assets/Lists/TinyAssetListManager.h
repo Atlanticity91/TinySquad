@@ -22,7 +22,7 @@
 
 #include "TinyAssetList.h"
 
-#define TAL_MAP( TYPE ) Map<##TYPE##Manager>( )
+#define TAL_MAP( TYPE ) Map< ##TYPE##Manager>( )
 
 te_class TinyAssetListManager final {
 

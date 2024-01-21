@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 11/10/2023
- * @version  : 2024.1
+ * @creation : 21/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,12 +20,20 @@
 
 #pragma once
 
-#include "TinyWindow.h"
+#include "TinyToolAssetEditor.h"
 
-tm_interface ITinyManager {
+te_class TinyToolTexture2D : tiny_inherit( TinyToolAssetEditor ) {
 
-	tiny_abstract( bool Initialize( TinyFilesystem& file_system, TinyWindow& window ) );
+public:
+	TinyToolTexture2D( );
 
-	tiny_abstract( void Terminate( TinyFilesystem& file_system, TinyWindow& window ) );
+	~TinyToolTexture2D( ) = default;
+
+	tiny_implement( bool Open( TinyGame* game, c_ptr asset ) );
+
+protected:
+	tiny_implement( void OnTick( TinyGame* game ) );
+
+	tiny_implement( void OnClose( ) );
 
 };

@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Framework/Sound/TinySound_System.h>
+#include <TinyEngine/Framework/Sound2D/TinySound2D_System.h>
 
 enum TinyScriptTypes { 
 

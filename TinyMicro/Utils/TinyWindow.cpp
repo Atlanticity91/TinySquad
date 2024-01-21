@@ -51,12 +51,12 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, void* user_data ) {
 
 void TinyWindow::SetCallback( TinyWindowCallbacks query, void* callback ) {
 	switch ( query ) {
-		case TWC_WINDOW_SIZE  : glfwSetWindowSizeCallback( _handle, (GLFWwindowsizefun)callback );   break;
-		case TWC_WINDOW_CLOSE : glfwSetWindowCloseCallback( _handle, (GLFWwindowclosefun)callback ); break;
-		case TWC_KEY		  : glfwSetKeyCallback( _handle, (GLFWkeyfun)callback );				 break;
-		case TWC_CURSOR		  : glfwSetCursorPosCallback( _handle, (GLFWcursorposfun)callback );	 break;
-		case TWC_MOUSE		  : glfwSetMouseButtonCallback( _handle, (GLFWmousebuttonfun)callback ); break;
-		case TWC_SCROLL		  : glfwSetScrollCallback( _handle, (GLFWscrollfun)callback );			 break;
+		case TWC_WINDOW_SIZE  : glfwSetWindowSizeCallback( _handle, tiny_cast( callback, GLFWwindowsizefun ) );   break;
+		case TWC_WINDOW_CLOSE : glfwSetWindowCloseCallback( _handle, tiny_cast( callback, GLFWwindowclosefun ) ); break;
+		case TWC_KEY		  : glfwSetKeyCallback( _handle, tiny_cast( callback, GLFWkeyfun ) );				  break;
+		case TWC_CURSOR		  : glfwSetCursorPosCallback( _handle, tiny_cast( callback, GLFWcursorposfun ) );	  break;
+		case TWC_MOUSE		  : glfwSetMouseButtonCallback( _handle, tiny_cast( callback, GLFWmousebuttonfun ) ); break;
+		case TWC_SCROLL		  : glfwSetScrollCallback( _handle, tiny_cast( callback, GLFWscrollfun ) );			  break;
 
 		default: break;
 	}

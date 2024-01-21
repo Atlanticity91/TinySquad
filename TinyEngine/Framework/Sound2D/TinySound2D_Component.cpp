@@ -23,28 +23,28 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinySound::TinySound( )
-	: TinySound{ TINY_NO_ENTITY } 
+TinySound2D::TinySound2D( )
+	: TinySound2D{ TINY_NO_ENTITY }
 { }
 
-TinySound::TinySound( const tiny_hash entity_hash )
+TinySound2D::TinySound2D( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash },
 	_cue{ TA_TYPE_CUE },
 	_handle{ TINY_UINT_MAX },
 	_volume{ 1.f }
 { }
 
-bool TinySound::Create( TinyGame* game, TinyEngine& engine ) {
+bool TinySound2D::Create( TinyGame* game, TinyEngine& engine ) {
 	return true;
 }
 
-void TinySound::Delete( TinyGame* game, TinyEngine& engine ) {
+void TinySound2D::Delete( TinyGame* game, TinyEngine& engine ) {
 	auto& audio = engine.GetAudio( );
 
 	audio.Release( _handle );
 }
 
-bool TinySound::SetCue( TinyGame* game, const tiny_string& cue_name ) {
+bool TinySound2D::SetCue( TinyGame* game, const tiny_string& cue_name ) {
 	auto& assets = game->GetAssets( );
 	auto state   = false;
 
@@ -62,9 +62,9 @@ bool TinySound::SetCue( TinyGame* game, const tiny_string& cue_name ) {
 	return state;
 }
 
-bool TinySound::Play( TinyGame* game ) { return Play( game, true ); }
+bool TinySound2D::Play( TinyGame* game ) { return Play( game, true ); }
 
-bool TinySound::Play( TinyGame* game, bool imediate ) {
+bool TinySound2D::Play( TinyGame* game, bool imediate ) {
 	auto& assets = game->GetAssets( );
 	auto& audio  = game->GetAudio( );
 	auto state   = false;
@@ -83,14 +83,14 @@ bool TinySound::Play( TinyGame* game, bool imediate ) {
 	return state;
 }
 
-void TinySound::Stop( TinyGame* game ) {
+void TinySound2D::Stop( TinyGame* game ) {
 	auto& audio = game->GetAudio( );
 
 	audio.Stop( _handle );
 	audio.Release( _handle );
 }
 
-void TinySound::DisplayWidget(
+void TinySound2D::DisplayWidget(
 	TinyGame* game,
 	TinyEngine& engine,
 	TinyToolbox& toolbox
@@ -117,6 +117,6 @@ void TinySound::DisplayWidget(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAsset& TinySound::GetCue( ) { return _cue; }
+TinyAsset& TinySound2D::GetCue( ) { return _cue; }
 
-float TinySound::GetVolume( ) const { return _volume; }
+float TinySound2D::GetVolume( ) const { return _volume; }

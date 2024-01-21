@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 11/10/2023
+ * @creation : 06/01/2024
  * @version  : 2024.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -18,14 +18,11 @@
  *
  ******************************************************************************************/
 
-#pragma once
+#include <TinyEngine/__tiny_engine_pch.h>
 
-#include "TinyWindow.h"
-
-tm_interface ITinyManager {
-
-	tiny_abstract( bool Initialize( TinyFilesystem& file_system, TinyWindow& window ) );
-
-	tiny_abstract( void Terminate( TinyFilesystem& file_system, TinyWindow& window ) );
-
-};
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+TinySound2DSystem::TinySound2DSystem( )
+	: TinySystem{ }
+{ }

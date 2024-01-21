@@ -51,15 +51,15 @@ tm_class TinyMemoryManager final {
 private:
 	c_ptr	  _block_storage;
 	tiny_uint _block_count;
-	tiny_uint _occupancy;
-	tiny_uint _capacity;
+	tiny_ulong _occupancy;
+	tiny_ulong _capacity;
 
 public:
 	TinyMemoryManager( );
 
 	~TinyMemoryManager( );
 
-	bool Initialize( tiny_uint capacity );
+	bool Initialize( tiny_ulong capacity );
 
 	bool Allocate( 
 		tiny_storage& storage,
@@ -93,9 +93,9 @@ public:
 public:
 	tiny_uint GetBlockCount( ) const;
 
-	tiny_uint GetOccupancy( ) const;
+	tiny_ulong GetOccupancy( ) const;
 
-	tiny_uint GetCapacity( ) const;
+	tiny_ulong GetCapacity( ) const;
 
 	TinyMemoryBlock* GetBlock( tiny_uint block ) const;
 

@@ -34,5 +34,34 @@ void TinyToolRender::OnTick(
 	TinyGame* game,
 	TinyEngine& engine,
 	TinyToolbox& toolbox
-) {     
+) {
+	TinyImGui::BeginVars( );
+
+	TinyImGui::InputScalar( "Pixelization", 0 );
+	TinyImGui::InputScalar( "Sharpen", 0.f );
+	TinyImGui::InputScalar( "Min Depth of Field", 0.f );
+	TinyImGui::InputScalar( "Max Depth of Field", 0.f );
+	TinyImGui::InputScalar( "Chromatic Aberration", 0.f ); // Vec3
+	TinyImGui::InputScalar( "Bloom Factor", 0.f );
+	TinyImGui::InputScalar( "Grain", 0.f );
+	TinyImGui::InputScalar( "LUT", 0.f );
+	TinyImGui::InputScalar( "Gamma", 2.2f );
+
+	TinyImGui::EndVars( );
+
+	TinyImGui::Collapsing( 
+		"Outlines", 
+		[ & ]( ) { 
+			TinyImGui::BeginVars( );
+
+			TinyImGui::InputScalar( "Min Separation", 0.f );
+			TinyImGui::InputScalar( "Max Separation", 0.f );
+			TinyImGui::InputScalar( "Min Distance", 0.f );
+			TinyImGui::InputScalar( "Max Distance", 0.f );
+			TinyImGui::InputScalar( "Size", 0.f );
+			TinyImGui::InputScalar( "Color", 0.f );
+
+			TinyImGui::EndVars( );
+		} 
+	);
 }

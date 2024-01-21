@@ -22,8 +22,8 @@
 
 #include "Entities/TinyEntityManager.h"
 
-#define _RegisterCompt( GAME, COMP, TARGET ) Register< ##COMP##System>( GAME, TARGET )
-#define _RegisterComp( GAME, COMP ) _RegisterCompt( GAME, COMP, TINY_UINT_MAX )
+#define _RegisterCompt( COMP, TARGET ) Register< ##COMP##System>( this, TARGET )
+#define _RegisterComp( COMP ) _RegisterCompt( COMP, TINY_UINT_MAX )
 
 template<typename Component>
 concept TinyIsComponent = tiny_is_child_of( Component, TinyComponent );

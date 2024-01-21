@@ -482,8 +482,8 @@ VkClearColorValue vk::CastColor( const tiny_color& color ) {
 #define VK_TO_STRING( ENUM_VAL )\
     case ENUM_VAL: text = #ENUM_VAL; break;
 
-tiny_string vk::CastFormat( const VkFormat format ) {
-    auto text = tiny_string{ "UNDEFINED" };
+c_str vk::CastFormat( const VkFormat format ) {
+    auto text = "UNDEFINED";
 
     switch ( format ) {
         VK_TO_STRING( VK_FORMAT_R4G4_UNORM_PACK8 );
@@ -743,7 +743,7 @@ tiny_string vk::CastFormat( const VkFormat format ) {
     return text;
 }
 
-tiny_string vk::CastColorSpace( const VkColorSpaceKHR color_space ) {
+c_str vk::CastColorSpace( const VkColorSpaceKHR color_space ) {
     auto text = tiny_string{ "UNDEFINED" };
 
     switch ( color_space ) {
@@ -770,8 +770,8 @@ tiny_string vk::CastColorSpace( const VkColorSpaceKHR color_space ) {
     return text;
 }
 
-tiny_string vk::CastPresentMode( const VkPresentModeKHR present_mode ) {
-    auto text = tiny_string{ "UNDEFINED" };
+c_str vk::CastPresentMode( const VkPresentModeKHR present_mode ) {
+    auto text = "UNDEFINED";
 
     switch ( present_mode ) {
         VK_TO_STRING( VK_PRESENT_MODE_IMMEDIATE_KHR );
@@ -780,6 +780,96 @@ tiny_string vk::CastPresentMode( const VkPresentModeKHR present_mode ) {
         VK_TO_STRING( VK_PRESENT_MODE_FIFO_RELAXED_KHR );
         VK_TO_STRING( VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR );
         VK_TO_STRING( VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR );
+
+        default : break;
+    }
+
+    return text;
+}
+
+c_str vk::CastLayout( const VkImageLayout layout ) {
+    auto text = "UNDEFINED";
+
+    switch ( layout ) {
+        VK_TO_STRING( VK_IMAGE_LAYOUT_GENERAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_PREINITIALIZED );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_READ_ONLY_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_PRESENT_SRC_KHR );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_VIDEO_DECODE_DST_KHR );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_VIDEO_DECODE_SRC_KHR );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_VIDEO_DECODE_DPB_KHR );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_SHARED_PRESENT_KHR );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_FRAGMENT_DENSITY_MAP_OPTIMAL_EXT );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR );
+        VK_TO_STRING( VK_IMAGE_LAYOUT_ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT );
+
+        default: break;
+    }
+
+    return text;
+}
+
+c_str vk::CastAspect( const VkImageAspectFlags aspect ) {
+    auto text = "UNDEFINED";
+
+    switch ( aspect ) {
+        VK_TO_STRING( VK_IMAGE_ASPECT_COLOR_BIT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_DEPTH_BIT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_STENCIL_BIT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_METADATA_BIT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_PLANE_0_BIT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_PLANE_1_BIT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_PLANE_2_BIT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_NONE );
+        VK_TO_STRING( VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT );
+        VK_TO_STRING( VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT );
+
+        default : break;
+    }
+
+    return text;
+}
+
+c_str vk::CastSamples( const VkSampleCountFlags samples ) {
+    auto text = "UNDEFINED";
+
+    switch ( samples ) {
+        VK_TO_STRING( VK_SAMPLE_COUNT_1_BIT );
+        VK_TO_STRING( VK_SAMPLE_COUNT_2_BIT );
+        VK_TO_STRING( VK_SAMPLE_COUNT_4_BIT );
+        VK_TO_STRING( VK_SAMPLE_COUNT_8_BIT );
+        VK_TO_STRING( VK_SAMPLE_COUNT_16_BIT );
+        VK_TO_STRING( VK_SAMPLE_COUNT_32_BIT );
+        VK_TO_STRING( VK_SAMPLE_COUNT_64_BIT );
+
+        default : break;
+    }
+
+    return text;
+}
+
+c_str vk::CastTiling( const VkImageTiling tiling ) {
+    auto text = "UNDEFINED";
+
+    switch ( tiling ) {
+        VK_TO_STRING( VK_IMAGE_TILING_OPTIMAL );
+        VK_TO_STRING( VK_IMAGE_TILING_LINEAR );
+        VK_TO_STRING( VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT );
 
         default: break;
     }

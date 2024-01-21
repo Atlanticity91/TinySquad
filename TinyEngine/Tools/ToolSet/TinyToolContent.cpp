@@ -26,8 +26,35 @@
 TinyToolContent::TinyToolContent( ) 
 	: TinyToolCategory{ "Content" },
     _has_changed{ false },
+    _type_count{ TinyAssetTypes::TA_TYPE_COUNT },
+    _type_to_string{ TinyToolContent::TypeToString },
+    _type_editors{ },
     _path_buffer{ }
 { }
+
+void TinyToolContent::Create(
+    TinyGame* game,
+    TinyEngine& engine,
+    TinyToolbox& toolbox
+) {
+    Register<TinyToolTexture2D, TA_TYPE_CONFIG>( );
+    Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
+}
+
+bool TinyToolContent::OpenAssetEditor( 
+    TinyGame* game, 
+    tiny_uint type, 
+    TinyAssetMetadata& metadata 
+) {
+    auto& assets = game->GetAssets( );
+
+    if ( metadata.Reference == 0 )
+        assets.Load( game, "" );
+
+    auto* asset = assets.GetAsset( {} );
+
+    return asset && _type_editors[ type ]->Open( game, asset );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
@@ -38,8 +65,8 @@ void TinyToolContent::OnTick(
     TinyToolbox& toolbox
 ) {
     auto& filesystem = engine.GetFilesystem( );
-    auto& assets = engine.GetAssets( );
-    auto& registry = assets.GetRegistry( );
+    auto& assets     = engine.GetAssets( );
+    auto& registry   = assets.GetRegistry( );
 
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
     auto filters = "Tiny Registry (*.tinyregistry)\0*.tinyregistry\0";
@@ -93,101 +120,93 @@ void TinyToolContent::OnTick(
 
     ImGui::SeparatorText( "Assets" );
 
-    auto& metadatas = registry.GetMetadatas( );
-    auto to_remove = std::string{ "" };
+    const auto flags      = ImGuiTableFlags_Borders | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTableFlags_RowBg;
+    const auto node_flags = ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_SpanAllColumns;
+    const auto leaf_flags = node_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+    const auto char_size  = ImGui::CalcTextSize( "#" ).x;
 
-    if ( metadatas.size( ) > 0 ) {
-        if ( ImGui::BeginTable( "AssetData", 5, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders ) ) {
-            ImGui::TableSetupColumn( "Name", ImGuiTableColumnFlags_WidthFixed );
-            ImGui::TableSetupColumn( "Type", ImGuiTableColumnFlags_WidthFixed );
-            ImGui::TableSetupColumn( "Use", ImGuiTableColumnFlags_WidthFixed );
-            ImGui::TableSetupColumn( "", ImGuiTableColumnFlags_WidthFixed );
-            ImGui::TableSetupColumn( "", ImGuiTableColumnFlags_WidthFixed );
+    if ( ImGui::BeginTable( "Asset List", 3, flags ) ) {
+        ImGui::TableSetupColumn( "Asset",  ImGuiTableColumnFlags_WidthStretch );
+        ImGui::TableSetupColumn( "Count",  ImGuiTableColumnFlags_WidthFixed, char_size * 6.0f );
+        ImGui::TableSetupColumn( "Action", ImGuiTableColumnFlags_WidthFixed, char_size * 10.0f );
+        ImGui::TableHeadersRow( );
 
-            ImGui::TableHeadersRow( );
+        auto spacing = ImGui::GetStyle( ).ItemSpacing.x;
+        auto type    = tiny_cast( 1, tiny_uint );
 
-            for ( auto& metadata : metadatas ) {
+        while ( type < _type_count ) {
+            auto name = _type_to_string( type );
+
+            if ( strlen( name ) > 0 ) {
                 ImGui::TableNextRow( );
-
-                ImGui::TableNextColumn( );
-                ImGui::Text( metadata.String.c_str( ) );
-
-                ImGui::TableNextColumn( );
-                auto type = ConvertType( metadata.Data.Type );
-
-                ImGui::Text( "%s", type.get( ) );
-
-                ImGui::TableNextColumn( );
-                ImGui::Text( "%d", metadata.Data.Reference );
-
                 ImGui::TableNextColumn( );
 
-                TINY_IMGUI_SCOPE_ID(
-                    if ( ImGui::Button( "X" ) ) {
-                        to_remove = metadata.String;
-
-                        _has_changed = true;
-                    }
-                );
+                auto open = ImGui::TreeNodeEx( name, node_flags );
 
                 ImGui::TableNextColumn( );
+                ImGui::TableNextColumn( );
 
-                TINY_IMGUI_SCOPE_ID(
-                    if ( ImGui::Button( "E" ) ) {
-                    }
-                );
+                if ( open ) {
+                    auto metadatas = registry.GetAssets( (TinyAssetTypes)type );
 
-                /*
-                if ( ImGui::IsItemHovered( ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_NoSharedDelay ) ) {
-                    if ( ImGui::BeginItemTooltip( ) ) {
-                        auto asset = TinyAsset{ TA_TYPE_TEXTURE_2D };
+                    for ( auto& metadata : metadatas ) {
+                        ImGui::TableNextRow( );
+                        ImGui::TableNextColumn( );
+                        ImGui::TreeNodeEx( metadata.get( ), leaf_flags );
+                        ImGui::TableNextColumn( );
+                        ImGui::Text( "%d", 0 ); // asset.Instance
+                        ImGui::TableNextColumn( );
 
-                        asset.Hash = metadata.Hash;
-                        asset.Handle = metadata.Data.Handle;
+                        TINY_IMGUI_SCOPE_ID(
+                            if ( ImGui::Button( TF_ICON_REDO ) )
+                                assets.Import( game, "" ); // metadata
+                        );
+                        ImGui::SameLine( .0f, spacing * .25f );
+                        
+                        TINY_IMGUI_SCOPE_ID(
+                            if ( ImGui::Button( TF_ICON_EDIT ) ) {
+                                //OpenAssetEditor( game, type, metadata );
+                            }
+                        );
+                        
+                        ImGui::SameLine( .0f, spacing * .25f );
 
-                        auto texture = assets.GetAssetAs<TinyTexture2D>( asset );
-
-                        if ( texture ) {
-                            auto m_Dset = ImGui_ImplVulkan_AddTexture( texture->GetSampler( ), texture->GetView( ), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
-
-                            ImVec2 viewportPanelSize = ImVec2{ 512, 512 };
-                            ImGui::Image( m_Dset, ImVec2{ viewportPanelSize.x, viewportPanelSize.y } );
-                        }
-
-                        ImGui::EndTooltip( );
+                        TINY_IMGUI_SCOPE_ID(
+                            if ( ImGui::Button( TF_ICON_TRASH_ALT ) )
+                                registry.Remove( metadata );
+                        );
                     }
 
-                    if ( ImGui::IsMouseDoubleClicked( ImGuiMouseButton_Left ) ) {
-                        printf( "d\n" );
-                    }
+                    ImGui::TreePop( );
                 }
-                */
             }
 
-            if ( to_remove.size( ) > 0 )
-                registry.Remove( to_remove.c_str( ) );
-
-            ImGui::EndTable( );
+            type += 1;
         }
+
+        ImGui::EndTable( );
     }
+
+    for ( auto& editor : _type_editors )
+        editor->Tick( game );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_string TinyToolContent::ConvertType( TinyAssetTypes type ) const {
-    auto string = tiny_string{ "UNDEFINED" };
+c_str TinyToolContent::TypeToString( tiny_uint type ) {
+    auto string = "";
 
     switch ( type ) {
-        case TA_TYPE_TEXTURE_2D: string = "TEXTURE 2D";   break;
-        case TA_TYPE_TEXTURE_3D: string = "TEXTURE 3D";   break;
-        case TA_TYPE_SHADER: string = "SHADER";       break;
-        case TA_TYPE_MATERIAL: string = "MATERIAL";     break;
-        case TA_TYPE_GEOMETRY: string = "GEOMETRY";     break;
-        case TA_TYPE_CUE: string = "CUE";          break;
-        case TA_TYPE_SCRIPT: string = "SCRIPT";       break;
-        case TA_TYPE_ANIMATION_2D: string = "ANIMATION 2D"; break;
-        case TA_TYPE_ANIMATION_3D: string = "ANIMATION 3D"; break;
+        case TA_TYPE_TEXTURE_2D   : string = "TEXTURE 2D";   break;
+        case TA_TYPE_TEXTURE_3D   : string = "TEXTURE 3D";   break;
+        case TA_TYPE_SHADER       : string = "SHADER";       break;
+        case TA_TYPE_MATERIAL     : string = "MATERIAL";     break;
+        case TA_TYPE_GEOMETRY     : string = "GEOMETRY";     break;
+        case TA_TYPE_CUE          : string = "CUE";          break;
+        case TA_TYPE_SCRIPT       : string = "SCRIPT";       break;
+        case TA_TYPE_ANIMATION_2D : string = "ANIMATION 2D"; break;
+        case TA_TYPE_ANIMATION_3D : string = "ANIMATION 3D"; break;
 
         default: break;
     }

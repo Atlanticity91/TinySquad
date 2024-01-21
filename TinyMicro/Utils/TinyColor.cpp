@@ -84,7 +84,7 @@ tiny_color& tiny_color::Asign( const tiny_vec4& vector ) {
 
 tiny_uint tiny_color::Convert( ) {
 	auto converted = tiny_cast( 0, tiny_uint );
-	auto channel   = tiny_cast( TCC_COUNT, tiny_uint);
+	auto channel   = tiny_cast( TCC_COUNT, tiny_uint );
 
 	while ( channel-- > 0 ) {
 		auto value = GetChannelAsInt( tiny_cast( channel, TinyColorChannels ) );

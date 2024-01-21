@@ -34,7 +34,7 @@ te_struct TinyToolboxFontEmbedded {
 
 	tiny_uint Length  = 0;
 	tiny_uint* Glyphs = nullptr;
-	tiny_uint Min	  = 0;
-	tiny_uint Max	  = 0;
+	tiny_ushort Min	  = 0;
+	tiny_ushort Max	  = 0;
 
 };

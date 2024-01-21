@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 11/10/2023
+ * @creation : 24/10/2023
  * @version  : 2024.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -20,12 +20,13 @@
 
 #pragma once
 
-#include "TinyWindow.h"
+#include "TinySound2D_Component.h"
 
-tm_interface ITinyManager {
+te_class TinySound2DSystem : tiny_inherit( TinySystem<TinySound2D> ) {
 
-	tiny_abstract( bool Initialize( TinyFilesystem& file_system, TinyWindow& window ) );
+public:
+	TinySound2DSystem( );
 
-	tiny_abstract( void Terminate( TinyFilesystem& file_system, TinyWindow& window ) );
+	~TinySound2DSystem( ) = default;
 
 };

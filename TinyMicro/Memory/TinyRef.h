@@ -47,17 +47,17 @@ public:
 	};
 
 public:
-	Type* Get( ) { return (Type*)GetAddress( ); };
+	Type* Get( ) { return tiny_cast( GetAddress( ), Type* ); };
 
-	const Type* Get( ) const { return (const Type*)GetAddress( ); };
+	const Type* Get( ) const { return tiny_cast( GetAddress( ), const Type* ); };
 
-	Type& GetRef( ) { return *Get( ); };
+	Type& GetRef( ) { return tiny_lvalue( Get( ) ); };
 
-	const Type& GetRef( ) const { return *Get( ); };
+	const Type& GetRef( ) const { return tiny_lvalue( Get( ) ); };
 
 private:
 	tiny_ptr GetAddress( ) const {
-		return (tiny_ptr)tiny_get_address_of( _block );
+		return tiny_cast( tiny_get_address_of( _block ), tiny_ptr );
 	};
 
 public:

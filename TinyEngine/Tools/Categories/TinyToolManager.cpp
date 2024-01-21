@@ -20,6 +20,9 @@
 
 #include <TinyEngine/__tiny_engine_pch.h>
 
+#define _RegisterTool( TYPE, ID )\
+	Register< TYPE, ID >( game, engine, toolbox );
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,17 +34,18 @@ TinyToolManager::TinyToolManager( )
 bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
 	auto& engine = game->GetEngine( );
 
-	Register<TinyToolCommon, TT_CATEGORY_COMMON>( game, engine, toolbox );
-	Register<TinyToolRender, TT_CATEGORY_RENDER>( game, engine, toolbox );
-	Register<TinyToolContent, TT_CATEGORY_CONTENT>( game, engine, toolbox );
-	Register<TinyToolWorld, TT_CATEGORY_WORLD>( game, engine, toolbox );
-	Register<TinyToolTerrain, TT_CATEGORY_TERRAIN>( game, engine, toolbox );
+	_RegisterTool( TinyToolCommon, TT_CATEGORY_COMMON );
+	_RegisterTool( TinyToolInputs, TT_CATEGORY_INPUTS );
+	_RegisterTool( TinyToolRender, TT_CATEGORY_RENDER );
+	_RegisterTool( TinyToolContent, TT_CATEGORY_CONTENT );
+	_RegisterTool( TinyToolWorld, TT_CATEGORY_WORLD );
+	_RegisterTool( TinyToolTerrain, TT_CATEGORY_TERRAIN );
 
 	return true; 
 }
 
 void TinyToolManager::Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox ) {
-	if ( ImGui::Begin( "Tiny Editor" ) ) {
+	if ( ImGui::Begin( "Tiny Editor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar ) ) {
 		auto tab_id = tiny_cast( 0, tiny_uint );
 		if ( ImGui::BeginTabBar( "__tiny_editor_tabs__", ImGuiTabBarFlags_None ) ) {
 			for ( auto& category : _categories ) {

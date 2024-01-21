@@ -60,12 +60,12 @@ void TinyGame::Close( ) {
 bool TinyGame::ProcessArguments( tiny_int argc, char** argv ) { return true; }
 
 void TinyGame::LoadDefault2D( TinyECS& ecs ) {
-	ecs._RegisterComp( this, TinyScript );
-	ecs._RegisterComp( this, TinyTransform2D );
-	ecs._RegisterComp( this, TinySound );
-	ecs._RegisterComp( this, TinyCamera );
-	ecs._RegisterComp( this, TinyAnim2D );
-	ecs._RegisterComp( this, TinySkin2D );
+	ecs._RegisterComp( TinyScript );
+	ecs._RegisterComp( TinyTransform2D );
+	ecs._RegisterComp( TinySound2D );
+	ecs._RegisterComp( TinyCamera );
+	ecs._RegisterComp( TinyAnim2D );
+	ecs._RegisterComp( TinySkin2D );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

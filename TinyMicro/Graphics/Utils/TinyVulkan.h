@@ -160,10 +160,18 @@ namespace vk {
 
 	tm_dll VkClearColorValue CastColor( const tiny_color& color );
 
-	tm_dll tiny_string CastFormat( const VkFormat format );
+	tm_dll c_str CastFormat( const VkFormat format );
 
-	tm_dll tiny_string CastColorSpace( const VkColorSpaceKHR color_space );
+	tm_dll c_str CastColorSpace( const VkColorSpaceKHR color_space );
 
-	tm_dll tiny_string CastPresentMode( const VkPresentModeKHR present_mode );
+	tm_dll c_str CastPresentMode( const VkPresentModeKHR present_mode );
+
+	tm_dll c_str CastLayout( const VkImageLayout layout );
+
+	tm_dll c_str CastAspect( const VkImageAspectFlags aspect );
+
+	tm_dll c_str CastSamples( const VkSampleCountFlags samples );
+
+	tm_dll c_str CastTiling( const VkImageTiling tiling );
 
 };

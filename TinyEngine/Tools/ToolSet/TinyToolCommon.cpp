@@ -66,7 +66,7 @@ void TinyToolCommon::OnTick(
 	TinyEngine& engine,
 	TinyToolbox& toolbox
 ) {
-    Collapsing( 
+    TinyImGui::Collapsing( 
         "Guizmo",
         [ & ]( ) { 
             TinyImGui::BeginVars( );
@@ -103,74 +103,35 @@ void TinyToolCommon::OnTick(
         }
     );
 
-    Collapsing( 
-        "Inputs",
+    TinyImGui::Collapsing( 
+        "Graphics",
         [ & ]( ) {
-            auto& inputs = engine.GetInputs( );
+            auto& graphics = engine.GetGraphics( );
 
-            tiny_buffer<256> buffer;
+            if ( ImGui::Button( "ReCreate", { -1.f, 0.f } ) )
+                graphics.ReCreate( );
 
-            auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
-            auto filters = "Tiny Inputs (*.tinyinputs)\0*.tinyinputs\0";
-            
-            if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
-                if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, filters, buffer.length( ), buffer.as_chars( ) ) ) {
-                }
-            }
+            ImGui::SeparatorText( "Hardware" );
 
-            ImGui::SameLine( );
+            DrawHardware( graphics );
 
-            ImGui::BeginDisabled( true );
-            if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-                if ( Tiny::OpenDialog( Tiny::TD_TYPE_SAVE_FILE, filters, buffer.length( ), buffer.as_chars( ) ) ) {
-                }
-            }
+            ImGui::SeparatorText( "Boundaries" );
 
-            ImGui::EndDisabled( );
+            DrawBoundaries( graphics );
 
-            if ( ImGui::Button( "New", { -1.f, 0.f } ) ) {
-            }
+            ImGui::SeparatorText( "Swapchain" );
 
-            ImGui::SeparatorText( "Inputs Table" );
+            DrawSwapchain( graphics );
 
-            auto& input_map = inputs.GetMap( );
+            ImGui::SeparatorText( "Passes" );
 
-            for ( auto& input : input_map ) {
-                TINY_IMGUI_SCOPE_ID(
-                    ImGui::Checkbox( IMGUI_NO_LABEL, (bool*)&input.Data.IsActive );
-                );
-                ImGui::SameLine( );
-                ImGui::Text( input.String.c_str( ) );
-            }
+            DrawPasses( graphics );
+
+            ImGui::Separator( );
         }
     );
 
-    if ( ImGui::CollapsingHeader( "Graphics", IMGUI_NO_FLAGS ) ) {
-        auto& graphics = engine.GetGraphics( );
-
-        if ( ImGui::Button( "ReCreate", { -1.f, 0.f } ) )
-            graphics.ReCreate( );
-
-        ImGui::SeparatorText( "Hardware" );
-
-        DrawHardware( graphics );
-
-        ImGui::SeparatorText( "Boundaries" );
-
-        DrawBoundaries( graphics );
-
-        ImGui::SeparatorText( "Swapchain" );
-
-        DrawSwapchain( graphics );
-
-        ImGui::SeparatorText( "Passes" );
-
-        DrawPasses( graphics );
-
-        ImGui::Separator( );
-    }
-
-    Collapsing( 
+    TinyImGui::Collapsing(
         "Memory",
         [ & ]( ) { 
             TinyImGui::BeginVars( );
@@ -189,7 +150,7 @@ void TinyToolCommon::OnTick(
     );
 
 #   ifdef DEBUG
-    Collapsing( 
+    TinyImGui::Collapsing(
         "Fonts",
         [ & ]( ) {
             auto& filesystem = engine.GetFilesystem( );
@@ -262,9 +223,9 @@ void TinyToolCommon::DrawSwapchain( TinyGraphicManager& graphics ) {
 
     ImGui::BeginDisabled( );
     TinyImGui::TextVar( "Capacity", "%d", properties.Capacity );
-    TinyImGui::TextVar( "Format", "%s", vk::CastFormat( properties.Format ).get( ) );
-    TinyImGui::TextVar( "Color Space", "%s", vk::CastColorSpace( properties.ColorSpace ).get( ) );
-    TinyImGui::TextVar( "Present Mode", "%s", vk::CastPresentMode( properties.PresentMode ).get( ) );
+    TinyImGui::TextVar( "Format", "%s", vk::CastFormat( properties.Format ) );
+    TinyImGui::TextVar( "Color Space", "%s", vk::CastColorSpace( properties.ColorSpace ) );
+    TinyImGui::TextVar( "Present Mode", "%s", vk::CastPresentMode( properties.PresentMode ) );
     ImGui::EndDisabled( );
 
     TinyImGui::EndVars( );

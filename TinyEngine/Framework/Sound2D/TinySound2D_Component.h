@@ -22,7 +22,7 @@
 
 #include <TinyEngine/Framework/Skin2D/TinySkin2D_System.h>
 
-TINY_FRAMEWORK_COMP( TinySound ) {
+TINY_FRAMEWORK_COMP( TinySound2D ) {
 
 private:
 	TinyAsset _cue;
@@ -30,11 +30,11 @@ private:
 	float	  _volume;
 
 public:
-	TinySound( );
+	TinySound2D( );
 
-	TinySound( const tiny_hash entity_hash );
+	TinySound2D( const tiny_hash entity_hash );
 
-	~TinySound( ) = default;
+	~TinySound2D( ) = default;
 
 	tiny_implement( bool Create( TinyGame* game, TinyEngine& engine ) );
 
@@ -55,7 +55,7 @@ public:
 	) );
 
 public:
-	TINY_COMP_NAME( TinySound );
+	TINY_COMP_NAME( TinySound2D );
 
 	TinyAsset& GetCue( );
 
