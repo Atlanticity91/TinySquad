@@ -26,8 +26,8 @@ tm_struct TinyMemoryBlock {
 
 	typedef void ( *DestructorCall )( );
 
-	tiny_uint Offset;
-	tiny_uint Capacity;
+	tiny_ulong Offset;
+	tiny_ulong Capacity;
 	tiny_uint Reference;
 	DestructorCall Destructor;
 

@@ -56,7 +56,7 @@ tiny_enum( TinyAssetTypes ) {
 
 te_struct TinyAssetMetadata {
 
-	TinyAssetTypes Type;
+	tiny_uint Type;
 	tiny_uint Reference;
 	tiny_uint Handle;
 	std::string Source;
@@ -64,10 +64,10 @@ te_struct TinyAssetMetadata {
 
 	TinyAssetMetadata( );
 
-	TinyAssetMetadata( TinyAssetTypes type );
+	TinyAssetMetadata( tiny_uint type );
 
 	TinyAssetMetadata(
-		TinyAssetTypes type, 
+		tiny_uint type,
 		const tiny_string& source, 
 		const tiny_string& target 
 	);

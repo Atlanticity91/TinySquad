@@ -57,7 +57,7 @@ bool TinyGraphicShaderCompiler::Compile(
 	tiny_storage& file,
 	TinyGraphicShaderProperties& properties 
 ) {
-	auto source = tiny_string{ file.GetAddress( ), file.Capacity };
+	auto source = tiny_string{ file.GetAddress( ), tiny_cast( file.Capacity, tiny_uint ) };
 	auto type	= shaderc_glsl_infer_from_source;
 	auto name	= tiny_string{ path.Name };
 

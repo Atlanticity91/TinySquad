@@ -31,7 +31,7 @@ tiny_uint TinyAssetRegistry::Append(
 	const tiny_string& name, 
 	const TinyAssetMetadata& metadata 
 ) {
-	auto metadata_id = (tiny_uint)0;
+	auto metadata_id = tiny_cast( 0, tiny_uint );
 
 	if ( !_metadatas.find( name ) )
 		_metadatas.emplace( name, metadata );
@@ -50,7 +50,13 @@ void TinyAssetRegistry::Remove( const tiny_string& name ) {
 }
 
 bool TinyAssetRegistry::Load( TinyFilesystem& filesystem ) {
-	return Load( filesystem, "Ressources/Default.tinyregistry" );
+#	ifdef TE_DEV
+	auto dev_path = std::string{ filesystem.GetGameDir( ).as_chars( ) } + "Dev\\Dev.tinyregistry";
+
+	return Load( filesystem, { dev_path } );
+#	endif
+
+	return false;
 }
 
 bool TinyAssetRegistry::Load( TinyFilesystem& filesystem, const tiny_string& path ) {
@@ -69,7 +75,7 @@ bool TinyAssetRegistry::Load( TinyFilesystem& filesystem, const tiny_string& pat
 			auto name = node[ "Name" ].as<std::string>( );
 
 			asset.Reference = 0;
-			asset.Type	    = (TinyAssetTypes)node[ "Type" ].as<tiny_uint>( );
+			asset.Type	    = tiny_cast( node[ "Type" ].as<tiny_uint>( ), TinyAssetTypes );
 			asset.Handle    = TINY_UINT_MAX;
 			asset.Source	= node[ "Source" ].as<std::string>( );
 			asset.Target	= node[ "Target" ].as<std::string>( );
@@ -94,7 +100,7 @@ void TinyAssetRegistry::Save( TinyFilesystem& filesystem, const tiny_string& pat
 
 		emitter << YAML::BeginMap;
 		emitter << YAML::Key << "Name"   << YAML::Value << metadata.String;
-		emitter << YAML::Key << "Type"   << YAML::Value << (tiny_uint)metadata.Data.Type;
+		emitter << YAML::Key << "Type"   << YAML::Value << tiny_cast( metadata.Data.Type, tiny_uint );
 		emitter << YAML::Key << "Source" << YAML::Value << metadata.Data.Source;
 		emitter << YAML::Key << "Target" << YAML::Value << metadata.Data.Target;
 		emitter << YAML::EndMap;
@@ -124,10 +130,8 @@ tiny_map<TinyAssetMetadata>& TinyAssetRegistry::GetMetadatas( ) {
 	return _metadatas;
 }
 
-tiny_list<tiny_string> TinyAssetRegistry::GetAssets( TinyAssetTypes type ) const {
+tiny_list<tiny_string> TinyAssetRegistry::GetAssets( tiny_uint type ) const {
 	auto assets = tiny_list<tiny_string>{ };
-
-	assets.emplace_back( "Undefined" );
 
 	for ( auto& metadata : _metadatas ) {
 		if ( metadata.Data.Type != type )
@@ -137,6 +141,19 @@ tiny_list<tiny_string> TinyAssetRegistry::GetAssets( TinyAssetTypes type ) const
 	}
 
 	return assets;
+}
+
+tiny_list<TinyAssetRegistry::MetaNode*> TinyAssetRegistry::GetMetadatas( tiny_uint type ) {
+	auto metadatas = tiny_list<TinyAssetRegistry::MetaNode*>{ };
+
+	for ( auto& metadata : _metadatas ) {
+		if ( metadata.Data.Type != type )
+			continue;
+
+		metadatas.emplace_back( tiny_rvalue( metadata ) );
+	}
+
+	return metadatas;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

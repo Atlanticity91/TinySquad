@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/11/2023
- * @version  : 2024.1
+ * @creation : 23/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,33 +20,22 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Utils/TinyRenderBuffer.h>
+#include "TinyToolMaterial.h"
 
-te_class TinyTextureSpriteSheet {
+te_class TinyToolLua final : tiny_inherit( TinyToolAssetEditor ) {
+
+public:
+	TinyToolLua( );
+
+	~TinyToolLua( ) = default;
+
+	tiny_implement( void Save( TinyGame* game ) );
 
 protected:
-	tiny_uint _rows;
-	tiny_uint _columns;
-	tiny_vec2 _uv;
+	tiny_implement( bool OnOpen( TinyGame* game, const tiny_string& name, c_ptr asset ) );
 
-public:
-	TinyTextureSpriteSheet( );
+	tiny_implement( void OnTick( TinyGame* game, TinyAssetManager& assets ) );
 
-	virtual ~TinyTextureSpriteSheet( ) = default;
-	
-	void SetDimensions( tiny_uint rows, tiny_uint columns );
-
-public:
-	tiny_uint GetRows( ) const;
-
-	tiny_uint GetColumns( ) const;
-	
-	const tiny_vec2& GetUV( ) const;
-
-	const tiny_vec4 GetUV( tiny_uint rows, tiny_uint columns ) const;
-
-	tiny_uint& GetEditColumns( );
-
-	tiny_uint& GetEditRows( );
+	tiny_implement( void OnClose( TinyGame* game, TinyAssetManager& assets ) );
 
 };

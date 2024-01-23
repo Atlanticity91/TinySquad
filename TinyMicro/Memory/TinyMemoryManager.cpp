@@ -66,7 +66,7 @@ bool TinyMemoryManager::Initialize( tiny_ulong capacity ) {
 
 bool TinyMemoryManager::Allocate(
 	tiny_storage& storage,
-	tiny_uint capacity,
+	tiny_ulong capacity,
 	TinyMemoryBlock::DestructorCall destructor
 ) {
 	auto* block = tiny_cast( nullptr, TinyMemoryBlock* );
@@ -90,7 +90,7 @@ bool TinyMemoryManager::Allocate(
 	return state;
 }
 
-bool TinyMemoryManager::ReAllocate( tiny_storage& storage, tiny_uint capacity ) {
+bool TinyMemoryManager::ReAllocate( tiny_storage& storage, tiny_ulong capacity ) {
 	auto state = storage.GetIsValid( ) && capacity > 0;
 
 	if ( state ) {

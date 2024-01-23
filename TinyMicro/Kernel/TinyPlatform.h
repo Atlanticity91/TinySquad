@@ -118,7 +118,7 @@ namespace Tiny {
 	bool Memcpy( const Type* src, Type* dst, tiny_uint count ) {
 		auto block_size = count * tiny_sizeof( Type );
 
-		return Memcpy( (const c_ptr)src, (c_ptr)dst, block_size );
+		return Memcpy( tiny_cast( src, const c_ptr ), tiny_cast( dst, c_ptr ), block_size );
 	};
 
 	template<typename Type>
@@ -164,9 +164,21 @@ namespace Tiny {
 
 	tm_dll bool OpenDialog( DialogTypes type, c_str filters, tiny_uint length, char* data );
 
-	tm_dll bool OpenDialog( DialogTypes type, c_str path, c_str filters, tiny_uint length, char* data );
+	tm_dll bool OpenDialog( 
+		DialogTypes type, 
+		c_str path,
+		c_str filters,
+		tiny_uint length,
+		char* data 
+	);
 
-	tm_dll bool OpenDialog( DialogTypes type, std::string path, c_str filters, tiny_uint length, char* data );
+	tm_dll bool OpenDialog(
+		DialogTypes type,
+		std::string path, 
+		c_str filters, 
+		tiny_uint length,
+		char* data 
+	);
 
 	tm_dll Date GetDate( );
 

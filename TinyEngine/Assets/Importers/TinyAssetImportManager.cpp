@@ -85,11 +85,11 @@ bool TinyAssetImportManager::Import(
 
 bool TinyAssetImportManager::Export(
 	TinyGame* game,
-	TinyAssetTypes type,
+	tiny_uint type,
 	TinyFile& file,
 	c_ptr& asset 
 ) {
-	auto exporter = _exporters[ tiny_cast( type, tiny_uint ) ];
+	auto exporter = _exporters[ type ];
 	auto state	  = false;
 
 	if ( exporter )
@@ -155,7 +155,7 @@ bool TinyAssetImportManager::ImportTextureDDS(
 
 bool TinyAssetImportManager::ExportTexture2D( TinyGame* game, TinyFile& file, c_ptr& asset ) {
 	auto* builder = tiny_cast( asset, TinyTexture2DBuilder* );
-	auto state    = builder != nullptr && builder->Texels;
+	auto state    = builder != nullptr;
 
 	if ( state ) {
 		file.Write( TinyAssetHeader{ TA_TYPE_TEXTURE_2D } );
@@ -167,7 +167,8 @@ bool TinyAssetImportManager::ExportTexture2D( TinyGame* game, TinyFile& file, c_
 			file.Write( builder->Size );
 			file.Write( builder->Size, builder->Texels );
 
-			stbi_image_free( builder->Texels );
+			if ( !builder->IsUserDefined )
+				stbi_image_free( builder->Texels );
 		}
 	}
 
@@ -183,8 +184,14 @@ bool TinyAssetImportManager::ExportTexture3D( TinyGame* game, TinyFile& file, c_
 		file.Write( builder->Rows );
 		file.Write( builder->Columns );
 		file.Write( builder->Properties );
-		file.Write( builder->Size );
-		//file.Write( builder->Size, builder->Texels );
+
+		if ( builder->Texels ) {
+			file.Write( builder->Size );
+			file.Write( builder->Size, builder->Texels );
+
+			if ( !builder->IsUserDefined )
+				stbi_image_free( builder->Texels );
+		}
 	}
 
 	return state;
@@ -385,9 +392,9 @@ const TinyAssetImporter& TinyAssetImportManager::Get( const tiny_string& extensi
 	return _importers[ extension ];
 }
 
-TinyAssetTypes TinyAssetImportManager::GetTypeOf( const tiny_string& extension ) const {
+tiny_uint TinyAssetImportManager::GetTypeOf( const tiny_string& extension ) const {
 	auto type_id = tiny_cast( 0, tiny_uint );
-	auto type	 = TA_TYPE_UNDEFINED;
+	auto type	 = tiny_cast( TA_TYPE_UNDEFINED, tiny_uint );
 
 	if ( _importers.find( extension, type_id ) )
 		type = _importers.at( type_id ).Type;

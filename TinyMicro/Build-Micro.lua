@@ -3,7 +3,7 @@ project "TinyMicro"
    language "C++"
    cdialect "C17"
    cppdialect "C++20"
-   staticruntime "on"
+   staticruntime "off"
 
    defines { "_CRT_SECURE_NO_WARNINGS", "TM_BUILD" }
 
@@ -27,12 +27,12 @@ project "TinyMicro"
        defines { "WINDOWS" }
 
    filter "configurations:Debug"
-       defines { "DEBUG", "TM_DEBUG" }
+       defines { "DEBUG", "TM_DEBUG", "TM_DEV" }
        runtime "Debug"
        symbols "On"
 
    filter "configurations:Release"
-       defines { "RELEASE" }
+       defines { "RELEASE", "TM_DEBUG", "TM_DEV" }
        runtime "Release"
        optimize "On"
        symbols "On"

@@ -101,7 +101,7 @@ public:
 
 	const c_ptr GetAsset( const TinyAsset& asset ) const;
 
-	tiny_inline tiny_list<tiny_string> GetAssets( TinyAssetTypes type );
+	tiny_inline tiny_list<tiny_string> GetAssets( tiny_uint type );
 
 public:
 	template<typename Type>

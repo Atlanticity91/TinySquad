@@ -85,6 +85,8 @@ public:
 
 	VkImageLayout GetLayout( ) const;
 
+	TinyGraphicTextureProperties& GetEditProperties( );
+
 private:
 	VkImageType GetImageType( ) const;
 

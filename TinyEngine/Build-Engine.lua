@@ -41,7 +41,7 @@ project "TinyEngine"
        }
 
    filter "configurations:Debug"
-       defines { "DEBUG" }
+       defines { "DEBUG", "TE_DEV" }
        runtime "Debug"
        symbols "On"
        links {
@@ -51,7 +51,7 @@ project "TinyEngine"
        }
 
    filter "configurations:Release"
-       defines { "RELEASE" }
+       defines { "RELEASE", "TE_DEV" }
        runtime "Release"
        optimize "On"
        symbols "On"

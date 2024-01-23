@@ -25,12 +25,14 @@
 te_struct TinyAsset {
 
 	tiny_hash Hash;
-	TinyAssetTypes Type;
+	tiny_uint Type;
 	tiny_uint Handle;
 	
 	TinyAsset( );
 
-	TinyAsset( TinyAssetTypes type );
+	TinyAsset( tiny_uint type );
+
+	TinyAsset( tiny_uint type, const tiny_string& name );
 
 	bool GetIsValid( ) const;
 

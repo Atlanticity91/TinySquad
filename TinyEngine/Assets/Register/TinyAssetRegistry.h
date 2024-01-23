@@ -22,10 +22,14 @@
 
 #include "TinyAssetMetadata.h"
 
-te_class TinyAssetRegistry final {
+te_class TinyAssetRegistry final{
+
+public:
+	using MetadataList = tiny_map<TinyAssetMetadata>;
+	using MetaNode = MetadataList::under_node;
 
 private:
-	tiny_map<TinyAssetMetadata> _metadatas;
+	MetadataList _metadatas;
 
 public:
 	TinyAssetRegistry( );
@@ -53,7 +57,9 @@ public:
 
 	tiny_map<TinyAssetMetadata>& GetMetadatas( );
 
-	tiny_list<tiny_string> GetAssets( TinyAssetTypes type ) const;
+	tiny_list<tiny_string> GetAssets( tiny_uint type ) const;
+
+	tiny_list<MetaNode*> GetMetadatas( tiny_uint type );
 
 public:
 	TinyAssetMetadata& operator[]( tiny_uint metadata_id );

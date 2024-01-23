@@ -35,7 +35,7 @@ namespace TinyImGui {
 
 	te_struct DropdownContext {
 
-		tiny_int Index;
+		tiny_uint Index;
 		tiny_list<c_str> Values;
 
 		DropdownContext( );
@@ -51,6 +51,8 @@ namespace TinyImGui {
 		DropdownContext( const tiny_list<tiny_string>& values, const tiny_string& value );
 
 		DropdownContext( const tiny_list<tiny_string>& values, const tiny_hash value );
+
+		DropdownContext( tiny_uint index, tiny_init<c_str> values );
 
 		void Find( const tiny_hash& hash );
 
@@ -83,16 +85,41 @@ namespace TinyImGui {
 
 	};
 
+	te_struct GridContext {
+
+		tiny_uint Columns;
+		tiny_uint Rows;
+		ImColor Color;
+		float Thickness;
+
+		GridContext( );
+
+		GridContext( tiny_uint columns, tiny_uint rows );
+
+		GridContext( tiny_uint columns, tiny_uint rows, float thickness );
+
+		GridContext( tiny_uint columns, tiny_uint rows, ImColor color, float thickness );
+
+	};
+
 	tiny_dll bool BeginModal( const tiny_string& label );
 
 	tiny_dll void EndModal( );
+
+	tiny_dll void BeginVars( );
+
+	tiny_dll void EndVars( );
 
 	template<typename Func, typename... Args>
 	void Collapsing( const tiny_string& name, Func&& draw, Args&... args ) {
 		auto* name_str = name.as_chars( );
 
 		if ( ImGui::CollapsingHeader( name_str, IMGUI_NO_FLAGS ) ) {
+			TinyImGui::BeginVars( );
+
 			draw( args... );
+
+			TinyImGui::EndVars( );
 
 			ImGui::Separator( );
 		}
@@ -103,27 +130,33 @@ namespace TinyImGui {
 		auto* name_str = name.as_chars( );
 
 		if ( ImGui::CollapsingHeader( name_str, ImGuiTreeNodeFlags_DefaultOpen ) ) {
+			TinyImGui::BeginVars( );
+
 			draw( args... );
+
+			TinyImGui::EndVars( );
 
 			ImGui::Separator( );
 		}
 	};
 
+	tiny_dll void SeparatorText( const tiny_string& label );
+
 	tiny_dll bool RightButton( const tiny_string& label );
+
+	tiny_dll ImVec2 ButtonSpan( tiny_uint button_count );
 
 	tiny_dll void Text( const tiny_string& text );
 
 	tiny_dll void Text( const std::string_view& text );
-
-	tiny_dll void BeginVars( );
-
-	tiny_dll void EndVars( );
 
 	tiny_dll void InputBegin( const tiny_string& label );
 
 	tiny_dll void InputEnd( );
 
 	tiny_dll bool Checkbox( const tiny_string& label, bool& value );
+
+	tiny_dll bool Checkbox( const tiny_string& label, const bool& value );
 
 	tiny_dll bool InputText( const tiny_string& label, tiny_uint length, char* buffer );
 
@@ -139,17 +172,45 @@ namespace TinyImGui {
 
 	tiny_dll bool InputScalar( const tiny_string& label, const float& scalar );
 
-	tiny_dll bool InputVector( const tiny_string& label, tiny_uint component, tiny_int* vector );
+	tiny_dll bool InputVector( 
+		const tiny_string& label,
+		tiny_uint component,
+		tiny_int* vector 
+	);
+
+	tiny_dll bool InputVector(
+		const tiny_string& label, 
+		tiny_uint component,
+		const tiny_int* vector 
+	);
 
 	tiny_dll bool InputPoint( const tiny_string& label, tiny_point& point );
 
-	tiny_dll bool InputVector( const tiny_string& label, tiny_uint component, float* vector );
+	tiny_dll bool InputPoint( const tiny_string& label, const tiny_point& point );
+
+	tiny_dll bool InputVector(
+		const tiny_string& label,
+		tiny_uint component,
+		float* vector 
+	);
+	
+	tiny_dll bool InputVector( 
+		const tiny_string& label,
+		tiny_uint component,
+		const float* vector
+	);
 
 	tiny_dll bool InputVec2( const tiny_string& label, tiny_vec2& vector );
 
+	tiny_dll bool InputVec2( const tiny_string& label, const tiny_vec2& vector );
+
 	tiny_dll bool InputVec3( const tiny_string& label, tiny_vec3& vector );
 
+	tiny_dll bool InputVec3( const tiny_string& label, const tiny_vec3& vector );
+
 	tiny_dll bool InputVec4( const tiny_string& label, tiny_vec4& vector );
+
+	tiny_dll bool InputVec4( const tiny_string& label, const tiny_vec4& vector );
 
 	tiny_dll bool InputDrag(
 		const tiny_string& label, 
@@ -232,8 +293,64 @@ namespace TinyImGui {
 
 	tiny_dll bool Dropdown( const tiny_string& label, DropdownContext& context );
 
+	tiny_dll bool InputVulkan( const tiny_string& label, VkFormat& format );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkFormat& format );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkImageLayout& layout );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkImageLayout& layout );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkImageAspectFlags& aspect );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkImageAspectFlags& aspect );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkSampleCountFlagBits& samples );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkSampleCountFlagBits& samples );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkImageTiling& tiling );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkImageTiling& tiling );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, TinyGraphicTextureUsages& usage );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const TinyGraphicTextureUsages& usage );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkFilter& filter );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkFilter& filter );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkSamplerMipmapMode& mipmap_mode );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkSamplerMipmapMode& mipmap_mode );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, TinyGraphicWrapModes& wrap_modes );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const TinyGraphicWrapModes& wrap_modes );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkCompareOp& compare_op );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkCompareOp& compare_op );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkBorderColor& border_color );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkBorderColor& border_color );
+
 	tiny_dll bool Knob( const tiny_string& label, float& scalar );
 
-	tiny_dll bool Knob( const tiny_string& label, float& scalar, const KnobContext& context );
+	tiny_dll bool Knob( 
+		const tiny_string& label,
+		float& scalar,
+		const KnobContext& context 
+	);
+
+	tiny_dll ImTextureID CreateTextureID( TinyTexture2D* texture );
+
+	tiny_dll ImTextureID CreateTextureID( TinyTexture2D& texture );
+
+	tiny_dll void DestroyTextureID( ImTextureID& texture_id );
+
+	tiny_dll void Grid( ImVec2 cursor, ImVec2 dimensions, const GridContext& context );
 
 };

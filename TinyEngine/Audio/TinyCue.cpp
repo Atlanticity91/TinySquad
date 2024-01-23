@@ -43,7 +43,7 @@ TinyCueBuffer TinyCue::GetBuffer( ) {
 
     return { 
         XAUDIO2_END_OF_STREAM,
-        _storage.Capacity, tiny_cast( address, const BYTE* ),
+        tiny_cast( _storage.Capacity, tiny_uint ), tiny_cast( address, const BYTE* ),
         0, 0,
         0, 0,
         1,

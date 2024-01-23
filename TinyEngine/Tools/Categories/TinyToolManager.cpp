@@ -60,6 +60,11 @@ void TinyToolManager::Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& too
 	}
 
 	ImGui::End( );
+
+	auto* content = GetCategoryAs<TinyToolContent>( TT_CATEGORY_CONTENT );
+
+	if ( content )
+		content->RenderEditors( game );
 }
 
 void TinyToolManager::Terminate( TinyGame* game ) {

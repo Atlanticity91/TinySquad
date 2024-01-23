@@ -20,7 +20,15 @@
 
 #pragma once
 
-#include <TinyEngine/Tools/Editors/TinyToolTexture2D.h>
+#include <TinyEngine/Tools/Editors/TinyToolLua.h>
+
+tiny_enum( TinyToolContentActions ) {
+
+	TTC_ACTION_RELOAD = 0,
+	TTC_ACTION_EDIT, 
+	TTC_ACTION_REMOVE
+
+};
 
 te_class TinyToolContent final : tiny_inherit( TinyToolCategory ) {
 
@@ -31,7 +39,8 @@ private:
 	tiny_uint						_type_count;
 	AssetTypeToString				_type_to_string;
 	tiny_list<TinyToolAssetEditor*> _type_editors;
-	tiny_buffer<256>				_path_buffer;
+	TinyToolContentActions			_action;
+	TinyAssetRegistry::MetaNode*	_metadata;
 
 public:
 	TinyToolContent( );
@@ -44,7 +53,13 @@ public:
 		TinyToolbox& toolbox 
 	) );
 
-	bool OpenAssetEditor( TinyGame* game, tiny_uint type, TinyAssetMetadata& metadata );
+	bool OpenAssetEditor(
+		TinyGame* game,
+		const tiny_string name,
+		TinyAssetMetadata& metadata 
+	);
+
+	void RenderEditors( TinyGame* game );
 
 protected:
 	tiny_implement( void OnTick(

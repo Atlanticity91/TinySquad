@@ -29,7 +29,8 @@ TinyToolContent::TinyToolContent( )
     _type_count{ TinyAssetTypes::TA_TYPE_COUNT },
     _type_to_string{ TinyToolContent::TypeToString },
     _type_editors{ },
-    _path_buffer{ }
+    _action{ },
+    _metadata{ nullptr }
 { }
 
 void TinyToolContent::Create(
@@ -43,17 +44,28 @@ void TinyToolContent::Create(
 
 bool TinyToolContent::OpenAssetEditor( 
     TinyGame* game, 
-    tiny_uint type, 
+    const tiny_string name,
     TinyAssetMetadata& metadata 
 ) {
     auto& assets = game->GetAssets( );
+    auto asset   = TinyAsset{ metadata.Type, name };
+    auto state   = false;
 
-    if ( metadata.Reference == 0 )
-        assets.Load( game, "" );
+    if ( assets.Acquire( game, asset ) ) {
+        auto* value = assets.GetAsset( asset );
 
-    auto* asset = assets.GetAsset( {} );
+        if ( value )
+            state = _type_editors[ metadata.Type ]->Open( game, name, value );
+    }
 
-    return asset && _type_editors[ type ]->Open( game, asset );
+    return state;
+}
+
+void TinyToolContent::RenderEditors( TinyGame* game ) {
+    auto& assets = game->GetAssets( );
+
+    for ( auto& editor : _type_editors )
+        editor->Tick( game, assets );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,13 +79,14 @@ void TinyToolContent::OnTick(
     auto& filesystem = engine.GetFilesystem( );
     auto& assets     = engine.GetAssets( );
     auto& registry   = assets.GetRegistry( );
-
+    
+    auto path_buffer = tiny_buffer<256>{ };
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
     auto filters = "Tiny Registry (*.tinyregistry)\0*.tinyregistry\0";
 
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
-        if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, filters, _path_buffer.length( ), _path_buffer ) ) {
-            registry.Load( filesystem, _path_buffer );
+        if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, filters, path_buffer.length( ), path_buffer ) ) {
+            registry.Load( filesystem, path_buffer );
 
             _has_changed = false;
         }
@@ -83,22 +96,22 @@ void TinyToolContent::OnTick(
 
     ImGui::BeginDisabled( !_has_changed );
     if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-        if ( Tiny::OpenDialog( Tiny::TD_TYPE_SAVE_FILE, filters, _path_buffer.length( ), _path_buffer ) )
-            registry.Save( filesystem, _path_buffer );
+        if ( Tiny::OpenDialog( Tiny::TD_TYPE_SAVE_FILE, filters, path_buffer.length( ), path_buffer ) )
+            registry.Save( filesystem, path_buffer );
     }
     ImGui::EndDisabled( );
 
     if ( ImGui::Button( "Import", { -1.f, 0.f } ) ) {
         auto path = std::string{ filesystem.GetWorkingDir( ).get( ) } + "Ressources\\";
 
-        if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", _path_buffer.length( ), _path_buffer ) ) {
-            _has_changed = !filesystem.GetIsFile( _path_buffer, TINY_REGISTRY_EXT );
+        if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", path_buffer.length( ), path_buffer ) ) {
+            _has_changed = !filesystem.GetIsFile( path_buffer, TINY_REGISTRY_EXT );
 
             if ( _has_changed ) {
-                if ( filesystem.GetIsAssetFile( _path_buffer ) || filesystem.GetIsArchiveFile( _path_buffer ) )
-                    _has_changed = assets.LoadPath( game, _path_buffer );
+                if ( filesystem.GetIsAssetFile( path_buffer ) || filesystem.GetIsArchiveFile( path_buffer ) )
+                    _has_changed = assets.LoadPath( game, path_buffer );
                 else
-                    _has_changed = assets.Import( game, _path_buffer );
+                    _has_changed = assets.Import( game, path_buffer );
             }
 
             if ( !_has_changed )
@@ -108,7 +121,7 @@ void TinyToolContent::OnTick(
 
     if ( TinyImGui::BeginModal( "Import Failed" ) ) {
         ImGui::Text( "Asset importation failed for :" );
-        ImGui::Text( _path_buffer );
+        ImGui::Text( path_buffer );
 
         ImGui::Separator( );
 
@@ -141,39 +154,46 @@ void TinyToolContent::OnTick(
                 ImGui::TableNextRow( );
                 ImGui::TableNextColumn( );
 
-                auto open = ImGui::TreeNodeEx( name, node_flags );
+                auto metadatas = registry.GetMetadatas( type );
+                auto open      = ImGui::TreeNodeEx( name, node_flags );
 
                 ImGui::TableNextColumn( );
+                ImGui::Text( "%u", metadatas.size( ) );
                 ImGui::TableNextColumn( );
 
                 if ( open ) {
-                    auto metadatas = registry.GetAssets( (TinyAssetTypes)type );
-
                     for ( auto& metadata : metadatas ) {
+                        auto name_str = metadata->String.c_str( );
+
                         ImGui::TableNextRow( );
                         ImGui::TableNextColumn( );
-                        ImGui::TreeNodeEx( metadata.get( ), leaf_flags );
+                        ImGui::TreeNodeEx( name_str, leaf_flags );
                         ImGui::TableNextColumn( );
-                        ImGui::Text( "%d", 0 ); // asset.Instance
+                        ImGui::Text( "%d", metadata->Data.Reference );
                         ImGui::TableNextColumn( );
 
                         TINY_IMGUI_SCOPE_ID(
-                            if ( ImGui::Button( TF_ICON_REDO ) )
-                                assets.Import( game, "" ); // metadata
+                            if ( ImGui::Button( TF_ICON_REDO ) ) {
+                                _action   = TTC_ACTION_RELOAD;
+                                _metadata = metadata;
+                            }
                         );
                         ImGui::SameLine( .0f, spacing * .25f );
                         
                         TINY_IMGUI_SCOPE_ID(
                             if ( ImGui::Button( TF_ICON_EDIT ) ) {
-                                //OpenAssetEditor( game, type, metadata );
+                                _action   = TTC_ACTION_EDIT;
+                                _metadata = metadata;
                             }
                         );
                         
                         ImGui::SameLine( .0f, spacing * .25f );
 
                         TINY_IMGUI_SCOPE_ID(
-                            if ( ImGui::Button( TF_ICON_TRASH_ALT ) )
-                                registry.Remove( metadata );
+                            if ( ImGui::Button( TF_ICON_TRASH_ALT ) ) {
+                                _action   = TTC_ACTION_REMOVE;
+                                _metadata = metadata;
+                            }
                         );
                     }
 
@@ -187,8 +207,17 @@ void TinyToolContent::OnTick(
         ImGui::EndTable( );
     }
 
-    for ( auto& editor : _type_editors )
-        editor->Tick( game );
+    if ( _metadata ) {
+        switch ( _action ) {
+            case TTC_ACTION_RELOAD : assets.Import( game, _metadata->Data.Source ); break;
+            case TTC_ACTION_EDIT   : OpenAssetEditor( game, _metadata->String, _metadata->Data );break;
+            case TTC_ACTION_REMOVE : registry.Remove( _metadata->Hash ); break;
+
+            default: break;
+        }
+
+        _metadata = nullptr;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

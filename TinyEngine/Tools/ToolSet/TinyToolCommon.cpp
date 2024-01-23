@@ -68,9 +68,7 @@ void TinyToolCommon::OnTick(
 ) {
     TinyImGui::Collapsing( 
         "Guizmo",
-        [ & ]( ) { 
-            TinyImGui::BeginVars( );
-
+        [ & ]( ) {
             if ( TinyImGui::Dropdown( "Mode", _modes ) )
                 _mode = _modes.Index == 0 ? TTWG_MODE_LOCAL : TTWG_MODE_WORLD;
 
@@ -81,12 +79,7 @@ void TinyToolCommon::OnTick(
                                    _tool == TTWG_TOOL_ROTATE_2D    ||
                                    _tool == TTWG_TOOL_SCALE_2D;
 
-            TinyImGui::EndVars( );
-
-            ImGui::SeparatorText( "Snap Targets" );
-
-            TinyImGui::BeginVars( );
-
+            TinyImGui::SeparatorText( "Snap Targets" );
             TinyImGui::Checkbox( "Use Snap", _use_snap );
 
             if ( is_orthographic ) {
@@ -98,8 +91,6 @@ void TinyToolCommon::OnTick(
                 TinyImGui::InputVec3( "Rotate", _snap_rotate );
                 TinyImGui::InputVec3( "Scale", _snap_scale );
             }
-
-            TinyImGui::EndVars( );
         }
     );
 
@@ -111,31 +102,27 @@ void TinyToolCommon::OnTick(
             if ( ImGui::Button( "ReCreate", { -1.f, 0.f } ) )
                 graphics.ReCreate( );
 
-            ImGui::SeparatorText( "Hardware" );
+            TinyImGui::SeparatorText( "Hardware" );
 
             DrawHardware( graphics );
 
-            ImGui::SeparatorText( "Boundaries" );
+            TinyImGui::SeparatorText( "Boundaries" );
 
             DrawBoundaries( graphics );
 
-            ImGui::SeparatorText( "Swapchain" );
+            TinyImGui::SeparatorText( "Swapchain" );
 
             DrawSwapchain( graphics );
 
-            ImGui::SeparatorText( "Passes" );
+            TinyImGui::SeparatorText( "Passes" );
 
             DrawPasses( graphics );
-
-            ImGui::Separator( );
         }
     );
 
     TinyImGui::Collapsing(
         "Memory",
-        [ & ]( ) { 
-            TinyImGui::BeginVars( );
-
+        [ & ]( ) {
             auto& memory = TinyMemoryManager::GetSingleton( );
 
             auto occupancy = memory.GetOccupancy( );
@@ -144,21 +131,19 @@ void TinyToolCommon::OnTick(
             TinyImGui::TextVar( "Memory", "%u / %u", occupancy, capacity );
             TinyImGui::TextVar( "Free", "%u", capacity - occupancy );
             TinyImGui::TextVar( "Blocks", "%u", memory.GetBlockCount( ) );
-
-            TinyImGui::EndVars( );
         }
     );
 
 #   ifdef DEBUG
     TinyImGui::Collapsing(
-        "Fonts",
+        "Convert To C-Array",
         [ & ]( ) {
             auto& filesystem = engine.GetFilesystem( );
             auto filters     = "TTF Fonts (*.ttf)\0*.ttf\0";
 
             tiny_buffer<256> buffer;
 
-            if ( ImGui::Button( "Compress", { -1, 0.f } ) ) {
+            if ( ImGui::Button( "Convert TTF", { -1, 0.f } ) ) {
                 if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, filters, buffer.length( ), buffer.as_chars( ) ) ) {
                     auto info = filesystem.GetInformation( buffer.as_chars( ) );
                     auto path = info.Path + "\\" + info.Name + ".cpp";

@@ -228,6 +228,10 @@ const TinyGraphicTextureProperties& TinyGraphicTexture::GetProperties( ) const {
 
 VkImageLayout TinyGraphicTexture::GetLayout( ) const { return _properties.Layout; }
 
+TinyGraphicTextureProperties& TinyGraphicTexture::GetEditProperties( ) {
+	return _properties;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////

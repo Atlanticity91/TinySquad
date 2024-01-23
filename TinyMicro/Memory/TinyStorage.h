@@ -35,7 +35,7 @@ tm_struct tiny_storage {
 
 	//TinyStorageTypes Type;
 	tiny_uint Block;
-	tiny_uint Capacity;
+	tiny_ulong Capacity;
 
 	tiny_storage( );
 

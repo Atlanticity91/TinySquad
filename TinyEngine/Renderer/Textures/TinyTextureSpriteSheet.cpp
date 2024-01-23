@@ -56,3 +56,7 @@ const tiny_vec4 TinyTextureSpriteSheet::GetUV( tiny_uint rows, tiny_uint columns
 		_uv.y * columns + _uv.y
 	};
 }
+
+tiny_uint& TinyTextureSpriteSheet::GetEditColumns( ) { return _columns; }
+
+tiny_uint& TinyTextureSpriteSheet::GetEditRows( ) { return _rows; }

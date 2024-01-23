@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 10/11/2023
- * @version  : 2024.1
+ * @creation : 23/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,40 +23,33 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAsset::TinyAsset( )
-	: TinyAsset{ TA_TYPE_UNDEFINED }
+TinyToolAnim2D::TinyToolAnim2D( )
+	: TinyToolAssetEditor{ "Animation 2D" },
+	_image{ nullptr }
 { }
 
-TinyAsset::TinyAsset( tiny_uint type )
-	: Hash{ },
-	Type{ type },
-	Handle{ TINY_UINT_MAX } 
-{ }
-
-TinyAsset::TinyAsset( tiny_uint type, const tiny_string& name )
-	: Hash{ name },
-	Type{ type },
-	Handle{ TINY_UINT_MAX }
-{ }
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC GET ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyAsset::GetIsValid( ) const {
-	return Type != TA_TYPE_UNDEFINED && Handle < TINY_UINT_MAX;
+void TinyToolAnim2D::Save( TinyGame* game ) {
 }
 
-bool TinyAsset::GetEqual( const TinyAsset& other ) const {
-	return Hash == other.Hash && Type == other.Type;
+void TinyToolAnim2D::Tick( TinyGame* game, TinyAssetManager& assets ) {
+	if ( !_asset && _image )
+		TinyImGui::DestroyTextureID( _image );
+
+	TinyToolAssetEditor::Tick( game, assets );
 }
 
-bool TinyAsset::GetNotEqual( const TinyAsset& asset ) const { return !GetEqual( asset ); }
-
 ////////////////////////////////////////////////////////////////////////////////////////////
-//		===	OPERATOR ===
+//		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAsset::operator bool const ( ) { return GetIsValid( ); }
+bool TinyToolAnim2D::OnOpen( TinyGame* game, const tiny_string& name, c_ptr asset ) {
+	_image = TinyImGui::CreateTextureID( tiny_cast( asset, TinyTexture2D* ) );
 
-bool TinyAsset::operator==( const TinyAsset& other ) const { return GetEqual( other ); }
+	return _image;
+}
 
-bool TinyAsset::operator!=( const TinyAsset& other ) const { return GetNotEqual( other ); }
+void TinyToolAnim2D::OnTick( TinyGame* game, TinyAssetManager& assets ) {
+}
+
+void TinyToolAnim2D::OnClose( TinyGame* game, TinyAssetManager& assets ) {
+	Save( game );
+}

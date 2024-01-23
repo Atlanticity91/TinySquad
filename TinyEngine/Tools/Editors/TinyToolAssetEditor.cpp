@@ -26,22 +26,39 @@
 TinyToolAssetEditor::TinyToolAssetEditor( const tiny_string& name )
 	: _in_use{ false },
 	_asset{ nullptr },
+	_asset_name{ "" },
 	_name{ name }
 { }
 
-void TinyToolAssetEditor::Close( ) {
-	_in_use = false;
-	_asset  = nullptr;
+bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, c_ptr asset ) {
+	if ( asset ) {
+		_in_use		= true;
+		_asset		= asset;
+		_asset_name = name;
+	}
 
-	OnClose( );
+	return _asset && OnOpen( game, name, asset );
 }
 
-void TinyToolAssetEditor::Tick( TinyGame* game ) {
-	auto* name_str = _name.as_chars( );
+void TinyToolAssetEditor::Tick( TinyGame* game, TinyAssetManager& assets ) {
+	if ( _in_use ) {
+		auto* name_str = _name.as_chars( );
 
-	if ( _in_use && ImGui::Begin( name_str, tiny_rvalue( _in_use ) ) ) {
-		OnTick( game );
+		if ( ImGui::Begin( name_str, tiny_rvalue( _in_use ), ImGuiWindowFlags_AlwaysVerticalScrollbar ) )
+			OnTick( game, assets );
+
+		if ( !_in_use )
+			Close( game );
 
 		ImGui::End( );
 	}
+}
+
+void TinyToolAssetEditor::Close( TinyGame* game ) {
+	auto& assets = game->GetAssets( );
+	
+	OnClose( game, assets );
+
+	_in_use = false;
+	_asset  = nullptr;
 }

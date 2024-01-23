@@ -72,13 +72,13 @@ public:
 	template<typename Type>
 		requires tiny_is_child_of( Type, TinyToolCategory )
 	Type* GetCurrentAs( ) { 
-		return tiny_cast( GetCurrent( ), Type );
+		return tiny_cast( GetCurrent( ), Type* );
 	};
 
 	template<typename Type>
 		requires tiny_is_child_of( Type, TinyToolCategory )
 	Type* GetCategoryAs( tiny_uint category ) {
-		return tiny_cast( GetCategory( category ), Type );
+		return tiny_cast( GetCategory( category ), Type* );
 	};
 
 };

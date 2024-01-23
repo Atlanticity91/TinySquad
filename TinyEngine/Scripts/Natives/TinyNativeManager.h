@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/11/2023
- * @version  : 2024.1
+ * @creation : 23/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,33 +20,25 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Utils/TinyRenderBuffer.h>
+#include <TinyEngine/Scripts/Interop/TinyLuaEntity.h>
 
-te_class TinyTextureSpriteSheet {
+typedef std::function<bool( TinyGame*, c_ptr )>;
 
-protected:
-	tiny_uint _rows;
-	tiny_uint _columns;
-	tiny_vec2 _uv;
+te_class TinyNativeManager final {
 
-public:
-	TinyTextureSpriteSheet( );
-
-	virtual ~TinyTextureSpriteSheet( ) = default;
-	
-	void SetDimensions( tiny_uint rows, tiny_uint columns );
+private:
+	tiny_map<TinyScriptNative> _natives;
 
 public:
-	tiny_uint GetRows( ) const;
+	TinyNativeManager( );
 
-	tiny_uint GetColumns( ) const;
-	
-	const tiny_vec2& GetUV( ) const;
+	~TinyNativeManager( ) = default;
 
-	const tiny_vec4 GetUV( tiny_uint rows, tiny_uint columns ) const;
+	void Register( const tiny_string& name, TinyScriptNative script );
 
-	tiny_uint& GetEditColumns( );
+	bool Execute( TinyGame* game, const tiny_string& name );
 
-	tiny_uint& GetEditRows( );
+public:
+	bool GetExist( const tiny_string& name ) const;
 
 };

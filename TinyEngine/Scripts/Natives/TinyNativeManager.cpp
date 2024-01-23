@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 27/11/2023
- * @version  : 2024.1
+ * @creation : 23/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,22 +23,27 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAssetMetadata::TinyAssetMetadata( )
-	: TinyAssetMetadata{ TA_TYPE_UNDEFINED, "", "" }
+TinyNativeManager::TinyNativeManager( )
+	: _natives{ }
 { }
 
-TinyAssetMetadata::TinyAssetMetadata( tiny_uint type )
-	: TinyAssetMetadata{ type, "", "" }
-{ }
+void TinyNativeManager::Register( const tiny_string& name, TinyScriptNative exec_script ) {
+	if ( !name.is_empty( ) && exec_script && !_natives.find( name ) )
+		_natives.emplace( name, exec_script );
+}
 
-TinyAssetMetadata::TinyAssetMetadata( 
-	tiny_uint type,
-	const tiny_string& source,
-	const tiny_string& target 
-)
-	: Type{ type },
-	Reference{ 0 },
-	Handle{ TINY_UINT_MAX },
-	Source{ source.get( ) },
-	Target{ target.get( ) }
-{ }
+bool TinyNativeManager::Execute( TinyGame* game, const tiny_string& name ) {
+	auto script_id = tiny_cast( 0, tiny_uint );
+	auto state = false;
+	
+	if ( _natives.find( name, script_id ) ) {
+		//state = std::invoke( _natives.at( script_id ), game );
+	}
+
+	return state;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyNativeManager::GetExist( const tiny_string& name ) const { return false; }

@@ -20,14 +20,15 @@
 
 #pragma once
 
-#include "Interop/TinyLuaEntity.h"
+#include "Natives/TinyNativeManager.h"
 
 te_class TinyScriptManager final 
 	: tiny_inherit( TinyAssetList<TA_TYPE_SCRIPT, TinyScriptLua> )
 {
 
 private:
-	TinyLuaContext _context;
+	TinyLuaContext	  _context;
+	TinyNativeManager _natives;
 
 public:
 	TinyScriptManager( );
@@ -35,6 +36,8 @@ public:
 	~TinyScriptManager( ) = default;
 
 	bool Initialize( );
+
+	tiny_inline void Register( const tiny_string& name, TinyScriptNative script );
 
 	void Terminate( );
 
@@ -58,5 +61,7 @@ private:
 
 public:
 	TinyLuaContext& GetContext( );
+
+	tiny_inline bool GetExist( const tiny_string & name ) const;
 
 };

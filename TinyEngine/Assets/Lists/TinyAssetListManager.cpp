@@ -139,11 +139,11 @@ void TinyAssetListManager::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-ITinyAssetList* TinyAssetListManager::GetManager( TinyAssetTypes type ) const {
+ITinyAssetList* TinyAssetListManager::GetManager( tiny_uint type ) const {
 	auto* manager = tiny_cast( nullptr, ITinyAssetList* );
 
 	if ( type < TA_TYPE_COUNT )
-		manager = _assets[ tiny_cast( type, tiny_uint ) ];
+		manager = _assets[ type ];
 
 	return manager;
 }

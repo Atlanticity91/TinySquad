@@ -63,11 +63,11 @@ public:
 
 	bool Allocate( 
 		tiny_storage& storage,
-		tiny_uint capacity,
+		tiny_ulong capacity,
 		TinyMemoryBlock::DestructorCall destructor 
 	);
 
-	bool ReAllocate( tiny_storage& storage, tiny_uint capacity );
+	bool ReAllocate( tiny_storage& storage, tiny_ulong capacity );
 
 	void SetDestructor( 
 		const tiny_storage& storage,

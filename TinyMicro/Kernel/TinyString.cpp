@@ -35,9 +35,10 @@ tiny_string::tiny_string( under_layer string )
 }
 
 tiny_string::tiny_string( const std::string& string )
-	: _handle( string.c_str( ) ),
-	_length{ (tiny_uint)string.length( ) }
-{ }
+	: tiny_string{ } 
+{
+	asign( string );
+}
 
 tiny_string::tiny_string( const tiny_string& other )
 	: tiny_string{ }
@@ -46,13 +47,13 @@ tiny_string::tiny_string( const tiny_string& other )
 }
 
 tiny_string::tiny_string( c_ptr address, tiny_uint length )
-	: _handle{ (under_layer)address },
+	: _handle{ tiny_cast( address, under_layer ) },
 	_length{ length }
 { }
 
 tiny_string& tiny_string::asign( under_layer string ) {
 	if ( string ) {
-		_length = (tiny_uint)strlen( string );
+		_length = tiny_cast( strlen( string ), tiny_uint );
 
 		if ( _length > 0 )
 			_handle = string;
@@ -63,7 +64,7 @@ tiny_string& tiny_string::asign( under_layer string ) {
 
 tiny_string& tiny_string::asign( const std::string& string ) {
 	_handle = string.c_str( );
-	_length = (tiny_uint)string.length( );
+	_length = tiny_cast( string.length( ), tiny_uint );
 
 	return tiny_self;
 }
@@ -81,12 +82,14 @@ bool tiny_string::is_valid( ) const { return is_valid( _handle ); }
 
 tiny_string::under_layer tiny_string::get( ) const { return _handle; }
 
-char* tiny_string::as_chars( ) const { return (char*)_handle; }
+char* tiny_string::as_chars( ) const { return tiny_cast( _handle, char* ); }
 
 std::string tiny_string::as_string( ) const { return std::string{ _handle }; }
 
 char& tiny_string::at( tiny_uint char_id ) {
-	return *(char*)&( char_id < _length ? _handle[ char_id ] : _handle[ _length + 1 ] );
+	char_id = char_id < _length ? char_id : _length + 1;
+
+	return tiny_lvalue( tiny_cast( tiny_rvalue( _handle[ char_id ] ), char* ) );
 }
 
 const char tiny_string::at( tiny_uint char_id ) const {
@@ -97,9 +100,9 @@ const char tiny_string::at( tiny_uint char_id ) const {
 }
 
 std::string tiny_string::make_string( char start, char stop ) const {
-	auto string = std::string{ _handle };
+	auto string	   = std::string{ _handle };
 	auto str_start = string.find_last_of( start )+1;
-	auto str_stop = string.find_last_of( stop );
+	auto str_stop  = string.find_last_of( stop );
 
 	return string.substr( str_start, str_stop - str_start );
 }

@@ -44,12 +44,7 @@ public:
 		tiny_storage& storage
 	);
 
-	bool Export(
-		TinyGame* game,
-		TinyAssetTypes type,
-		TinyFile& file,
-		c_ptr& asset 
-	);
+	bool Export( TinyGame* game, tiny_uint type, TinyFile& file, c_ptr& asset  );
 
 private:
 	void Register( tiny_init<tiny_string> extensions, const TinyAssetImporter& importer );
@@ -119,7 +114,7 @@ private:
 public:
 	const TinyAssetImporter& Get( const tiny_string& extension ) const;
 
-	TinyAssetTypes GetTypeOf( const tiny_string& extension ) const;
+	tiny_uint GetTypeOf( const tiny_string& extension ) const;
 
 public:
 	const TinyAssetImporter& operator[]( const tiny_string& extension ) const;

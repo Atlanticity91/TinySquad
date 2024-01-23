@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyScriptManager::TinyScriptManager( ) 
-	: _context{ }
+	: _context{ },
+	_natives{ }
 { }
 
 bool TinyScriptManager::Initialize( ) {
@@ -34,6 +35,10 @@ bool TinyScriptManager::Initialize( ) {
 		GenerateInterop( );
 
 	return state;
+}
+
+void TinyScriptManager::Register( const tiny_string& name, TinyScriptNative script ) {
+	_natives.Register( name, script );
 }
 
 void TinyScriptManager::Terminate( ) { _context.Terminate( ); }
@@ -88,3 +93,7 @@ void TinyScriptManager::GenerateInterop( ) {
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyLuaContext& TinyScriptManager::GetContext( ) { return _context; }
+
+bool TinyScriptManager::GetExist( const tiny_string& name ) const {
+	return _natives.GetExist( name );
+}

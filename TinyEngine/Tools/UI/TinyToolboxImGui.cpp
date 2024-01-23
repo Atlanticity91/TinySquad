@@ -10,11 +10,11 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 18/10/2023
- * @version  : 2024.1
+ * @creation : 21/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
- *			   Tiny Squad team use originaly.
+ *			   tiny_Squad team use originaly.
  *
  ******************************************************************************************/
 
@@ -143,6 +143,40 @@ TinyImGui::DropdownContext::DropdownContext(
     Find( value );
 }
 
+TinyImGui::DropdownContext::DropdownContext( tiny_uint index, tiny_init<c_str> values ) 
+    : Index{ index < values.size( ) ? index : 0 },
+    Values{ values }
+{ }
+
+TinyImGui::GridContext::GridContext( )
+    : GridContext{ 2, 2, ImGui::GetColorU32( ImGuiCol_Separator ), 1.f }
+{ }
+
+TinyImGui::GridContext::GridContext( tiny_uint columns, tiny_uint rows )
+    : GridContext{ columns, rows, 1.f } 
+{ }
+
+TinyImGui::GridContext::GridContext( tiny_uint columns, tiny_uint rows, float thickness ) 
+    : GridContext{ 
+        columns,
+        rows, 
+        ImGui::GetColorU32( ImGuiCol_Separator ), 
+        thickness
+    }
+{ }
+
+TinyImGui::GridContext::GridContext(
+    tiny_uint columns,
+    tiny_uint rows,
+    ImColor color,
+    float thickness
+)
+    : Columns{ columns },
+    Rows{ rows },
+    Color{ color },
+    Thickness{ thickness }
+{ }
+
 void TinyImGui::DropdownContext::Find( const tiny_hash& hash ) {
     Index = Values.size( );
 
@@ -173,6 +207,25 @@ bool TinyImGui::BeginModal( const tiny_string& label ) {
 
 void TinyImGui::EndModal( ) { ImGui::EndPopup( ); }
 
+void TinyImGui::BeginVars( ) {
+    auto size = Internal_CalcTextSize( "################" ).x;
+
+    ImGui::Columns( 2 );
+    ImGui::SetColumnWidth( 0, size );
+}
+
+void TinyImGui::EndVars( ) { ImGui::EndColumns( ); }
+
+void TinyImGui::SeparatorText( const tiny_string& label ) {
+    auto label_str = label.as_chars( );
+
+    TinyImGui::EndVars( );
+
+    ImGui::SeparatorText( label_str );
+
+    TinyImGui::BeginVars( );
+}
+
 bool TinyImGui::RightButton( const tiny_string& label ) {
     auto offset = Internal_CalcTextSize( "############" ).x;
     auto cursor = ImGui::GetCursorPosX( ) + ImGui::GetContentRegionAvail( ).x;
@@ -182,18 +235,20 @@ bool TinyImGui::RightButton( const tiny_string& label ) {
     return ImGui::Button( label.get( ), { -1.f, .0f } );
 }
 
+ImVec2 TinyImGui::ButtonSpan( tiny_uint button_count ) {
+    auto& style       = ImGui::GetStyle( );
+    auto button_size  = ImGui::CalcTextSize( "##############" ).x + style.FramePadding.x * 2.f;
+    auto span_width   = ( button_size + style.ItemSpacing.x ) * button_count - style.ItemSpacing.x;
+    auto cusor_offset = ImGui::GetCursorPosX( ) + ImGui::GetContentRegionAvail( ).x - span_width;
+
+    ImGui::SetCursorPosX( cusor_offset );
+
+    return { button_size, 0.f };
+}
+
 void TinyImGui::Text( const tiny_string& text ) { ImGui::Text( text.get( ) ); }
 
 void TinyImGui::Text( const std::string_view& text ) { ImGui::Text( text.data( ) ); }
-
-void TinyImGui::BeginVars( ) {
-    auto size = Internal_CalcTextSize( "################" ).x;
-
-    ImGui::Columns( 2 );
-    ImGui::SetColumnWidth( 0, size );
-}
-
-void TinyImGui::EndVars( ) { ImGui::EndColumns( ); }
 
 void TinyImGui::InputBegin( const tiny_string& label ) {
     const auto* name = label.get( );
@@ -222,6 +277,17 @@ bool TinyImGui::Checkbox( const tiny_string& label, bool& value ) {
     return state;
 }
 
+bool TinyImGui::Checkbox( const tiny_string& label, const bool& value ) {
+    ImGui::BeginDisabled( );
+
+    auto _value = tiny_cast( value, bool );
+    auto state  = TinyImGui::Checkbox( label, _value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
 bool TinyImGui::InputText( const tiny_string& label, tiny_uint length, char* buffer ) {
     TinyImGui::InputBegin( label );
 
@@ -238,7 +304,7 @@ bool TinyImGui::InputScalar( const tiny_string& label, tiny_int& scalar ) {
     TinyImGui::InputBegin( label );
 
     TINY_IMGUI_SCOPE_ID( 
-        auto state = ImGui::InputInt( IMGUI_NO_LABEL, &scalar );
+        auto state = ImGui::InputScalar( IMGUI_NO_LABEL, ImGuiDataType_S32, tiny_rvalue( scalar ) );
     );
 
     TinyImGui::InputEnd( );
@@ -250,7 +316,7 @@ bool TinyImGui::InputScalar( const tiny_string& label, const tiny_int& scalar ) 
     ImGui::BeginDisabled( );
 
     auto value = tiny_cast( scalar, tiny_int );
-    auto state = InputScalar( label, value );
+    auto state = TinyImGui::InputScalar( label, value );
 
     ImGui::EndDisabled( );
 
@@ -261,7 +327,7 @@ bool TinyImGui::InputScalar( const tiny_string& label, tiny_uint& scalar ) {
     TinyImGui::InputBegin( label );
 
     TINY_IMGUI_SCOPE_ID(
-        auto state = ImGui::InputScalar( IMGUI_NO_LABEL, ImGuiDataType_U32, &scalar );
+        auto state = ImGui::InputScalar( IMGUI_NO_LABEL, ImGuiDataType_U32, tiny_rvalue( scalar ), nullptr, nullptr, "%u", 0 );
     );
     
     TinyImGui::InputEnd( );
@@ -273,7 +339,7 @@ bool TinyImGui::InputScalar( const tiny_string& label, const tiny_uint& scalar )
     ImGui::BeginDisabled( );
 
     auto value = tiny_cast( scalar, tiny_uint );
-    auto state = InputScalar( label, value );
+    auto state = TinyImGui::InputScalar( label, value );
 
     ImGui::EndDisabled( );
 
@@ -296,7 +362,7 @@ bool TinyImGui::InputScalar( const tiny_string& label, const float& scalar ) {
     ImGui::BeginDisabled( );
 
     auto value = tiny_cast( scalar, float );
-    auto state = InputScalar( label, value );
+    auto state = TinyImGui::InputScalar( label, value );
 
     ImGui::EndDisabled( );
 
@@ -323,8 +389,22 @@ bool TinyImGui::InputVector( const tiny_string& label, tiny_uint component, tiny
     return state;
 }
 
+bool TinyImGui::InputVector( const tiny_string& label, tiny_uint component, const tiny_int* vector ) { 
+    ImGui::BeginDisabled( );
+
+    auto state = TinyImGui::InputVector( label, component, tiny_cast( vector, tiny_int* ) );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
 bool TinyImGui::InputPoint( const tiny_string& label, tiny_point& point ) {
-    return TinyImGui::InputVector( label, 2, &point.x );
+    return TinyImGui::InputVector( label, 2, tiny_rvalue( point.x ) );
+}
+
+bool TinyImGui::InputPoint( const tiny_string& label, const tiny_point& point ) {
+    return TinyImGui::InputVector( label, 2, tiny_rvalue( point.x ) );
 }
 
 bool TinyImGui::InputVector( const tiny_string& label, tiny_uint component, float* vector ) {
@@ -347,16 +427,38 @@ bool TinyImGui::InputVector( const tiny_string& label, tiny_uint component, floa
     return state;
 }
 
+bool TinyImGui::InputVector( const tiny_string& label, tiny_uint component, const float* vector ) { 
+    ImGui::BeginDisabled( );
+
+    auto state = InputVector( label, component, tiny_cast( vector, float* ) );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
 bool TinyImGui::InputVec2( const tiny_string& label, tiny_vec2& vector ) {
-    return TinyImGui::InputVector( label, 2, &vector.x );
+    return TinyImGui::InputVector( label, 2, tiny_rvalue( vector.x ) );
+}
+
+bool TinyImGui::InputVec2( const tiny_string& label, const tiny_vec2& vector ) {
+    return TinyImGui::InputVector( label, 2, tiny_rvalue( vector.x ) );
 }
 
 bool TinyImGui::InputVec3( const tiny_string& label, tiny_vec3& vector ) {
-    return TinyImGui::InputVector( label, 3, &vector.x );
+    return TinyImGui::InputVector( label, 3, tiny_rvalue( vector.x ) );
+}
+
+bool TinyImGui::InputVec3( const tiny_string& label, const tiny_vec3& vector ) {
+    return TinyImGui::InputVector( label, 3, tiny_rvalue( vector.x ) );
 }
 
 bool TinyImGui::InputVec4( const tiny_string& label, tiny_vec4& vector ) {
-    return TinyImGui::InputVector( label, 4, &vector.x );
+    return TinyImGui::InputVector( label, 4, tiny_rvalue( vector.x ) );
+}
+
+bool TinyImGui::InputVec4( const tiny_string& label, const tiny_vec4& vector ) {
+    return TinyImGui::InputVector( label, 4, tiny_rvalue( vector.x ) );
 }
 
 bool TinyImGui::InputDrag( 
@@ -528,7 +630,7 @@ bool TinyImGui::Dropdown( const tiny_string& label, TinyImGui::DropdownContext& 
     TINY_IMGUI_SCOPE_ID(
         auto state = ImGui::Combo( 
             IMGUI_NO_LABEL, 
-            &context.Index, 
+            tiny_cast( tiny_rvalue( context.Index ), tiny_int* ),
             context.Values.data( ),
             context.Values.size( ) 
         );
@@ -538,6 +640,553 @@ bool TinyImGui::Dropdown( const tiny_string& label, TinyImGui::DropdownContext& 
     TinyImGui::InputEnd( );
 
     return state; 
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkFormat& format ) {
+    auto context = TinyImGui::DropdownContext{
+        tiny_cast( format, tiny_uint ),
+        {
+            "Undefined",
+            "R4G4 Unorm",
+            "R4G4B4A4 Unorm",
+            "B4G4R4A4 Unorm",
+            "R5G6B5 Unorm",
+            "B5G6R5 Unorm",
+            "R5G5B5A1 Unorm",
+            "B5G5R5A1 Unorm",
+            "A1R5G5B5 Unorm",
+            "R8 Unorm",
+            "R8 Uorm",
+            "R8 UScaled",
+            "R8 Scaled",
+            "R8 Uint",
+            "R8 Int",
+            "R8 SRGB",
+            "R8G8 UNorm",
+            "R8G8 Norm",
+            "R8G8 UScaled",
+            "R8G8 Scaled",
+            "R8G8 Uint",
+            "R8G8 Int",
+            "R8G8 SRGB",
+            "R8G8B8 Unorm",
+            "R8G8B8 Norm",
+            "R8G8B8 UScaled",
+            "R8G8B8 Scaled",
+            "R8G8B8 Uint",
+            "R8G8B8 Int",
+            "R8G8B8 SRGB",
+            "B8G8R8 Unorm",
+            "B8G8R8 Norm",
+            "B8G8R8 UScaled",
+            "B8G8R8 Scaled",
+            "B8G8R8 Uint",
+            "B8G8R8 Int",
+            "B8G8R8 SRGB",
+            "R8G8B8A8 Unorm",
+            "R8G8B8A8 Norm",
+            "R8G8B8A8 UScaled",
+            "R8G8B8A8 Scaled",
+            "R8G8B8A8 Uint",
+            "R8G8B8A8 Int",
+            "R8G8B8A8 SRGB",
+            "B8G8R8A8 Unorm",
+            "B8G8R8A8 Norm",
+            "B8G8R8A8 UScaled",
+            "B8G8R8A8 Scaled",
+            "B8G8R8A8 Uint",
+            "B8G8R8A8 Int",
+            "B8G8R8A8 SRGB",
+            "A8B8G8R8 Unorm Unorm",
+            "A8B8G8R8 Norm Unorm",
+            "A8B8G8R8 UScaled Unorm",
+            "A8B8G8R8 Scaled Unorm",
+            "A8B8G8R8 Uint Unorm",
+            "A8B8G8R8 Int Unorm",
+            "A8B8G8R8 SRGB Unorm",
+            "A2R10G10B10 Unorm Unorm",
+            "A2R10G10B10 Norm Unorm",
+            "A2R10G10B10 UScaled Unorm",
+            "A2R10G10B10 Scaled Unorm",
+            "A2R10G10B10 Uint Unorm",
+            "A2R10G10B10 Int Unorm",
+            "A2B10G10R10 Unorm Unorm",
+            "A2B10G10R10 Norm Unorm",
+            "A2B10G10R10 UScaled Unorm",
+            "A2B10G10R10 Scaled Unorm",
+            "A2B10G10R10 Uint Unorm",
+            "A2B10G10R10 Int Unorm",
+            "R16 Unorm",
+            "R16 Norm",
+            "R16 UScaled",
+            "R16 Scaled",
+            "R16 Uint",
+            "R16 Int",
+            "R16 Float",
+            "R16G16 Unorm",
+            "R16G16 Norm",
+            "R16G16 UScaled",
+            "R16G16 Scaled",
+            "R16G16 Uint",
+            "R16G16 Int",
+            "R16G16 Float",
+            "R16G16B16 Unorm",
+            "R16G16B16 Norm",
+            "R16G16B16 UScaled",
+            "R16G16B16 Scaled",
+            "R16G16B16 Uint",
+            "R16G16B16 Int",
+            "R16G16B16 Float",
+            "R16G16B16A16 Unorm",
+            "R16G16B16A16 Norm",
+            "R16G16B16A16 UScaled",
+            "R16G16B16A16 Scaled",
+            "R16G16B16A16 Uint",
+            "R16G16B16A16 Int",
+            "R16G16B16A16 Float",
+            "R32 Uint",
+            "R32 Int",
+            "R32 Float",
+            "R32G32 Uint",
+            "R32G32 Int",
+            "R32G32 Float",
+            "R32G32B32 Uint",
+            "R32G32B32 Int",
+            "R32G32B32 Float",
+            "R32G32B32A32 Uint",
+            "R32G32B32A32 Int",
+            "R32G32B32A32 Float",
+            "R64 Uint",
+            "R64 Int",
+            "R64 Float",
+            "R64G64 Uint",
+            "R64G64 Int",
+            "R64G64 Float",
+            "R64G64B64 Uint",
+            "R64G64B64 Int",
+            "R64G64B64 Float",
+            "R64G64B64A64 Uint",
+            "R64G64B64A64 Int",
+            "R64G64B64A64 Float",
+            "B10G11R11 UFloat Unorm",
+            "E5B9G9R9 UFloat Unorm",
+            "D16 Unorm",
+            "X8 D24 Unorm Unorm",
+            "D32 Float",
+            "S8 Uint",
+            "D16 Unorm S8 Uint",
+            "D24 Unorm S8 Uint",
+            "D32 Float S8 Uint",
+            "BC1 RGB Unorm",
+            "BC1 RGB SRGB",
+            "BC1 RGBA Unorm",
+            "BC1 RGBA SRGB",
+            "BC2 Unorm",
+            "BC2 SRGB",
+            "BC3 Unorm",
+            "BC3 SRGB",
+            "BC4 Unorm",
+            "BC4 Norm",
+            "BC5 Unorm",
+            "BC5 Norm",
+            "BC6H UFloat",
+            "BC6H Float",
+            "BC7 Unorm",
+            "BC7 SRGB",
+            "ETC2 R8G8B8 Unorm",
+            "ETC2 R8G8B8 SRGB",
+            "ETC2 R8G8B8A1 Unorm",
+            "ETC2 R8G8B8A1 SRGB",
+            "ETC2 R8G8B8A8 Unorm",
+            "ETC2 R8G8B8A8 SRGB",
+            "EAC R11 Unorm",
+            "EAC R11 Norm",
+            "EAC R11G11 Unorm",
+            "EAC R11G11 Norm",
+            "ASTC 4x4 Unorm",
+            "ASTC 4x4 SRGB",
+            "ASTC 5x4 Unorm",
+            "ASTC 5x4 SRGB",
+            "ASTC 5x5 Unorm",
+            "ASTC 5x5 SRGB",
+            "ASTC 6x5 Unorm",
+            "ASTC 6x5 SRGB",
+            "ASTC 6x6 Unorm",
+            "ASTC 6x6 SRGB",
+            "ASTC 8x5 Unorm",
+            "ASTC 8x5 SRGB",
+            "ASTC 8x6 Unorm",
+            "ASTC 8x6 SRGB",
+            "ASTC 8x8 Unorm",
+            "ASTC 8x8 SRGB",
+            "ASTC 10x5 Unorm",
+            "ASTC 10x5 SRGB",
+            "ASTC 10x6 Unorm",
+            "ASTC 10x6 SRGB",
+            "ASTC 10x8 Unorm",
+            "ASTC 10x8 SRGB",
+            "ASTC 10x10 Unorm",
+            "ASTC 10x10 SRGB",
+            "ASTC 12x10 Unorm",
+            "ASTC 12x10 SRGB",
+            "ASTC 12x12 Unorm",
+            "ASTC 12x12 SRGB"
+        }
+    };
+    auto state = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        format = tiny_cast( context.Index, VkFormat );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkFormat& format ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkFormat{ format };
+    auto state = TinyImGui::InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkImageLayout& layout ) {
+    auto context = TinyImGui::DropdownContext{
+        tiny_cast( layout, tiny_uint ),
+        {
+            "Undefined",
+            "General",
+            "Color Attachement",
+            "Depth Stencil Attachement",
+            "Depth Stencil Read Only",
+            "Shader Read Only",
+            "Transfer Source",
+            "Transfer Destination",
+            "Pre-Initialized"
+        }
+    };
+    auto state = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        layout = tiny_cast( context.Index, VkImageLayout );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkImageLayout& layout ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkImageLayout{ layout };
+    auto state = TinyImGui::InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkImageAspectFlags& aspect ) {
+    auto aspect_id = tiny_cast( 0, tiny_uint );
+
+    switch ( aspect ) {
+        case VK_IMAGE_ASPECT_COLOR_BIT              : aspect_id =  1; break;
+        case VK_IMAGE_ASPECT_DEPTH_BIT              : aspect_id =  2; break;
+        case VK_IMAGE_ASPECT_STENCIL_BIT            : aspect_id =  3; break;
+        case VK_IMAGE_ASPECT_METADATA_BIT           : aspect_id =  4; break;
+        case VK_IMAGE_ASPECT_PLANE_0_BIT            : aspect_id =  5; break;
+        case VK_IMAGE_ASPECT_PLANE_1_BIT            : aspect_id =  6; break;
+        case VK_IMAGE_ASPECT_PLANE_2_BIT            : aspect_id =  7; break;
+        case VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT : aspect_id =  8; break;
+        case VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT : aspect_id =  9; break;
+        case VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT : aspect_id = 10; break;
+        case VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT : aspect_id = 11; break;
+
+        default: break;
+    }
+
+    auto context = TinyImGui::DropdownContext{
+        aspect_id,
+        {
+            "None",
+            "Color",
+            "Depth",
+            "Stencil",
+            "Metadata",
+            "Plane 0",
+            "Plane 1",
+            "Plane 2",
+            "Plane 3"
+        }
+    };
+    auto state = TinyImGui::Dropdown( label, context );
+    
+    if ( state ) {
+        switch ( context.Index ) {
+            case  0 : aspect = VK_IMAGE_ASPECT_NONE;                   break;
+            case  1 : aspect = VK_IMAGE_ASPECT_COLOR_BIT;              break;
+            case  2 : aspect = VK_IMAGE_ASPECT_DEPTH_BIT;              break;
+            case  3 : aspect = VK_IMAGE_ASPECT_STENCIL_BIT;            break;
+            case  4 : aspect = VK_IMAGE_ASPECT_METADATA_BIT;           break;
+            case  5 : aspect = VK_IMAGE_ASPECT_PLANE_0_BIT;            break;
+            case  6 : aspect = VK_IMAGE_ASPECT_PLANE_1_BIT;            break;
+            case  7 : aspect = VK_IMAGE_ASPECT_PLANE_2_BIT;            break;
+            case  8 : aspect = VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT; break;
+            case  9 : aspect = VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT; break;
+            case 10 : aspect = VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT; break;
+            case 11 : aspect = VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT; break;
+
+            default: break;
+        }
+    }
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkImageAspectFlags& aspect ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkImageAspectFlags{ aspect };
+    auto state = TinyImGui::InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkSampleCountFlagBits& samples ) {
+    auto sample_id = tiny_cast( 0, tiny_uint );
+
+    switch ( samples ) {
+        case VK_SAMPLE_COUNT_2_BIT  : sample_id = 1; break;
+        case VK_SAMPLE_COUNT_4_BIT  : sample_id = 2; break;
+        case VK_SAMPLE_COUNT_8_BIT  : sample_id = 3; break;
+        case VK_SAMPLE_COUNT_16_BIT : sample_id = 4; break;
+        case VK_SAMPLE_COUNT_32_BIT : sample_id = 5; break;
+        case VK_SAMPLE_COUNT_64_BIT : sample_id = 6; break;
+
+        default : break;
+    }
+
+    auto context = TinyImGui::DropdownContext{ sample_id, { "None", "2", "4", "8", "16", "32", "64" } };
+    auto state   = TinyImGui::Dropdown( label, context );
+
+    if ( state ) {
+        switch ( context.Index ) {
+            case 0 : samples = VK_SAMPLE_COUNT_1_BIT;  break;
+            case 1 : samples = VK_SAMPLE_COUNT_2_BIT;  break;
+            case 2 : samples = VK_SAMPLE_COUNT_4_BIT;  break;
+            case 3 : samples = VK_SAMPLE_COUNT_8_BIT;  break;
+            case 4 : samples = VK_SAMPLE_COUNT_16_BIT; break;
+            case 5 : samples = VK_SAMPLE_COUNT_32_BIT; break;
+            case 6 : samples = VK_SAMPLE_COUNT_64_BIT; break;
+
+            default : break;
+        }
+    }
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkSampleCountFlagBits& samples ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkSampleCountFlagBits{ samples };
+    auto state = TinyImGui::InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkImageTiling& tiling ) {
+    auto context = TinyImGui::DropdownContext{ tiny_cast( tiling, tiny_uint ), { "Optimal", "Linear" } };
+    auto state   = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        tiling = tiny_cast( context.Index, VkImageTiling );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkImageTiling& tiling ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkImageTiling{ tiling };
+    auto state = TinyImGui::InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, TinyGraphicTextureUsages& usage ) {
+    auto index = tiny_cast( 0, tiny_uint );
+
+    switch ( usage ) {
+        case TGT_USAGE_TARGET : index = 1; break;
+        case TGT_USAGE_DEPTH  : index = 2; break;
+
+        default : break;
+    }
+
+    auto context = TinyImGui::DropdownContext{ index, { "Texture", "Render Target", "Depth Target" } };
+    auto state   = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        usage = tiny_cast( context.Index, TinyGraphicTextureUsages );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const TinyGraphicTextureUsages& usage ) {
+    ImGui::BeginDisabled( );
+
+    auto value = TinyGraphicTextureUsages{ usage };
+    auto state = InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkFilter& filter ) {
+    auto context = TinyImGui::DropdownContext{ tiny_cast( filter, tiny_uint ), { "Nearest", "Linear" } };
+    auto state   = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        filter = tiny_cast( context.Index, VkFilter );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkFilter& filter ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkFilter{ filter };
+    auto state = InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkSamplerMipmapMode& mipmap_mode ) {
+    auto context = TinyImGui::DropdownContext{ tiny_cast( mipmap_mode, tiny_uint ), { "Nearest", "Linear" } };
+    auto state   = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        mipmap_mode = tiny_cast( context.Index, VkSamplerMipmapMode );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkSamplerMipmapMode& mipmap_mode ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkSamplerMipmapMode{ mipmap_mode };
+    auto state = InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, TinyGraphicWrapModes& wrap_modes ) {
+    auto context = TinyImGui::DropdownContext{
+        tiny_cast( wrap_modes, tiny_uint ),
+        {
+            "Repeat",
+            "Mirror Repeat",
+            "Clamp To Edge",
+            "Clamp To Border",
+            "Clamp Mirror Edge"
+        }
+    };
+
+    auto state = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        wrap_modes = tiny_cast( context.Index, TinyGraphicWrapModes );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const TinyGraphicWrapModes& wrap_modes ) {
+    ImGui::BeginDisabled( );
+
+    auto value = TinyGraphicWrapModes{ wrap_modes };
+    auto state = InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkCompareOp& compare_op ) {
+    auto context = TinyImGui::DropdownContext{
+        tiny_cast( compare_op, tiny_uint ),
+        {
+            "Never",
+            "Less",
+            "Equal",
+            "Less Or Equal",
+            "Greater",
+            "Not Equal",
+            "Greater Or Equal",
+            "Always"
+        } 
+    };
+
+    auto state = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        compare_op = tiny_cast( context.Index, VkCompareOp );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkCompareOp& compare_op ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkCompareOp{ compare_op };
+    auto state = InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkBorderColor& border_color ) {
+    auto context = TinyImGui::DropdownContext{
+        tiny_cast( border_color, tiny_uint ),
+        {
+            "Transparent Black Float",
+            "Transparent Black Int",
+            "Opaque Black Float",
+            "Opaque Black Int",
+            "Opaque White Float",
+            "Opaque White Int"
+        }
+    };
+
+    auto state = TinyImGui::Dropdown( label, context );
+
+    if ( state )
+        border_color = tiny_cast( context.Index, VkBorderColor );
+
+    return state;
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkBorderColor& border_color ) {
+    ImGui::BeginDisabled( );
+
+    auto value = VkBorderColor{ border_color };
+    auto state = InputVulkan( label, value );
+
+    ImGui::EndDisabled( );
+
+    return state;
 }
 
 bool TinyImGui::Knob( const tiny_string& label, float& scalar ) {
@@ -556,4 +1205,55 @@ bool TinyImGui::Knob( const tiny_string& label, float& scalar, const KnobContext
         .0f,
         ImGuiKnobFlags_DragHorizontal
     );
+}
+
+ImTextureID TinyImGui::CreateTextureID( TinyTexture2D* texture ) {
+    auto texture_id = tiny_cast( nullptr, VkDescriptorSet );
+
+    if ( texture ) {
+        auto sampler = texture->GetSampler( );
+        auto view    = texture->GetView( );
+        
+        texture_id = ImGui_ImplVulkan_AddTexture( sampler, view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+    }
+
+    return tiny_cast( texture_id, ImTextureID );
+}
+
+ImTextureID TinyImGui::CreateTextureID( TinyTexture2D& texture ) {
+    return CreateTextureID( tiny_rvalue( texture ) );
+}
+
+void TinyImGui::DestroyTextureID( ImTextureID& texture_id ) {
+    if ( texture_id ) {
+        ImGui_ImplVulkan_RemoveTexture( tiny_cast( texture_id, VkDescriptorSet ) );
+
+        texture_id = nullptr;
+    }
+}
+
+void TinyImGui::Grid( ImVec2 cursor, ImVec2 dimensions, const GridContext& context ) {
+    auto* draw_list = ImGui::GetWindowDrawList( );
+    auto columns    = context.Columns;
+    auto rows       = context.Rows;
+    auto size_w     = dimensions.x / columns - context.Thickness * columns;
+    auto size_h     = dimensions.y / rows    - context.Thickness * rows;
+
+    while ( columns-- > 0 ) {
+        draw_list->AddLine( 
+            { cursor.x + columns * size_w, cursor.y },
+            { cursor.x + columns * size_w, cursor.y + dimensions.y },
+            context.Color, 
+            context.Thickness 
+        );
+    }
+
+    while ( rows-- > 0 ) {
+        draw_list->AddLine( 
+            { cursor.x               , cursor.y + rows * size_h },
+            { cursor.x + dimensions.x, cursor.y + rows * size_h },
+            context.Color, 
+            context.Thickness 
+        );
+    }
 }

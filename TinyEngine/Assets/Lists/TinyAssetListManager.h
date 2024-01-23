@@ -66,7 +66,7 @@ public:
 	};
 
 public:
-	ITinyAssetList* GetManager( TinyAssetTypes type ) const;
+	ITinyAssetList* GetManager( tiny_uint type ) const;
 
 	c_ptr Get( const TinyAsset& asset );
 

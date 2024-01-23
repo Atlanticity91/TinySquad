@@ -34,6 +34,7 @@ struct tiny_map_node {
 template<typename Type>
 class tiny_map {
 
+public:
 	using under_node  = tiny_map_node<Type>;
 	using under_layer = tiny_list<under_node>;
 

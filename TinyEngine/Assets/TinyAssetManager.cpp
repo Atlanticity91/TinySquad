@@ -118,12 +118,8 @@ bool TinyAssetManager::Export(
 
 		state = file.GetIsValid( );
 
-		if ( state ) {
+		if ( state )
 			state = _importers.Export( game, metadata.Type, file, asset_builder );
-
-			if ( state && metadata.Reference > 0 )
-				state = _managers.ReLoad( game, tiny_self, metadata );
-		}
 	}
 
 	return state;
@@ -370,6 +366,6 @@ c_ptr TinyAssetManager::GetAsset( const TinyAsset& asset ) {
 	return  asset_value;
 }
 
-tiny_list<tiny_string> TinyAssetManager::GetAssets( TinyAssetTypes type ) {
+tiny_list<tiny_string> TinyAssetManager::GetAssets( tiny_uint type ) {
 	return _registry.GetAssets( type );
 }
