@@ -42,21 +42,25 @@ void TinyToolContent::Create(
     Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
 }
 
+bool TinyToolContent::OpenAssetEditor( TinyGame* game, const tiny_string& asset_name ) {
+    auto metadata = TinyAssetMetadata{ };
+    auto& assets  = game->GetAssets( );
+
+    return  assets.GetMetadata( asset_name, metadata ) &&
+            OpenAssetEditor( game, asset_name, metadata );
+}
+
 bool TinyToolContent::OpenAssetEditor( 
     TinyGame* game, 
-    const tiny_string name,
-    TinyAssetMetadata& metadata 
+    const tiny_string& name,
+    const TinyAssetMetadata& metadata 
 ) {
     auto& assets = game->GetAssets( );
     auto asset   = TinyAsset{ metadata.Type, name };
     auto state   = false;
 
-    if ( assets.Acquire( game, asset ) ) {
-        auto* value = assets.GetAsset( asset );
-
-        if ( value )
-            state = _type_editors[ metadata.Type ]->Open( game, name, value );
-    }
+    if ( assets.Acquire( game, asset ) )
+        state = _type_editors[ metadata.Type ]->Open( game, name, asset );
 
     return state;
 }
@@ -135,7 +139,7 @@ void TinyToolContent::OnTick(
 
     const auto flags      = ImGuiTableFlags_Borders | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTableFlags_RowBg;
     const auto node_flags = ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_SpanAllColumns;
-    const auto leaf_flags = node_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+    const auto leaf_flags = node_flags | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_AllowOverlap;
     const auto char_size  = ImGui::CalcTextSize( "#" ).x;
 
     if ( ImGui::BeginTable( "Asset List", 3, flags ) ) {
@@ -163,38 +167,38 @@ void TinyToolContent::OnTick(
 
                 if ( open ) {
                     for ( auto& metadata : metadatas ) {
-                        auto name_str = metadata->String.c_str( );
+                        auto* name_str = metadata->String.c_str( );
 
                         ImGui::TableNextRow( );
                         ImGui::TableNextColumn( );
-                        ImGui::TreeNodeEx( name_str, leaf_flags );
+
+                        {
+                            TinyImGui::ScopeVars{ ImGuiStyleVar_FramePadding, { 4.f, 4.f } };
+                            ImGui::TreeNodeEx( name_str, leaf_flags );
+                        }
+
                         ImGui::TableNextColumn( );
                         ImGui::Text( "%d", metadata->Data.Reference );
                         ImGui::TableNextColumn( );
 
-                        TINY_IMGUI_SCOPE_ID(
-                            if ( ImGui::Button( TF_ICON_REDO ) ) {
-                                _action   = TTC_ACTION_RELOAD;
-                                _metadata = metadata;
-                            }
-                        );
+                        if ( TinyImGui::Button( TF_ICON_REDO ) ) {
+                            _action   = TTC_ACTION_RELOAD;
+                            _metadata = metadata;
+                        }
+
                         ImGui::SameLine( .0f, spacing * .25f );
                         
-                        TINY_IMGUI_SCOPE_ID(
-                            if ( ImGui::Button( TF_ICON_EDIT ) ) {
-                                _action   = TTC_ACTION_EDIT;
-                                _metadata = metadata;
-                            }
-                        );
+                        if ( TinyImGui::Button( TF_ICON_EDIT ) ) {
+                            _action   = TTC_ACTION_EDIT;
+                            _metadata = metadata;
+                        }
                         
                         ImGui::SameLine( .0f, spacing * .25f );
 
-                        TINY_IMGUI_SCOPE_ID(
-                            if ( ImGui::Button( TF_ICON_TRASH_ALT ) ) {
-                                _action   = TTC_ACTION_REMOVE;
-                                _metadata = metadata;
-                            }
-                        );
+                        if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) ) {
+                            _action   = TTC_ACTION_REMOVE;
+                            _metadata = metadata;
+                        }
                     }
 
                     ImGui::TreePop( );
@@ -223,7 +227,7 @@ void TinyToolContent::OnTick(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-c_str TinyToolContent::TypeToString( tiny_uint type ) {
+c_string TinyToolContent::TypeToString( tiny_uint type ) {
     auto string = "";
 
     switch ( type ) {

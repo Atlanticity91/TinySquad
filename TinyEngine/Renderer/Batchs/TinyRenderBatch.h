@@ -25,7 +25,7 @@
 te_struct TinyRenderBatchFlush {
 
 	tiny_uint Count = 0;
-	c_ptr Values	= nullptr;
+	c_pointer Values	= nullptr;
 
 };
 
@@ -95,6 +95,6 @@ public:
 
 	tiny_uint GetSize( ) const { return _count * tiny_sizeof( Type ); };
 
-	c_ptr GetData( ) const { return tiny_get_address( _storage ); };
+	c_pointer GetData( ) const { return tiny_get_address( _storage ); };
 
 };

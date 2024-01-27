@@ -49,7 +49,7 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 	_is_running = PreInit( game, game_config );
 
 	if ( _is_running ) {
-		_is_running = _window.Initialize( game_config, tiny_cast( this, c_ptr ) ) &&
+		_is_running = _window.Initialize( game_config, tiny_cast( this, c_pointer ) ) &&
 					  _inputs.Initialize( _filesystem, _window )				  &&
 					  _audio.Initialize( _filesystem, _window )					  &&
 					  _graphics.Initialize( _filesystem, _window );
@@ -143,7 +143,7 @@ bool TinyEngine::ProcessArgs( TinyGame* game, tiny_int argc, char** argv ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE STATIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyEngine::JobRun( c_ptr game ) {
+void TinyEngine::JobRun( c_pointer game ) {
 	auto* _game  = tiny_cast( game, TinyGame* );
 	auto& engine = _game->GetEngine( );
 

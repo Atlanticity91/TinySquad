@@ -69,9 +69,10 @@ public:
 		TinyAssetManager& assets, 
 		TinyAssetMetadata& metadata 
 	) ) {
+		auto* target_path = metadata.Target.c_str( );
 		auto asset_handle = TINY_UINT_MAX;
 		auto asset_id	  = FindEmpty( );
-		auto file		  = filesystem.OpenFile( metadata.Target.c_str( ), Tiny::TF_ACCESS_READ );
+		auto file		  = filesystem.OpenFile( target_path, Tiny::TF_ACCESS_READ );
 
 		if ( asset_id == _assets.size( ) || _assets[ asset_id ].IsActive ) {
 			_assets.create_back( );
@@ -112,7 +113,8 @@ public:
 		auto state		 = false;
 
 		if ( GetIsValid( metadata.Handle ) ) {
-			auto file = filesystem.OpenFile( metadata.Target.c_str( ), Tiny::TF_ACCESS_READ );
+			auto* target_path = metadata.Target.c_str( );
+			auto file		  = filesystem.OpenFile( target_path, Tiny::TF_ACCESS_READ );
 
 			OnUnLoad( game, _assets[ metadata.Handle ].Element );
 
@@ -126,7 +128,7 @@ public:
 	tiny_implement( tiny_uint Create(
 		TinyGame* game,
 		TinyAssetMetadata& metadata,
-		c_ptr asset_builder
+		c_pointer asset_builder
 	) ) { 
 		auto asset_handle = TINY_UINT_MAX;
 		auto asset_id	  = FindEmpty( );
@@ -147,7 +149,7 @@ public:
 	tiny_implement( bool ReCreate(
 		TinyGame* game,
 		TinyAssetMetadata& metadata,
-		c_ptr asset_builder
+		c_pointer asset_builder
 	) ) {
 		auto handle = metadata.Handle;
 		auto state  = false;
@@ -183,7 +185,7 @@ protected:
 
 	tiny_abstract( bool OnCreate(
 		TinyGame* game,
-		c_ptr asset_builder, 
+		c_pointer asset_builder, 
 		Asset& element 
 	) );
 
@@ -194,20 +196,20 @@ public:
 		return handle < _assets.size( ) && _assets[ handle ].IsActive;
 	};
 
-	tiny_implement( c_ptr GetAsset( const TinyAsset& asset ) ) {
-		auto* element = ( c_ptr )nullptr;
+	tiny_implement( c_pointer GetAsset( const TinyAsset& asset ) ) {
+		auto* element = ( c_pointer )nullptr;
 
 		if ( GetIsValid( asset.Handle ) )
-			element = tiny_cast( &_assets[ asset.Handle ].Element, c_ptr );
+			element = tiny_cast( &_assets[ asset.Handle ].Element, c_pointer );
 
 		return element;
 	};
 
-	tiny_implement( const c_ptr GetAsset( const TinyAsset& asset ) const ) {
-		auto* element = (const c_ptr)nullptr;
+	tiny_implement( const c_pointer GetAsset( const TinyAsset& asset ) const ) {
+		auto* element = (const c_pointer)nullptr;
 
 		if ( GetIsValid( asset.Handle ) )
-			element = tiny_cast( &_assets[ asset.Handle ].Element, const c_ptr );
+			element = tiny_cast( &_assets[ asset.Handle ].Element, const c_pointer );
 
 		return element;
 	};

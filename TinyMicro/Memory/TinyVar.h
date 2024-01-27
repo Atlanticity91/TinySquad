@@ -54,10 +54,10 @@ struct tiny_var {
 
 	tiny_var& Set( const Type& data ) {
 		if ( Storage ) {
-			auto* dst = Storage.As<c_ptr_base>( );
+			auto* dst = Storage.As<c_pointer_base>( );
 
 			if ( dst )
-				Tiny::Memcpy( tiny_cast( tiny_rvalue( data ), const c_ptr ), dst, tiny_sizeof( Type ) );
+				Tiny::Memcpy( tiny_cast( tiny_rvalue( data ), const c_pointer ), dst, tiny_sizeof( Type ) );
 		}
 
 		return tiny_self;

@@ -32,15 +32,15 @@ tiny_enum( TinyJobPriorities ) {
 
 tm_struct TinyJobData {
 
-	tiny_uint Size = 0;
-	c_ptr Value	   = nullptr;
+	tiny_uint Size  = 0;
+	c_pointer Value	= nullptr;
 
 };
 
 tm_struct TinyJob{
 
-	using JobExecutalbe = std::function<bool( TinyJobData&, c_ptr )>;
-	using JobCallback   = std::function<void( TinyJobData&, c_ptr )>;
+	using JobExecutalbe = std::function<bool( TinyJobData&, c_pointer )>;
+	using JobCallback   = std::function<void( TinyJobData&, c_pointer )>;
 
 	TinyJobPriorities Priority = TJ_PRIORITY_NORMAL;
 	TinyJobData Data{ };

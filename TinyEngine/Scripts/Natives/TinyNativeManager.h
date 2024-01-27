@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include <TinyEngine/Scripts/Interop/TinyLuaEntity.h>
+#include <TinyEngine/Scripts/Lua/Interop/TinyLuaEntity.h>
 
-typedef std::function<bool( TinyGame*, c_ptr )>;
+typedef std::function<bool( TinyGame*, c_pointer )> TinyScriptNative;
 
 te_class TinyNativeManager final {
 
@@ -36,7 +36,7 @@ public:
 
 	void Register( const tiny_string& name, TinyScriptNative script );
 
-	bool Execute( TinyGame* game, const tiny_string& name );
+	bool Execute( TinyGame* game, const tiny_string& name, c_pointer instigator );
 
 public:
 	bool GetExist( const tiny_string& name ) const;

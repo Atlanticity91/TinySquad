@@ -40,12 +40,12 @@ public:
 
 	void Unload( TinyGame* game, TinyAssetManager& assets, TinyAssetMetadata& metadata );
 
-	bool Create( TinyGame* game, TinyAssetMetadata& metadata, c_ptr asset_builder );
+	bool Create( TinyGame* game, TinyAssetMetadata& metadata, c_pointer asset_builder );
 
 	bool ReCreate(
 		TinyGame* game,
 		TinyAssetMetadata& metadata,
-		c_ptr asset_builder
+		c_pointer asset_builder
 	);
 
 	void Clear( TinyGame* game );
@@ -68,8 +68,8 @@ public:
 public:
 	ITinyAssetList* GetManager( tiny_uint type ) const;
 
-	c_ptr Get( const TinyAsset& asset );
+	c_pointer Get( const TinyAsset& asset );
 
-	const c_ptr Get( const TinyAsset& asset ) const;
+	const c_pointer Get( const TinyAsset& asset ) const;
 
 };

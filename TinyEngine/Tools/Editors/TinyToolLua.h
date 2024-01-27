@@ -32,10 +32,8 @@ public:
 	tiny_implement( void Save( TinyGame* game ) );
 
 protected:
-	tiny_implement( bool OnOpen( TinyGame* game, const tiny_string& name, c_ptr asset ) );
+	tiny_implement( bool OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) );
 
 	tiny_implement( void OnTick( TinyGame* game, TinyAssetManager& assets ) );
-
-	tiny_implement( void OnClose( TinyGame* game, TinyAssetManager& assets ) );
 
 };

@@ -52,7 +52,7 @@ bool TinyScriptLua::Create( TinyLuaContext& context, tiny_ptr source ) {
 
 	if ( state ) {
 		auto length = tiny_lvalue( address );
-		auto src	= tiny_string{ tiny_cast( address + 1 , c_ptr ), length };
+		auto src	= tiny_string{ tiny_cast( address + 1 , c_pointer ), length };
 
 		state = context.Compile( src );
 	}

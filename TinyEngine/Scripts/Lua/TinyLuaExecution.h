@@ -38,7 +38,7 @@ tiny_enum( TinyLuaTypes ) {
 te_struct TinyLuaParameter {
 
 	TinyLuaTypes Type = TLT_BOOL;
-	c_ptr Value		  = nullptr;
+	c_pointer Value		  = nullptr;
 
 };
 

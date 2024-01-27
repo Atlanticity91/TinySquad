@@ -104,7 +104,7 @@ bool TinyAssetManager::Import( TinyGame* game, const tiny_string& path ) {
 bool TinyAssetManager::Export(
 	TinyGame* game,
 	const tiny_string& name,
-	c_ptr& asset_builder
+	c_pointer& asset_builder
 ) { 
 	auto metadata_hash = tiny_hash{ name };
 	auto metadata_id   = tiny_cast( 0, tiny_uint );
@@ -114,7 +114,8 @@ bool TinyAssetManager::Export(
 	if ( state ) {
 		auto& filesystem = game->GetFilesystem( );
 		auto& metadata	 = _registry.GetMetadatas( ).at( metadata_id );
-		auto file		 = filesystem.OpenFile( metadata.Target.c_str( ), Tiny::TF_ACCESS_WRITE );
+		auto* target_str = metadata.Target.c_str( );
+		auto file		 = filesystem.OpenFile( target_str, Tiny::TF_ACCESS_WRITE );
 
 		state = file.GetIsValid( );
 
@@ -129,13 +130,14 @@ bool TinyAssetManager::Export(
 	TinyGame* game, 
 	TinyAssetTypes type,
 	const tiny_string& path,
-	c_ptr& asset_builder
+	c_pointer& asset_builder
 ) {
 	auto& filesystem = game->GetFilesystem( );
 	auto state		 = !path.is_empty( );
 	
 	if ( state ) {
-		auto name = filesystem.GetInformation( path ).Name;
+		auto* name_str = filesystem.GetInformation( path ).Name.c_str( );
+		auto name	   = tiny_string{ name_str };
 
 		if ( !_registry.GetExist( name ) ) {
 			state = filesystem.GetIsAssetFile( path );
@@ -218,7 +220,7 @@ bool TinyAssetManager::Create(
 	TinyGame* game,
 	const tiny_string& name,
 	TinyAssetTypes type,
-	c_ptr asset_builder
+	c_pointer asset_builder
 ) {
 	auto state = !name.is_empty( )		  && 
 				 asset_builder != nullptr && 
@@ -241,7 +243,7 @@ bool TinyAssetManager::ReCreate(
 	TinyGame* game,
 	const tiny_string& name,
 	TinyAssetTypes type,
-	c_ptr asset_builder
+	c_pointer asset_builder
 ) {
 	auto asset_hash = tiny_hash{ name };
 	auto asset_id   = tiny_cast( 0, tiny_uint );
@@ -327,10 +329,11 @@ tiny_hash TinyAssetManager::GenerateMetadata(
 	TinyFilesystem& filesystem,
 	TinyPathInformation& path_info
 ) {
-	auto new_path = filesystem.ConvertToAsset( path_info.Full );
-	auto type	  = _importers.GetTypeOf( path_info.Extension );
+	auto name_hash = tiny_hash{ path_info.Name.c_str( ) };
+	auto new_path  = filesystem.ConvertToAsset( path_info.Full );
+	auto type	   = _importers.GetTypeOf( path_info.Extension );
 
-	if ( _registry.GetExist( path_info.Name.c_str( ) ) )
+	if ( _registry.GetExist( name_hash ) )
 		 path_info.Name += "_";
 
 	_registry.Append( path_info.Name, { type, path_info.Full, new_path } );
@@ -357,8 +360,19 @@ bool TinyAssetManager::GetExist( const tiny_string& asset, tiny_hash& asset_hash
 	return state;
 }
 
-c_ptr TinyAssetManager::GetAsset( const TinyAsset& asset ) {
-	auto* asset_value = tiny_cast( nullptr, c_ptr );
+bool TinyAssetManager::GetMetadata( const tiny_string& asset_name, TinyAssetMetadata& metadata ) {
+	auto metadata_hash = tiny_hash{ asset_name };
+	auto metadata_id   = tiny_cast( 0, tiny_uint );
+	auto state		   = _registry.FindMetadata( metadata_hash, metadata_id );
+
+	if ( state )
+		metadata = _registry.At( metadata_id );
+
+	return state;
+}
+
+c_pointer TinyAssetManager::GetAsset( const TinyAsset& asset ) {
+	auto* asset_value = tiny_cast( nullptr, c_pointer );
 
 	if ( _registry.GetExist( asset.Hash ) )
 		asset_value = _managers.Get( asset );

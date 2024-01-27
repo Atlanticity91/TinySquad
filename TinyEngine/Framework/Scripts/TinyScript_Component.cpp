@@ -52,8 +52,9 @@ TinyScript& TinyScript::SetPreTick(
 	return tiny_self;
 }
 
-TinyScript& TinyScript::SetPreTick( TinyScriptNative native ) {
-	_pre_tick.Type = TS_TYPE_NATIVE;
+TinyScript& TinyScript::SetPreTick( const tiny_string& function ) {
+	_pre_tick.Type	   = TS_TYPE_NATIVE;
+	_pre_tick.Function = function;
 
 	return tiny_self;
 }
@@ -77,9 +78,9 @@ TinyScript& TinyScript::SetPostTick(
 	return tiny_self;
 }
 
-TinyScript& TinyScript::SetPostTick( TinyScriptNative native ) {
-	_post_tick.Type   = TS_TYPE_NATIVE;
-	_post_tick.Native = native;
+TinyScript& TinyScript::SetPostTick( const tiny_string& function ) {
+	_post_tick.Type     = TS_TYPE_NATIVE;
+	_post_tick.Function = function;
 
 	return tiny_self;
 }
@@ -91,8 +92,8 @@ bool TinyScript::GetHasPreTick( ) const {
 	auto state = false;
 
 	switch ( _pre_tick.Type ) {
-		case TS_TYPE_NATIVE : state = _pre_tick.Native != nullptr;   break;
-		case TS_TYPE_LUA	: state = _pre_tick.Asset.GetIsValid( ); break;
+		case TS_TYPE_NATIVE : state = !_pre_tick.Function.is_empty( ); break;
+		case TS_TYPE_LUA	: state = _pre_tick.Asset.GetIsValid( );   break;
 
 		default: break;
 	}
@@ -104,8 +105,8 @@ bool TinyScript::GetHasPostTick( ) const {
 	auto state = false;
 
 	switch ( _post_tick.Type ) {
-		case TS_TYPE_NATIVE : state = _post_tick.Native != nullptr;   break;
-		case TS_TYPE_LUA	: state = _post_tick.Asset.GetIsValid( ); break;
+		case TS_TYPE_NATIVE : state = !_post_tick.Function.is_empty( ); break;
+		case TS_TYPE_LUA	: state = _post_tick.Asset.GetIsValid( );	break;
 
 		default: break;
 	}

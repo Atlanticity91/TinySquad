@@ -56,7 +56,7 @@ bool TinyToolbox::LoadFont(
 
     if ( state ) {
         auto& io = ImGui::GetIO( );
-        auto* _font = io.Fonts->AddFontFromFileTTF( tiny_cast( font.Path, c_str ), font.Size );
+        auto* _font = io.Fonts->AddFontFromFileTTF( tiny_cast( font.Path, c_string ), font.Size );
 
         if ( _font ) {
             _fonts.emplace( font.Alias, _font );
@@ -93,7 +93,7 @@ bool TinyToolbox::AddFont(
     float size
 ) {
     auto& io = ImGui::GetIO( );
-    auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, c_ptr ), length, size );
+    auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, c_pointer ), length, size );
 
     if ( font ) {
         auto alias_str = alias.as_chars( );

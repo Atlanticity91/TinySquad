@@ -40,7 +40,7 @@ HANDLE			 intern_tp_file_handle = INVALID_HANDLE_VALUE;
 
 Tiny::FileEntry intern_tp_CreateEntry( ) { 
 	auto entry  = Tiny::FileEntry{ };
-	auto length = (tiny_uint)strlen( intern_tp_find_data.cFileName ) + 1;
+	auto length = tiny_cast( strlen( intern_tp_find_data.cFileName ) + 1, tiny_uint );
 
 	Tiny::Memcpy( intern_tp_find_data.cFileName, entry.Name, length );
 
@@ -52,7 +52,7 @@ Tiny::FileEntry intern_tp_CreateEntry( ) {
 			entry.Extension = length + 1;
 	}
 
-	entry.Size = (tiny_ulong)intern_tp_find_data.nFileSizeLow;
+	entry.Size = tiny_cast( intern_tp_find_data.nFileSizeLow, tiny_ulong );
 	
 	if ( intern_tp_find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 		entry.Type = Tiny::TF_TYPE_DIRECTORY;
@@ -70,7 +70,7 @@ void Tiny::DumpLeaks( ) {
 #	endif
 }
 
-bool Tiny::Memcpy( const c_ptr src, c_ptr dst, tiny_uint size ) {
+bool Tiny::Memcpy( const c_pointer src, c_pointer dst, tiny_uint size ) {
 	auto state = false;
 
 #	ifdef TINY_WIN
@@ -111,7 +111,7 @@ std::string Tiny::GetDocumentDir( ) {
 	return path;
 }
 
-bool Tiny::CreateDir( c_str path ) {
+bool Tiny::CreateDir( c_string path ) {
 	auto state = false;
 
 #	ifdef TINY_WIN
@@ -121,7 +121,7 @@ bool Tiny::CreateDir( c_str path ) {
 	return state;
 }
 
-bool Tiny::RemoveDir( c_str path ) {
+bool Tiny::RemoveDir( c_string path ) {
 	auto state = false;
 
 #	ifdef TINY_WIN
@@ -131,13 +131,13 @@ bool Tiny::RemoveDir( c_str path ) {
 	return state;
 }
 
-bool Tiny::GetIsDir( c_str path ) {
+bool Tiny::GetIsDir( c_string path ) {
 	auto state = false;
 
 #	ifdef TINY_WIN
 	auto attribute_data = WIN32_FILE_ATTRIBUTE_DATA{ };
 
-	state = GetFileAttributesExA( path, GetFileExInfoStandard, &attribute_data ) ==  TRUE;
+	state = GetFileAttributesExA( path, GetFileExInfoStandard, tiny_rvalue( attribute_data ) ) == TRUE;
 
 	if ( state )
 		state = attribute_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
@@ -146,13 +146,13 @@ bool Tiny::GetIsDir( c_str path ) {
 	return state;
 }
 
-bool Tiny::GetIsFile( c_str path ) {
+bool Tiny::GetIsFile( c_string path ) {
 	auto state = false;
 
 #	ifdef TINY_WIN
 	auto attribute_data = WIN32_FILE_ATTRIBUTE_DATA{ };
 
-	state = GetFileAttributesExA( path, GetFileExInfoStandard, &attribute_data ) == TRUE;
+	state = GetFileAttributesExA( path, GetFileExInfoStandard, tiny_rvalue( attribute_data ) ) == TRUE;
 	
 	if ( state )
 		state = !( attribute_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY );
@@ -161,8 +161,8 @@ bool Tiny::GetIsFile( c_str path ) {
 	return state;
 }
 
-std::optional<Tiny::FileEntry> Tiny::FindEntry( c_str path ) {
-	intern_tp_file_handle = FindFirstFileExA( path, FindExInfoStandard, &intern_tp_find_data, FindExSearchNameMatch, NULL, 0 );
+std::optional<Tiny::FileEntry> Tiny::FindEntry( c_string path ) {
+	intern_tp_file_handle = FindFirstFileExA( path, FindExInfoStandard, tiny_rvalue( intern_tp_find_data ), FindExSearchNameMatch, NULL, 0 );
 
 	if ( intern_tp_file_handle != INVALID_HANDLE_VALUE )
 		return intern_tp_CreateEntry( );
@@ -174,7 +174,7 @@ std::optional<Tiny::FileEntry> Tiny::FindEntry( c_str path ) {
 
 std::optional<Tiny::FileEntry> Tiny::NextEntry( ) {
 	if ( intern_tp_file_handle != INVALID_HANDLE_VALUE ) { 
-		if ( FindNextFileA( intern_tp_file_handle, &intern_tp_find_data ) )
+		if ( FindNextFileA( intern_tp_file_handle, tiny_rvalue( intern_tp_find_data ) ) )
 			return intern_tp_CreateEntry( );
 		
 		FindClose( intern_tp_file_handle );
@@ -185,7 +185,7 @@ std::optional<Tiny::FileEntry> Tiny::NextEntry( ) {
 	return { };
 }
 
-Tiny::File Tiny::FileOpen( c_str path, FileAccesses access ) {
+Tiny::File Tiny::FileOpen( c_string path, FileAccesses access ) {
 	auto file = Tiny::File{ access };
 
 #	ifdef TINY_WIN
@@ -211,9 +211,9 @@ Tiny::File Tiny::FileOpen( c_str path, FileAccesses access ) {
 	if ( Tiny::GetFileIsValid( file ) ) {
 		auto tmp_size = LARGE_INTEGER{ };
 
-		GetFileSizeEx( file.Handle, &tmp_size );
+		GetFileSizeEx( file.Handle, tiny_rvalue( tmp_size ) );
 
-		file.Size = (tiny_uint)tmp_size.LowPart;
+		file.Size = tiny_cast( tmp_size.LowPart, tiny_uint );
 	}
 #	endif
 
@@ -235,33 +235,33 @@ bool Tiny::FileSeek( File& file, FileOrigin origin, tiny_uint offset ) {
 	else if ( origin == TF_ORIGIN_END )
 		flag = FILE_END;
 
-	state = SetFilePointer( file.Handle, (LONG)offset, NULL, flag ) != INVALID_SET_FILE_POINTER;
+	state = SetFilePointer( file.Handle, tiny_cast( offset, LONG ), NULL, flag ) != INVALID_SET_FILE_POINTER;
 #	endif
 
 	return state;
 }
 
-tiny_uint Tiny::FileRead( File& file, tiny_uint length, c_ptr data ) {
-	auto read_bytes = (tiny_uint)0;
+tiny_uint Tiny::FileRead( File& file, tiny_uint length, c_pointer data ) {
+	auto read_bytes = tiny_cast( 0, tiny_uint );
 
 #	ifdef TINY_WIN
-	auto tmp_read = (DWORD)0;
+	auto tmp_read = tiny_cast( 0, DWORD );
 
-	if ( ReadFile( file.Handle, data, length, (LPDWORD)&tmp_read, NULL ) == TRUE )
-		read_bytes = (tiny_uint)tmp_read;
+	if ( ReadFile( file.Handle, data, length, tiny_rvalue( tmp_read ), NULL ) == TRUE )
+		read_bytes = tiny_cast( tmp_read, tiny_uint );
 #	endif
 
 	return read_bytes;
 }
 
-tiny_uint Tiny::FileWrite( File& file, tiny_uint length, const c_ptr data ) {
-	auto write_bytes = (tiny_uint)0;
+tiny_uint Tiny::FileWrite( File& file, tiny_uint length, const c_pointer data ) {
+	auto write_bytes = tiny_cast( 0, tiny_uint );
 
 #	ifdef TINY_WIN
-	auto tmp_write = (DWORD)0;
+	auto tmp_write = tiny_cast( 0, DWORD );
 
-	if ( WriteFile( file.Handle, data, length, &tmp_write, NULL ) == TRUE )
-		write_bytes = (tiny_uint)tmp_write;
+	if ( WriteFile( file.Handle, data, length, tiny_rvalue( tmp_write ), NULL ) == TRUE )
+		write_bytes = tiny_cast( tmp_write, tiny_uint );
 #	endif
 
 	return write_bytes;
@@ -274,7 +274,7 @@ void Tiny::FileClose( File& file ) {
 #	endif
 }
 
-bool Tiny::RemoveFile( c_str path ) {
+bool Tiny::RemoveFile( c_string path ) {
 	auto state = false;
 
 #	ifdef TINY_WIN
@@ -284,55 +284,64 @@ bool Tiny::RemoveFile( c_str path ) {
 	return state;
 }
 
-bool Tiny::GetFileIsValid( const File& file ) { return file.Handle != INVALID_HANDLE_VALUE; }
+bool Tiny::GetFileIsValid( const File& file ) { 
+#	ifdef TINY_WIN
+	return file.Handle != INVALID_HANDLE_VALUE; 
+#	else
+	return false;
+#	endif
+}
 
 bool Tiny::GetFileCan( const File& file, FileAccesses access ) {
 	return Tiny::GetFileIsValid( file ) && ( file.Access & access );
 }
 
 tiny_uint Tiny::GetFileCursor( const File& file ) {
-	auto cursor = (tiny_uint)0;
+	auto cursor = tiny_cast( 0, tiny_uint );
 	
-	if ( Tiny::GetFileIsValid( file ) )
-		cursor = (tiny_uint)SetFilePointer( file.Handle, 0, NULL, FILE_CURRENT );
+	if ( Tiny::GetFileIsValid( file ) ) {
+#		ifdef TINY_WIN
+		cursor = tiny_cast( SetFilePointer( file.Handle, 0, NULL, FILE_CURRENT ), tiny_uint );
+#		endif
+	}
 
 	return cursor;
 }
 
-bool Tiny::OpenDialog( DialogTypes type, c_str filters, tiny_uint length, char* data ) {
+bool Tiny::OpenDialog( DialogTypes type, c_string filters, tiny_uint length, char* data ) {
 	return Tiny::OpenDialog( type, nullptr, filters, length, data );
 }
 
-bool Tiny::OpenDialog( DialogTypes type, c_str path, c_str filters, tiny_uint length, char* data ) {
+bool Tiny::OpenDialog( DialogTypes type, c_string path, c_string filters, tiny_uint length, char* data ) {
 	auto state = false;
 
-	#	ifdef TINY_WIN
+#	ifdef TINY_WIN
 	auto context = OPENFILENAMEA{ };
 
 	ZeroMemory( &context, sizeof( OPENFILENAMEA ) );
 
-	context.lStructSize = sizeof( OPENFILENAMEA );
-	context.hwndOwner = GetActiveWindow( );
-	context.lpstrFile = data;
-	context.nMaxFile = length;
-	context.lpstrFilter = filters;
+	context.lStructSize  = sizeof( OPENFILENAMEA );
+	context.hwndOwner	 = GetActiveWindow( );
+	context.lpstrFile	 = data;
+	context.nMaxFile	 = length;
+	context.lpstrFilter  = filters;
 	context.nFilterIndex = 1;
-	context.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+	context.Flags		 = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
 	if ( path )
 		context.lpstrInitialDir = path;
 
 	if ( type == Tiny::TD_TYPE_OPEM_FILE )
-		state = GetOpenFileNameA( &context ) == TRUE;
+		state = GetOpenFileNameA( tiny_rvalue( context ) ) == TRUE;
 	else if ( type == Tiny::TD_TYPE_SAVE_FILE )
-		state = GetSaveFileNameA( &context ) == TRUE;
-	#	endif
+		state = GetSaveFileNameA( tiny_rvalue( context ) ) == TRUE;
+#	endif
 
 	return state;
 }
 
-bool Tiny::OpenDialog( DialogTypes type, std::string path, c_str filters, tiny_uint length, char* data ) {
-	auto _path = path.size( ) > 0 ? path.c_str( ) : nullptr;
+bool Tiny::OpenDialog( DialogTypes type, std::string path, c_string filters, tiny_uint length, char* data ) {
+	auto* _path = path.size( ) > 0 ? path.c_str( ) : nullptr;
 
 	return Tiny::OpenDialog( type, _path, filters, length, data );
 }
@@ -343,40 +352,40 @@ Tiny::Date Tiny::GetDate( ) {
 #	ifdef TINY_WIN
 	auto time = SYSTEMTIME{ };
 
-	GetSystemTime( &time );
+	GetSystemTime( tiny_rvalue( time ) );
 
-	date.Year   = (tiny_ushort)time.wYear;
-	date.Day    = (tiny_ubyte)time.wDay;
-	date.Month  = (tiny_ubyte)time.wMonth;
-	date.Hour   = (tiny_ubyte)time.wHour;
-	date.Minute = (tiny_ubyte)time.wMinute;
-	date.Second = (tiny_ubyte)time.wSecond;
+	date.Year   = tiny_cast( time.wYear, tiny_ushort );
+	date.Day    = tiny_cast( time.wDay, tiny_ubyte );
+	date.Month  = tiny_cast( time.wMonth, tiny_ubyte );
+	date.Hour   = tiny_cast( time.wHour, tiny_ubyte );
+	date.Minute = tiny_cast( time.wMinute, tiny_ubyte );
+	date.Second = tiny_cast( time.wSecond, tiny_ubyte );
 #	else
 #	endif
 
 	return date;
 }
 
-bool Tiny::LoadLib( c_str& path, Library& library ) {
+bool Tiny::LoadLib( c_string& path, Library& library ) {
 	auto state = path && strlen( path ) > 0;
 
-#	ifdef TINY_WIN
 	if ( state ) {
+#		ifdef TINY_WIN
 		library.Handle = LoadLibraryA( path );
 
 		state = library.Handle != 0;
+#		endif
 	}
-#	endif
 
 	return state;
 }
 
-c_ptr Tiny::GetLibProcedure( Library& library, c_str& address ) {
-	auto procedure = (c_ptr)nullptr;
+c_pointer Tiny::GetLibProcedure( Library& library, c_string& address ) {
+	auto procedure = tiny_cast( nullptr, c_pointer );
 
 #	ifdef TINY_WIN
 	if ( library.Handle != 0 && address && strlen( address ) > 0 )
-		procedure = (c_ptr)GetProcAddress( library.Handle, address );
+		procedure = tiny_cast( GetProcAddress( library.Handle, address ), c_pointer );
 #	endif
 
 	return procedure;

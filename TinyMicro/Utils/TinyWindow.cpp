@@ -28,14 +28,14 @@ TinyWindow::TinyWindow( tiny_string title )
 	_handle{ nullptr }
 { }
 
-bool TinyWindow::Initialize( const TinyAppConfig& config, void* user_data ) {
+bool TinyWindow::Initialize( const TinyAppConfig& config, c_pointer user_data ) {
 	auto state = glfwInit( );
 
 	if ( state ) {
 		glfwWindowHint( GLFW_RESIZABLE, GLFW_TRUE );
 		glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API );
 
-		_handle = glfwCreateWindow( config.Width, config.Height, tiny_cast( _title, c_str ), nullptr, nullptr );
+		_handle = glfwCreateWindow( config.Width, config.Height, tiny_cast( _title, c_string ), nullptr, nullptr );
 
 		state = _handle != nullptr;
 
@@ -49,7 +49,7 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, void* user_data ) {
 	return state;
 }
 
-void TinyWindow::SetCallback( TinyWindowCallbacks query, void* callback ) {
+void TinyWindow::SetCallback( TinyWindowCallbacks query, c_pointer callback ) {
 	switch ( query ) {
 		case TWC_WINDOW_SIZE  : glfwSetWindowSizeCallback( _handle, tiny_cast( callback, GLFWwindowsizefun ) );   break;
 		case TWC_WINDOW_CLOSE : glfwSetWindowCloseCallback( _handle, tiny_cast( callback, GLFWwindowclosefun ) ); break;
@@ -91,7 +91,7 @@ tiny_vec2 TinyWindow::GetDimensions_v( ) const {
 tiny_point TinyWindow::GetDimensions_p( ) const {
 	auto dimensions = tiny_point{ };
 
-	glfwGetWindowSize( _handle, &dimensions.x, &dimensions.y );
+	glfwGetWindowSize( _handle, tiny_rvalue( dimensions.x ), tiny_rvalue( dimensions.y ) );
 
 	return dimensions;
 }

@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	INTERNAL ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-static c_str vec_axises[] = { "X", "Y", "Z", "W" };
+static c_string vec_axises[] = { "X", "Y", "Z", "W" };
 static ImU32 vec_colors[] = {
 
     IM_COL32( 168,  46,   2, 255 ),
@@ -33,7 +33,7 @@ static ImU32 vec_colors[] = {
 
 };
 
-ImVec2 Internal_CalcTextSize( c_str text ) { 
+ImVec2 Internal_CalcTextSize( c_string text ) { 
     auto& style = ImGui::GetStyle( );
     auto size   = ImGui::CalcTextSize( text );
     
@@ -97,19 +97,19 @@ TinyImGui::DropdownContext::DropdownContext( )
     : DropdownContext{ { } }
 { }
 
-TinyImGui::DropdownContext::DropdownContext( tiny_init<c_str> values )
+TinyImGui::DropdownContext::DropdownContext( tiny_init<c_string> values )
     : Index{ 0 },
     Values{ values }
 { }
 
 TinyImGui::DropdownContext::DropdownContext(
-    tiny_init<c_str> values,
+    tiny_init<c_string> values,
     const tiny_string& value
 ) : DropdownContext{ values, tiny_hash{ value } }
 { }
 
 TinyImGui::DropdownContext::DropdownContext( 
-    tiny_init<c_str> values, 
+    tiny_init<c_string> values, 
     const tiny_hash value 
 ) : DropdownContext{ values } 
 { 
@@ -143,7 +143,7 @@ TinyImGui::DropdownContext::DropdownContext(
     Find( value );
 }
 
-TinyImGui::DropdownContext::DropdownContext( tiny_uint index, tiny_init<c_str> values ) 
+TinyImGui::DropdownContext::DropdownContext( tiny_uint index, tiny_init<c_string> values ) 
     : Index{ index < values.size( ) ? index : 0 },
     Values{ values }
 { }
@@ -226,6 +226,19 @@ void TinyImGui::SeparatorText( const tiny_string& label ) {
     TinyImGui::BeginVars( );
 }
 
+bool TinyImGui::Button( const tiny_string& label ) { 
+    return TinyImGui::Button( label, { 0.f, 0.f } );
+}
+
+bool TinyImGui::Button( const tiny_string& label, const ImVec2& size ) {
+    TINY_IMGUI_SCOPE_ID(
+        auto* label_str = label.as_chars( );
+        auto state      = ImGui::Button( label_str, size );
+    );
+
+    return state;
+}
+
 bool TinyImGui::RightButton( const tiny_string& label ) {
     auto offset = Internal_CalcTextSize( "############" ).x;
     auto cursor = ImGui::GetCursorPosX( ) + ImGui::GetContentRegionAvail( ).x;
@@ -235,7 +248,14 @@ bool TinyImGui::RightButton( const tiny_string& label ) {
     return ImGui::Button( label.get( ), { -1.f, .0f } );
 }
 
-ImVec2 TinyImGui::ButtonSpan( tiny_uint button_count ) {
+ImVec2 TinyImGui::ButtonSpanLeft( tiny_uint button_count ) {
+    auto& style      = ImGui::GetStyle( );
+    auto button_size = ImGui::CalcTextSize( "##############" ).x + style.FramePadding.x * 2.f;
+
+    return { button_size, 0.f };
+}
+
+ImVec2 TinyImGui::ButtonSpanRight( tiny_uint button_count ) {
     auto& style       = ImGui::GetStyle( );
     auto button_size  = ImGui::CalcTextSize( "##############" ).x + style.FramePadding.x * 2.f;
     auto span_width   = ( button_size + style.ItemSpacing.x ) * button_count - style.ItemSpacing.x;
@@ -623,6 +643,20 @@ bool TinyImGui::InputColor( const tiny_string& label, tiny_color& color ) {
     return TinyImGui::InputColor( label, color.Get( ) );
 }
 
+bool TinyImGui::InputColor( const tiny_string& label, const VkClearColorValue& color ) {
+    auto* _color = tiny_rvalue( color.float32[ 0 ] );
+
+    return TinyImGui::InputColor( label, tiny_cast( _color, float* ) );
+}
+
+bool TinyImGui::InputText( tiny_uint length, char* buffer ) {
+    TINY_IMGUI_SCOPE_ID(
+        auto state = ImGui::InputText( IMGUI_NO_LABEL, buffer, length + 1 );
+    );
+
+    return state;
+}
+
 bool TinyImGui::Dropdown( const tiny_string& label, TinyImGui::DropdownContext& context ) {
     TinyImGui::InputBegin( label );
 
@@ -850,6 +884,57 @@ bool TinyImGui::InputVulkan( const tiny_string& label, const VkFormat& format ) 
     ImGui::EndDisabled( );
 
     return state;
+}
+
+bool TinyImGui::InputVulkan(
+    const tiny_string& label, 
+    const VkColorSpaceKHR& color_space 
+) {
+    auto index = tiny_cast( 0, tiny_uint );
+
+    switch ( color_space ) {
+        case VK_COLOR_SPACE_DISPLAY_P3_NONLINEAR_EXT    : index =  1; break;
+        case VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT    : index =  2; break;
+        case VK_COLOR_SPACE_DISPLAY_P3_LINEAR_EXT       : index =  3; break;
+        case VK_COLOR_SPACE_DCI_P3_NONLINEAR_EXT        : index =  4; break;
+        case VK_COLOR_SPACE_BT709_LINEAR_EXT            : index =  5; break;
+        case VK_COLOR_SPACE_BT709_NONLINEAR_EXT         : index =  6; break;
+        case VK_COLOR_SPACE_BT2020_LINEAR_EXT           : index =  7; break;
+        case VK_COLOR_SPACE_HDR10_ST2084_EXT            : index =  8; break;
+        case VK_COLOR_SPACE_DOLBYVISION_EXT             : index =  9; break;
+        case VK_COLOR_SPACE_HDR10_HLG_EXT               : index = 10; break;
+        case VK_COLOR_SPACE_ADOBERGB_LINEAR_EXT         : index = 11; break;
+        case VK_COLOR_SPACE_ADOBERGB_NONLINEAR_EXT      : index = 12; break;
+        case VK_COLOR_SPACE_PASS_THROUGH_EXT            : index = 13; break;
+        case VK_COLOR_SPACE_EXTENDED_SRGB_NONLINEAR_EXT : index = 14; break;
+        case VK_COLOR_SPACE_DISPLAY_NATIVE_AMD          : index = 15; break;
+
+        default: break;
+    }
+
+    auto context = TinyImGui::DropdownContext{
+        index,
+        {
+            "SRGB Non Linear",
+            "Display P3 Non Linear",
+            "Extended SRGB Linear",
+            "Display P3 Linear",
+            "DCI P3 Non Linear",
+            "BT 709 Linear",
+            "BT 709 Non Linear",
+            "BT 2020 Linear",
+            "HDR 10 ST2084",
+            "Dolby Vision",
+            "HDR 10 HLG",
+            "Adobe RGB Linear",
+            "Adobe RGB Non Linear",
+            "Pass Through",
+            "Extended SRGB Non Linear",
+            "Display Native AMD"
+        }
+    };
+    
+    return TinyImGui::Dropdown( label, context );
 }
 
 bool TinyImGui::InputVulkan( const tiny_string& label, VkImageLayout& layout ) {
@@ -1189,6 +1274,34 @@ bool TinyImGui::InputVulkan( const tiny_string& label, const VkBorderColor& bord
     return state;
 }
 
+bool TinyImGui::InputVulkan( const tiny_string& label, VkViewport& viewport ) {
+    return TinyImGui::InputVector( label, 4, tiny_rvalue( viewport.x ) );
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkViewport& viewport ) {
+    ImGui::BeginDisabled( );
+
+    auto state = TinyImGui::InputVector( label, 4, tiny_rvalue( viewport.x ) );
+
+    ImGui::EndDisabled( );
+
+    return state;
+};
+
+bool TinyImGui::InputVulkan( const tiny_string& label, VkScissor& scissor ) {
+    return TinyImGui::InputVector( label, 4, tiny_rvalue( scissor.offset.x ) );
+}
+
+bool TinyImGui::InputVulkan( const tiny_string& label, const VkScissor& scissor ) {
+    ImGui::BeginDisabled( );
+
+    auto state = TinyImGui::InputVector( label, 4, tiny_rvalue( scissor.offset.x ) );
+
+    ImGui::EndDisabled( );
+
+    return state;
+}
+
 bool TinyImGui::Knob( const tiny_string& label, float& scalar ) {
     return TinyImGui::Knob( label, scalar, { } );
 }
@@ -1236,8 +1349,11 @@ void TinyImGui::Grid( ImVec2 cursor, ImVec2 dimensions, const GridContext& conte
     auto* draw_list = ImGui::GetWindowDrawList( );
     auto columns    = context.Columns;
     auto rows       = context.Rows;
-    auto size_w     = dimensions.x / columns - context.Thickness * columns;
-    auto size_h     = dimensions.y / rows    - context.Thickness * rows;
+    auto size_w     = dimensions.x / columns;
+    auto size_h     = dimensions.y / rows;
+
+    columns += 1;
+    rows    += 1;
 
     while ( columns-- > 0 ) {
         draw_list->AddLine( 

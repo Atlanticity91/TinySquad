@@ -76,6 +76,8 @@ public:
 
 	void Kill( TinyGame* game, TinyEngine& engine, const tiny_hash entity_hash );
 
+	void Clean( const tiny_list<TinyEntityGhost>& entities );
+
 	void PreTick( TinyGame* game, TinyEngine& engine );
 
 	void PostTick( TinyGame* game, TinyEngine& engine );

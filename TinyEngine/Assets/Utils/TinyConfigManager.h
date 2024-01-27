@@ -59,13 +59,13 @@ public:
 	tiny_implement( tiny_uint Create(
 		TinyGame* game,
 		TinyAssetMetadata& metadata,
-		c_ptr asset_builder
+		c_pointer asset_builder
 	) );
 
 	tiny_implement( bool ReCreate(
 		TinyGame* game,
 		TinyAssetMetadata& metadata,
-		c_ptr asset_builder
+		c_pointer asset_builder
 	) );
 
 	tiny_implement( void Clear( TinyGame* game ) );
@@ -75,9 +75,9 @@ public:
 public:
 	tiny_implement( bool GetIsValid( tiny_uint asset_id ) const );
 
-	tiny_implement( c_ptr GetAsset( const TinyAsset& asset ) );
+	tiny_implement( c_pointer GetAsset( const TinyAsset& asset ) );
 
-	tiny_implement( const c_ptr GetAsset( const TinyAsset& asset ) const );
+	tiny_implement( const c_pointer GetAsset( const TinyAsset& asset ) const );
 
 	TinyGameConfig& GetGameConfig( );
 

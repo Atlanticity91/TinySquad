@@ -77,7 +77,7 @@ void TinyAssetListManager::Unload(
 bool TinyAssetListManager::Create(
 	TinyGame* game,
 	TinyAssetMetadata& metadata,
-	c_ptr asset_builder
+	c_pointer asset_builder
 ) {
 	auto* manager = GetManager( metadata.Type );
 	auto state    = manager != nullptr && asset_builder != nullptr;
@@ -94,7 +94,7 @@ bool TinyAssetListManager::Create(
 bool TinyAssetListManager::ReCreate(
 	TinyGame* game,
 	TinyAssetMetadata& metadata,
-	c_ptr asset_builder
+	c_pointer asset_builder
 ) {
 	auto* manager = GetManager( TA_TYPE_TEXTURE_2D );
 	auto state    = manager != nullptr && asset_builder != nullptr;
@@ -148,8 +148,8 @@ ITinyAssetList* TinyAssetListManager::GetManager( tiny_uint type ) const {
 	return manager;
 }
 
-c_ptr TinyAssetListManager::Get( const TinyAsset& asset ) {
-	auto* asset_value = tiny_cast( nullptr, c_ptr );
+c_pointer TinyAssetListManager::Get( const TinyAsset& asset ) {
+	auto* asset_value = tiny_cast( nullptr, c_pointer );
 	auto* manager	  = GetManager( asset.Type );
 
 	if ( manager && manager->GetIsValid( asset.Handle ) )
@@ -158,8 +158,8 @@ c_ptr TinyAssetListManager::Get( const TinyAsset& asset ) {
 	return asset_value;
 }
 
-const c_ptr TinyAssetListManager::Get( const TinyAsset& asset ) const {
-	auto* asset_value = tiny_cast( nullptr, const c_ptr );
+const c_pointer TinyAssetListManager::Get( const TinyAsset& asset ) const {
+	auto* asset_value = tiny_cast( nullptr, const c_pointer );
 	auto* manager	  = GetManager( asset.Type );
 
 	if ( manager && manager->GetIsValid( asset.Handle ) )

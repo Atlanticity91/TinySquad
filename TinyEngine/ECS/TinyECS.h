@@ -472,6 +472,8 @@ public:
 	};
 
 public:
+	tiny_map<TinyEntity>& GetEntities( );
+
 	const tiny_map<TinyEntity>& GetEntities( ) const;
 
 	const tiny_list<tiny_string> GetComponentList( ) const;

@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyPlatform.h"
+#include "TinyCore.h"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -45,4 +45,4 @@ TINY_GLM_REG( mat4x4, mat4 );
 TINY_GLM_REG( quat, quat );
 
 #define TINY_PI ( 3.1415926535897932384626433832795 )
-#define TINY_PIF ( (float)TINY_PI )
+#define TINY_PIF tiny_cast( TINY_PI, float )

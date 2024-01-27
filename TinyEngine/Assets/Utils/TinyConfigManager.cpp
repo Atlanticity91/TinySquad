@@ -82,13 +82,13 @@ void TinyConfigManager::Unload(
 tiny_uint TinyConfigManager::Create(
 	TinyGame* game,
 	TinyAssetMetadata& metadata,
-	c_ptr asset_builder
+	c_pointer asset_builder
 ) { return TINY_UINT_MAX; }
 
 bool TinyConfigManager::ReCreate(
 	TinyGame* game,
 	TinyAssetMetadata& metadata,
-	c_ptr asset_builder
+	c_pointer asset_builder
 ) { return false; }
 
 void TinyConfigManager::Clear( TinyGame* game ) { }
@@ -107,12 +107,12 @@ void TinyConfigManager::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyConfigManager::GetIsValid( tiny_uint asset_id ) const { return true; }
 
-c_ptr TinyConfigManager::GetAsset( const TinyAsset& asset ) {
-	return tiny_cast( &_config, c_ptr );
+c_pointer TinyConfigManager::GetAsset( const TinyAsset& asset ) {
+	return tiny_cast( &_config, c_pointer );
 }
 
-const c_ptr TinyConfigManager::GetAsset( const TinyAsset& asset ) const {
-	return tiny_cast( &_config, const c_ptr );
+const c_pointer TinyConfigManager::GetAsset( const TinyAsset& asset ) const {
+	return tiny_cast( &_config, const c_pointer );
 }
 
 TinyGameConfig& TinyConfigManager::GetGameConfig( ) { return _config; }

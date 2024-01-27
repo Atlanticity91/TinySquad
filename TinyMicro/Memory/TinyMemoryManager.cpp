@@ -169,18 +169,18 @@ TinyMemoryBlock* TinyMemoryManager::GetBlock( tiny_uint block ) const {
 	return block < MAX_BLOCKS ? blocks + block : nullptr;
 }
 
-c_ptr TinyMemoryManager::GetAddress( const tiny_storage& storage ) const {
+c_pointer TinyMemoryManager::GetAddress( const tiny_storage& storage ) const {
 	return GetAddress( storage.Block );
 }
 
-c_ptr TinyMemoryManager::GetAddress( tiny_uint block ) const {
+c_pointer TinyMemoryManager::GetAddress( tiny_uint block ) const {
 	auto* blocks  = tiny_cast( _block_storage, TinyMemoryBlock* );
-	auto* address = tiny_cast( nullptr, c_ptr );
+	auto* address = tiny_cast( nullptr, c_pointer );
 
 	if ( block < MAX_BLOCKS ) {
 		auto* offset = tiny_cast( blocks + MAX_BLOCKS, tiny_ptr );
 
-		address = tiny_cast( offset + blocks[ block ].Offset, c_ptr );
+		address = tiny_cast( offset + blocks[ block ].Offset, c_pointer );
 	}
 
 	return address;

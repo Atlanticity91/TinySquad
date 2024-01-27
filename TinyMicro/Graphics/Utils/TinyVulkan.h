@@ -89,13 +89,13 @@ tm_struct VkAllocationStas {
 
 namespace vk {
 
-	static constexpr c_str LAYERS[] = {
+	static constexpr c_string LAYERS[] = {
 
 		"VK_LAYER_KHRONOS_validation"
 
 	};
 
-	static constexpr c_str EXTENSIONS[] = {
+	static constexpr c_string EXTENSIONS[] = {
 		
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 
@@ -160,18 +160,18 @@ namespace vk {
 
 	tm_dll VkClearColorValue CastColor( const tiny_color& color );
 
-	tm_dll c_str CastFormat( const VkFormat format );
+	tm_dll c_string CastFormat( const VkFormat format );
 
-	tm_dll c_str CastColorSpace( const VkColorSpaceKHR color_space );
+	tm_dll c_string CastColorSpace( const VkColorSpaceKHR color_space );
 
-	tm_dll c_str CastPresentMode( const VkPresentModeKHR present_mode );
+	tm_dll c_string CastPresentMode( const VkPresentModeKHR present_mode );
 
-	tm_dll c_str CastLayout( const VkImageLayout layout );
+	tm_dll c_string CastLayout( const VkImageLayout layout );
 
-	tm_dll c_str CastAspect( const VkImageAspectFlags aspect );
+	tm_dll c_string CastAspect( const VkImageAspectFlags aspect );
 
-	tm_dll c_str CastSamples( const VkSampleCountFlags samples );
+	tm_dll c_string CastSamples( const VkSampleCountFlags samples );
 
-	tm_dll c_str CastTiling( const VkImageTiling tiling );
+	tm_dll c_string CastTiling( const VkImageTiling tiling );
 
 };

@@ -66,11 +66,11 @@ bool TinyInputDeviceJoystick::PeekJoystick( ) {
             if ( !glfwJoystickPresent( _joystick ) || !glfwGetJoystickName( _joystick ) )
                 continue;
 
-            tiny_int numAxes;
-            tiny_int numButtons;
+            auto num_axes = 0;
+            auto num_buttons = 0;
 
-            glfwGetJoystickAxes( _joystick, &numAxes );
-            glfwGetJoystickButtons( _joystick, &numButtons );
+            glfwGetJoystickAxes( _joystick, tiny_rvalue( num_axes ) );
+            glfwGetJoystickButtons( _joystick, tiny_rvalue( num_buttons ) );
 
             break;
         }
@@ -122,18 +122,18 @@ void TinyInputDeviceJoystick::ProcessDeadzone( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 std::optional<TinyInputJoystick> TinyInputDeviceJoystick::Get( ) const {
     if ( _is_present ) {
-        tiny_int axis_count;
-        tiny_int button_count;
+        auto axis_count   = 0;
+        auto button_count = 0;
 
-        glfwGetJoystickAxes( _joystick, &axis_count );
-        glfwGetJoystickButtons( _joystick, &button_count );
+        glfwGetJoystickAxes( _joystick, tiny_rvalue( axis_count ) );
+        glfwGetJoystickButtons( _joystick, tiny_rvalue( button_count ) );
 
         auto joystick = TinyInputJoystick{ };
 
         joystick.Underlaying = _joystick;
         joystick.Name        = glfwGetJoystickName( _joystick );
-        joystick.AxisCount   = (tiny_uint)axis_count;
-        joystick.ButtonCount = (tiny_uint)button_count;
+        joystick.AxisCount   = tiny_cast( axis_count, tiny_uint );
+        joystick.ButtonCount = tiny_cast( button_count, tiny_uint );
         joystick.DeadZone    = _deadzones;
 
         return joystick;

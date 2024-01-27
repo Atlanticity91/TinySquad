@@ -114,26 +114,27 @@ bool TinyECS::Rename( const tiny_uint entity_id, const tiny_string& new_name ) {
 }
 
 void TinyECS::Kill( TinyGame* game, TinyEngine& engine, const tiny_string& entity_name ) {
-	auto entity_id = tiny_cast( 0, tiny_uint );
+	auto entity_hash = tiny_hash{ entity_name };
 
-	_entities.GetEntityID( entity_name, entity_id );
-
-	Kill( game, engine, entity_id );
+	return Kill( game, engine, entity_hash );
 }
 
 void TinyECS::Kill( TinyGame* game, TinyEngine& engine, const tiny_hash entity_hash ) {
 	auto entity_id = tiny_cast( 0, tiny_uint );
 
-	_entities.GetEntityID( entity_hash, entity_id );
-
-	Kill( game, engine, entity_id );
+	if ( _entities.GetEntityID( entity_hash, entity_id ) ) {
+		_entities.Kill( entity_id );
+		_systems.Kill( game, engine, entity_hash );
+	}
 }
 
 void TinyECS::Kill( TinyGame* game, TinyEngine& engine, const tiny_uint entity_id ) {
 	auto entity_hash = tiny_hash{ };
 
-	if ( _entities.Kill( entity_id, entity_hash ) )
+	if ( _entities.GetEntityHash( entity_id, entity_hash ) ) {
+		_entities.Kill( entity_id );
 		_systems.Kill( game, engine, entity_hash );
+	}
 }
 
 bool TinyECS::Attach( const tiny_string& entity_name, const tiny_string& parent_name ) {
@@ -485,6 +486,11 @@ void TinyECS::Remove(
 }
 
 void TinyECS::PreTick( TinyGame* game, TinyEngine& engine ) {
+	auto& entities = _entities.GetRemoved( );
+
+	_systems.Clean( entities ); 
+	_entities.Clean( );
+
 	_systems.PreTick( game, engine );
 }
 
@@ -497,6 +503,10 @@ void TinyECS::Terminate( ) { _systems.Terminate( ); }
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+tiny_map<TinyEntity>& TinyECS::GetEntities( ) {
+	return _entities.GetEntities( );
+}
+
 const tiny_map<TinyEntity>& TinyECS::GetEntities( ) const {
 	return _entities.GetEntities( );
 }
@@ -784,6 +794,8 @@ tiny_list<TinyComponent*> TinyECS::GetComponents( const tiny_string& entity_name
 
 tiny_list<TinyComponent*> TinyECS::GetComponents( const tiny_hash entity_hash ) {
 	auto entity_id = tiny_cast( 0, tiny_uint );
+
+	_entities.GetEntityID( entity_hash, entity_id );
 
 	return GetComponents( entity_id );
 }

@@ -38,13 +38,13 @@ public:
 
 	bool Import( TinyGame* game, const tiny_string& path );
 
-	bool Export( TinyGame* game, const tiny_string& name, c_ptr& asset_builder );
+	bool Export( TinyGame* game, const tiny_string& name, c_pointer& asset_builder );
 
 	bool Export( 
 		TinyGame* game, 
 		TinyAssetTypes type, 
 		const tiny_string& path,
-		c_ptr& asset_builder 
+		c_pointer& asset_builder 
 	);
 
 	bool LoadRegistry( TinyGame* game, const tiny_string& path );
@@ -65,14 +65,14 @@ public:
 		TinyGame* game,
 		const tiny_string& name,
 		TinyAssetTypes type,
-		c_ptr asset_builder
+		c_pointer asset_builder
 	);
 
 	bool ReCreate(
 		TinyGame* game,
 		const tiny_string& name,
 		TinyAssetTypes type,
-		c_ptr asset_builder
+		c_pointer asset_builder
 	);
 
 	bool Acquire( TinyGame* game, TinyAsset& asset );
@@ -97,9 +97,11 @@ public:
 
 	bool GetExist( const tiny_string& asset, tiny_hash& asset_hash ) const;
 
-	c_ptr GetAsset( const TinyAsset& asset );
+	bool GetMetadata( const tiny_string& asset_name, TinyAssetMetadata& metadata );
 
-	const c_ptr GetAsset( const TinyAsset& asset ) const;
+	c_pointer GetAsset( const TinyAsset& asset );
+
+	const c_pointer GetAsset( const TinyAsset& asset ) const;
 
 	tiny_inline tiny_list<tiny_string> GetAssets( tiny_uint type );
 

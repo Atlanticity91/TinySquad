@@ -22,6 +22,15 @@
 
 #include "ITinySystem.h"
 
+tiny_enum( TinySystemFlags ) { 
+
+	TS_FLAG_IS_ACTIVE	 = 0,
+	TS_FLAG_USE_CLEAN	 = TINY_LEFT_SHIFT( 1 ),
+	TS_FLAG_USE_PRETICK  = TINY_LEFT_SHIFT( 2 ),
+	TS_FLAG_USE_POSTTICK = TINY_LEFT_SHIFT( 3 ),
+
+};
+
 template<typename Component>
 class TinySystem : tiny_inherit( ITinySystem ) {
 
@@ -29,45 +38,50 @@ public:
 	using Component_t = Component;
 
 protected:
-	bool				 _is_active;
-	bool				 _use_pretick;
-	bool				 _use_posttick;
+	tiny_ubyte			 _flags;
 	tiny_list<Component> _components;
 
 public:
 	TinySystem( ) 
-		: TinySystem{ false, false } 
+		: TinySystem{ false, false, false } 
 	{ };
 
 	TinySystem( bool use_pretick, bool use_posttick )
-		: _is_active{ true },
-		_use_pretick{ use_pretick },
-		_use_posttick{ use_posttick },
-		_components{ }
+		: TinySystem{ true, use_pretick, use_posttick }
 	{ };
+
+	TinySystem( bool use_clean, bool use_pretick, bool use_posttick )
+		: _flags{ 0 },
+		_components{ }
+	{ 
+		_flags = TS_FLAG_IS_ACTIVE				   | 
+				 use_clean   * TS_FLAG_USE_CLEAN   | 
+				 use_pretick * TS_FLAG_USE_PRETICK |
+				use_posttick * TS_FLAG_USE_POSTTICK;
+	};
 
 	virtual ~TinySystem( ) = default;
 
 	tiny_virtual( void RegisterInterop( TinyGame* game ) );
 
 	tiny_implement( void Enable( TinyGame* game, TinyEngine& engine ) ) { 
-		if ( !_is_active ) {
-			_is_active = true;
+		if ( !GetIsActive( ) ) {
+			_flags |= TS_FLAG_IS_ACTIVE;
 
 			OnEnable( game, engine );
 		}
 	};
 
 	tiny_implement( void Disable( TinyGame* game, TinyEngine& engine ) ) {
-		if ( _is_active ) {
-			_is_active = false;
+		if ( GetIsActive( ) ) {
+			_flags ^= TS_FLAG_IS_ACTIVE;
 
 			OnDisable( game, engine );
 		}
 	};
 
 	tiny_implement( void Toggle( TinyGame* game, TinyEngine& engine ) ) { 
-		if ( _is_active )
+		if ( GetIsActive( ) )
 			Disable( game, engine );
 		else
 			Enable( game, engine );
@@ -137,10 +151,17 @@ public:
 	) ) { 
 		auto comp_id = FindID( entity_hash );
 
-		if ( GetIsValid( comp_id ) && _components[ comp_id ].GetOwner( ) == entity_hash ) {
+		if ( GetIsValid( comp_id ) && _components[ comp_id ].GetOwner( ) == entity_hash )
 			_components[ comp_id ].Delete( game, engine );
+	};
 
-			_components.erase( comp_id );
+	virtual void Clean( const tiny_list<TinyEntityGhost>& entities ) override {
+		for ( auto& ghost : entities ) {
+			auto entity_hash = ghost.Hash;
+			auto comp_id	 = FindID( entity_hash );
+
+			if ( GetIsValid( comp_id ) && _components[ comp_id ].GetOwner( ) == entity_hash )
+				_components.erase( comp_id );
 		}
 	};
 
@@ -154,16 +175,20 @@ protected:
 	tiny_virtual( void OnDisable( TinyGame* game, TinyEngine& engine ) );
 
 public:
-	tiny_implement( bool GetIsActive( ) const ) { return _is_active; };
+	tiny_implement( bool GetIsActive( ) const ) { return ( _flags & TS_FLAG_IS_ACTIVE ); };
 
 	tiny_implement( tiny_string GetName( ) const ) { return Component::sGetName( ); };
 
+	tiny_implement( bool GetHasClean( ) const ) {
+		return ( _flags & TS_FLAG_IS_ACTIVE ) && ( _flags & TS_FLAG_USE_CLEAN);
+	};
+
 	tiny_implement( bool GetHasPreTick( ) const ) {
-		return _is_active && _use_pretick;
+		return ( _flags & TS_FLAG_IS_ACTIVE ) && ( _flags & TS_FLAG_USE_PRETICK );
 	};
 
 	tiny_implement( bool GetHasPostTick( ) const ) {
-		return _is_active && _use_posttick;
+		return ( _flags & TS_FLAG_IS_ACTIVE ) && ( _flags & TS_FLAG_USE_POSTTICK );
 	};
 
 	tiny_implement( tiny_uint GetComponentID( const tiny_hash entity_hash ) const ) {

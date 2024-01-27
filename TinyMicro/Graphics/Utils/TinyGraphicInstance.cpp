@@ -60,10 +60,10 @@ void TinyGraphicInstance::Terminate( ) {
 		vkDestroyInstance( _instance, vk::GetAllocator( ) );
 }
 
-tiny_list<c_str> TinyGraphicInstance::GetExtensions( ) const {
+tiny_list<c_string> TinyGraphicInstance::GetExtensions( ) const {
     auto extension_count = (tiny_uint)0;
     auto* required       = glfwGetRequiredInstanceExtensions( &extension_count );
-    auto extensions      = tiny_list<c_str>{ };
+    auto extensions      = tiny_list<c_string>{ };
 
 #   ifdef TM_DEBUG
     extensions = extension_count + 1;

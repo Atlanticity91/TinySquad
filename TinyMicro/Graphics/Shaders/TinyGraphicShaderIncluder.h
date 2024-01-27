@@ -34,9 +34,9 @@ public:
 	bool Initalize( );
 
     tiny_implement( shaderc_include_result* GetInclude( 
-        c_str requested_source,
+        c_string requested_source,
         shaderc_include_type type,
-        c_str requesting_source,
+        c_string requesting_source,
         size_t include_depth 
     ) );
 

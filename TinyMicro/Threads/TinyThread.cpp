@@ -30,7 +30,7 @@ TinyThread::TinyThread( )
 TinyThread::TinyThread( const TinyThread& other )
 { }
 
-void TinyThread::Create( TinyThreadRun thread_run, c_ptr data ) {
+void TinyThread::Create( TinyThreadRun thread_run, c_pointer data ) {
 	_handle = std::thread{ thread_run, data };
 }
 

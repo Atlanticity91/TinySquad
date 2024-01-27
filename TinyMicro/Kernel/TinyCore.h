@@ -26,6 +26,7 @@
 #	pragma warning( disable : 4217 )
 #	pragma warning( disable : 4251 )
 #	pragma warning( disable : 4275 )
+#	pragma warning( disable : 5103 )
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,6 +135,7 @@ extern "C" {
 #define tiny_offset_of( TYPE, FIELD ) offsetof( TYPE, FIELD )
 #define tiny_lvalue( PTR ) ( *( PTR ) )
 #define tiny_rvalue( REF ) ( &( REF ) )
+#define tiny_unused( VAR ) tiny_cast( VAR, void )
 #define tiny_self tiny_lvalue( this )
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,19 +148,16 @@ TINY_INT_REG( int16_t, short );
 TINY_INT_REG( int32_t, int   );
 TINY_INT_REG( int64_t, long  );
 
-#define TINY_LEFT_SHIFT( VAL ) ( 1 << VAL )
-#define TINY_RIGHT_SHIFT( VAL ) ( 1 >> VAL )
+#define TINY_UBYTE_MAX	tiny_cast( UCHAR_MAX, tiny_ubyte )
+#define TINY_USHORT_MAX tiny_cast( USHRT_MAX, tiny_ushort )
+#define TINY_UINT_MAX	tiny_cast( UINT_MAX, tiny_uint )
+#define TINY_ULONG_MAX	tiny_cast( ULONG_MAX, tiny_ulong )
 
-#define TINY_KILO( COUNT ) (tiny_uint)( COUNT * 1024 )
-#define TINY_MEGA( COUNT ) (tiny_uint)( COUNT * 1024 * 1024 )
-#define TINY_GIGA( COUNT ) (tiny_uint)( COUNT * 1024 * 1024 * 1024 )
+#define tiny_kilo( COUNT ) tiny_cast( COUNT * 1024, tiny_uint )
+#define tiny_mega( COUNT ) tiny_cast( COUNT * 1024 * 1024, tiny_uint )
+#define tiny_giga( COUNT ) tiny_cast( COUNT * 1024 * 1024 * 1024, tiny_uint )
 
-#define TINY_UBYTE_MAX	(tiny_ubyte)UCHAR_MAX
-#define TINY_USHORT_MAX (tiny_ushort)USHRT_MAX
-#define TINY_UINT_MAX	(tiny_uint)UINT_MAX
-#define TINY_ULONG_MAX	(tiny_ulong)ULONG_MAX
-
-#define TINY_FOURCC2( VAL ) ( *( (tiny_uint*) VAL ) )
+#define TINY_FOURCC2( VAL ) tiny_lvalue( tiny_cast( VAL, tiny_uint* ) )
 #define TINY_FOURCC( VAL ) TINY_FOURCC2( #VAL )
 
 #define tiny_clamp( VAL, LOW, HIGH ) ( VAL < LOW ? LOW : ( VAL > HIGH ? HIGH : VAL ) )
@@ -168,18 +167,12 @@ TINY_INT_REG( int64_t, long  );
 #define tiny_signi( VAL ) ( ( 0 < VAL ) - ( VAL < 0 ) )
 #define tiny_signf( VAL ) ( ( .0f < VAL ) - ( VAL < .0f ) )
 
-constexpr tiny_ulong operator""_b( tiny_ulong size ) {
-	return size;
-}
+#define TINY_LEFT_SHIFT( VAL ) ( 1 << VAL )
+#define TINY_RIGHT_SHIFT( VAL ) ( 1 >> VAL )
 
-constexpr tiny_ulong operator""_kb( tiny_ulong size ) {
-	return TINY_KILO( size );
-}
+#define TINY_STR_OP( NAME, ... ) constexpr tiny_ulong operator""_##NAME##( tiny_ulong size ) { __VA_ARGS__; }
 
-constexpr tiny_ulong operator""_mb( tiny_ulong size ) {
-	return TINY_MEGA( size );
-}
-
-constexpr tiny_ulong operator""_gb( tiny_ulong size ) {
-	return TINY_GIGA( size );
-}
+TINY_STR_OP( b, return size );
+TINY_STR_OP( kb, return tiny_kilo( size ) );
+TINY_STR_OP( mb, return tiny_mega( size ) );
+TINY_STR_OP( gb, return tiny_giga( size ) );

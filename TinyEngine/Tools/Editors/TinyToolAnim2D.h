@@ -25,7 +25,9 @@
 te_class TinyToolAnim2D final : tiny_inherit( TinyToolAssetEditor ) {
 
 private:
-	ImTextureID _image;
+	TinyAnimation2D* _animation;
+	TinyTexture2D*	 _texture;
+	ImTextureID		 _image;
 
 public:
 	TinyToolAnim2D( );
@@ -34,13 +36,13 @@ public:
 
 	tiny_implement( void Save( TinyGame* game ) );
 
-	tiny_implement( void Tick( TinyGame* game, TinyAssetManager& assets ) );
-
 protected:
-	tiny_implement( bool OnOpen( TinyGame* game, const tiny_string& name, c_ptr asset ) );
+	tiny_implement( bool OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) );
 
 	tiny_implement( void OnTick( TinyGame* game, TinyAssetManager& assets ) );
 
 	tiny_implement( void OnClose( TinyGame* game, TinyAssetManager& assets ) );
+
+	void SetTexture( TinyAssetManager& assets );
 
 };

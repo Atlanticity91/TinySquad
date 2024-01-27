@@ -32,7 +32,7 @@ public:
 
 	~TinyThreadManager( ) = default;
 
-	bool Create( TinyThreadRun thread_run, c_ptr data );
+	bool Create( TinyThreadRun thread_run, c_pointer data );
 
 	void Terminate( );
 

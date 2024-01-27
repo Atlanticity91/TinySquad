@@ -94,11 +94,11 @@ bool ImGui::CompressTTF(const char* filename, const char* symbol, bool use_base8
     FILE* out = fopen( symbol, "w" );
     //fprintf(out, "// File: '%s' (%d bytes)\n", filename, (int)data_sz);
     //fprintf(out, "// Exported using binary_to_compressed_c.cpp\n");
-    const char* static_str = use_static ? "static " : "";
+    const char* static_string = use_static ? "static " : "";
     const char* compressed_str = use_compression ? "compressed_" : "";
     if (use_base85_encoding)
     {
-        fprintf(out, "%sconst char %s_%sdata_base85[%d+1] =\n    \"", static_str, symbol, compressed_str, (int)((compressed_sz + 3) / 4)*5);
+        fprintf(out, "%sconst char %s_%sdata_base85[%d+1] =\n    \"", static_string, symbol, compressed_str, (int)((compressed_sz + 3) / 4)*5);
         char prev_c = 0;
         for (int src_i = 0; src_i < compressed_sz; src_i += 4)
         {
@@ -117,8 +117,8 @@ bool ImGui::CompressTTF(const char* filename, const char* symbol, bool use_base8
     }
     else
     {
-        fprintf(out, "%sconst unsigned int %s_%ssize = %d;\n", static_str, symbol, compressed_str, (int)compressed_sz);
-        fprintf(out, "%sconst unsigned int %s_%sdata[%d/4] =\n{", static_str, symbol, compressed_str, (int)((compressed_sz + 3) / 4)*4);
+        fprintf(out, "%sconst unsigned int %s_%ssize = %d;\n", static_string, symbol, compressed_str, (int)compressed_sz);
+        fprintf(out, "%sconst unsigned int %s_%sdata[%d/4] =\n{", static_string, symbol, compressed_str, (int)((compressed_sz + 3) / 4)*4);
         int column = 0;
         for (int i = 0; i < compressed_sz; i += 4)
         {

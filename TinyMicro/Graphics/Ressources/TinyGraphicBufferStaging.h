@@ -26,7 +26,7 @@ tm_class TinyGraphicBufferStaging final {
 
 private:
 	TinyGraphicBuffer _buffer;
-	c_ptr			  _access;
+	c_pointer			  _access;
 
 public:
 	TinyGraphicBufferStaging( );
@@ -54,11 +54,11 @@ public:
 
 	const TinyGraphicBuffer& GetBuffer( ) const;
 
-	c_ptr GetAccess( ) const;
+	c_pointer GetAccess( ) const;
 
 public:
 	operator const TinyGraphicBuffer&( ) const;
 
-	operator c_ptr( ) const;
+	operator c_pointer( ) const;
 
 };

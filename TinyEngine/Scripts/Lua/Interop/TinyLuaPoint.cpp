@@ -295,7 +295,7 @@ tli_implementfn( TinyLua::Point::Equal ) {
 		lua_istable( context, tli_param_one ) &&
 		lua_istable( context, tli_param_two )
 	) {
-		c_str channels[ 2 ] = { "x", "y" };
+		c_string channels[ 2 ] = { "x", "y" };
 
 		auto state = true;
 		auto val_0 = lua_Number{ };
@@ -322,7 +322,7 @@ tli_implementfn( TinyLua::Point::Less ) {
 		lua_istable( context, tli_param_one ) &&
 		lua_istable( context, tli_param_two )
 	) {
-		c_str channels[ 2 ] = { "x", "y" };
+		c_string channels[ 2 ] = { "x", "y" };
 
 		auto state = true;
 		auto val_0 = lua_Number{ };
@@ -349,7 +349,7 @@ tli_implementfn( TinyLua::Point::LessEqual ) {
 		lua_istable( context, tli_param_one ) &&
 		lua_istable( context, tli_param_two )
 	) {
-		c_str channels[ 2 ] = { "x", "y" };
+		c_string channels[ 2 ] = { "x", "y" };
 
 		auto state = true;
 		auto val_0 = lua_Number{ };

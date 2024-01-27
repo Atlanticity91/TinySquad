@@ -20,6 +20,6 @@ std::ostream& operator<<(std::ostream& out, const Node& node) {
 std::string Dump(const Node& node) {
   Emitter emitter;
   emitter << node;
-  return emitter.c_str();
+  return emitter.c_string();
 }
 }  // namespace YAML

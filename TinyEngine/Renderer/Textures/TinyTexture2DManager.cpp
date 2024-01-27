@@ -76,7 +76,7 @@ void TinyTexture2DManager::OnUnLoad( TinyGame* game, TinyTexture2D& texture ) {
 
 bool TinyTexture2DManager::OnCreate(
 	TinyGame* game,
-	c_ptr asset_builder,
+	c_pointer asset_builder,
 	TinyTexture2D& texture
 ) {
 	auto& graphics = game->GetGraphics( );
@@ -86,7 +86,7 @@ bool TinyTexture2DManager::OnCreate(
 	auto state	   = staging.Create2( context, builder->Size );
 
 	if ( state ) {
-		Tiny::Memcpy( tiny_cast( builder->Texels, const c_ptr ), staging, builder->Size );
+		Tiny::Memcpy( tiny_cast( builder->Texels, const c_pointer ), staging, builder->Size );
 
 		staging.UnMap( context );
 

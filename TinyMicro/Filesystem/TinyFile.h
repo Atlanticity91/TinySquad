@@ -38,11 +38,11 @@ public:
 
 	bool Seek( Tiny::FileOrigin origin, tiny_uint offset );
 
-	tiny_uint Read( tiny_uint length, c_ptr data );
+	tiny_uint Read( tiny_uint length, c_pointer data );
 
-	tiny_uint Write( tiny_uint length, const c_ptr data );
+	tiny_uint Write( tiny_uint length, const c_pointer data );
 
-	tiny_uint ReadAll( tiny_uint length, c_ptr& storage );
+	tiny_uint ReadAll( tiny_uint length, c_pointer& storage );
 
 public:
 	template<typename Type>
@@ -52,17 +52,20 @@ public:
 
 	template<typename Type>
 	tiny_uint Read( Type& data ) {
-		return Read( tiny_sizeof( Type ), (c_ptr)&data );
+		auto* _data = tiny_rvalue( data );
+
+		return Read( tiny_sizeof( Type ), tiny_cast( _data, c_pointer ) );
 	};
 
 	template<>
 	tiny_uint Read<std::string>( std::string& text ) {
-		auto length = (tiny_uint)0;
+		auto text_str = text.c_str( );
+		auto length   = tiny_cast( 0, tiny_uint );
 
-		if ( Read( tiny_sizeof( tiny_uint ), &length ) > 0 )
-			text.resize( (size_t)( length + 1 ), '\0' );
+		if ( Read( tiny_sizeof( tiny_uint ), tiny_rvalue( length ) ) > 0 )
+			text.resize( tiny_cast( length + 1, size_t ), '\0' );
 
-		return Read( length, (c_ptr)text.c_str( ) );
+		return Read( length, tiny_cast( text_str, c_pointer ) );
 	};
 
 	template<tiny_uint Length>
@@ -72,14 +75,14 @@ public:
 
 	template<typename Type>
 	tiny_uint Read( tiny_list<Type>& list ) { 
-		auto size = (tiny_uint)0;
+		auto size = tiny_cast( 0, tiny_uint );
 
 		Read( size );
 
 		if ( size > 0 ) {
 			list = size;
 
-			size = Read( size * tiny_sizeof( Type ), (c_ptr)list.data( ) );
+			size = Read( size * tiny_sizeof( Type ), list.as_pointer( ) );
 		}
 
 		return size;
@@ -87,8 +90,8 @@ public:
 
 	template<typename Type>
 	tiny_uint Read( const tiny_map<Type>& map ) {
-		auto length = (tiny_uint)0;
-		auto size   = (tiny_uint)0;
+		auto length = tiny_cast( 0, tiny_uint );
+		auto size   = tiny_cast( 0, tiny_uint );
 
 		Read( size );
 
@@ -107,8 +110,8 @@ public:
 
 	template<>
 	tiny_uint Read<std::string>( tiny_list<std::string>& list ) {
-		auto size  = (tiny_uint)0;
-		auto count = (tiny_uint)0;
+		auto size  = tiny_cast( 0, tiny_uint );
+		auto count = tiny_cast( 0, tiny_uint );
 
 		Read( size );
 
@@ -124,7 +127,9 @@ public:
 
 	template<typename Type>
 	tiny_uint Write( const Type& data ) {
-		return Write( tiny_sizeof( Type ), (const c_ptr)&data );
+		auto* _data = tiny_rvalue( data );
+
+		return Write( tiny_sizeof( Type ), tiny_cast( _data, const c_pointer ) );
 	};
 
 	template<>
@@ -138,10 +143,10 @@ public:
 	tiny_uint Write<tiny_string>( const tiny_string& text ) {
 		auto length = text.length( );
 
-		length = Write( tiny_sizeof( tiny_uint ), tiny_cast( &length, const c_ptr ) );
+		length = Write( tiny_sizeof( tiny_uint ), tiny_cast( tiny_rvalue( length ), const c_pointer ) );
 
 		if ( length > 0 )
-			length = Write( text.length( ), tiny_cast( text.get( ), const c_ptr ) );
+			length = Write( text.length( ), tiny_cast( text.get( ), const c_pointer ) );
 
 		return length;
 	};
@@ -158,7 +163,7 @@ public:
 		Write( size );
 
 		if ( size > 0 )
-			size = Write( size * tiny_sizeof( Type ), tiny_cast( list.data( ), const c_ptr ) );
+			size = Write( size * tiny_sizeof( Type ), tiny_cast( list.data( ), const c_pointer ) );
 
 		return size;
 	};
@@ -166,7 +171,7 @@ public:
 	template<typename Type>
 	tiny_uint Write( const tiny_map<Type>& map ) { 
 		auto size   = map.size( );
-		auto length = (tiny_uint)0;
+		auto length = tiny_cast( 0, tiny_uint );
 
 		Write( size );
 		
@@ -181,7 +186,7 @@ public:
 
 	template<>
 	tiny_uint Write<std::string>( const tiny_list<std::string>& list ) {
-		auto count = (tiny_uint)0;
+		auto count = tiny_cast( 0, tiny_uint );
 		auto size  = list.size( );
 
 		Write( size );

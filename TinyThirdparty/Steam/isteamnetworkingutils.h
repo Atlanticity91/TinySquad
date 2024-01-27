@@ -422,11 +422,11 @@ struct SteamRelayNetworkStatus_t
 #ifndef API_GEN
 
 /// Utility class for printing a SteamNetworkingIdentity.
-/// E.g. printf( "Identity is '%s'\n", SteamNetworkingIdentityRender( identity ).c_str() );
+/// E.g. printf( "Identity is '%s'\n", SteamNetworkingIdentityRender( identity ).c_string() );
 struct SteamNetworkingIdentityRender
 {
 	SteamNetworkingIdentityRender( const SteamNetworkingIdentity &x ) { x.ToString( buf, sizeof(buf) ); }
-	inline const char *c_str() const { return buf; }
+	inline const char *c_string() const { return buf; }
 private:
 	char buf[ SteamNetworkingIdentity::k_cchMaxString ];
 };
@@ -435,7 +435,7 @@ private:
 struct SteamNetworkingIPAddrRender
 {
 	SteamNetworkingIPAddrRender( const SteamNetworkingIPAddr &x, bool bWithPort = true ) { x.ToString( buf, sizeof(buf), bWithPort ); }
-	inline const char *c_str() const { return buf; }
+	inline const char *c_string() const { return buf; }
 private:
 	char buf[ SteamNetworkingIPAddr::k_cchMaxString ];
 };

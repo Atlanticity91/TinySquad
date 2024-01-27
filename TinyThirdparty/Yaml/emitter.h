@@ -39,7 +39,7 @@ class YAML_CPP_API Emitter {
   ~Emitter();
 
   // output
-  const char* c_str() const;
+  const char* c_string() const;
   std::size_t size() const;
 
   // state checking

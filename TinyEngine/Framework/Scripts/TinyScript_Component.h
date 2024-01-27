@@ -22,22 +22,11 @@
 
 #include <TinyEngine/Framework/Sound2D/TinySound2D_System.h>
 
-enum TinyScriptTypes { 
-
-	TS_TYPE_UNDEFINED = 0,
-	TS_TYPE_NATIVE,
-	TS_TYPE_LUA,
-
-};
-
-typedef bool ( *TinyScriptNative )( TinyGame*, TinyEngine&, class TinyScript& );
-
 struct TinyScriptMetadata { 
 
-	TinyScriptTypes Type	= TS_TYPE_UNDEFINED;
-	TinyAsset Asset{};
-	tiny_string Function    = "";
-	TinyScriptNative Native = nullptr;
+	TinyScriptTypes Type = TS_TYPE_NATIVE;
+	tiny_string Function = "";
+	TinyAsset Asset{ };
 
 };
 
@@ -65,7 +54,7 @@ public:
 		const tiny_string& function
 	);
 
-	TinyScript& SetPreTick( TinyScriptNative native );
+	TinyScript& SetPreTick( const tiny_string& function );
 
 	TinyScript& SetPostTick(
 		class TinyScriptManager& scripts,
@@ -78,7 +67,7 @@ public:
 		const tiny_string& function
 	);
 
-	TinyScript& SetPostTick( TinyScriptNative native );
+	TinyScript& SetPostTick( const tiny_string& function );
 
 public:
 	TINY_COMP_NAME( TinyScript );

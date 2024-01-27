@@ -33,12 +33,9 @@ void TinyToolLua::Save( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolLua::OnOpen( TinyGame* game, const tiny_string& name, c_ptr asset ) {
+bool TinyToolLua::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
 	return true;
 }
 
 void TinyToolLua::OnTick( TinyGame* game, TinyAssetManager& assets ) {
-}
-
-void TinyToolLua::OnClose( TinyGame* game, TinyAssetManager& assets ) {
 }

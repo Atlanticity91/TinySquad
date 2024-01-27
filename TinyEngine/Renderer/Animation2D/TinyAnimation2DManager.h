@@ -41,7 +41,7 @@ protected:
 
 	tiny_implement( bool OnCreate(
 		TinyGame* game,
-		c_ptr asset_builder,
+		c_pointer asset_builder,
 		TinyAnimation2D& animation
 	) );
 

@@ -32,7 +32,7 @@ tiny_enum( TinyToolContentActions ) {
 
 te_class TinyToolContent final : tiny_inherit( TinyToolCategory ) {
 
-	typedef c_str ( *AssetTypeToString )( tiny_uint );
+	typedef c_string ( *AssetTypeToString )( tiny_uint );
 
 private:
 	bool							_has_changed;
@@ -53,10 +53,12 @@ public:
 		TinyToolbox& toolbox 
 	) );
 
+	bool OpenAssetEditor( TinyGame* game, const tiny_string& asset_name );
+
 	bool OpenAssetEditor(
 		TinyGame* game,
-		const tiny_string name,
-		TinyAssetMetadata& metadata 
+		const tiny_string& name,
+		const TinyAssetMetadata& metadata 
 	);
 
 	void RenderEditors( TinyGame* game );
@@ -79,6 +81,6 @@ public:
 	};
 
 private:
-	static c_str TypeToString( tiny_uint type );
+	static c_string TypeToString( tiny_uint type );
 
 };

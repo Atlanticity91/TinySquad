@@ -188,13 +188,17 @@ public:
 		return _data[ element_id ].Data;
 	};
 
+	under_node& node( tiny_uint node ) {
+		return _data[ node ];
+	};
+
 	const under_node& node( tiny_uint node ) const { 
 		return _data[ node ];
 	};
 
 private:
 	tiny_uint binary_search( const tiny_hash hash ) const {
-		auto low   = (tiny_uint)0;
+		auto low   = tiny_cast( 0, tiny_uint );
 		auto max   = size( );
 		auto high  = max;
 		auto pivot = low;

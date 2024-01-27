@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include <TinyEngine/Scripts/Utils/TinyScriptLua.h>
+#include <TinyEngine/Scripts/Lua/TinyScriptLua.h>
 
-#define tli_make_lua_context( NAME ) auto& NAME = game->GetScripts( ).GetContext( )
+#define tli_make_lua_context( NAME ) auto& NAME = game->GetScripts( ).GetLua( )
 #define tli_metaname( NAME ) ( NAME"Metatable" )
 #define tli_create( NAME ) auto table_id = TinyLua::CreateTable( context, NAME )
 #define tli_createmeta( NAME ) TinyLua::CreateMetatable( context, tli_metaname( NAME ), table_id )
@@ -90,7 +90,7 @@ namespace TinyLua {
 	tiny_dll void CreateField(
 		lua_State* context,
 		const tiny_string& name,
-		c_ptr& value
+		c_pointer& value
 	);
 
 	tiny_dll void LinkMetatable( lua_State* context, const tiny_string& name );
@@ -113,7 +113,7 @@ namespace TinyLua {
 		lua_State* context,
 		tiny_int table_id,
 		const tiny_string& name,
-		c_ptr& value
+		c_pointer& value
 	);
 
 	tiny_dll void SetField( 

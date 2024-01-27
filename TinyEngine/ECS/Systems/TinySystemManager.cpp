@@ -122,6 +122,13 @@ void TinySystemManager::Kill(
 		system->Remove( game, engine, entity_hash );
 }
 
+void TinySystemManager::Clean( const tiny_list<TinyEntityGhost>& entities ) {
+	for ( auto& system : _systems ) {
+		if ( system->GetHasClean( ) )
+			system->Clean( entities );
+	}
+}
+
 void TinySystemManager::PreTick( TinyGame* game, TinyEngine& engine ) {
 	for ( auto& system : _systems ) {
 		if ( system->GetHasPreTick( ) )
@@ -164,8 +171,11 @@ const tiny_list<tiny_string> TinySystemManager::GetComponentListFor(
 	auto components = tiny_list<tiny_string>{ };
 
 	for ( auto& component : _systems_ids ) {
-		if ( !( component_mask & TINY_LEFT_SHIFT( component.Data ) ) )
-			components.emplace_back( { component.String.c_str( ) } );
+		if ( !( component_mask & TINY_LEFT_SHIFT( component.Data ) ) ) {
+			auto name = tiny_string{ component.String };
+
+			components.emplace_back( name );
+		}
 	}
 
 	return components;

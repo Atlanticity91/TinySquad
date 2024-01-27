@@ -44,9 +44,15 @@ TinyTimestep::time_point TinyTimestep::Now( ) const { return time_clock::now( );
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 float TinyTimestep::GetElapsed( ) const { 
-	return ( time_duration( Now( ) - _game_tick ) ).count( );
+	auto now	  = Now( );
+	auto duration = time_duration{ now - _game_tick };
+
+	return duration.count( );
 }
 
 float TinyTimestep::GetTotal( ) const { 
-	return ( time_duration( Now( ) - _game_start ) ).count( );
+	auto now	  = Now( );
+	auto duration = time_duration{ now - _game_start };
+
+	return duration.count( );
 }

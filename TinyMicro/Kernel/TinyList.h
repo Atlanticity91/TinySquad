@@ -143,8 +143,8 @@ public:
 		if ( capacity > 1 ) {
 			capacity -= 1;
 
-			auto capacity_n = (tiny_uint)0;
-			auto claim		= (tiny_uint)0;
+			auto capacity_n = tiny_cast( 0, tiny_uint );
+			auto claim		= tiny_cast( 0, tiny_uint );
 
 			while ( capacity-- > 1 ) {
 				capacity_n = capacity + 1;
@@ -200,9 +200,11 @@ public:
 public:
 	under_layer& get_internal( ) { return _data; };
 
-	tiny_uint size( ) const { return (tiny_uint)_data.size( ); };
+	tiny_uint size( ) const { return tiny_cast( _data.size( ), tiny_uint ); };
 
-	tiny_uint capacity( ) const { return (tiny_uint)_data.capacity( ); };
+	tiny_uint capacity( ) const { return tiny_cast( _data.capacity( ), tiny_uint ); };
+
+	c_pointer as_pointer( ) { return tiny_cast( _data.data( ), c_pointer ); }
 
 	Type* data( ) { return _data.data( ); };
 
@@ -211,7 +213,7 @@ public:
 	bool exist( tiny_uint element_id ) const { return element_id < size( ); };
 
 	tiny_uint find( std::function<bool( const Type& )> search ) const { 
-		auto element_id = 0;
+		auto element_id = tiny_cast( 0, tiny_uint );
 
 		for ( const auto& element : _data ) {
 			if ( !search( element ) )
@@ -239,7 +241,7 @@ public:
 	};
 
 	bool contain( std::function<bool( const Type& )> search ) const { 
-		tiny_uint element_id;
+		auto element_id = tiny_cast( 0, tiny_uint );
 
 		return contain( element_id, search );
 	};
@@ -252,7 +254,7 @@ public:
 
 	tiny_list<tiny_uint> find_multiple( std::function<bool( const Type& )> search ) const {
 		auto element_ids = tiny_list<tiny_uint>{ };
-		auto element_id  = 0;
+		auto element_id  = tiny_cast( 0, tiny_uint );
 
 		for ( const auto& element : _data ) {
 			if ( search( _data[ element_id ] ) )
@@ -281,11 +283,21 @@ public:
 	const Type& last( ) const { return _data[ _data.size( ) - 1 ]; };
 
 	Type* get( tiny_uint element_id ) { 
-		return exist( element_id ) ? &_data[element_id] : nullptr;
+		auto* result = tiny_cast( nullptr, Type* );
+
+		if ( exist( element_id ) )
+			result = tiny_rvalue( _data[ element_id ] );
+
+		return result;
 	};
 
 	const Type* get( tiny_uint element_id ) const {
-		return exist( element_id ) ? &_data[ element_id ] : nullptr;
+		auto* result = tiny_cast( nullptr, Type* );
+
+		if ( exist( element_id ) )
+			result = tiny_rvalue( _data[ element_id ] );
+
+		return result;
 	};
 
 	Type& at( tiny_uint element_id ) { return _data[ element_id ]; };

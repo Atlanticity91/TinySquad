@@ -45,7 +45,7 @@ void TinyAnimation2DManager::OnUnLoad( TinyGame* game, TinyAnimation2D& animatio
 
 bool TinyAnimation2DManager::OnCreate(
 	TinyGame* game,
-	c_ptr asset_builder,
+	c_pointer asset_builder,
 	TinyAnimation2D& animation
 ) {
 	auto* frames = tiny_cast( asset_builder, tiny_list<TinyAnimation2DFrame>* );

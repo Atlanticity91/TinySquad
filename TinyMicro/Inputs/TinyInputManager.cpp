@@ -86,7 +86,12 @@ bool TinyInputManager::Evaluate( tiny_string input_alias, bool consume ) {
 		auto input_hash = tiny_hash{ input_alias };
 		auto* queries   = _map.Query( input_hash );
 
-		if ( queries != nullptr && queries->Values.size( ) > 0 && !queries->IsConsumed ) {
+		if ( 
+			queries != nullptr			&& 
+			queries->IsActive			&& 
+			queries->Values.size( ) > 0 && 
+			!queries->IsConsumed 
+		) {
 			for ( const auto& query : queries->Values ) {
 				state = _devices.Evaluate( query );
 

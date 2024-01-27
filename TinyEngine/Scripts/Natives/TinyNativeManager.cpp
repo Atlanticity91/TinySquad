@@ -32,12 +32,18 @@ void TinyNativeManager::Register( const tiny_string& name, TinyScriptNative exec
 		_natives.emplace( name, exec_script );
 }
 
-bool TinyNativeManager::Execute( TinyGame* game, const tiny_string& name ) {
+bool TinyNativeManager::Execute( 
+	TinyGame* game,
+	const tiny_string& name,
+	c_pointer instigator
+) {
 	auto script_id = tiny_cast( 0, tiny_uint );
 	auto state = false;
 	
 	if ( _natives.find( name, script_id ) ) {
-		//state = std::invoke( _natives.at( script_id ), game );
+		auto& function = _natives.at( script_id );
+
+		state = std::invoke( function, game, instigator );
 	}
 
 	return state;

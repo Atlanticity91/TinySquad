@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyLua::Transform2D::Convert( lua_State* context, TinyComponent* component ) {
-	auto* tmp = tiny_cast( component, c_ptr );
+	auto* tmp = tiny_cast( component, c_pointer );
 	
 	tli_create_new(
 		TINY_TRANSFORM2D_NAME,

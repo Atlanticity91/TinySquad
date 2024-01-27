@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyHash.h"
+#include "TinyBuffer.h"
 
 template<typename Type, tiny_uint Capacity>
 	requires ( Capacity > 0 )
@@ -59,6 +59,8 @@ public:
 
 	tiny_uint capacity( ) const { return Capacity; };
 
+	c_pointer as_pointer( ) const { return tiny_cast( _data.data( ), c_pointer ); };
+
 	Type* data( ) { return _data.data( ); };
 
 	const Type* data( ) const { return _data.data( ); };
@@ -68,7 +70,7 @@ public:
 	};
 
 	tiny_uint find( std::function<bool( const Type& )> search ) const {
-		auto element_id = 0;
+		auto element_id = tiny_cast( 0, tiny_uint );
 
 		for ( const auto& element : _data ) {
 			if ( !search( element ) )
@@ -81,7 +83,7 @@ public:
 	};
 
 	bool contain( std::function<bool( const Type& )> search ) const {
-		tiny_uint element_id;
+		auto element_id = tiny_cast( 0, tiny_uint );
 
 		return contain( element_id, search );
 	};

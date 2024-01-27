@@ -24,12 +24,12 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyScriptManager::TinyScriptManager( ) 
-	: _context{ },
-	_natives{ }
+	: _natives{ },
+	_lua{ }
 { }
 
 bool TinyScriptManager::Initialize( ) {
-	auto state = _context.Create( );
+	auto state = _lua.Create( );
 
 	if ( state )
 		GenerateInterop( );
@@ -41,7 +41,24 @@ void TinyScriptManager::Register( const tiny_string& name, TinyScriptNative scri
 	_natives.Register( name, script );
 }
 
-void TinyScriptManager::Terminate( ) { _context.Terminate( ); }
+bool TinyScriptManager::Execute( 
+	TinyGame* game, 
+	c_pointer instigator, 
+	const TinyScriptContext& context
+) {
+	auto state = false;
+
+	switch ( context.Type ) {
+		case TS_TYPE_NATIVE : state = _natives.Execute( game, context.Name, instigator ); break;
+		case TS_TYPE_LUA	: state = _lua.Execute( game, context.Name, instigator );	  break;
+
+		default : break;
+	}
+
+	return state;
+}
+
+void TinyScriptManager::Terminate( ) { _lua.Terminate( ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
@@ -57,42 +74,42 @@ bool TinyScriptManager::OnLoad(
 	file.Read( header );
 
 	if ( header.Type == TA_TYPE_SCRIPT )
-		state = script.Create( _context, file );
+		state = script.Create( _lua, file );
 
 	return state;
 }
 
 bool TinyScriptManager::OnCreate(
 	TinyGame* game,
-	c_ptr asset_builder,
+	c_pointer asset_builder,
 	TinyScriptLua& script
 ) {
 	auto* address = tiny_cast( asset_builder, tiny_ptr );
 
-	return script.Create( _context, address );
+	return script.Create( _lua, address );
 }
 
 void TinyScriptManager::OnUnLoad( TinyGame* game, TinyScriptLua& script ) {
-	script.Terminate( _context ); 
+	script.Terminate( _lua );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyScriptManager::GenerateInterop( ) {
-	TinyLua::Point::Register( _context );
-	//TinyLua::Vec2::Register( _context );
-	//TinyLua::Vec3::Register( _context );
-	//TinyLua::Vec4::Register( _context );
-	TinyLua::Color::Register( _context );
-	TinyLua::Engine::Register( _context );
-	//TinyLua::Entity::Register( _context );
+	TinyLua::Point::Register( _lua );
+	//TinyLua::Vec2::Register( _lua );
+	//TinyLua::Vec3::Register( _lua );
+	//TinyLua::Vec4::Register( _lua );
+	TinyLua::Color::Register( _lua );
+	TinyLua::Engine::Register( _lua );
+	//TinyLua::Entity::Register( _lua );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyLuaContext& TinyScriptManager::GetContext( ) { return _context; }
+TinyLuaContext& TinyScriptManager::GetLua( ) { return _lua; }
 
 bool TinyScriptManager::GetExist( const tiny_string& name ) const {
 	return _natives.GetExist( name );

@@ -1772,7 +1772,7 @@ const SteamNetworkingPOPID k_SteamDatagramPOPID_dev = ( (uint32)'d' << 16U ) | (
 struct SteamNetworkingPOPIDRender
 {
 	SteamNetworkingPOPIDRender( SteamNetworkingPOPID x ) { GetSteamNetworkingLocationPOPStringFromID( x, buf ); }
-	inline const char *c_str() const { return buf; }
+	inline const char *c_string() const { return buf; }
 private:
 	char buf[ 8 ];
 };

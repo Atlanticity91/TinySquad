@@ -88,7 +88,7 @@ void TinyMaterialManager::OnUnLoad( TinyGame* game, TinyMaterial& material ) {
 
 bool TinyMaterialManager::OnCreate(
 	TinyGame* game,
-	c_ptr asset_builder,
+	c_pointer asset_builder,
 	TinyMaterial& material
 ) {
 	auto& graphics = game->GetGraphics( );

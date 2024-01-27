@@ -25,31 +25,48 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolAnim2D::TinyToolAnim2D( )
 	: TinyToolAssetEditor{ "Animation 2D" },
+	_animation{ nullptr },
+	_texture{ nullptr },
 	_image{ nullptr }
 { }
 
 void TinyToolAnim2D::Save( TinyGame* game ) {
 }
 
-void TinyToolAnim2D::Tick( TinyGame* game, TinyAssetManager& assets ) {
-	if ( !_asset && _image )
-		TinyImGui::DestroyTextureID( _image );
-
-	TinyToolAssetEditor::Tick( game, assets );
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolAnim2D::OnOpen( TinyGame* game, const tiny_string& name, c_ptr asset ) {
-	_image = TinyImGui::CreateTextureID( tiny_cast( asset, TinyTexture2D* ) );
+bool TinyToolAnim2D::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
+	_animation = tiny_cast( asset, TinyAnimation2D* );
 
-	return _image;
+	if ( false ) {
+		auto& assets = game->GetAssets( );
+
+		SetTexture( assets );
+	}
+
+	return _animation;
 }
 
 void TinyToolAnim2D::OnTick( TinyGame* game, TinyAssetManager& assets ) {
+	auto frame = _animation->Get( )[ 0 ];
+	auto uv = _texture->GetUV( frame.Row, frame.Column );
+
+	ImGui::Image( _image, {}, { uv.x, uv.y }, { uv.z, uv.w } );
 }
 
 void TinyToolAnim2D::OnClose( TinyGame* game, TinyAssetManager& assets ) {
-	Save( game );
+	TinyToolAssetEditor::OnClose( game, assets );
+
+	TinyImGui::DestroyTextureID( _image );
+}
+
+void TinyToolAnim2D::SetTexture( TinyAssetManager& assets ) {
+	if ( _image )
+		TinyImGui::DestroyTextureID( _image );
+
+	auto asset = TinyAsset{ TA_TYPE_TEXTURE_2D, "" };
+
+	_texture = assets.GetAssetAs<TinyTexture2D>( asset );
+	_image   = TinyImGui::CreateTextureID( _texture );
 }

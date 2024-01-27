@@ -61,6 +61,8 @@ public:
 
 	tiny_list<MetaNode*> GetMetadatas( tiny_uint type );
 
+	TinyAssetMetadata& At( tiny_uint metadata_id );
+
 public:
 	TinyAssetMetadata& operator[]( tiny_uint metadata_id );
 

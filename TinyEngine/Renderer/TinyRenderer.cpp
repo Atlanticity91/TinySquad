@@ -78,11 +78,11 @@ void TinyRenderer::Compose( TinyGame* game ) {
 				{ .0f, .0f, 1.f, 1.f }
 			};
 
-			Tiny::Memcpy( (const c_ptr)s->GetColor().Get(), (c_ptr)&core.Color.r, 4 * tiny_sizeof( float ) );
+			Tiny::Memcpy( (const c_pointer)s->GetColor().Get(), (c_pointer)&core.Color.r, 4 * tiny_sizeof( float ) );
 
 
-			Tiny::Memcpy( (const c_ptr)glm::value_ptr( cache ), ( (tiny_ptr)_staging.GetAccess( ) ) +( (7-count) * tiny_sizeof( tiny_mat4 ) ), tiny_sizeof( tiny_mat4 ) );
-			Tiny::Memcpy( (const c_ptr)&core, ( (tiny_ptr)_staging.GetAccess( ) ) + ( 8 * tiny_sizeof( tiny_mat4 ) ) + ( ( 7 - count )* tiny_sizeof( TinyUBORenderCore ) ), tiny_sizeof( TinyUBORenderCore ) );
+			Tiny::Memcpy( (const c_pointer)glm::value_ptr( cache ), ( (tiny_ptr)_staging.GetAccess( ) ) +( (7-count) * tiny_sizeof( tiny_mat4 ) ), tiny_sizeof( tiny_mat4 ) );
+			Tiny::Memcpy( (const c_pointer)&core, ( (tiny_ptr)_staging.GetAccess( ) ) + ( 8 * tiny_sizeof( tiny_mat4 ) ) + ( ( 7 - count )* tiny_sizeof( TinyUBORenderCore ) ), tiny_sizeof( TinyUBORenderCore ) );
 		}
 	}
 

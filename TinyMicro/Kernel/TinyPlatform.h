@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyCore.h"
+#include "TinyString.h"
 
 #ifdef TM_DEBUG
 #	define tiny_dump_leaks( ) Tiny::DumpLeaks( )
@@ -30,12 +30,6 @@
 
 #define TINY_NO_CFILE (c_file)nullptr
 
-typedef void c_ptr_base;
-typedef c_ptr_base* c_ptr;
-typedef tiny_ubyte tiny_ptr_base;
-typedef tiny_ptr_base* tiny_ptr;
-
-typedef const char* c_str;
 typedef FILE* c_file;
 
 namespace Tiny {
@@ -112,13 +106,13 @@ namespace Tiny {
 
 	tm_dll void DumpLeaks( );
 
-	tm_dll bool Memcpy( const c_ptr src, c_ptr dst, tiny_uint size );
+	tm_dll bool Memcpy( const c_pointer src, c_pointer dst, tiny_uint size );
 
 	template<typename Type>
 	bool Memcpy( const Type* src, Type* dst, tiny_uint count ) {
 		auto block_size = count * tiny_sizeof( Type );
 
-		return Memcpy( tiny_cast( src, const c_ptr ), tiny_cast( dst, c_ptr ), block_size );
+		return Memcpy( tiny_cast( src, const c_pointer ), tiny_cast( dst, c_pointer ), block_size );
 	};
 
 	template<typename Type>
@@ -126,35 +120,50 @@ namespace Tiny {
 		return Memcpy( src, dst, 1 );
 	};
 
+	template<typename... Args>
+	bool Sprintf( const tiny_string& buffer, const tiny_string& format, Args&&... args ) { 
+#		ifdef TINY_WIN
+		auto* buffer_str = buffer.as_chars( );
+		auto buffer_len  = buffer.length( );
+		auto* format_str = format.as_chars( );
+
+		return sprintf_s( buffer_str, buffer_len, format_str, std::forward<Args>( args )... ) > -1;
+#		else
+		return sprintf( buffer_str, format_str, args... ) != EOF;
+#		endif
+
+		return false;
+	};
+
 	tm_dll std::string GetWorkingDir( );
 
 	tm_dll std::string GetDocumentDir( );
 
-	tm_dll bool CreateDir( c_str path );
+	tm_dll bool CreateDir( c_string path );
 
-	tm_dll bool RemoveDir( c_str path );
+	tm_dll bool RemoveDir( c_string path );
 
-	tm_dll bool GetIsDir( c_str path );
+	tm_dll bool GetIsDir( c_string path );
 
-	tm_dll bool GetIsFile( c_str path );
+	tm_dll bool GetIsFile( c_string path );
 
-	tm_dll std::optional<FileEntry> FindEntry( c_str path );
+	tm_dll std::optional<FileEntry> FindEntry( c_string path );
 
 	tm_dll std::optional<FileEntry> NextEntry( );
 
-	tm_dll File FileOpen( c_str path, FileAccesses access );
+	tm_dll File FileOpen( c_string path, FileAccesses access );
 
 	tm_dll bool FileSeek( File& file, FileOrigin origin );
 
 	tm_dll bool FileSeek( File& file, FileOrigin origin, tiny_uint offset );
 
-	tm_dll tiny_uint FileRead( File& file, tiny_uint length, c_ptr data );
+	tm_dll tiny_uint FileRead( File& file, tiny_uint length, c_pointer data );
 
-	tm_dll tiny_uint FileWrite( File& file, tiny_uint length, const c_ptr data );
+	tm_dll tiny_uint FileWrite( File& file, tiny_uint length, const c_pointer data );
 
 	tm_dll void FileClose( File& file );
 
-	tm_dll bool RemoveFile( c_str path );
+	tm_dll bool RemoveFile( c_string path );
 
 	tm_dll bool GetFileIsValid( const File& file );
 
@@ -162,12 +171,12 @@ namespace Tiny {
 
 	tm_dll tiny_uint GetFileCursor( const File& file );
 
-	tm_dll bool OpenDialog( DialogTypes type, c_str filters, tiny_uint length, char* data );
+	tm_dll bool OpenDialog( DialogTypes type, c_string filters, tiny_uint length, char* data );
 
 	tm_dll bool OpenDialog( 
 		DialogTypes type, 
-		c_str path,
-		c_str filters,
+		c_string path,
+		c_string filters,
 		tiny_uint length,
 		char* data 
 	);
@@ -175,16 +184,16 @@ namespace Tiny {
 	tm_dll bool OpenDialog(
 		DialogTypes type,
 		std::string path, 
-		c_str filters, 
+		c_string filters, 
 		tiny_uint length,
 		char* data 
 	);
 
 	tm_dll Date GetDate( );
 
-	tm_dll bool LoadLib( c_str& path, Library& library );
+	tm_dll bool LoadLib( c_string& path, Library& library );
 
-	tm_dll c_ptr GetLibProcedure( Library& library, c_str& address );
+	tm_dll c_pointer GetLibProcedure( Library& library, c_string& address );
 
 	tm_dll bool UnloadLib( Library& library );
 

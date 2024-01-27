@@ -36,15 +36,15 @@ namespace TinyImGui {
 	te_struct DropdownContext {
 
 		tiny_uint Index;
-		tiny_list<c_str> Values;
+		tiny_list<c_string> Values;
 
 		DropdownContext( );
 
-		DropdownContext( tiny_init<c_str> values );
+		DropdownContext( tiny_init<c_string> values );
 
-		DropdownContext( tiny_init<c_str> values, const tiny_string& value );
+		DropdownContext( tiny_init<c_string> values, const tiny_string& value );
 
-		DropdownContext( tiny_init<c_str> values, const tiny_hash value );
+		DropdownContext( tiny_init<c_string> values, const tiny_hash value );
 
 		DropdownContext( const tiny_list<tiny_string>& values );
 
@@ -52,7 +52,7 @@ namespace TinyImGui {
 
 		DropdownContext( const tiny_list<tiny_string>& values, const tiny_hash value );
 
-		DropdownContext( tiny_uint index, tiny_init<c_str> values );
+		DropdownContext( tiny_uint index, tiny_init<c_string> values );
 
 		void Find( const tiny_hash& hash );
 
@@ -115,11 +115,7 @@ namespace TinyImGui {
 		auto* name_str = name.as_chars( );
 
 		if ( ImGui::CollapsingHeader( name_str, IMGUI_NO_FLAGS ) ) {
-			TinyImGui::BeginVars( );
-
 			draw( args... );
-
-			TinyImGui::EndVars( );
 
 			ImGui::Separator( );
 		}
@@ -130,11 +126,7 @@ namespace TinyImGui {
 		auto* name_str = name.as_chars( );
 
 		if ( ImGui::CollapsingHeader( name_str, ImGuiTreeNodeFlags_DefaultOpen ) ) {
-			TinyImGui::BeginVars( );
-
 			draw( args... );
-
-			TinyImGui::EndVars( );
 
 			ImGui::Separator( );
 		}
@@ -142,9 +134,15 @@ namespace TinyImGui {
 
 	tiny_dll void SeparatorText( const tiny_string& label );
 
+	tiny_dll bool Button( const tiny_string& label );
+
+	tiny_dll bool Button( const tiny_string& label, const ImVec2& size );
+
 	tiny_dll bool RightButton( const tiny_string& label );
 
-	tiny_dll ImVec2 ButtonSpan( tiny_uint button_count );
+	tiny_dll ImVec2 ButtonSpanLeft( tiny_uint button_count );
+
+	tiny_dll ImVec2 ButtonSpanRight( tiny_uint button_count );
 
 	tiny_dll void Text( const tiny_string& text );
 
@@ -282,6 +280,8 @@ namespace TinyImGui {
 
 	tiny_dll bool InputColor( const tiny_string& label, tiny_color& color );
 
+	tiny_dll bool InputColor( const tiny_string& label, const VkClearColorValue& color );
+
 	template<typename... Args>
 	void TextVar( const tiny_string& label, const tiny_string& format, Args... args ) {
 		TinyImGui::InputBegin( label );
@@ -291,11 +291,22 @@ namespace TinyImGui {
 		TinyImGui::InputEnd( );
 	};
 
+	tiny_dll bool InputText( tiny_uint length, char* buffer );
+
+	template<tiny_uint Length>
+	bool InputText( tiny_buffer<Length>& buffer ) {
+		auto* buffer_chars = buffer.as_chars( );
+
+		return InputText( Length, buffer_chars );
+	};
+
 	tiny_dll bool Dropdown( const tiny_string& label, DropdownContext& context );
 
 	tiny_dll bool InputVulkan( const tiny_string& label, VkFormat& format );
 
 	tiny_dll bool InputVulkan( const tiny_string& label, const VkFormat& format );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkColorSpaceKHR& color_space );
 
 	tiny_dll bool InputVulkan( const tiny_string& label, VkImageLayout& layout );
 
@@ -336,6 +347,14 @@ namespace TinyImGui {
 	tiny_dll bool InputVulkan( const tiny_string& label, VkBorderColor& border_color );
 
 	tiny_dll bool InputVulkan( const tiny_string& label, const VkBorderColor& border_color );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkViewport& viewport );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkViewport& viewport );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, VkScissor& scissor );
+
+	tiny_dll bool InputVulkan( const tiny_string& label, const VkScissor& scissor );
 
 	tiny_dll bool Knob( const tiny_string& label, float& scalar );
 

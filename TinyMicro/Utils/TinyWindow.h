@@ -44,9 +44,9 @@ public:
 
 	~TinyWindow( ) = default;
 
-	bool Initialize( const TinyAppConfig& config, void* user_data );
+	bool Initialize( const TinyAppConfig& config, c_pointer user_data );
 
-	void SetCallback( TinyWindowCallbacks query, void* callback );
+	void SetCallback( TinyWindowCallbacks query, c_pointer callback );
 
 	void Tick( );
 

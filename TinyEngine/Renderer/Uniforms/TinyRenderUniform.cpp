@@ -58,7 +58,7 @@ tiny_uint TinyRenderUniform::GetBinding( ) const { return _bind_point.Binding; }
 TinyGraphicBuffer& TinyRenderUniform::GetBuffer( ) { return _buffer; }
 
 TinyGraphicPipelineBindpoint& TinyRenderUniform::GetBindpoint( ) {
-	_bind_point.Value = tiny_cast( _buffer.GetDescriptor( ), c_ptr );
+	_bind_point.Value = tiny_cast( _buffer.GetDescriptor( ), c_pointer );
 
 	return _bind_point; 
 }

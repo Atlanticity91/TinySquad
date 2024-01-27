@@ -36,7 +36,7 @@ tm_struct TinyGraphicPipelineBindpoint {
 	tiny_uint Description;
 	tiny_uint Set;
 	tiny_uint Binding;
-	c_ptr Value;
+	c_pointer Value;
 
 	TinyGraphicPipelineBindpoint( );
 

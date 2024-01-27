@@ -33,11 +33,11 @@ tiny_storage::tiny_storage( )
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool tiny_storage::GetIsValid( ) const { return Block < TINY_UINT_MAX && Capacity > 0; }
 
-c_ptr tiny_storage::GetAddress( ) const { return tiny_get_address( tiny_self ); }
+c_pointer tiny_storage::GetAddress( ) const { return tiny_get_address( tiny_self ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_storage::operator bool( ) const { return GetIsValid( ); }
 
-tiny_storage::operator c_ptr( ) const { return GetAddress( ); }
+tiny_storage::operator c_pointer( ) const { return GetAddress( ); }

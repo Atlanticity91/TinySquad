@@ -26,20 +26,20 @@ te_class TinyToolAssetEditor {
 
 protected:
 	bool		_in_use;
-	c_ptr		_asset;
-	tiny_string _asset_name;
 	tiny_string _name;
+	TinyAsset	_asset;
+	tiny_string _asset_name;
 
 public:
 	TinyToolAssetEditor( const tiny_string& name );
 
 	virtual ~TinyToolAssetEditor( ) = default;
 
-	bool Open( TinyGame* game, const tiny_string& name, c_ptr asset );
+	bool Open( TinyGame* game, const tiny_string& name, TinyAsset& asset );
 
 	tiny_virtual( void Save( TinyGame* game ) );
 
-	virtual void Tick( TinyGame* game, TinyAssetManager& assets );
+	void Tick( TinyGame* game, TinyAssetManager& assets );
 
 	void Close( TinyGame* game );
 
@@ -47,11 +47,11 @@ protected:
 	tiny_virtualv( true, bool OnOpen(
 		TinyGame* game, 
 		const tiny_string& name, 
-		c_ptr asset 
+		c_pointer asset 
 	) );
 
 	tiny_virtual( void OnTick( TinyGame* game, TinyAssetManager& assets ) );
 
-	tiny_virtual( void OnClose( TinyGame* game, TinyAssetManager& assets ) );
+	virtual void OnClose( TinyGame* game, TinyAssetManager& assets );
 
 };

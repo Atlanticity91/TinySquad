@@ -105,7 +105,7 @@ bool TinyGraphicShaderCompiler::CompileGLSL(
 		if ( state ) {
 			properties.Code = (tiny_uint)( spirv.end( ) - spirv.begin( ) ) * tiny_sizeof( tiny_uint );
 
-			Tiny::Memcpy( (const c_ptr)spirv.begin( ), (c_ptr)properties.Code.data( ), properties.Code.size( ) );
+			Tiny::Memcpy( (const c_pointer)spirv.begin( ), (c_pointer)properties.Code.data( ), properties.Code.size( ) );
 		} else
 			printf( "[ VK ] Shader Compilation Error : %s\n%s\n", name.get( ), spirv.GetErrorMessage( ).c_str( ) );
 	} else
@@ -132,7 +132,7 @@ bool TinyGraphicShaderCompiler::CompileGLSL(
 			properties.Entry = std::string{ context.Entry.get( ) };
 			properties.Code  = (tiny_uint)( spirv.end( ) - spirv.begin( ) ) * tiny_sizeof( tiny_uint );
 
-			Tiny::Memcpy( (const c_ptr)spirv.begin( ), (c_ptr)properties.Code.data( ), properties.Code.size( ) );
+			Tiny::Memcpy( (const c_pointer)spirv.begin( ), (c_pointer)properties.Code.data( ), properties.Code.size( ) );
 		} else
 			printf( "[ VK ] Shader Compilation Error : %s\n%s\n", context.Name.get( ), spirv.GetErrorMessage( ).c_str( ) );
 	} else 
@@ -213,7 +213,7 @@ TinyGraphicShaderProperties TinyGraphicShaderCompiler::GrabProperties(
 
 	properties.Code = length;
 
-	Tiny::Memcpy( (const c_ptr)result.begin( ), (c_ptr)properties.Code.data( ), length * tiny_sizeof( tiny_uint ) );
+	Tiny::Memcpy( (const c_pointer)result.begin( ), (c_pointer)properties.Code.data( ), length * tiny_sizeof( tiny_uint ) );
 
 	return properties;
 }

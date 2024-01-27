@@ -20,15 +20,15 @@
 
 #pragma once
 
-#include "Natives/TinyNativeManager.h"
+#include "Utils/TinyScriptContext.h"
 
 te_class TinyScriptManager final 
 	: tiny_inherit( TinyAssetList<TA_TYPE_SCRIPT, TinyScriptLua> )
 {
 
 private:
-	TinyLuaContext	  _context;
 	TinyNativeManager _natives;
+	TinyLuaContext	  _lua;
 
 public:
 	TinyScriptManager( );
@@ -38,6 +38,8 @@ public:
 	bool Initialize( );
 
 	tiny_inline void Register( const tiny_string& name, TinyScriptNative script );
+
+	bool Execute( TinyGame* game, c_pointer instigator, const TinyScriptContext& context );
 
 	void Terminate( );
 
@@ -50,7 +52,7 @@ protected:
 
 	tiny_implement( bool OnCreate(
 		TinyGame* game,
-		c_ptr asset_builder,
+		c_pointer asset_builder,
 		TinyScriptLua& script
 	) );
 
@@ -60,7 +62,7 @@ private:
 	void GenerateInterop( );
 
 public:
-	TinyLuaContext& GetContext( );
+	TinyLuaContext& GetLua( );
 
 	tiny_inline bool GetExist( const tiny_string & name ) const;
 

@@ -24,6 +24,12 @@
 
 te_class TinyToolWorld final : tiny_inherit( TinyToolCategory ) {
 
+private:
+	tiny_buffer<32> _new_entity;
+	tiny_uint		_new_entity_id;
+	tiny_hash		_selection_hash;
+	tiny_hash		_query_hash;
+
 public:
 	TinyToolWorld( );
 
@@ -35,6 +41,13 @@ protected:
 		TinyEngine& engine,
 		TinyToolbox& toolbox
 	) );
+
+private:
+	void DrawAddComp( TinyGame* game, TinyEngine& engine, TinyECS& ecs );
+
+	void DrawEntity( TinyGame* game, TinyECS& ecs, tiny_map_node<TinyEntity>& entity );
+
+	void DrawNewEntity( TinyECS& ecs );
 
 private:
 	static void DrawSystems( TinyGame* game, TinyEngine& engine, TinyECS& ecs );

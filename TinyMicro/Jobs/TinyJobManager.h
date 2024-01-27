@@ -33,7 +33,7 @@ public:
 
 	~TinyJobManager( ) = default;
 
-	bool Initialize( TinyThreadRun thread_run, c_ptr data );
+	bool Initialize( TinyThreadRun thread_run, c_pointer data );
 
 	bool Dispatch( const TinyJob& job );
 

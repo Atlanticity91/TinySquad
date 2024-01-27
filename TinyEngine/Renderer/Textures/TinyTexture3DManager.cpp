@@ -43,7 +43,7 @@ void TinyTexture3DManager::OnUnLoad( TinyGame* game, TinyTexture3D& texture ) {
 
 bool TinyTexture3DManager::OnCreate(
 	TinyGame* game,
-	c_ptr asset_builder,
+	c_pointer asset_builder,
 	TinyTexture3D& element
 ) {
 	return false;

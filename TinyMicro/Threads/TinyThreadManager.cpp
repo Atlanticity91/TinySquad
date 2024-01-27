@@ -27,7 +27,7 @@ TinyThreadManager::TinyThreadManager( )
 	: _threads{ }
 { }
 
-bool TinyThreadManager::Create( TinyThreadRun thread_run, c_ptr data ) {
+bool TinyThreadManager::Create( TinyThreadRun thread_run, c_pointer data ) {
 	auto state = !FAILED( CoInitializeEx( nullptr, COINIT_MULTITHREADED ) );
 
 	if ( state ) {

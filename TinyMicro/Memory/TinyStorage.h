@@ -45,11 +45,11 @@ tm_struct tiny_storage {
 
 	//TinyStorageTypes GetType( ) const;
 
-	c_ptr GetAddress( ) const;
+	c_pointer GetAddress( ) const;
 
 	operator bool( ) const;
 
-	operator c_ptr ( ) const;
+	operator c_pointer ( ) const;
 
 	template<typename Type>
 	Type* As( ) { return (Type*)GetAddress( ); };

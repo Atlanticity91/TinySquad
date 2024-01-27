@@ -60,7 +60,7 @@ void TinyCueManager::OnUnLoad( TinyGame* game, TinyCue& sound_cue ) {
 	tiny_deallocate( sound_cue.GetStorage( ) );
 }
 
-bool TinyCueManager::OnCreate( TinyGame* game, c_ptr asset_builder, TinyCue& cue ) {
+bool TinyCueManager::OnCreate( TinyGame* game, c_pointer asset_builder, TinyCue& cue ) {
 	auto* builder = tiny_cast( asset_builder, TinyCueBuilder* );
 	auto state	  = builder != nullptr && builder->Size > 0;
 

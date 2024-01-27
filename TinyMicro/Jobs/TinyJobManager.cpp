@@ -28,7 +28,7 @@ TinyJobManager::TinyJobManager( )
 	_queues{ }
 { }
 
-bool TinyJobManager::Initialize( TinyThreadRun thread_run, c_ptr data ) {
+bool TinyJobManager::Initialize( TinyThreadRun thread_run, c_pointer data ) {
 	return _threads.Create( thread_run, data );
 }
 

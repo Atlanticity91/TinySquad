@@ -22,9 +22,16 @@
 
 #include "TinyIterator.h"
 
+typedef void c_pointer_base;
+typedef c_pointer_base* c_pointer;
+typedef tiny_ubyte tiny_ptr_base;
+typedef tiny_ptr_base* tiny_ptr;
+
+typedef const char* c_string;
+
 tm_class tiny_string final {
 
-	using under_layer = c_str;
+	using under_layer = c_string;
 	using iterator	  = tiny_iterator<char>;
 
 private:
@@ -40,7 +47,7 @@ public:
 
 	tiny_string( const tiny_string& other );
 
-	tiny_string( c_ptr address, tiny_uint length );
+	tiny_string( c_pointer address, tiny_uint length );
 
 	~tiny_string( ) = default;
 

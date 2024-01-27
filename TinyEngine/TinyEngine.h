@@ -120,7 +120,7 @@ private:
 	 * @note : Child Thread execution loop.
 	 * @param game : Pointer to current game class instance.
 	 **/
-	static void JobRun( c_ptr game );
+	static void JobRun( c_pointer game );
 
 	/**
 	 * Resize static method

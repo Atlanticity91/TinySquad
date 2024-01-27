@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 03/01/2024
- * @version  : 2024.1
+ * @creation : 23/01/2024
+ * @version  : 2024.1.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,30 +20,18 @@
 
 #pragma once
 
-#include "TinyCue.h"
+#include <TinyEngine/Scripts/Natives/TinyNativeManager.h>
 
-te_class TinyCueManager final 
-	: tiny_inherit( TinyAssetList<TA_TYPE_CUE, TinyCue> )
-{
+tiny_enum( TinyScriptTypes ) {
 
-public:
-	TinyCueManager( );
+	TS_TYPE_NATIVE = 0,
+	TS_TYPE_LUA
 
-	~TinyCueManager( ) = default;
+};
 
-protected:
-	tiny_implement( bool OnLoad(
-		TinyGame* game,
-		TinyFile& file,
-		TinyCue& sound_cue
-	) );
+te_struct TinyScriptContext {
 
-	tiny_implement( void OnUnLoad( TinyGame* game, TinyCue& sound_cue ) );
-
-	tiny_implement( bool OnCreate(
-		TinyGame* game,
-		c_pointer asset_builder,
-		TinyCue& element
-	) );
+	TinyScriptTypes Type = TS_TYPE_NATIVE;
+	tiny_string Name	 = "";
 
 };

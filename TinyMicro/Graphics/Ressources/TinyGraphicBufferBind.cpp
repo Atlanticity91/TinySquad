@@ -23,14 +23,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicBufferBind::TinyGraphicBufferBind( TinyGraphicBuffer& buffer, c_ptr data )
+TinyGraphicBufferBind::TinyGraphicBufferBind( TinyGraphicBuffer& buffer, c_pointer data )
 	: TinyGraphicBufferBind{ buffer, 0, 0, data }
 { }
 
 TinyGraphicBufferBind::TinyGraphicBufferBind(
 	TinyGraphicBuffer& buffer,
 	tiny_uint size,
-	c_ptr data
+	c_pointer data
 )
 	: TinyGraphicBufferBind{ buffer, 0, size, data }
 { }
@@ -39,7 +39,7 @@ TinyGraphicBufferBind::TinyGraphicBufferBind(
 	TinyGraphicBuffer& buffer,
 	tiny_uint offset,
 	tiny_uint size,
-	c_ptr data
+	c_pointer data
 )
 	: Buffer{ buffer },
 	Offset{ offset },
@@ -49,7 +49,7 @@ TinyGraphicBufferBind::TinyGraphicBufferBind(
 
 TinyGraphicBufferBind::TinyGraphicBufferBind( 
 	const TinyGraphicBufferBind& other, 
-	c_ptr data
+	c_pointer data
 )
 	: TinyGraphicBufferBind{ other.Buffer, other.Offset, other.Size, data }
 { }

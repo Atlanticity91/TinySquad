@@ -22,7 +22,7 @@
 
 #include <TinyMicro/Memory/TinyRef.h>
 
-typedef std::function<void( c_ptr )> TinyThreadRun;
+typedef std::function<void( c_pointer )> TinyThreadRun;
 
 tm_class TinyThread final { 
 
@@ -36,7 +36,7 @@ public:
 
 	~TinyThread( ) = default;
 
-	void Create( TinyThreadRun thread_run, c_ptr data );
+	void Create( TinyThreadRun thread_run, c_pointer data );
 
 	void Terminate( );
 

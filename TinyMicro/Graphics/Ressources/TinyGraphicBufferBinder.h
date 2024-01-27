@@ -37,7 +37,7 @@ private:
 	VkDeviceMemory Map(
 		TinyGraphicLogical& logical,
 		const TinyGraphicBufferBind& bind,
-		c_ptr& storage
+		c_pointer& storage
 	);
 
 	void Unmap( TinyGraphicLogical& logical, VkDeviceMemory memory );
@@ -49,7 +49,7 @@ public:
 		const TinyGraphicBufferBind& bind, 
 		Type& data
 	) {
-		auto* data_ptr = (c_ptr*)&data;
+		auto* data_ptr = (c_pointer*)&data;
 
 		return Read( context, { bind, data_ptr } );
 	};
@@ -60,7 +60,7 @@ public:
 		const TinyGraphicBufferBind& bind,
 		Type& data
 	) {
-		auto* data_ptr = (c_ptr*)&data;
+		auto* data_ptr = (c_pointer*)&data;
 
 		return Write( context, { bind, data_ptr } );
 	};

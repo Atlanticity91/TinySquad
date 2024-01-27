@@ -129,7 +129,7 @@ tiny_array<VkBufferCopy, 2> TinyRenderBatchManager::Flush2D(
 
 		_staging.Map( context, tr_size + sp_size );
 		Tiny::Memcpy( transform.Values, _staging.GetAccess( ), tr_size );
-		Tiny::Memcpy( sprites.Values, tiny_cast( tiny_cast( _staging.GetAccess( ), tiny_ptr ) + tr_size, c_ptr ), sp_size );
+		Tiny::Memcpy( sprites.Values, tiny_cast( tiny_cast( _staging.GetAccess( ), tiny_ptr ) + tr_size, c_pointer ), sp_size );
 		_staging.UnMap( context );
 
 		copy_destination[ 0 ] = { 0, 0, tr_size };

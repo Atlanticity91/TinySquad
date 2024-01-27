@@ -24,7 +24,7 @@
 
 te_class TinyAssetImportManager final {
 
-	using TinyAssetExporter = std::function<bool( TinyGame*, TinyFile&, c_ptr& )>;
+	using TinyAssetExporter = std::function<bool( TinyGame*, TinyFile&, c_pointer& )>;
 
 private:
 	tiny_map<TinyAssetImporter>					 _importers;
@@ -35,6 +35,8 @@ public:
 
 	~TinyAssetImportManager( ) = default;
 
+	void Register( tiny_init<tiny_string> extensions, const TinyAssetImporter& importer );
+
 	void Initialize( );
 
 	bool Import(
@@ -44,10 +46,7 @@ public:
 		tiny_storage& storage
 	);
 
-	bool Export( TinyGame* game, tiny_uint type, TinyFile& file, c_ptr& asset  );
-
-private:
-	void Register( tiny_init<tiny_string> extensions, const TinyAssetImporter& importer );
+	bool Export( TinyGame* game, tiny_uint type, TinyFile& file, c_pointer& asset  );
 
 private:
 	static bool ImportTexture2D( 
@@ -64,9 +63,9 @@ private:
 		tiny_storage& storage
 	);
 
-	static bool ExportTexture2D( TinyGame* game, TinyFile& file, c_ptr& asset );
+	static bool ExportTexture2D( TinyGame* game, TinyFile& file, c_pointer& asset );
 
-	static bool ExportTexture3D( TinyGame* game, TinyFile& file, c_ptr& asset );
+	static bool ExportTexture3D( TinyGame* game, TinyFile& file, c_pointer& asset );
 
 	static bool ImportSPV(
 		TinyGame* game,
@@ -89,9 +88,9 @@ private:
 		tiny_storage& storage
 	);
 
-	static bool ExportSPV( TinyGame* game, TinyFile& file, c_ptr& asset );
+	static bool ExportSPV( TinyGame* game, TinyFile& file, c_pointer& asset );
 
-	static bool ExportMaterial( TinyGame* game, TinyFile& file, c_ptr& asset );
+	static bool ExportMaterial( TinyGame* game, TinyFile& file, c_pointer& asset );
 
 	static bool ImportLua( 
 		TinyGame* game,
@@ -100,7 +99,7 @@ private:
 		tiny_storage& storage
 	);
 
-	static bool ExportLua( TinyGame* game, TinyFile& file, c_ptr& asset );
+	static bool ExportLua( TinyGame* game, TinyFile& file, c_pointer& asset );
 
 	static bool ImportWav(
 		TinyGame* game,
@@ -109,7 +108,7 @@ private:
 		tiny_storage& storage
 	);
 
-	static bool ExportWav( TinyGame* game, TinyFile& file, c_ptr& asset );
+	static bool ExportWav( TinyGame* game, TinyFile& file, c_pointer& asset );
 
 public:
 	const TinyAssetImporter& Get( const tiny_string& extension ) const;

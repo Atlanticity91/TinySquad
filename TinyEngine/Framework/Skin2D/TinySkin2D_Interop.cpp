@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyLua::Skin2D::Convert( lua_State* context, TinyComponent* component ) {
-	auto* tmp = tiny_cast( component, c_ptr );
+	auto* tmp = tiny_cast( component, c_pointer );
 
 	tli_create_new(
 		TINY_SKIN2D_NAME,

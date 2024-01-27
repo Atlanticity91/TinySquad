@@ -38,9 +38,9 @@ public:
 
 	bool Skip( tiny_uint count );
 
-	tiny_uint Read( tiny_uint size, c_ptr buffer );
+	tiny_uint Read( tiny_uint size, c_pointer buffer );
 
-	tiny_uint Write( tiny_uint size, const c_ptr buffer );
+	tiny_uint Write( tiny_uint size, const c_pointer buffer );
 
 	TinyVirtualFile& Asign( const tiny_storage& storage );
 
@@ -49,28 +49,36 @@ public:
 	bool Read( Type& element ) { 
 		constexpr auto size = tiny_sizeof( Type );
 
-		return Read( size, tiny_cast( tiny_rvalue( element ), c_ptr ) ) == size;
+		auto* _element = tiny_rvalue( element );
+
+		return Read( size, tiny_cast( _element, c_pointer ) ) == size;
 	};
 
 	template<typename Type>
 	bool Read( Type& element, tiny_uint count ) {
 		constexpr auto size = count * tiny_sizeof( Type );
 
-		return count > 0 && Read( size, tiny_cast( tiny_rvalue( element ), c_ptr ) ) == size;
+		auto* _element = tiny_rvalue( element );
+
+		return count > 0 && Read( size, tiny_cast( _element, c_pointer ) ) == size;
 	};
 
 	template<typename Type>
 	bool Write( Type& element ) {
 		constexpr auto size = tiny_sizeof( Type );
 
-		return Write( size, tiny_cast( tiny_rvalue( element ), const c_ptr ) ) == size;
+		auto* _element = tiny_rvalue( element );
+
+		return Write( size, tiny_cast( _element, const c_pointer ) ) == size;
 	};
 
 	template<typename Type>
 	bool Write( Type& element, tiny_uint count ) {
 		constexpr auto size = count * tiny_sizeof( Type );
 
-		return count > 0 && Write( size, tiny_cast( tiny_rvalue( element ), const c_ptr ) ) == size;
+		auto* _element = tiny_rvalue( element );
+
+		return count > 0 && Write( size, tiny_cast( _element, const c_pointer ) ) == size;
 	};
 
 public:

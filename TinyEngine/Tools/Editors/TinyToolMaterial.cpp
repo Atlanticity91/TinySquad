@@ -30,18 +30,12 @@ TinyToolMaterial::TinyToolMaterial( )
 void TinyToolMaterial::Save( TinyGame* game ) {
 }
 
-void TinyToolMaterial::Tick( TinyGame* game, TinyAssetManager& assets ) {
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolMaterial::OnOpen( TinyGame* game, const tiny_string& name, c_ptr asset ) {
+bool TinyToolMaterial::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
 	return true;
 }
 
 void TinyToolMaterial::OnTick( TinyGame* game, TinyAssetManager& assets ) {
-}
-
-void TinyToolMaterial::OnClose( TinyGame* game, TinyAssetManager& assets ) {
 }

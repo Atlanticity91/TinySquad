@@ -22,6 +22,8 @@
 
 #include <TinyEngine/ECS/Components/TinyComponent_Interop.h>
 
+struct TinyEntityGhost;
+
 te_interface ITinySystem {
 
 	tiny_abstract( void RegisterInterop( TinyGame* game ) );
@@ -58,6 +60,8 @@ te_interface ITinySystem {
 		const tiny_hash entity_hash 
 	) );
 
+	tiny_abstract( void Clean( const tiny_list<TinyEntityGhost>& entities ) );
+	
 	tiny_abstract( void PreTick( TinyGame* game, TinyEngine& engine ) );
 
 	tiny_abstract( void PostTick( TinyGame* game, TinyEngine& engine ) );
@@ -65,6 +69,8 @@ te_interface ITinySystem {
 	tiny_abstract( bool GetIsActive( ) const );
 
 	tiny_abstract( tiny_string GetName( ) const );
+
+	tiny_abstract( bool GetHasClean( ) const );
 
 	tiny_abstract( bool GetHasPreTick( ) const );
 

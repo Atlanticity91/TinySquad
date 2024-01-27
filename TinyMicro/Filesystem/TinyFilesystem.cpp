@@ -220,7 +220,7 @@ std::string TinyFilesystem::ConvertToAsset( const tiny_string& path ) const {
 
 	while ( delim-- > 0 && path[ delim ] != '.' );
 	
-	new_path.erase( (size_t)( delim + 1 ), (size_t)(path.length( ) - delim ) );
+	new_path.erase( tiny_cast( delim + 1, size_t ), tiny_cast( path.length( ) - delim, size_t ) );
 	new_path.append( TINY_ASSET_EXT );
 
 	return new_path;

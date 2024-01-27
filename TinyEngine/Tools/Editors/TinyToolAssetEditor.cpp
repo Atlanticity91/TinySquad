@@ -25,19 +25,26 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolAssetEditor::TinyToolAssetEditor( const tiny_string& name )
 	: _in_use{ false },
-	_asset{ nullptr },
-	_asset_name{ "" },
-	_name{ name }
+	_name{ name },
+	_asset{ },
+	_asset_name{ "" }
 { }
 
-bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, c_ptr asset ) {
-	if ( asset ) {
+bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, TinyAsset& asset ) {
+	auto state = asset.GetIsValid( );
+
+	if ( state ) {
 		_in_use		= true;
 		_asset		= asset;
 		_asset_name = name;
+
+		auto& assets = game->GetAssets( );
+		auto* _asset = assets.GetAsset( asset );
+
+		state = _asset && OnOpen( game, name, _asset );
 	}
 
-	return _asset && OnOpen( game, name, asset );
+	return state;
 }
 
 void TinyToolAssetEditor::Tick( TinyGame* game, TinyAssetManager& assets ) {
@@ -51,14 +58,19 @@ void TinyToolAssetEditor::Tick( TinyGame* game, TinyAssetManager& assets ) {
 			Close( game );
 
 		ImGui::End( );
-	}
+	} else if ( _asset )
+		OnClose( game, assets );
 }
 
 void TinyToolAssetEditor::Close( TinyGame* game ) {
-	auto& assets = game->GetAssets( );
-	
-	OnClose( game, assets );
+	Save( game );
 
 	_in_use = false;
-	_asset  = nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyToolAssetEditor::OnClose( TinyGame* game, TinyAssetManager& assets ) {
+	assets.Release( game, _asset );
 }

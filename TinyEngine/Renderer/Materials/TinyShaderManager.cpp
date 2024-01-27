@@ -64,7 +64,7 @@ void TinyShaderManager::OnUnLoad( TinyGame* game, TinyGraphicShader& shader ) {
 
 bool TinyShaderManager::OnCreate(
 	TinyGame* game,
-	c_ptr asset_builder,
+	c_pointer asset_builder,
 	TinyGraphicShader& shader
 ) {
 	auto& graphics = game->GetGraphics( );

@@ -42,7 +42,7 @@ protected:
 
 	tiny_implement( bool OnCreate(
 		TinyGame* game,
-		c_ptr asset_builder, 
+		c_pointer asset_builder, 
 		TinyTexture2D& element
 	) );
 

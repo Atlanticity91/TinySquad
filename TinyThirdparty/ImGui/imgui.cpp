@@ -13051,7 +13051,7 @@ static inline void LogTextV(ImGuiContext& g, const char* fmt, va_list args)
     {
         g.LogBuffer.Buf.resize(0);
         g.LogBuffer.appendfv(fmt, args);
-        ImFileWrite(g.LogBuffer.c_str(), sizeof(char), (ImU64)g.LogBuffer.size(), g.LogFile);
+        ImFileWrite(g.LogBuffer.c_string(), sizeof(char), (ImU64)g.LogBuffer.size(), g.LogFile);
     }
     else
     {
@@ -13490,7 +13490,7 @@ const char* ImGui::SaveIniSettingsToMemory(size_t* out_size)
         handler.WriteAllFn(&g, &handler, &g.SettingsIniData);
     if (out_size)
         *out_size = (size_t)g.SettingsIniData.size();
-    return g.SettingsIniData.c_str();
+    return g.SettingsIniData.c_string();
 }
 
 ImGuiWindowSettings* ImGui::CreateNewWindowSettings(const char* name)
@@ -14435,7 +14435,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
 
         if (TreeNode("SettingsIniData", "Settings unpacked data (.ini): %d bytes", g.SettingsIniData.size()))
         {
-            InputTextMultiline("##Ini", (char*)(void*)g.SettingsIniData.c_str(), g.SettingsIniData.Buf.Size, ImVec2(-FLT_MIN, GetTextLineHeight() * 20), ImGuiInputTextFlags_ReadOnly);
+            InputTextMultiline("##Ini", (char*)(void*)g.SettingsIniData.c_string(), g.SettingsIniData.Buf.Size, ImVec2(-FLT_MIN, GetTextLineHeight() * 20), ImGuiInputTextFlags_ReadOnly);
             TreePop();
         }
         TreePop();
@@ -14892,9 +14892,9 @@ void ImGui::DebugNodeFont(ImFont* font)
         "You can also render at multiple sizes and select which one to use at runtime.\n\n"
         "(Glimmer of hope: the atlas system will be rewritten in the future to make scaling more flexible.)");
     Text("Ascent: %f, Descent: %f, Height: %f", font->Ascent, font->Descent, font->Ascent - font->Descent);
-    char c_str[5];
-    Text("Fallback character: '%s' (U+%04X)", ImTextCharToUtf8(c_str, font->FallbackChar), font->FallbackChar);
-    Text("Ellipsis character: '%s' (U+%04X)", ImTextCharToUtf8(c_str, font->EllipsisChar), font->EllipsisChar);
+    char c_string[5];
+    Text("Fallback character: '%s' (U+%04X)", ImTextCharToUtf8(c_string, font->FallbackChar), font->FallbackChar);
+    Text("Ellipsis character: '%s' (U+%04X)", ImTextCharToUtf8(c_string, font->EllipsisChar), font->EllipsisChar);
     const int surface_sqrt = (int)ImSqrt((float)font->MetricsTotalSurface);
     Text("Texture Area: about %d px ~%dx%d px", font->MetricsTotalSurface, surface_sqrt, surface_sqrt);
     for (int config_i = 0; config_i < font->ConfigDataCount; config_i++)
@@ -15158,7 +15158,7 @@ void ImGui::DebugLogV(const char* fmt, va_list args)
     const int old_size = g.DebugLogBuf.size();
     g.DebugLogBuf.appendf("[%05d] ", g.FrameCount);
     g.DebugLogBuf.appendfv(fmt, args);
-    g.DebugLogIndex.append(g.DebugLogBuf.c_str(), old_size, g.DebugLogBuf.size());
+    g.DebugLogIndex.append(g.DebugLogBuf.c_string(), old_size, g.DebugLogBuf.size());
     if (g.DebugLogFlags & ImGuiDebugLogFlags_OutputToTTY)
         IMGUI_DEBUG_PRINTF("%s", g.DebugLogBuf.begin() + old_size);
 #ifdef IMGUI_ENABLE_TEST_ENGINE
@@ -15221,7 +15221,7 @@ void ImGui::ShowDebugLogWindow(bool* p_open)
     }
     SameLine();
     if (SmallButton("Copy"))
-        SetClipboardText(g.DebugLogBuf.c_str());
+        SetClipboardText(g.DebugLogBuf.c_string());
     BeginChild("##log", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Border, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar);
 
     const ImGuiDebugLogFlags backup_log_flags = g.DebugLogFlags;
@@ -15232,8 +15232,8 @@ void ImGui::ShowDebugLogWindow(bool* p_open)
     while (clipper.Step())
         for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
         {
-            const char* line_begin = g.DebugLogIndex.get_line_begin(g.DebugLogBuf.c_str(), line_no);
-            const char* line_end = g.DebugLogIndex.get_line_end(g.DebugLogBuf.c_str(), line_no);
+            const char* line_begin = g.DebugLogIndex.get_line_begin(g.DebugLogBuf.c_string(), line_no);
+            const char* line_end = g.DebugLogIndex.get_line_end(g.DebugLogBuf.c_string(), line_no);
             TextUnformatted(line_begin, line_end); // Display line
             ImRect text_rect = g.LastItemData.Rect;
             if (IsItemHovered())

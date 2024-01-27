@@ -22,10 +22,18 @@
 
 #include "TinyEntity.h"
 
+te_struct TinyEntityGhost {
+
+	tiny_hash Hash{ };
+	tiny_uint EntityID = 0;
+
+};
+
 te_class TinyEntityManager final { 
 
 private:
-	tiny_map<TinyEntity> _entities;
+	tiny_map<TinyEntity>	   _entities;
+	tiny_list<TinyEntityGhost> _removed;
 
 public:
 	TinyEntityManager( );
@@ -36,7 +44,7 @@ public:
 
 	bool Rename( const tiny_uint entity_id, const tiny_string& new_name );
 
-	bool Kill( const tiny_uint entity_id, tiny_hash& entity_hash );
+	void Kill( const tiny_uint entity_id );
 
 	void Attach( const tiny_uint entity_id, const tiny_uint parent_id );
 
@@ -60,8 +68,14 @@ public:
 
 	void Remove( const tiny_uint entity_id, const tiny_uint component_id );
 
+	void Clean( );
+
 public:
+	tiny_map<TinyEntity>& GetEntities( );
+
 	const tiny_map<TinyEntity>& GetEntities( ) const;
+
+	const tiny_list<TinyEntityGhost>& GetRemoved( ) const;
 
 	tiny_uint GetCount( ) const;
 

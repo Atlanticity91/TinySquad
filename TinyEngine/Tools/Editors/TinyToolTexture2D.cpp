@@ -25,83 +25,74 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolTexture2D::TinyToolTexture2D( )
 	: TinyToolAssetEditor{ "Texture2D" },
+	_texture{ nullptr },
 	_image{ nullptr }
 { }
 
 void TinyToolTexture2D::Save( TinyGame* game ) {
-	auto* texture    = tiny_cast( _asset, TinyTexture2D* );
-	auto& properties = texture->GetProperties( );
+	auto& properties = _texture->GetProperties( );
 	auto& assets	 = game->GetAssets( );
 	auto builder	 = TinyTexture2DBuilder{ };
-	auto* address	 = tiny_cast( tiny_rvalue( builder ), c_ptr );
+	auto* address	 = tiny_cast( tiny_rvalue( builder ), c_pointer );
 
 	Tiny::Memcpy( tiny_rvalue( properties ), tiny_rvalue( builder.Properties ) );
 
-	builder.Columns = texture->GetColumns( );
-	builder.Rows	= texture->GetRows( );
+	builder.Columns = _texture->GetColumns( );
+	builder.Rows	= _texture->GetRows( );
 
 	assets.Export( game, _asset_name, address );
-}
-
-void TinyToolTexture2D::Tick( TinyGame* game, TinyAssetManager& assets ) {
-	if ( !_asset && _image )
-		TinyImGui::DestroyTextureID( _image );
-
-
-	TinyImGui::ScopeVars{ ImGuiStyleVar_WindowMinSize, { 512.f + 256.f, 512.f} };
-
-	TinyToolAssetEditor::Tick( game, assets );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolTexture2D::OnOpen( TinyGame* game, const tiny_string& name, c_ptr asset ) {
-	_image = TinyImGui::CreateTextureID( tiny_cast( asset, TinyTexture2D* ) );
+bool TinyToolTexture2D::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
+	_texture = tiny_cast( asset, TinyTexture2D* );
+	_image   = TinyImGui::CreateTextureID( _texture );
 
 	return _image;
 }
 
 void TinyToolTexture2D::OnTick( TinyGame* game, TinyAssetManager& assets ) {
-	auto* texture = tiny_cast( _asset, TinyTexture2D* );
+	if ( ImGui::BeginTable( "##TinyToolTexture2D", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV ) ) {
+		ImGui::TableSetupColumn( "Controls", IMGUI_NO_FLAGS, 354.f );
+		ImGui::TableSetupColumn( "Image", IMGUI_NO_FLAGS, 512.f );
+		ImGui::TableHeadersRow( );
 
-	if ( ImGui::BeginTable( "table1", 2, ImGuiTableFlags_SizingFixedFit ) ) {
 		ImGui::TableNextRow( );
+		ImGui::TableNextColumn( );
+		
+		ImGui::BeginGroup( );
+		RenderProperties( game, assets );
+		ImGui::EndGroup( );
 
 		ImGui::TableNextColumn( );
-
-		RenderProperties( game, assets, texture );
-
-		ImGui::TableNextColumn( );
-
-		RenderImage( texture );
+		RenderImage( );
 
 		ImGui::EndTable( );
 	}
 }
 
-void TinyToolTexture2D::OnClose( TinyGame* game, TinyAssetManager& assets ) { 
-	Save( game ); 
+void TinyToolTexture2D::OnClose( TinyGame* game, TinyAssetManager& assets ) {
+	TinyToolAssetEditor::OnClose( game, assets );
+
+	TinyImGui::DestroyTextureID( _image );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolTexture2D::RenderProperties( 
-	TinyGame* game,
-	TinyAssetManager& assets,
-	TinyTexture2D* texture 
-) {
+void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& assets ) {
 	TinyImGui::CollapsingOpen(
 		"Sprite Sheet",
 		[ & ]( ) {
-			TinyImGui::InputScalar( "Columns", texture->GetEditColumns( ) );
-			TinyImGui::InputScalar( "Rows", texture->GetEditRows( ) );
-			TinyImGui::InputVec2( "UV", texture->GetUV( ) );
+			TinyImGui::InputScalar( "Columns", _texture->GetEditColumns( ) );
+			TinyImGui::InputScalar( "Rows", _texture->GetEditRows( ) );
+			TinyImGui::InputVec2( "UV", _texture->GetUV( ) );
 		}
 	);
 
-	auto& properties = texture->GetEditProperties( );
+	auto& properties = _texture->GetEditProperties( );
 
 	TinyImGui::Collapsing(
 		"Properties",
@@ -146,7 +137,7 @@ void TinyToolTexture2D::RenderProperties(
 		}
 	);
 
-	auto button_size = TinyImGui::ButtonSpan( 2 );
+	auto button_size = TinyImGui::ButtonSpanLeft( 2 );
 
 	if ( ImGui::Button( "Save", button_size ) )
 		Save( game );
@@ -157,16 +148,15 @@ void TinyToolTexture2D::RenderProperties(
 		Close( game );
 }
 
-void TinyToolTexture2D::RenderImage( TinyTexture2D* texture ) {
-	auto& properties = texture->GetProperties( );
-	auto columns	 = texture->GetColumns( );
-	auto rows		 = texture->GetRows( );
-	auto aspect		 = properties.Width / properties.Height;
+void TinyToolTexture2D::RenderImage( ) {
+	auto& properties = _texture->GetProperties( );
+	auto columns	 = _texture->GetColumns( );
+	auto rows		 = _texture->GetRows( );
+	auto cursor		 = ImGui::GetCursorScreenPos( );
 
-	auto cursor = ImGui::GetCursorScreenPos( );
-	auto size   = ImVec2{ 512, 512 };
-
-	ImGui::Image( _image, size, { .0f, 0.f }, { 1.f, 1.f } );
+	ImGui::Image( _image, { 512, 512 }, { .0f, 0.f }, { 1.f, 1.f } );
 	
+	auto size = ImGui::GetItemRectSize( );
+
 	TinyImGui::Grid( cursor, size, { columns, rows } );
 }

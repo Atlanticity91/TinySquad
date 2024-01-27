@@ -51,7 +51,8 @@ void TinyAssetRegistry::Remove( const tiny_string& name ) {
 
 bool TinyAssetRegistry::Load( TinyFilesystem& filesystem ) {
 #	ifdef TE_DEV
-	auto dev_path = std::string{ filesystem.GetGameDir( ).as_chars( ) } + "Dev\\Dev.tinyregistry";
+	auto game_dir = filesystem.GetGameDir( );
+	auto dev_path = std::string{ game_dir.as_chars( ) } + "Dev\\Dev.tinyregistry";
 
 	return Load( filesystem, { dev_path } );
 #	endif
@@ -72,7 +73,8 @@ bool TinyAssetRegistry::Load( TinyFilesystem& filesystem, const tiny_string& pat
 		auto asset = TinyAssetMetadata{ };
 
 		for ( const auto& node : rootNode ) {
-			auto name = node[ "Name" ].as<std::string>( );
+			auto name	   = node[ "Name" ].as<std::string>( );
+			auto* name_str = name.c_str( );
 
 			asset.Reference = 0;
 			asset.Type	    = tiny_cast( node[ "Type" ].as<tiny_uint>( ), TinyAssetTypes );
@@ -80,7 +82,7 @@ bool TinyAssetRegistry::Load( TinyFilesystem& filesystem, const tiny_string& pat
 			asset.Source	= node[ "Source" ].as<std::string>( );
 			asset.Target	= node[ "Target" ].as<std::string>( );
 
-			_metadatas.emplace( name.c_str( ), asset );
+			_metadatas.emplace( name_str, asset );
 		}
 	} catch ( YAML::ParserException e ) {
 		return false;
@@ -108,7 +110,7 @@ void TinyAssetRegistry::Save( TinyFilesystem& filesystem, const tiny_string& pat
 
 	emitter << YAML::EndSeq << YAML::EndMap;
 
-	filesystem.Dump( path, emitter.c_str( ) );
+	filesystem.Dump( path, emitter.c_string( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,7 +139,9 @@ tiny_list<tiny_string> TinyAssetRegistry::GetAssets( tiny_uint type ) const {
 		if ( metadata.Data.Type != type )
 			continue;
 
-		assets.emplace_back( metadata.String.c_str( ) );
+		auto* name_str = metadata.String.c_str( );
+
+		assets.emplace_back( name_str );
 	}
 
 	return assets;
@@ -156,9 +160,13 @@ tiny_list<TinyAssetRegistry::MetaNode*> TinyAssetRegistry::GetMetadatas( tiny_ui
 	return metadatas;
 }
 
+TinyAssetMetadata& TinyAssetRegistry::At( tiny_uint metadata_id ) {
+	return _metadatas[ metadata_id ];
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		=== OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAssetMetadata& TinyAssetRegistry::operator[]( tiny_uint metadata_id ) {
-	return _metadatas[ metadata_id ];
+	return At( metadata_id );
 }

@@ -93,7 +93,7 @@ tiny_uint TinyGraphicBufferStaging::GetSize( ) const {
 
 const TinyGraphicBuffer& TinyGraphicBufferStaging::GetBuffer( ) const { return _buffer; }
 
-c_ptr TinyGraphicBufferStaging::GetAccess( ) const { return _access; }
+c_pointer TinyGraphicBufferStaging::GetAccess( ) const { return _access; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
@@ -102,4 +102,4 @@ TinyGraphicBufferStaging::operator const TinyGraphicBuffer&( ) const {
 	return GetBuffer( ); 
 }
 
-TinyGraphicBufferStaging::operator c_ptr( ) const { return GetAccess( ); }
+TinyGraphicBufferStaging::operator c_pointer( ) const { return GetAccess( ); }

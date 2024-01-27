@@ -154,6 +154,8 @@ bool TinyGraphicRenderManager::CreateTargets(
 	textures = graphic.Swapchain.GetProperties( ).Capacity;
 
 	for ( const auto& target : targets ) {
+		auto* name_str = target.Name.c_str( );
+
 		if ( target.Type != TRT_TYPE_EXTERNAL ) {
 			if ( target.Type != TRT_TYPE_OUT ) {
 				for ( auto& texture : textures )
@@ -165,9 +167,9 @@ bool TinyGraphicRenderManager::CreateTargets(
 					texture = graphic.Swapchain.GetTargetProperties( swap_target++ );
 			}
 
-			state = _targets.Create( graphic, target.Name.c_str( ), textures );
+			state = _targets.Create( graphic, name_str, textures );
 		} else
-			state = _targets.GetExist( target.Name.c_str( ) );
+			state = _targets.GetExist( name_str );
 
 		if ( !state )
 			break;
@@ -212,7 +214,7 @@ void TinyGraphicRenderManager::CreateBarriers(
 	auto barrier_count = references.Passes.size( );
 	auto barriers	   = tiny_list<TinyGraphicRenderBarrierBundle>{ barrier_count + 1 };
 
-	//_barriers.Create( bundle.Name.c_str( ), barriers );
+	//_barriers.Create( bundle.Name.c_string( ), barriers );
 }
 
 tiny_list<VkClearValue> TinyGraphicRenderManager::CreatePassClears(
@@ -245,7 +247,8 @@ TinyGraphicRenderReferences TinyGraphicRenderManager::CreatePassReferences(
 		reference.ColorOffset = reference.InputOffset;
 
 		for ( auto& target : pass.Targets ) {
-			auto layout		 = _targets.GetTarget( target.Name.c_str( ) ).GetLayout( );
+			auto name_str	 = target.Name.c_str( );
+			auto layout		 = _targets.GetTarget( name_str ).GetLayout( );
 			auto attachement = bundle.Targets.find( 
 				[ target ]( const auto& _target ) {
 					return _target.Name == target.Name;
@@ -281,7 +284,8 @@ tiny_list<VkAttachmentDescription> TinyGraphicRenderManager::CreatePassAttachmen
 	attachements = bundle.Targets.size( );
 
 	for ( auto& attachement : attachements ) {
-		auto& target = bundle.Targets[ target_id++ ];
+		auto& target	  = bundle.Targets[ target_id++ ];
+		auto* target_name = target.Name.c_str( );
 
 		attachement.flags		  = VK_NULL_FLAGS;
 		attachement.format		  = target.Format;
@@ -299,7 +303,7 @@ tiny_list<VkAttachmentDescription> TinyGraphicRenderManager::CreatePassAttachmen
 			attachement.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
 		}
 
-		attachement.finalLayout = _targets.GetTarget( target.Name.c_str( ) ).GetLayout( );
+		attachement.finalLayout = _targets.GetTarget( target_name ).GetLayout( );
 	}
 
 	return attachements;
@@ -415,8 +419,9 @@ bool TinyGraphicRenderManager::CreatePasse(
 	const VkScissor& scissor,
 	const TinyGraphicRenderBundle& bundle
 ) {
-	auto renderpass  = TinyGraphicRenderpassBundle{ };
-	auto references  = CreatePassReferences( bundle );
+	auto renderpass = TinyGraphicRenderpassBundle{ };
+	auto references = CreatePassReferences( bundle );
+	auto* name_str  = bundle.Name.c_str( );
 	
 	renderpass.Frame		= _frames.GetCount( );
 	renderpass.Viewport		= viewport;
@@ -426,7 +431,7 @@ bool TinyGraphicRenderManager::CreatePasse(
 	renderpass.Subpasses    = CreatePassSubpasses( references );
 	renderpass.Dependencies = CreatePassDependencies( bundle );
 
-	auto state = _passes.Create( graphic.Logical, bundle.Name.c_str( ), renderpass );
+	auto state = _passes.Create( graphic.Logical, name_str, renderpass );
 	
 	if ( state ) 
 		CreateBarriers( bundle, references );
@@ -439,15 +444,18 @@ bool TinyGraphicRenderManager::CreateFrame(
 	const VkScissor& scissor,
 	const TinyGraphicRenderBundle& bundle
 ) {
-	auto frame = TinyGraphicRenderFrameProperties{ };
+	auto* name_str = bundle.Name.c_str( );
+	auto frame	   = TinyGraphicRenderFrameProperties{ };
 
-	frame.Pass	  = GetPass( bundle.Name.c_str( ) );
+	frame.Pass	  = GetPass( name_str );
 	frame.Width   = scissor.extent.width;
 	frame.Height  = scissor.extent.height;
 	frame.Targets = graphic.Swapchain.GetProperties( ).Capacity;
 
 	for ( auto& target : bundle.Targets ) {
-		auto views	 = _targets.GetViews( target.Name.c_str( ) );
+		name_str = target.Name.c_str( );
+
+		auto views	 = _targets.GetViews( name_str );
 		auto view_id = views.size( );
 
 		while ( view_id-- > 0 )

@@ -24,16 +24,16 @@
 
 tm_struct TinyAppIcon {
 
-	tiny_int Width;
-	tiny_int Height;
-	tiny_ptr Pixels;
+	tiny_int Width  = 0;
+	tiny_int Height = 0;
+	tiny_ptr Pixels = nullptr;
 
 };
 
 tm_struct TinyAppConfig {
 
-	tiny_int Width;
-	tiny_int Height;
-	TinyAppIcon Icon;
+	tiny_int Width  = 0;
+	tiny_int Height = 0;
+	TinyAppIcon Icon{ };
 
 };

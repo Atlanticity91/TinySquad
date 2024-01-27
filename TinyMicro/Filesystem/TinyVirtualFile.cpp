@@ -41,12 +41,12 @@ bool TinyVirtualFile::Skip( tiny_uint count ) {
 	return _offset < _size;
 }
 
-tiny_uint TinyVirtualFile::Read( tiny_uint size, c_ptr buffer ) {
+tiny_uint TinyVirtualFile::Read( tiny_uint size, c_pointer buffer ) {
 	if ( _offset < _size ) {
 		if ( _offset + size > _size )
 			size = _size - _offset;
 
-		if ( Tiny::Memcpy( tiny_cast( _memory + _offset, const c_ptr ), buffer, size ) )
+		if ( Tiny::Memcpy( tiny_cast( _memory + _offset, const c_pointer ), buffer, size ) )
 			_offset += size;
 	} else
 		size = 0;
@@ -54,12 +54,12 @@ tiny_uint TinyVirtualFile::Read( tiny_uint size, c_ptr buffer ) {
 	return size;
 }
 
-tiny_uint TinyVirtualFile::Write( tiny_uint size, const c_ptr buffer ) {
+tiny_uint TinyVirtualFile::Write( tiny_uint size, const c_pointer buffer ) {
 	if ( _offset < _size ) {
 		if ( _offset + size > _size )
 			size = _size - _offset;
 
-		if ( Tiny::Memcpy( buffer, tiny_cast( _memory + _offset, c_ptr ), size ) )
+		if ( Tiny::Memcpy( buffer, tiny_cast( _memory + _offset, c_pointer ), size ) )
 			_offset += size;
 	} else
 		size = 0;
@@ -71,7 +71,7 @@ TinyVirtualFile& TinyVirtualFile::Asign( const tiny_storage& storage ) {
 	if ( storage ) {
 		_memory = tiny_cast( storage.GetAddress( ), tiny_ptr );
 		_offset = 0;
-		_size   = storage.Capacity;
+		_size   = tiny_cast( storage.Capacity, tiny_uint );
 	}
 
 	return tiny_self;

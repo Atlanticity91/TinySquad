@@ -18,7 +18,7 @@ Emitter::Emitter(std::ostream& stream)
 
 Emitter::~Emitter() = default;
 
-const char* Emitter::c_str() const { return m_stream.str(); }
+const char* Emitter::c_string() const { return m_stream.str(); }
 
 std::size_t Emitter::size() const { return m_stream.pos(); }
 

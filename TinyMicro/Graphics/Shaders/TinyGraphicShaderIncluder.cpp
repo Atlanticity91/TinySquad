@@ -32,9 +32,9 @@ bool TinyGraphicShaderIncluder::Initalize( ) {
 }
 
 shaderc_include_result* TinyGraphicShaderIncluder::GetInclude(
-    c_str requested_source,
+    c_string requested_source,
     shaderc_include_type type,
-    c_str requesting_source,
+    c_string requesting_source,
     size_t include_depth
 ) {
     printf( "%s - %s\n", requested_source, requesting_source );

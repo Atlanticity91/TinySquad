@@ -38,11 +38,11 @@ public:
 
 	bool Create( );
 
-	bool Compile( c_str source );
+	bool Compile( c_string source );
 
 	bool Compile( const tiny_string& source );
 
-	void SetGlobal( const tiny_string& name, c_ptr value );
+	void SetGlobal( const tiny_string& name, c_pointer value );
 
 	void SetGlobal( const tiny_string& name, bool value );
 
@@ -72,7 +72,7 @@ public:
 
 	bool Execute( TinyGame* game, TinyLuaExecution& execution );
 
-	bool Execute( TinyGame* game, const tiny_string& function );
+	bool Execute( TinyGame* game, const tiny_string& script, c_pointer instigator );
 
 	void Terminate( );
 

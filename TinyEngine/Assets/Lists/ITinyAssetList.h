@@ -55,13 +55,13 @@ public:
 	tiny_abstract( tiny_uint Create( 
 		TinyGame* game,
 		TinyAssetMetadata& metadata, 
-		c_ptr asset_builder
+		c_pointer asset_builder
 	) );
 
 	tiny_abstract( bool ReCreate(
 		TinyGame* game,
 		TinyAssetMetadata& metadata,
-		c_ptr asset_builder
+		c_pointer asset_builder
 	) );
 
 	tiny_abstract( void Clear( TinyGame* game ) );
@@ -73,8 +73,8 @@ public:
 
 	tiny_abstract( bool GetIsValid( tiny_uint handle ) const );
 
-	tiny_abstract( c_ptr GetAsset( const TinyAsset& asset ) );
+	tiny_abstract( c_pointer GetAsset( const TinyAsset& asset ) );
 
-	tiny_abstract( const c_ptr GetAsset( const TinyAsset& asset ) const );
+	tiny_abstract( const c_pointer GetAsset( const TinyAsset& asset ) const );
 
 };

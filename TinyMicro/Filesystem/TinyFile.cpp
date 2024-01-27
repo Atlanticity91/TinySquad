@@ -42,8 +42,8 @@ bool TinyFile::Seek( Tiny::FileOrigin origin, tiny_uint offset ) {
 	return Tiny::FileSeek( _file, origin, offset );
 }
 
-tiny_uint TinyFile::Read( tiny_uint length, c_ptr data ) {
-	auto count = (tiny_uint)0;
+tiny_uint TinyFile::Read( tiny_uint length, c_pointer data ) {
+	auto count = tiny_cast( 0, tiny_uint );
 	
 	if ( GetCan( Tiny::TF_ACCESS_READ ) )
 		count = Tiny::FileRead( _file, length, data );
@@ -51,8 +51,8 @@ tiny_uint TinyFile::Read( tiny_uint length, c_ptr data ) {
 	return count;
 }
 
-tiny_uint TinyFile::Write( tiny_uint length, const c_ptr data ) {
-	auto count = (tiny_uint)0;
+tiny_uint TinyFile::Write( tiny_uint length, const c_pointer data ) {
+	auto count = tiny_cast( 0, tiny_uint );
 
 	if ( GetCan( Tiny::TF_ACCESS_WRITE ) )
 		count = Tiny::FileWrite( _file, length, data );
@@ -60,8 +60,8 @@ tiny_uint TinyFile::Write( tiny_uint length, const c_ptr data ) {
 	return count;
 }
 
-tiny_uint TinyFile::ReadAll( tiny_uint length, c_ptr& storage ) {
-	auto size = (tiny_uint)0;
+tiny_uint TinyFile::ReadAll( tiny_uint length, c_pointer& storage ) {
+	auto size = tiny_cast( 0, tiny_uint );
 
 	if ( _file.Size <= length )
 		size = Read( _file.Size, storage );

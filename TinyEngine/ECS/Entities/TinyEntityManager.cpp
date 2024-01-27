@@ -24,12 +24,15 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyEntityManager::TinyEntityManager( )
-	: _entities{ }
+	: _entities{ },
+	_removed{ }
 { }
 
 tiny_uint TinyEntityManager::Create( const tiny_string& name, const tiny_uint parent_id ) {
 	auto entity_id = TINY_UINT_MAX;
 	
+	static int i = 0;
+
 	if ( !_entities.find( name, entity_id ) ) {
 		auto entity = TinyEntity{ };
 
@@ -59,13 +62,12 @@ bool TinyEntityManager::Rename( const tiny_uint entity_id, const tiny_string& ne
 	return state;
 }
 
-bool TinyEntityManager::Kill( const tiny_uint entity_id, tiny_hash& entity_hash  ) {
-	auto state = _entities.find_key( entity_id, entity_hash );
+void TinyEntityManager::Kill( const tiny_uint entity_id ) {
+	auto& entity = _entities.node( entity_id );
+	
+	entity.Data.Flags ^= TINY_LEFT_SHIFT( TE_FLAG_ALIVE );
 
-	if ( state )
-		_entities.at( entity_id ).Flags ^= TINY_LEFT_SHIFT( TE_FLAG_ALIVE );
-
-	return state;
+	_removed.create_back( entity.Hash, entity_id );
 }
 
 void TinyEntityManager::Attach( const tiny_uint entity_id, const tiny_uint parent_id ) {
@@ -128,10 +130,28 @@ void TinyEntityManager::Remove( const tiny_uint entity_id, const tiny_uint compo
 	_entities.at( entity_id ).Components ^= TINY_LEFT_SHIFT( component_id );
 }
 
+void TinyEntityManager::Clean( ) {
+	auto entity_id = _entities.size( );
+
+	while ( entity_id-- > 0 ) {
+		if ( _entities.at( entity_id ).GetHasFlag( TE_FLAG_ALIVE ) )
+			continue;
+
+		_entities.erase( entity_id );
+	}
+	_removed.clear( );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+tiny_map<TinyEntity>& TinyEntityManager::GetEntities( ) { return _entities; }
+
 const tiny_map<TinyEntity>& TinyEntityManager::GetEntities( ) const { return _entities; }
+
+const tiny_list<TinyEntityGhost>& TinyEntityManager::GetRemoved( ) const { 
+	return _removed; 
+}
 
 tiny_uint TinyEntityManager::GetCount( ) const { return _entities.size( ); }
 

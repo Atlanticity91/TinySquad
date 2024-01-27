@@ -49,7 +49,7 @@ tm_class TinyMemoryManager final {
 	const tiny_uint MAX_BLOCKS = 512;
 
 private:
-	c_ptr	  _block_storage;
+	c_pointer	  _block_storage;
 	tiny_uint _block_count;
 	tiny_ulong _occupancy;
 	tiny_ulong _capacity;
@@ -99,9 +99,9 @@ public:
 
 	TinyMemoryBlock* GetBlock( tiny_uint block ) const;
 
-	c_ptr GetAddress( const tiny_storage& storage ) const;
+	c_pointer GetAddress( const tiny_storage& storage ) const;
 
-	c_ptr GetAddress( tiny_uint block ) const;
+	c_pointer GetAddress( tiny_uint block ) const;
 
 private:
 	bool FindEmpty( tiny_uint& block_id, TinyMemoryBlock*& block ) const;

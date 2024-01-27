@@ -47,6 +47,18 @@ tiny_hash::tiny_hash( const tiny_string& string, tiny_uint offset, tiny_uint len
 	asign( string, offset, length );
 }
 
+tiny_hash::tiny_hash( c_string string )
+	: tiny_hash{ } 
+{
+	asign( string );
+}
+
+tiny_hash::tiny_hash( const std::string& string )
+	: tiny_hash{ }
+{ 
+	asign( string );
+}
+
 tiny_hash& tiny_hash::asign( const tiny_string& string ) {
 	_data = generate( string );
 
@@ -65,6 +77,18 @@ tiny_hash& tiny_hash::asign( const tiny_hash& other ) {
 	return tiny_self;
 }
 
+tiny_hash& tiny_hash::asign( c_string other ) {
+	auto _other = tiny_string{ other };
+
+	return asign( _other );
+}
+
+tiny_hash& tiny_hash::asign( const std::string& other ) {
+	auto _other = tiny_string{ other.c_str( ) };
+
+	return asign( _other );
+}
+
 tiny_hash& tiny_hash::asign(
 	const tiny_string& string,
 	tiny_uint offset,
@@ -74,6 +98,8 @@ tiny_hash& tiny_hash::asign(
 
 	return tiny_self;
 }
+
+void tiny_hash::empty( ) { _data = tiny_cast( 0, tiny_uint ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
@@ -115,6 +141,12 @@ bool tiny_hash::equal( tiny_uint other ) const { return _data == other; }
 
 bool tiny_hash::equal( const tiny_hash& other ) const { return _data == other.get( ); }
 
+bool tiny_hash::equal( const std::string& other ) const {
+	auto _other = tiny_string{ other };
+
+	return equal( _other );
+}
+
 bool tiny_hash::not_equal( tiny_string string ) const {
 	return _data != generate( string );
 }
@@ -122,6 +154,12 @@ bool tiny_hash::not_equal( tiny_string string ) const {
 bool tiny_hash::not_equal( tiny_uint other ) const { return _data != other; }
 
 bool tiny_hash::not_equal( const tiny_hash& other ) const { return _data != other.get( ); }
+
+bool tiny_hash::not_equal( const std::string& other ) const {
+	auto _other = tiny_string{ other };
+
+	return not_equal( _other );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
@@ -134,6 +172,8 @@ tiny_hash& tiny_hash::operator=( tiny_uint other ) { return asign( other ); }
 
 tiny_hash& tiny_hash::operator=( const tiny_hash& other ) { return asign( other ); }
 
+tiny_hash& tiny_hash::operator=( const std::string& other ) { return asign( other ); }
+
 bool tiny_hash::operator<( const tiny_hash other ) const { return _data < other.get( ); }
 
 bool tiny_hash::operator>( const tiny_hash other ) const { return _data > other.get( ); }
@@ -144,8 +184,12 @@ bool tiny_hash::operator==( tiny_uint other ) const { return equal( other ); }
 
 bool tiny_hash::operator==( const tiny_hash& other ) const { return equal( other ); }
 
+bool tiny_hash::operator==( const std::string& other ) const { return equal( other ); }
+
 bool tiny_hash::operator!=( tiny_string string ) const { return not_equal( string ); }
 
 bool tiny_hash::operator!=( tiny_uint other ) const { return not_equal( other ); }
 
 bool tiny_hash::operator!=( const tiny_hash& other ) const { return not_equal( other ); }
+
+bool tiny_hash::operator!=( const std::string& other ) const { return not_equal( other ); }

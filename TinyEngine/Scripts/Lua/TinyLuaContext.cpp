@@ -36,7 +36,7 @@ bool TinyLuaContext::Create( ) {
 	return _lua_state;
 }
 
-bool TinyLuaContext::Compile( c_str source ) {
+bool TinyLuaContext::Compile( c_string source ) {
 	return luaL_loadstring( _lua_state, source ) == LUA_OK;
 }
 
@@ -46,7 +46,7 @@ bool TinyLuaContext::Compile( const tiny_string& source ) {
 	return Compile( chars );
 }
 
-void TinyLuaContext::SetGlobal( const tiny_string& name, c_ptr value ) {
+void TinyLuaContext::SetGlobal( const tiny_string& name, c_pointer value ) {
 	if ( value ) {
 		auto name_str = name.as_chars( );
 
@@ -158,7 +158,7 @@ bool TinyLuaContext::Execute( TinyGame* game, TinyLuaExecution& execution ) {
 	auto state = lua_getglobal( _lua_state, name ) == LUA_OK;
 
 	if ( state && lua_isfunction( _lua_state, TINY_LUA_TOP ) ) {
-		SetGlobal( "game", tiny_cast( game, c_ptr ) );
+		SetGlobal( "game", tiny_cast( game, c_pointer ) );
 
 		state = lua_pcall( _lua_state, execution.Inputs.size( ), execution.Outputs.size( ), 0 ) == LUA_OK;
 
@@ -170,8 +170,8 @@ bool TinyLuaContext::Execute( TinyGame* game, TinyLuaExecution& execution ) {
 	return state;
 }
 
-bool TinyLuaContext::Execute( TinyGame* game, const tiny_string& function ) {
-	auto execution = TinyLuaExecution{ function };
+bool TinyLuaContext::Execute( TinyGame* game, const tiny_string& script, c_pointer instigator ) {
+	auto execution = TinyLuaExecution{ script };
 
 	return Execute( game, execution );
 }

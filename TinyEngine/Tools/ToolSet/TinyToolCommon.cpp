@@ -69,6 +69,8 @@ void TinyToolCommon::OnTick(
     TinyImGui::Collapsing( 
         "Guizmo",
         [ & ]( ) {
+            TinyImGui::BeginVars( );
+
             if ( TinyImGui::Dropdown( "Mode", _modes ) )
                 _mode = _modes.Index == 0 ? TTWG_MODE_LOCAL : TTWG_MODE_WORLD;
 
@@ -91,6 +93,8 @@ void TinyToolCommon::OnTick(
                 TinyImGui::InputVec3( "Rotate", _snap_rotate );
                 TinyImGui::InputVec3( "Scale", _snap_scale );
             }
+
+            TinyImGui::EndVars( );
         }
     );
 
@@ -102,19 +106,19 @@ void TinyToolCommon::OnTick(
             if ( ImGui::Button( "ReCreate", { -1.f, 0.f } ) )
                 graphics.ReCreate( );
 
-            TinyImGui::SeparatorText( "Hardware" );
+            ImGui::SeparatorText( "Hardware" );
 
             DrawHardware( graphics );
 
-            TinyImGui::SeparatorText( "Boundaries" );
+            ImGui::SeparatorText( "Boundaries" );
 
             DrawBoundaries( graphics );
 
-            TinyImGui::SeparatorText( "Swapchain" );
+            ImGui::SeparatorText( "Swapchain" );
 
             DrawSwapchain( graphics );
 
-            TinyImGui::SeparatorText( "Passes" );
+            ImGui::SeparatorText( "Passes" );
 
             DrawPasses( graphics );
         }
@@ -128,9 +132,13 @@ void TinyToolCommon::OnTick(
             auto occupancy = memory.GetOccupancy( );
             auto capacity = memory.GetCapacity( );
 
+            TinyImGui::BeginVars( );
+
             TinyImGui::TextVar( "Memory", "%u / %u", occupancy, capacity );
             TinyImGui::TextVar( "Free", "%u", capacity - occupancy );
             TinyImGui::TextVar( "Blocks", "%u", memory.GetBlockCount( ) );
+
+            TinyImGui::EndVars( );
         }
     );
 
@@ -190,13 +198,12 @@ void TinyToolCommon::DrawBoundaries( TinyGraphicManager& graphics ) {
 
     TinyImGui::BeginVars( );
 
-    ImGui::BeginDisabled( );
-    TinyImGui::InputVector( "Aspect", 2, (float*)&boundaries.GetAspect( ) );
-    TinyImGui::InputVector( "Viewport", 4, (float*)&boundaries.GetViewport( ).x );
-    TinyImGui::InputVector( "Scissor", 4, (tiny_int*)&boundaries.GetScissor( ).offset.x );
-    ImGui::EndDisabled( );
-    TinyImGui::InputSlider( "Depth Min", (float*)&boundaries.GetViewport( ).minDepth, -1.f, 1.f );
-    TinyImGui::InputSlider( "Depth Max", (float*)&boundaries.GetViewport( ).maxDepth, -1.f, 1.f );
+    TinyImGui::InputVec2( "Aspect", boundaries.GetAspect( ) );
+    TinyImGui::InputVulkan( "Viewport", boundaries.GetViewport( ) );
+    TinyImGui::InputVulkan( "Scissor", boundaries.GetScissor( ) );
+
+    TinyImGui::InputSlider( "Depth Min", tiny_cast( tiny_rvalue( boundaries.GetViewport( ).minDepth ), float* ), -1.f, 1.f );
+    TinyImGui::InputSlider( "Depth Max", tiny_cast( tiny_rvalue( boundaries.GetViewport( ).maxDepth ), float* ), -1.f, 1.f );
 
     TinyImGui::EndVars( );
 }
@@ -208,9 +215,9 @@ void TinyToolCommon::DrawSwapchain( TinyGraphicManager& graphics ) {
 
     ImGui::BeginDisabled( );
     TinyImGui::TextVar( "Capacity", "%d", properties.Capacity );
-    TinyImGui::TextVar( "Format", "%s", vk::CastFormat( properties.Format ) );
-    TinyImGui::TextVar( "Color Space", "%s", vk::CastColorSpace( properties.ColorSpace ) );
-    TinyImGui::TextVar( "Present Mode", "%s", vk::CastPresentMode( properties.PresentMode ) );
+    TinyImGui::InputVulkan( "Format", properties.Format );
+    TinyImGui::InputVulkan( "Color Space", properties.ColorSpace );
+    TinyImGui::InputVulkan( "Present Mode", properties.PresentMode );
     ImGui::EndDisabled( );
 
     TinyImGui::EndVars( );
@@ -221,11 +228,16 @@ void TinyToolCommon::DrawPasses( TinyGraphicManager& graphics ) {
     auto& bundles = passes.GetBundles( );
 
     for ( auto& bundle : bundles ) {
-        if ( ImGui::CollapsingHeader( bundle.Name.c_str( ), 0 ) ) {
+        auto* name_str = bundle.Name.c_str( );
+
+        if ( ImGui::CollapsingHeader( name_str, 0 ) ) {
             TinyImGui::BeginVars( );
 
-            for ( auto& target : bundle.Targets )
-                TinyImGui::InputColor( target.Name.c_str( ), (float*)target.Clear.color.float32 );
+            for ( auto& target : bundle.Targets ) {
+                name_str = target.Name.c_str( );
+
+                TinyImGui::InputColor( name_str, target.Clear.color );
+            }
 
             TinyImGui::EndVars( );
 
