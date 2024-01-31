@@ -29,10 +29,12 @@ TinyAnim2D::TinyAnim2D( )
 
 TinyAnim2D::TinyAnim2D( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash },
-	_animation{ TA_TYPE_ANIMATION_2D },
-	_flags{ tiny_cast( 0, tiny_uint ) },
-	_frame_id{ tiny_cast( 0, tiny_uint ) },
-	_frame_time{ .0f }
+	_collection{ TA_TYPE_ANIMATION_2D },
+	_animation{ "" },
+	_flags{ 0 },
+	_frame_id{ 0 },
+	_frame_time{ .0f },
+	_frame_duration{ .0f }
 { }
 
 bool TinyAnim2D::Create( TinyGame* game, TinyEngine& engine ) {
@@ -45,8 +47,47 @@ bool TinyAnim2D::Create( TinyGame* game, TinyEngine& engine ) {
 	return state;
 }
 
-void TinyAnim2D::Delete( TinyGame* game, TinyEngine& engine ) {
+TinyAnim2D& TinyAnim2D::SetCollection( TinyGame* game, const tiny_string& collection ) {
+	auto& assets = game->GetAssets( );
+
+	assets.Acquire( game, _collection, collection );
+
+	return tiny_self;
 }
+
+TinyAnim2D& TinyAnim2D::SetAnimation( TinyGame* game, const tiny_string& animation ) {
+	_animation = animation;
+
+	return SetFrame( game, 0 );
+}
+
+TinyAnim2D& TinyAnim2D::SetFrame( TinyGame* game, tiny_uint frame_id ) {
+	auto& assets	 = game->GetAssets( );
+	auto* collection = assets.GetAssetAs<TinyAnimation2D>( _collection );
+
+	if ( collection ) {
+		auto* frames = collection->Get( _animation );
+
+		if ( frames && frame_id < frames->size( ) )
+			SetFrame( game, frame_id, frames );
+	}
+
+	return tiny_self;
+}
+
+TinyAnim2D& TinyAnim2D::Play( ) {
+	_flags |= TA_FLAG_PLAYING;
+
+	return tiny_self;
+}
+
+TinyAnim2D& TinyAnim2D::Pause( ) {
+	_flags ^= TA_FLAG_PLAYING;
+
+	return tiny_self;
+}
+
+void TinyAnim2D::Delete( TinyGame* game, TinyEngine& engine ) { }
 
 void TinyAnim2D::DisplayWidget(
 	TinyGame* game,
@@ -55,7 +96,23 @@ void TinyAnim2D::DisplayWidget(
 ) {
 	TinyComponent::DisplayWidget( game, engine, toolbox );
 
-	toolbox.DisplayAsset( game, "Animation", _animation );
+	toolbox.DisplayAsset( game, "Collection", _collection );
+
+	auto& assets	 = game->GetAssets( );
+	auto* collection = assets.GetAssetAs<TinyAnimation2D>( _collection );
+	auto animations  = tiny_list<tiny_string>{ "Undefined" };
+
+	if ( collection )
+		collection->GetAnimations( animations );
+
+	ImGui::BeginDisabled( !collection );
+	
+	auto context = TinyImGui::DropdownContext{ animations, _animation };
+
+	if ( TinyImGui::Dropdown( "Animation", context ) )
+		_animation = context.Values[ context.Index ];
+	
+	ImGui::EndDisabled( );
 
 	auto state = tiny_cast( _flags & TA_FLAG_PLAYING, bool );
 	if ( TinyImGui::Checkbox( "Playing", state ) )
@@ -69,17 +126,52 @@ void TinyAnim2D::DisplayWidget(
 	if ( TinyImGui::Checkbox( "Reverse", state ) )
 		_flags ^= TA_FLAG_REVERSE;
 
-	TinyImGui::InputScalar( "Frame", _frame_id );
+	if ( TinyImGui::InputScalar( "Frame", _frame_id ) )
+		_frame_time = 0.f;
+
+	ImGui::BeginDisabled( );
 	TinyImGui::InputScalar( "Time", _frame_time );
+	TinyImGui::InputScalar( "Duration", _frame_duration );
+	ImGui::EndDisabled( );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyAnim2D::SetFrame(
+	TinyGame* game,
+	tiny_uint frame_id,
+	TinyAnimation2D::FrameCollection* frames
+) {
+	auto& ecs   = game->GetECS( );
+	auto& frame = frames->at( frame_id );
+
+	_frame_id		= frame_id;
+	_frame_time		= .0f;
+	_frame_duration = frame.Duration;
+
+	auto* skin = ecs.GetComponentAs<TinySkin2D>( _owner );
+
+	skin->SetSprite( frame.Column, frame.Row );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAsset& TinyAnim2D::GetAnimation( ) { return _animation; }
+TinyAsset& TinyAnim2D::GetCollection( ) { return _collection; }
+
+const tiny_string& TinyAnim2D::GetAnimation( ) const { return _animation; }
 
 tiny_uint TinyAnim2D::GetFlags( ) const { return _flags; }
+
+bool TinyAnim2D::GetIsPlaying( ) const { return _flags & TA_FLAG_PLAYING; }
+
+bool TinyAnim2D::GetLoop( ) const { return _flags & TA_FLAG_LOOPING; }
+
+bool TinyAnim2D::GetReverse( ) const { return _flags & TA_FLAG_REVERSE; }
 
 tiny_uint TinyAnim2D::GetFrameID( ) const { return _frame_id; }
 
 float TinyAnim2D::GetFrameTime( ) const { return _frame_time; }
+
+float TinyAnim2D::GetFrameDuration( ) const { return _frame_duration; }

@@ -24,13 +24,15 @@
 
 tiny_enum( TinyToolContentActions ) {
 
-	TTC_ACTION_RELOAD = 0,
-	TTC_ACTION_EDIT, 
+	TTC_ACTION_EDIT = 0, 
 	TTC_ACTION_REMOVE
 
 };
 
-te_class TinyToolContent final : tiny_inherit( TinyToolCategory ) {
+te_class TinyToolContent final 
+	: tiny_inherit( TinyToolCategory ),
+	tiny_inherit( TinyToolDialog )
+{
 
 	typedef c_string ( *AssetTypeToString )( tiny_uint );
 
@@ -79,6 +81,9 @@ public:
 		if ( editor )
 			_type_editors.insert( AssetType, editor );
 	};
+
+public:
+	bool GetHasEditor( tiny_uint asset_type ) const;
 
 private:
 	static c_string TypeToString( tiny_uint type );

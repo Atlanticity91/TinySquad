@@ -22,10 +22,10 @@
 
 #include "TinyToolCommon.h"
 
-te_class TinyToolInputs final : tiny_inherit( TinyToolCategory ) {
-
-private:
-	tiny_buffer<256> _path;
+te_class TinyToolInputs final 
+	: tiny_inherit( TinyToolCategory ),
+	tiny_inherit( TinyToolDialog )
+{
 
 public:
 	TinyToolInputs( );

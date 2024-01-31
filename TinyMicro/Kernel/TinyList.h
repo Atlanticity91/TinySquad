@@ -43,6 +43,12 @@ public:
 		: _data{ elements } 
 	{ };
 
+	tiny_list( const Type& element )
+		: tiny_list{ }
+	{
+		emplace_back( element );
+	};
+
 	tiny_list( tiny_uint capacity, const Type& def_value )
 		: _data{ capacity > 0 ? capacity : 1 } 
 	{ 
@@ -292,7 +298,7 @@ public:
 	};
 
 	const Type* get( tiny_uint element_id ) const {
-		auto* result = tiny_cast( nullptr, Type* );
+		auto* result = tiny_cast( nullptr, const Type* );
 
 		if ( exist( element_id ) )
 			result = tiny_rvalue( _data[ element_id ] );

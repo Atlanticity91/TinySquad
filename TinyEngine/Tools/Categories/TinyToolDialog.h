@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/12/2023
- * @version  : 2024.1
+ * @creation : 31/01/2024
+ * @version  : 2024.1.2
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,32 +20,26 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Uniforms/TinyRenderUniformManager.h>
+#include "TinyToolCategory.h"
 
-#define TINY_MAX_INSTANCE 1024
-#define TINY_MAX_VERTICES 4 * TINY_MAX_INSTANCE
-#define TINY_MAX_INDEX 6 * TINY_MAX_INSTANCE
-#define TINY_MAX_LIGHT 512
+te_class TinyToolDialog {
 
-#define TINY_RENDER_SET_CONTEXT 0 
-#define TINY_RENDER_SET_RENDER 1
-#define TINY_RENDER_SET_TEXTURE 2
-#define TINY_RENDER_SET_LIGHT 3
+protected:
+	tiny_string _dialog_filters;
+	tiny_string _dialog_path;
 
-typedef tiny_mat4 TinyRenderTransform;
-typedef tiny_uint TinyRenderIndex;
-typedef tiny_vec4 TinyRenderVertex;
-typedef tiny_vec2 TinyRenderUV;
+public:
+	TinyToolDialog( const tiny_string& filters );
 
-te_struct TinyRenderSprite {
+	virtual ~TinyToolDialog( ) = default;
 
-	tiny_vec4 Color;
-	tiny_vec4 UV;
+	bool OpenDialog( TinyFilesystem& filesystem );
 
-};
+	bool SaveDialog( TinyFilesystem& filesystem );
 
-te_struct TinyRenderLight {
+public:
+	const tiny_string& GetFilters( ) const;
 
-	tiny_vec4 Color;
+	const tiny_string& GetPath( ) const;
 
 };

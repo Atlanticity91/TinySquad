@@ -230,7 +230,14 @@ bool TinyGraphicPipeline::CreateRenderPipeline(
 	pipeline_info.basePipelineHandle  = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex   = 0;
 
-	return vk::Check( vkCreateGraphicsPipelines( graphic.Logical, pipeline_cache, 1, &pipeline_info, vk::GetAllocator( ), &_pipeline ) );
+	return vk::Check( vkCreateGraphicsPipelines( 
+		graphic.Logical,
+		pipeline_cache, 
+		1, 
+		tiny_rvalue( pipeline_info ),
+		vk::GetAllocator( ),
+		tiny_rvalue( _pipeline ) 
+	) );
 }
 
 bool TinyGraphicPipeline::CreateComputePipeline(
@@ -247,7 +254,14 @@ bool TinyGraphicPipeline::CreateComputePipeline(
 	pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex  = 0;
 
-	return vk::Check( vkCreateComputePipelines( graphic.Logical, pipeline_cache, 1, &pipeline_info, vk::GetAllocator( ), &_pipeline ) );
+	return vk::Check( vkCreateComputePipelines( 
+		graphic.Logical,
+		pipeline_cache,
+		1, 
+		tiny_rvalue( pipeline_info ),
+		vk::GetAllocator( ),
+		tiny_rvalue( _pipeline )
+	) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -298,7 +312,7 @@ bool TinyGraphicPipeline::GetPipelineLayout(
 		layout_info.pushConstantRangeCount = bundle.Constants.size( );
 		layout_info.pPushConstantRanges	   = bundle.Constants.data( );
 
-		state = vk::Check( vkCreatePipelineLayout( logical, &layout_info, vk::GetAllocator( ), &_layout ) );
+		state = vk::Check( vkCreatePipelineLayout( logical, tiny_rvalue( layout_info ), vk::GetAllocator( ), tiny_rvalue( _layout ) ) );
 	}
 
 	return state;
@@ -368,9 +382,9 @@ VkPipelineRasterizationStateCreateInfo TinyGraphicPipeline::GetRasterizationStat
 	rasterization_state.cullMode				= VK_CULL_MODE_FRONT_BIT;
 	rasterization_state.frontFace				= VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterization_state.depthBiasEnable			= VK_FALSE;
-	rasterization_state.depthBiasConstantFactor = .0f;
-	rasterization_state.depthBiasClamp			= .0f;
-	rasterization_state.depthBiasSlopeFactor	= .0f;
+	rasterization_state.depthBiasConstantFactor =  .0f;
+	rasterization_state.depthBiasClamp			=  .0f;
+	rasterization_state.depthBiasSlopeFactor	=  .0f;
 	rasterization_state.lineWidth				= 1.f;
 
 	return rasterization_state;

@@ -77,6 +77,8 @@ public:
 
 	bool Acquire( TinyGame* game, TinyAsset& asset );
 
+	bool Acquire( TinyGame* game, TinyAsset& asset, const tiny_string& new_asset );
+
 	void Release( TinyGame* game, TinyAsset& asset );
 
 	void Terminate( TinyGame* game );

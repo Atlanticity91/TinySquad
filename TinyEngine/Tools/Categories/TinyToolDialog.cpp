@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/11/2023
- * @version  : 2024.1
+ * @creation : 31/01/2024
+ * @version  : 2024.1.2
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,44 +23,22 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyTextureSpriteSheet::TinyTextureSpriteSheet( ) 
-	: _rows{ 0 },
-	_columns{ 0 },
-	_uv{ .0f, .0f }
+TinyToolDialog::TinyToolDialog( const tiny_string& filters )
+	: _dialog_filters{ filters },
+	_dialog_path{ }
 { }
 
-void TinyTextureSpriteSheet::SetDimensions( tiny_uint rows, tiny_uint columns ) {
-	_rows	 = rows;
-	_columns = columns;
-	_uv.x	 = 1.f / rows;
-	_uv.y	 = 1.f / columns;
+bool TinyToolDialog::OpenDialog( TinyFilesystem& filesystem ) {
+	return filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, _dialog_filters, _dialog_path );
+}
+
+bool TinyToolDialog::SaveDialog( TinyFilesystem& filesystem ) {
+	return filesystem.OpenDialog( Tiny::TD_TYPE_SAVE_FILE, _dialog_filters, _dialog_path );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_uint TinyTextureSpriteSheet::GetRows( ) const { return _rows; }
+const tiny_string& TinyToolDialog::GetFilters( ) const { return _dialog_filters; }
 
-tiny_uint TinyTextureSpriteSheet::GetColumns( ) const { return _columns; }
-
-const tiny_vec2& TinyTextureSpriteSheet::GetUV( ) const { return _uv; }
-
-const tiny_vec4 TinyTextureSpriteSheet::GetUV( const tiny_upoint& sprite ) const {
-	return GetUV( sprite.x, sprite.y );
-}
-
-const tiny_vec4 TinyTextureSpriteSheet::GetUV( tiny_uint columns, tiny_uint rows ) const {
-	rows	= rows	  < _rows	 ? rows	   : _rows;
-	columns = columns < _columns ? columns : _columns;
-
-	return { 
-		_uv.x * rows,
-		_uv.y * columns,
-		_uv.x * rows    + _uv.x,
-		_uv.y * columns + _uv.y
-	};
-}
-
-tiny_uint& TinyTextureSpriteSheet::GetEditColumns( ) { return _columns; }
-
-tiny_uint& TinyTextureSpriteSheet::GetEditRows( ) { return _rows; }
+const tiny_string& TinyToolDialog::GetPath( ) const { return _dialog_path; }

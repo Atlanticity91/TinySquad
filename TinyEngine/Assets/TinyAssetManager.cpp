@@ -136,8 +136,8 @@ bool TinyAssetManager::Export(
 	auto state		 = !path.is_empty( );
 	
 	if ( state ) {
-		auto* name_str = filesystem.GetInformation( path ).Name.c_str( );
-		auto name	   = tiny_string{ name_str };
+		auto name_str = filesystem.GetInformation( path ).Name;
+		auto name	  = tiny_string{ name_str };
 
 		if ( !_registry.GetExist( name ) ) {
 			state = filesystem.GetIsAssetFile( path );
@@ -283,6 +283,15 @@ bool TinyAssetManager::Acquire( TinyGame* game, TinyAsset& asset ) {
 	}
 
 	return state;
+}
+
+bool TinyAssetManager::Acquire( TinyGame* game, TinyAsset& asset, const tiny_string& new_asset ) {
+	if ( asset.Hash )
+		Release( game, asset );
+
+	asset.Hash = tiny_hash{ new_asset };
+
+	return Acquire( game, asset );
 }
 
 void TinyAssetManager::Release( TinyGame* game, TinyAsset& asset ) {

@@ -27,8 +27,10 @@ TinyFilesystem::TinyFilesystem( )
 	: _work_dir{ },
 	_game_dir{ },
 	_save_dir{ },
+	_dev_dir{ },
 	_game{ },
-	_cache{ }
+	_cache{ },
+	_dialog_path{ "" }
 { }
 
 bool TinyFilesystem::Initialize( const TinyWindow& window ) {
@@ -38,6 +40,7 @@ bool TinyFilesystem::Initialize( const TinyWindow& window ) {
 	if ( state ) {
 		_work_dir = Tiny::GetWorkingDir( );
 		_save_dir = _game_dir + "Saves\\";
+		_dev_dir  = _game_dir + "Dev\\";
 
 		if ( !GetDirExist( _save_dir ) )
 			CreateDir( _save_dir );
@@ -55,6 +58,22 @@ bool TinyFilesystem::CreateDir( const tiny_string& path ) {
 
 bool TinyFilesystem::RemoveDir( const tiny_string& path ) {
 	return path.is_valid( ) && Tiny::RemoveDir( path.get( ) );
+}
+
+bool TinyFilesystem::OpenDialog(
+	Tiny::DialogTypes type,
+	const tiny_string& filters,
+	tiny_string& path
+) {
+	auto* _filters   = filters.as_chars( );
+	auto* path_str   = _dialog_path.as_chars( );
+	auto path_length = _dialog_path.length( );
+	auto state		 = Tiny::OpenDialog( type, _dev_dir, _filters, path_length, path_str );
+
+	if ( state )
+		path = path_str;
+
+	return state;
 }
 
 TinyFile TinyFilesystem::OpenFile( const tiny_string& path, Tiny::FileAccesses access ) {
@@ -108,15 +127,17 @@ bool TinyFilesystem::GenerateGameDir( const std::string& title ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_string TinyFilesystem::GetWorkingDir( ) const { return tiny_string{ _work_dir }; }
+tiny_string TinyFilesystem::GetWorkingDir( ) const { return _work_dir; }
 
-tiny_string TinyFilesystem::GetGameDir( ) const { return tiny_string{ _game_dir }; }
+tiny_string TinyFilesystem::GetGameDir( ) const { return _game_dir; }
 
 tiny_string TinyFilesystem::GetSaveDir( ) const { return _save_dir; }
 
-tiny_string TinyFilesystem::GetConfigPath( ) const { return tiny_string{ _game }; }
+tiny_string TinyFilesystem::GetDevDir( ) const { return _dev_dir; }
 
-tiny_string TinyFilesystem::GetCachePath( ) const { return tiny_string{ _cache }; }
+tiny_string TinyFilesystem::GetConfigPath( ) const { return _game; }
+
+tiny_string TinyFilesystem::GetCachePath( ) const { return _cache; }
 
 bool TinyFilesystem::GetDirExist( const tiny_string& path ) const {
 	return path.is_valid( ) && Tiny::GetIsDir( path.get( ) );

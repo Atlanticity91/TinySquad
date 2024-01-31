@@ -135,6 +135,8 @@ tiny_map<TinyAssetMetadata>& TinyAssetRegistry::GetMetadatas( ) {
 tiny_list<tiny_string> TinyAssetRegistry::GetAssets( tiny_uint type ) const {
 	auto assets = tiny_list<tiny_string>{ };
 
+	assets.emplace_back( "Undefined" );
+
 	for ( auto& metadata : _metadatas ) {
 		if ( metadata.Data.Type != type )
 			continue;

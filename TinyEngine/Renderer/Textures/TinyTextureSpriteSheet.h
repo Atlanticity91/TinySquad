@@ -43,7 +43,9 @@ public:
 	
 	const tiny_vec2& GetUV( ) const;
 
-	const tiny_vec4 GetUV( tiny_uint rows, tiny_uint columns ) const;
+	const tiny_vec4 GetUV( const tiny_upoint& sprite ) const;
+
+	const tiny_vec4 GetUV( tiny_uint columns, tiny_uint rows ) const;
 
 	tiny_uint& GetEditColumns( );
 

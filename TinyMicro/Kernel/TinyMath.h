@@ -36,6 +36,8 @@
 
 #define TINY_GLM_REG( TYPE, QUERY ) typedef glm::TYPE tiny_##QUERY
 
+typedef glm::vec<2, tiny_uint, glm::defaultp> tiny_upoint;
+
 TINY_GLM_REG( ivec2, point );
 TINY_GLM_REG( vec2, vec2 );
 TINY_GLM_REG( vec3, vec3 );

@@ -44,16 +44,17 @@ bool TinyGraphicManager::Initialize( TinyFilesystem& file_system, TinyWindow& wi
 
 	auto context = GetContext( );
 
-	return  _instance.Create( window.GetTitle( ) )		&&
-			_surface.Create( window, _instance )		&&
-			_physical.Initialize( _instance, _surface )	&&
-			_surface.Initialize( _physical )			&&
-			_logical.Create( _physical )				&&
-			_queues.Create( _physical, _logical )		&& 
-			_memory.Create( context )					&&
-			_swapchain.Create( context )				&&
-			_passes.Create( context )					&&
-			_pipelines.Initialize( file_system, _logical );
+	return  _instance.Create( window.GetTitle( ) )		   &&
+			_surface.Create( window, _instance )		   &&
+			_physical.Initialize( _instance, _surface )	   &&
+			_surface.Initialize( _physical )			   &&
+			_logical.Create( _physical )				   &&
+			_queues.Create( _physical, _logical )		   && 
+			_memory.Create( context )					   &&
+			_swapchain.Create( context )				   &&
+			_passes.Create( context )					   &&
+			_pipelines.Initialize( file_system, _logical ) &&
+			_compiler.Initialize( );
 }
 
 bool TinyGraphicManager::CompileShader(

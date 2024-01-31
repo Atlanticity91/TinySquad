@@ -30,7 +30,7 @@ te_struct TinyRenderUniformBuilder : tiny_inherit( TinyGraphicBufferProperties )
 
 };
 
-te_struct TinyUBOContext{
+te_struct TinyUBOContext {
 
 	tiny_mat4 Projection;
 	tiny_mat4 View;

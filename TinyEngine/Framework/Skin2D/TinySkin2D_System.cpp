@@ -80,8 +80,8 @@ void TinySkin2DSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
 				draw_context.Textures	   = 1;
 				draw_context.Textures[ 0 ] = texture;
 				draw_context.Sprite.Color  = comp.GetColor( );
-				draw_context.Sprite.UV     = texture->GetUV( 0, 0 );
-				draw_context.Tranform	   = proj_view * transform->GetLocal( );
+				draw_context.Sprite.UV     = texture->GetUV( comp.GetSprite( ) );
+				draw_context.Tranform	   = proj_view * transform->GetTransform( );
 
 				renderer.Draw( game, draw_context );
 			}
@@ -129,7 +129,7 @@ void TinySkin2DSystem::Draw(
 			}
 		);
 
-		//material->Bind( graphics.GetLogical( ),context, );
+		//material->Bind( graphics.GetLogical( ), context, );
 		material->Draw( work_context, { TGD_MODE_DIRECT, 6, vertex_count } );
 	}
 }

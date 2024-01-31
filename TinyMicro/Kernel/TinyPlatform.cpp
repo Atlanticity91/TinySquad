@@ -318,7 +318,7 @@ bool Tiny::OpenDialog( DialogTypes type, c_string path, c_string filters, tiny_u
 #	ifdef TINY_WIN
 	auto context = OPENFILENAMEA{ };
 
-	ZeroMemory( &context, sizeof( OPENFILENAMEA ) );
+	ZeroMemory( tiny_rvalue( context ), sizeof( OPENFILENAMEA ) );
 
 	context.lStructSize  = sizeof( OPENFILENAMEA );
 	context.hwndOwner	 = GetActiveWindow( );

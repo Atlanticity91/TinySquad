@@ -45,7 +45,30 @@ bool TinySkin2D::Create( TinyGame* game, TinyEngine& engine ) {
 	return state;
 }
 
-void TinySkin2D::Delete( TinyGame* game, TinyEngine& engine ) {
+TinySkin2D& TinySkin2D::SetSpriteColumn( tiny_uint column ) {
+	return SetSprite( column, _sprite.y );
+}
+
+TinySkin2D& TinySkin2D::SetSpriteRow( tiny_uint row ) {
+	return SetSprite( _sprite.x, row );
+}
+
+TinySkin2D& TinySkin2D::SetSprite( const tiny_upoint& sprite ) {
+	return SetSprite( sprite.x, sprite.y );
+}
+
+TinySkin2D& TinySkin2D::SetSprite( tiny_uint column, tiny_uint row ) {
+	_sprite.x = column;
+	_sprite.y = row;
+
+	return tiny_self;
+}
+
+void TinySkin2D::Delete( TinyGame* game, TinyEngine& engine ) { 
+	auto& ecs = engine.GetECS( );
+
+	if ( ecs.GetHasComponent( _owner, "TinyAnim2D" ) )
+		ecs.Remove( game, engine, _owner, "TinyAnim2D" );
 }
 
 void TinySkin2D::DisplayWidget(
@@ -75,3 +98,5 @@ TinyAsset& TinySkin2D::GetMaterial( ) { return _material; }
 TinyAsset& TinySkin2D::GetTexture( ) { return _texture; }
 
 tiny_color& TinySkin2D::GetColor( ) { return _color; }
+
+tiny_upoint& TinySkin2D::GetSprite( ) { return _sprite; }

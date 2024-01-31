@@ -40,11 +40,13 @@ class TinyWindow;
 tm_class TinyFilesystem final {
 
 private:
-	std::string _work_dir;
-	std::string _game_dir;
-	std::string _save_dir;
-	std::string _game;
-	std::string _cache;
+	std::string		 _work_dir;
+	std::string		 _game_dir;
+	std::string		 _save_dir;
+	std::string		 _dev_dir;
+	std::string		 _game;
+	std::string		 _cache;
+	tiny_buffer<256> _dialog_path;
 
 public:
 	TinyFilesystem( );
@@ -56,6 +58,12 @@ public:
 	bool CreateDir( const tiny_string& path );
 
 	bool RemoveDir( const tiny_string& path );
+
+	bool OpenDialog( 
+		Tiny::DialogTypes type, 
+		const tiny_string& filters, 
+		tiny_string& path
+	);
 
 	TinyFile OpenFile( const tiny_string& path, Tiny::FileAccesses access );
 
@@ -74,6 +82,8 @@ public:
 	tiny_string GetGameDir( ) const;
 
 	tiny_string GetSaveDir( ) const;
+
+	tiny_string GetDevDir( ) const;
 
 	tiny_string GetConfigPath( ) const;
 

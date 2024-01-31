@@ -25,7 +25,7 @@
 tiny_enum( TinyToolboxWidgetGuizmoModes ) {
 
 	TTWG_MODE_LOCAL = 0,
-		TTWG_MODE_WORLD
+	TTWG_MODE_WORLD
 
 };
 

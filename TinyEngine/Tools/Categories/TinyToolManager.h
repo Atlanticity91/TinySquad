@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyToolCategory.h"
+#include "TinyToolDialog.h"
 
 tiny_enum( TinyToolCategories ) {
 
@@ -28,6 +28,7 @@ tiny_enum( TinyToolCategories ) {
 	TT_CATEGORY_INPUTS,
 	TT_CATEGORY_RENDER,
 	TT_CATEGORY_CONTENT,
+	TT_CATEGORY_SCENE,
 	TT_CATEGORY_WORLD,
 	TT_CATEGORY_TERRAIN,
 

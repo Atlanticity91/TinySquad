@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyToolContent.h"
+#include "TinyToolScene.h"
 
 te_class TinyToolWorld final : tiny_inherit( TinyToolCategory ) {
 

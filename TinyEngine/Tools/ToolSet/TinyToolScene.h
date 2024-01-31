@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/12/2023
- * @version  : 2024.1
+ * @creation : 29/01/2024
+ * @version  : 2024.1.2
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,32 +20,31 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Uniforms/TinyRenderUniformManager.h>
+#include "TinyToolContent.h"
 
-#define TINY_MAX_INSTANCE 1024
-#define TINY_MAX_VERTICES 4 * TINY_MAX_INSTANCE
-#define TINY_MAX_INDEX 6 * TINY_MAX_INSTANCE
-#define TINY_MAX_LIGHT 512
+te_class TinyToolScene final 
+	: tiny_inherit( TinyToolCategory ),
+	tiny_inherit( TinyToolDialog )
+{
 
-#define TINY_RENDER_SET_CONTEXT 0 
-#define TINY_RENDER_SET_RENDER 1
-#define TINY_RENDER_SET_TEXTURE 2
-#define TINY_RENDER_SET_LIGHT 3
+private:
+	bool _has_changed;
 
-typedef tiny_mat4 TinyRenderTransform;
-typedef tiny_uint TinyRenderIndex;
-typedef tiny_vec4 TinyRenderVertex;
-typedef tiny_vec2 TinyRenderUV;
+public:
+	TinyToolScene( );
 
-te_struct TinyRenderSprite {
+	~TinyToolScene( ) = default;
 
-	tiny_vec4 Color;
-	tiny_vec4 UV;
+	void MarkUnSaved( );
 
-};
+protected:
+	tiny_implement( void OnTick(
+		TinyGame* game,
+		TinyEngine& engine,
+		TinyToolbox& toolbox
+	) );
 
-te_struct TinyRenderLight {
-
-	tiny_vec4 Color;
+public:
+	bool GetHasChanged( ) const;
 
 };

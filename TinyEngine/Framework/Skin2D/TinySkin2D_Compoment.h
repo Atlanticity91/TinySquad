@@ -25,10 +25,10 @@
 TINY_FRAMEWORK_COMP( TinySkin2D ) {
 
 private:
-	TinyAsset  _material;
-	TinyAsset  _texture;
-	tiny_color _color;
-	tiny_point  _sprite;
+	TinyAsset	 _material;
+	TinyAsset	 _texture;
+	tiny_color	 _color;
+	tiny_upoint  _sprite;
 
 public:
 	TinySkin2D( );
@@ -38,6 +38,14 @@ public:
 	~TinySkin2D( ) = default;
 
 	tiny_implement( bool Create( TinyGame* game, TinyEngine& engine ) );
+
+	tiny_inline TinySkin2D& SetSpriteColumn( tiny_uint column );
+
+	tiny_inline TinySkin2D& SetSpriteRow( tiny_uint row );
+
+	tiny_inline TinySkin2D& SetSprite( const tiny_upoint & sprite );
+
+	TinySkin2D& SetSprite( tiny_uint column, tiny_uint row );
 
 	tiny_implement( void Delete( TinyGame* game, TinyEngine& engine ) );
 
@@ -57,5 +65,7 @@ public:
 	TinyAsset& GetTexture( );
 
 	tiny_color& GetColor( );
+
+	tiny_upoint& GetSprite( );
 
 };

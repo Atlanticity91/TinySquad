@@ -111,15 +111,17 @@ TinyTransform2D& TinyTransform2D::Scale( float x, float y ) {
 	_scale.y *= y;
 
 	return tiny_self;
-}
+} 
 
-void TinyTransform2D::ReCalculate( ) {
+TinyTransform2D& TinyTransform2D::ReCalculate( ) {
 	auto offset = GetCenter( );
 
-	_transform  = glm::translate( tiny_vec3{ _location.x + offset.x, _location.y + offset.y, .0f } );
-	_transform *= glm::rotate( glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
-	_transform *= glm::translate( tiny_vec3{ -offset.x, -offset.y, .0f } );
-	_transform *= glm::scale( tiny_vec3{ _scale.x, _scale.y, 1.f } );
+	_transform = glm::translate( tiny_vec3{ _location.x + offset.x, _location.y + offset.y, .0f } );
+	_transform = glm::rotate( _transform, glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
+	_transform = glm::translate( _transform, tiny_vec3{ -offset.x, -offset.y, .0f } );
+	_transform = glm::scale( _transform, tiny_vec3{ _scale.x, _scale.y, 1.f } );
+
+	return tiny_self;
 }
 
 void TinyTransform2D::DisplayWidget(
@@ -151,16 +153,4 @@ const tiny_vec2& TinyTransform2D::GetScale( ) const { return _scale; }
 
 float TinyTransform2D::GetRotator( ) const { return glm::radians( _rotation ); }
 
-const tiny_mat4& TinyTransform2D::GetLocal( ) const { return _transform; }
-
-tiny_mat4 TinyTransform2D::GetLocalCenter( ) const {
-	auto transform = tiny_mat4{ 1.f };
-	auto offset	   = GetCenter( );
-
-	transform  = glm::translate( tiny_vec3{ _location.x + _scale.x, _location.y + _scale.y, .0f } );
-	transform *= glm::rotate( glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
-	transform *= glm::translate( tiny_vec3{ -offset.x, -offset.y, .0f } );
-	transform *= glm::scale( tiny_vec3{ _scale.x, _scale.y, 1.f } );
-
-	return transform;
-}
+const tiny_mat4& TinyTransform2D::GetTransform( ) const { return _transform; }

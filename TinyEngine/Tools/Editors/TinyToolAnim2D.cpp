@@ -49,8 +49,10 @@ bool TinyToolAnim2D::OnOpen( TinyGame* game, const tiny_string& name, c_pointer 
 }
 
 void TinyToolAnim2D::OnTick( TinyGame* game, TinyAssetManager& assets ) {
-	auto frame = _animation->Get( )[ 0 ];
-	auto uv = _texture->GetUV( frame.Row, frame.Column );
+	auto* animation = _animation->Get( "" );
+	auto& frame = tiny_lvalue( animation->get( 0 ) );
+
+	auto uv = _texture->GetUV( frame.Column, frame.Row );
 
 	ImGui::Image( _image, {}, { uv.x, uv.y }, { uv.z, uv.w } );
 }

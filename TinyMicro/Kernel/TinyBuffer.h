@@ -62,7 +62,7 @@ struct tiny_buffer {
 
 	bool store( const tiny_string& string ) { 
 		auto* buffer_str = string.as_chars( );
-		auto buffer_len  = string.length( );
+		auto buffer_len  = string.length( ) + 1;
 
 		return store( buffer_len, tiny_cast( buffer_str, const c_pointer ) );
 	};

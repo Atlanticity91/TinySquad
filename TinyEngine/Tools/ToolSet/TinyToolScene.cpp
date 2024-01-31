@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 21/01/2024
- * @version  : 2024.1.1
+ * @creation : 29/01/2024
+ * @version  : 2024.1.2
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,75 +23,48 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyToolInputs::TinyToolInputs( )
-	: TinyToolCategory{ "Inputs" },
-    TinyToolDialog{ "Tiny Inputs (*.tinyinputs)\0*.tinyinputs\0" }
+TinyToolScene::TinyToolScene( )
+	: TinyToolCategory{ "Scene" },
+    TinyToolDialog{ "Tiny Scene (*.tinyscene)\0*.tinyscene\0" },
+    _has_changed{ false }
 { }
+
+void TinyToolScene::MarkUnSaved( ) { _has_changed = true; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolInputs::OnTick(
+void TinyToolScene::OnTick(
 	TinyGame* game,
 	TinyEngine& engine,
 	TinyToolbox& toolbox
-) { 
+) {
     auto& filesystem = engine.GetFilesystem( );
-    auto& inputs     = engine.GetInputs( );
+    auto& assets     = engine.GetAssets( );
+    auto& registry   = assets.GetRegistry( );
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
         if ( OpenDialog( filesystem ) ) {
+            registry.Load( filesystem, _dialog_path );
+
+            _has_changed = false;
         }
     }
 
     ImGui::SameLine( );
 
-    ImGui::BeginDisabled( true );
+    ImGui::BeginDisabled( !_has_changed );
     if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-        if ( SaveDialog( filesystem ) ) {
-        }
+        if ( SaveDialog( filesystem ) )
+            registry.Save( filesystem, _dialog_path );
     }
-
     ImGui::EndDisabled( );
 
-    if ( ImGui::Button( "New", { -1.f, 0.f } ) ) {
-    }
-
-    ImGui::SeparatorText( "Inputs Table" );
-
-    auto& input_map = inputs.GetMap( );
-
-    for ( auto& input : input_map ) {
-        TINY_IMGUI_SCOPE_ID(
-            ImGui::Checkbox( IMGUI_NO_LABEL, tiny_cast( tiny_rvalue( input.Data.IsActive ), bool* ) );
-        );
-        
-        ImGui::SameLine( );
-
-        if ( ImGui::TreeNodeEx( input.String.c_str( ), IMGUI_NO_FLAGS ) ) {
-            for ( auto& query : input.Data.Values ) {
-                TINY_IMGUI_SCOPE_ID(
-                    auto open = ImGui::TreeNodeEx( IMGUI_NO_LABEL, IMGUI_NO_FLAGS );
-                );
-
-                ImGui::SameLine( );
-                ImGui::Text( "TID_KEYBOARD" );
-                ImGui::SameLine( );
-                ImGui::Text( "TIT_BUTTON" );
-
-                if ( open ) {
-                    //query.Descriptor.Device;
-                    //query.Descriptor.Type;
-                    //query.Descriptor.Key;
-                    //query.Modifier;
-                    //query.State;
-
-                    ImGui::TreePop( );
-                }
-            }
-
-            ImGui::TreePop( );
-        }
-    }
+    ImGui::SeparatorText( "Generals" );
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyToolScene::GetHasChanged( ) const { return _has_changed; }

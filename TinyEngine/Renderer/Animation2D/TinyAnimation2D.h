@@ -25,37 +25,76 @@
 te_struct TinyAnimation2DFrame {
 
 	float Duration   = .0f;
-	tiny_uint Row	 = 0;
 	tiny_uint Column = 0;
+	tiny_uint Row	 = 0;
 
 };
 
 te_class TinyAnimation2D {
 
+public:
+	using FrameCollection = tiny_list<TinyAnimation2DFrame>;
+
 private:
-	tiny_list<TinyAnimation2DFrame> _frames;
+	tiny_map<FrameCollection> _collection;
 
 public:
 	TinyAnimation2D( );
 
 	~TinyAnimation2D( ) = default;
 
-	void Add( const TinyAnimation2DFrame& frame );
+	TinyAnimation2D& Create( 
+		const tiny_string& name,
+		tiny_init<TinyAnimation2DFrame> frames 
+	);
 
-	tiny_inline void Add( float duration, tiny_uint row, tiny_uint column );
+	TinyAnimation2D& Add( const tiny_string& name, const TinyAnimation2DFrame& frame );
 
-	void Insert( tiny_uint frame_id, const TinyAnimation2DFrame& frame );
+	tiny_inline TinyAnimation2D& Add(
+		const tiny_string& name,
+		float duration, 
+		tiny_uint column,
+		tiny_uint row
+	);
 
-	void Remove( tiny_uint frame_id );
+	TinyAnimation2D& Insert(
+		const tiny_string& name, 
+		tiny_uint frame_id, 
+		const TinyAnimation2DFrame& frame 
+	);
+
+	tiny_inline TinyAnimation2D& Insert(
+		const tiny_string& name,
+		tiny_uint frame_id,
+		float duration,
+		tiny_uint column,
+		tiny_uint row
+	);
+
+	TinyAnimation2D& Remove( const tiny_string& name );
+
+	TinyAnimation2D& Remove( const tiny_string& name, tiny_uint frame_id );
 
 public:
-	tiny_list<TinyAnimation2DFrame>& Get( );
+	tiny_map<FrameCollection>& GetCollection( );
 
-	const tiny_list<TinyAnimation2DFrame>& Get( ) const;
+	void GetAnimations( tiny_list<tiny_string>& list ) const;
 
-	const TinyAnimation2DFrame& Peek( tiny_uint& frame_id ) const;
+	tiny_inline FrameCollection* Get( const tiny_string& animation_name );
 
-	const TinyAnimation2DFrame& Next( 
+	FrameCollection* Get( const tiny_hash animation_hash );
+
+	tiny_inline const FrameCollection* Get( const tiny_string& animation_name ) const;
+
+	const FrameCollection* Get( const tiny_hash animation_hash ) const;
+
+	const TinyAnimation2DFrame* Peek( 
+		const tiny_hash animation_hash, 
+		tiny_uint& frame_id 
+	) const;
+
+	const TinyAnimation2DFrame* Next( 
+		const tiny_hash animation_hash,
 		tiny_uint& frame_id, 
 		bool reverse,
 		bool& restart

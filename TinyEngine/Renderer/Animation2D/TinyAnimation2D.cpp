@@ -24,48 +24,180 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAnimation2D::TinyAnimation2D( )
-	: _frames{ }
+	: _collection{ }
 { }
 
-void TinyAnimation2D::Add( const TinyAnimation2DFrame& frame ) {
-	_frames.emplace_back( frame );
+TinyAnimation2D& TinyAnimation2D::Create(
+	const tiny_string& name,
+	tiny_init<TinyAnimation2DFrame> frames
+) {
+	if ( !_collection.find( name ) )
+		_collection.emplace( name, frames );
+
+	return tiny_self;
 }
 
-void TinyAnimation2D::Add( float duration, tiny_uint row, tiny_uint column ) {
-	return Add( { duration, row, column } );
+TinyAnimation2D& TinyAnimation2D::Add(
+	const tiny_string& name,
+	const TinyAnimation2DFrame& frame
+) {
+	if ( !_collection.find( name ) )
+		_collection.emplace( name, { } );
+
+	_collection[ name ].emplace_back( frame );
+
+	return tiny_self;
 }
 
-void TinyAnimation2D::Insert( tiny_uint frame_id, const TinyAnimation2DFrame& frame ) {
-	_frames.insert( frame_id, frame );
+TinyAnimation2D& TinyAnimation2D::Add(
+	const tiny_string& name,
+	float duration,
+	tiny_uint column,
+	tiny_uint row
+) {
+	auto frame = TinyAnimation2DFrame{ duration, column, row };
+
+	return Add( name, frame );
 }
 
-void TinyAnimation2D::Remove( tiny_uint frame_id ) { _frames.erase( frame_id ); }
+TinyAnimation2D& TinyAnimation2D::Insert(
+	const tiny_string& name,
+	tiny_uint frame_id,
+	const TinyAnimation2DFrame& frame
+) {
+	auto animation_id = tiny_cast( 0, tiny_uint );
+
+	if ( _collection.find( name, animation_id ) ) {
+		auto& animation = _collection.at( animation_id );
+
+		animation.insert( frame_id, frame );
+	}
+
+	return tiny_self;
+}
+
+TinyAnimation2D& TinyAnimation2D::Insert(
+	const tiny_string& name,
+	tiny_uint frame_id,
+	float duration,
+	tiny_uint column,
+	tiny_uint row
+) {
+	auto frame = TinyAnimation2DFrame{ duration, column, row };
+
+	return Insert( name, frame_id, frame );
+}
+
+TinyAnimation2D& TinyAnimation2D::Remove( const tiny_string& name ) {
+	_collection.erase( name );
+
+	return tiny_self;
+}
+
+TinyAnimation2D& TinyAnimation2D::Remove( const tiny_string& name, tiny_uint frame_id ) {
+	auto animation_id = tiny_cast( 0, tiny_uint );
+
+	if ( _collection.find( name, animation_id ) ) {
+		auto& animation = _collection.at( animation_id );
+		
+		animation.erase( frame_id );
+	}
+
+	return tiny_self;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_list<TinyAnimation2DFrame>& TinyAnimation2D::Get( ) { return _frames; }
-
-const tiny_list<TinyAnimation2DFrame>& TinyAnimation2D::Get( ) const { return _frames; }
-
-const TinyAnimation2DFrame& TinyAnimation2D::Peek( tiny_uint& frame_id ) const {
-	return _frames[ frame_id ];
+tiny_map<TinyAnimation2D::FrameCollection>& TinyAnimation2D::GetCollection( ) {
+	return _collection;
 }
 
-const TinyAnimation2DFrame& TinyAnimation2D::Next( 
-	tiny_uint& frame_id, 
+void TinyAnimation2D::GetAnimations( tiny_list<tiny_string>& list ) const {
+	auto node_str = tiny_string{ };
+
+	for ( auto& node : _collection ) {
+		node_str = node.String;
+
+		list.emplace_back( node_str );
+	}
+}
+
+TinyAnimation2D::FrameCollection* TinyAnimation2D::Get(
+	const tiny_string& animation_name
+) {
+	auto animation_hash = tiny_hash{ animation_name };
+
+	return Get( animation_hash );
+}
+
+TinyAnimation2D::FrameCollection* TinyAnimation2D::Get(
+	const tiny_hash animation_hash
+) {
+	auto animation_id = tiny_cast( 0, tiny_uint );
+	auto* animation   = tiny_cast( nullptr, FrameCollection* );
+
+	if ( _collection.find( animation_hash, animation_id ) )
+		animation = tiny_rvalue( _collection.at( animation_id ) );
+
+	return animation;
+}
+
+const TinyAnimation2D::FrameCollection* TinyAnimation2D::Get( 
+	const tiny_string& animation_name
+) const {
+	auto animation_hash = tiny_hash{ animation_name };
+
+	return Get( animation_hash );
+}
+
+const TinyAnimation2D::FrameCollection* TinyAnimation2D::Get(
+	const tiny_hash animation_hash 
+) const {
+	auto animation_id = tiny_cast( 0, tiny_uint );
+	auto* animation   = tiny_cast( nullptr, const FrameCollection* );
+
+	if ( _collection.find( animation_hash, animation_id ) )
+		animation = tiny_rvalue( _collection.at( animation_id ) );
+
+	return animation;
+}
+
+const TinyAnimation2DFrame* TinyAnimation2D::Peek(
+	const tiny_hash animation_hash,
+	tiny_uint& frame_id
+) const {
+	auto* animation_frame = tiny_cast( nullptr, const TinyAnimation2DFrame* );
+	auto* animation = Get( animation_hash );
+
+	if ( animation )
+		animation_frame = animation->get( frame_id );
+
+	return animation_frame;
+}
+
+const TinyAnimation2DFrame* TinyAnimation2D::Next(
+	const tiny_hash animation_hash,
+	tiny_uint& frame_id,
 	bool reverse,
 	bool& restart
 ) const {
-	auto max_frame = _frames.size( ) - 1;
+	auto* animation_frame = tiny_cast( nullptr, const TinyAnimation2DFrame* );
+	auto* animation		  = Get( animation_hash );
 
-	if ( !reverse ) {
-		frame_id = frame_id < max_frame ? frame_id + 1 : 0;
-		restart  = frame_id == 0;
-	} else {
-		frame_id = frame_id > 0 ? frame_id - 1 : max_frame;
-		restart  = frame_id == max_frame;
+	if ( animation ) {
+		auto max_frame = animation->size( ) - 1;
+
+		if ( !reverse ) {
+			frame_id = frame_id < max_frame ? frame_id + 1 : 0;
+			restart  = frame_id == 0;
+		} else {
+			frame_id = frame_id > 0 ? frame_id - 1 : max_frame;
+			restart  = frame_id == max_frame;
+		}
+
+		animation_frame = animation->get( frame_id );
 	}
 
-	return _frames[ frame_id ];
+	return animation_frame;
 }

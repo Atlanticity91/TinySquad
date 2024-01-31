@@ -35,24 +35,17 @@ bool TinyAnimation2DManager::OnLoad(
 	TinyFile& file,
 	TinyAnimation2D& animation
 ) {
-	auto& frames = animation.Get( );
+	auto& collection = animation.GetCollection( );
 
-	return file.Read( frames );
+	return file.Read( collection );
 }
 
-void TinyAnimation2DManager::OnUnLoad( TinyGame* game, TinyAnimation2D& animation ) {
-}
+void TinyAnimation2DManager::OnUnLoad( TinyGame* game, TinyAnimation2D& animation ) { }
 
 bool TinyAnimation2DManager::OnCreate(
 	TinyGame* game,
 	c_pointer asset_builder,
 	TinyAnimation2D& animation
 ) {
-	auto* frames = tiny_cast( asset_builder, tiny_list<TinyAnimation2DFrame>* );
-	auto state   = frames != nullptr;
-
-	if ( state )
-		animation.Get( ) = tiny_lvalue( frames );
-
-	return state;
+	return false;
 }

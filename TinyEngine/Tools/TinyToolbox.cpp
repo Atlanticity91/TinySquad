@@ -25,6 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolbox::TinyToolbox( ) 
     : _is_in_use{ true },
+    _has_dir{ false },
     _imgui{ nullptr },
     _local_pools{ nullptr },
     _fonts{ },
@@ -186,6 +187,9 @@ void TinyToolbox::Tick( TinyGame* game, TinyEngine& engine ) {
         _is_in_use = !_is_in_use;
 
     if ( _is_in_use ) {
+        if ( !_has_dir )
+            CreateDevDir( engine );
+
         ImGui_ImplVulkan_NewFrame( );
         ImGui_ImplGlfw_NewFrame( );
 
@@ -365,6 +369,14 @@ bool TinyToolbox::CreateImGuiFont( ) {
     }
 
     return state;
+}
+
+void TinyToolbox::CreateDevDir( TinyEngine& engine ) {
+    auto& filesystem = engine.GetFilesystem( );
+    auto dev_dir     = filesystem.GetDevDir( );
+
+    if ( !filesystem.GetDirExist( dev_dir ) )
+        filesystem.CreateDir( dev_dir );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

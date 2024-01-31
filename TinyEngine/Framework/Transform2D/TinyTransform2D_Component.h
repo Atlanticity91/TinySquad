@@ -63,7 +63,7 @@ public:
 
 	TinyTransform2D& Scale( float x, float y );
 
-	void ReCalculate( );
+	TinyTransform2D& ReCalculate( );
 
 	tiny_implement( void DisplayWidget(
 		TinyGame* game,
@@ -88,8 +88,6 @@ public:
 
 	float GetRotator( ) const;
 
-	const tiny_mat4& GetLocal( ) const;
-
-	tiny_mat4 GetLocalCenter( ) const;
+	const tiny_mat4& GetTransform( ) const;
 
 };

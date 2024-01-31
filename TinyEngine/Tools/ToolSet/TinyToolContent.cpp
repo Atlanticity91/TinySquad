@@ -25,6 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolContent::TinyToolContent( ) 
 	: TinyToolCategory{ "Content" },
+    TinyToolDialog{ "Tiny Registry (*.tinyregistry)\0*.tinyregistry\0" },
     _has_changed{ false },
     _type_count{ TinyAssetTypes::TA_TYPE_COUNT },
     _type_to_string{ TinyToolContent::TypeToString },
@@ -59,7 +60,7 @@ bool TinyToolContent::OpenAssetEditor(
     auto asset   = TinyAsset{ metadata.Type, name };
     auto state   = false;
 
-    if ( assets.Acquire( game, asset ) )
+    if ( GetHasEditor( metadata.Type ) && assets.Acquire( game, asset ) )
         state = _type_editors[ metadata.Type ]->Open( game, name, asset );
 
     return state;
@@ -83,14 +84,13 @@ void TinyToolContent::OnTick(
     auto& filesystem = engine.GetFilesystem( );
     auto& assets     = engine.GetAssets( );
     auto& registry   = assets.GetRegistry( );
-    
+
     auto path_buffer = tiny_buffer<256>{ };
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
-    auto filters = "Tiny Registry (*.tinyregistry)\0*.tinyregistry\0";
 
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
-        if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, filters, path_buffer.length( ), path_buffer ) ) {
-            registry.Load( filesystem, path_buffer );
+        if ( OpenDialog( filesystem ) ) {
+            registry.Load( filesystem, _dialog_path );
 
             _has_changed = false;
         }
@@ -100,13 +100,14 @@ void TinyToolContent::OnTick(
 
     ImGui::BeginDisabled( !_has_changed );
     if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-        if ( Tiny::OpenDialog( Tiny::TD_TYPE_SAVE_FILE, filters, path_buffer.length( ), path_buffer ) )
-            registry.Save( filesystem, path_buffer );
+        if ( SaveDialog( filesystem ) )
+            registry.Save( filesystem, _dialog_path );
     }
     ImGui::EndDisabled( );
 
     if ( ImGui::Button( "Import", { -1.f, 0.f } ) ) {
-        auto path = std::string{ filesystem.GetWorkingDir( ).get( ) } + "Ressources\\";
+        auto dev_dir = filesystem.GetDevDir( );
+        auto path = std::string{ dev_dir.as_chars( ) };
 
         if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", path_buffer.length( ), path_buffer ) ) {
             _has_changed = !filesystem.GetIsFile( path_buffer, TINY_REGISTRY_EXT );
@@ -138,8 +139,6 @@ void TinyToolContent::OnTick(
     ImGui::SeparatorText( "Assets" );
 
     const auto flags      = ImGuiTableFlags_Borders | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTableFlags_RowBg;
-    const auto node_flags = ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_SpanAllColumns;
-    const auto leaf_flags = node_flags | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_AllowOverlap;
     const auto char_size  = ImGui::CalcTextSize( "#" ).x;
 
     if ( ImGui::BeginTable( "Asset List", 3, flags ) ) {
@@ -147,6 +146,14 @@ void TinyToolContent::OnTick(
         ImGui::TableSetupColumn( "Count",  ImGuiTableColumnFlags_WidthFixed, char_size * 6.0f );
         ImGui::TableSetupColumn( "Action", ImGuiTableColumnFlags_WidthFixed, char_size * 10.0f );
         ImGui::TableHeadersRow( );
+
+        const auto node_flags = ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_SpanAllColumns;
+        const auto leaf_flags = node_flags                          |
+                                ImGuiTreeNodeFlags_FramePadding     |
+                                ImGuiTreeNodeFlags_Leaf             |
+                                ImGuiTreeNodeFlags_Bullet           |
+                                ImGuiTreeNodeFlags_NoTreePushOnOpen |
+                                ImGuiTreeNodeFlags_AllowOverlap;
 
         auto spacing = ImGui::GetStyle( ).ItemSpacing.x;
         auto type    = tiny_cast( 1, tiny_uint );
@@ -159,7 +166,7 @@ void TinyToolContent::OnTick(
                 ImGui::TableNextColumn( );
 
                 auto metadatas = registry.GetMetadatas( type );
-                auto open      = ImGui::TreeNodeEx( name, node_flags );
+                auto open = ImGui::TreeNodeEx( name, node_flags );
 
                 ImGui::TableNextColumn( );
                 ImGui::Text( "%u", metadatas.size( ) );
@@ -168,35 +175,30 @@ void TinyToolContent::OnTick(
                 if ( open ) {
                     for ( auto& metadata : metadatas ) {
                         auto* name_str = metadata->String.c_str( );
+                        auto can_edit  = GetHasEditor( type );
 
                         ImGui::TableNextRow( );
                         ImGui::TableNextColumn( );
 
-                        {
-                            TinyImGui::ScopeVars{ ImGuiStyleVar_FramePadding, { 4.f, 4.f } };
-                            ImGui::TreeNodeEx( name_str, leaf_flags );
-                        }
+                        ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, { 3.5f, 3.5f } );
+                        ImGui::TreeNodeEx( name_str, leaf_flags );
+                        ImGui::PopStyleVar( );
 
                         ImGui::TableNextColumn( );
                         ImGui::Text( "%d", metadata->Data.Reference );
                         ImGui::TableNextColumn( );
 
-                        if ( TinyImGui::Button( TF_ICON_REDO ) ) {
-                            _action   = TTC_ACTION_RELOAD;
-                            _metadata = metadata;
-                        }
-
-                        ImGui::SameLine( .0f, spacing * .25f );
-                        
+                        ImGui::BeginDisabled( !can_edit );
                         if ( TinyImGui::Button( TF_ICON_EDIT ) ) {
-                            _action   = TTC_ACTION_EDIT;
+                            _action = TTC_ACTION_EDIT;
                             _metadata = metadata;
                         }
-                        
+                        ImGui::EndDisabled( );
+
                         ImGui::SameLine( .0f, spacing * .25f );
 
                         if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) ) {
-                            _action   = TTC_ACTION_REMOVE;
+                            _action = TTC_ACTION_REMOVE;
                             _metadata = metadata;
                         }
                     }
@@ -213,15 +215,21 @@ void TinyToolContent::OnTick(
 
     if ( _metadata ) {
         switch ( _action ) {
-            case TTC_ACTION_RELOAD : assets.Import( game, _metadata->Data.Source ); break;
-            case TTC_ACTION_EDIT   : OpenAssetEditor( game, _metadata->String, _metadata->Data );break;
-            case TTC_ACTION_REMOVE : registry.Remove( _metadata->Hash ); break;
+            case TTC_ACTION_EDIT   : OpenAssetEditor( game, _metadata->String, _metadata->Data ); break;
+            case TTC_ACTION_REMOVE : registry.Remove( _metadata->Hash );                          break;
 
             default: break;
         }
 
         _metadata = nullptr;
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyToolContent::GetHasEditor( tiny_uint asset_type ) const {
+    return asset_type < _type_editors.size( ) && _type_editors[ asset_type ];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

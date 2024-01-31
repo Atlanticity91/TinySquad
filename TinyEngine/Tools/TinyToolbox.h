@@ -26,6 +26,7 @@ te_class TinyToolbox final {
 
 private:
 	bool			  _is_in_use;
+	bool			  _has_dir;
 	ImGuiContext*	  _imgui;
 	VkDescriptorPool  _local_pools;
 	tiny_map<ImFont*> _fonts;
@@ -91,5 +92,7 @@ private:
 	void CreateImGuiTheme( );
 
 	bool CreateImGuiFont( );
+
+	void CreateDevDir( TinyEngine& engine );
 
 };
