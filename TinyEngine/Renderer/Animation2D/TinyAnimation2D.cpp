@@ -180,7 +180,7 @@ const TinyAnimation2DFrame* TinyAnimation2D::Next(
 	const tiny_hash animation_hash,
 	tiny_uint& frame_id,
 	bool reverse,
-	bool& restart
+	bool restart
 ) const {
 	auto* animation_frame = tiny_cast( nullptr, const TinyAnimation2DFrame* );
 	auto* animation		  = Get( animation_hash );
@@ -189,11 +189,15 @@ const TinyAnimation2DFrame* TinyAnimation2D::Next(
 		auto max_frame = animation->size( ) - 1;
 
 		if ( !reverse ) {
-			frame_id = frame_id < max_frame ? frame_id + 1 : 0;
-			restart  = frame_id == 0;
+			if ( frame_id < max_frame )
+				frame_id += 1;
+			else
+				frame_id = restart ? 0 : max_frame;
 		} else {
-			frame_id = frame_id > 0 ? frame_id - 1 : max_frame;
-			restart  = frame_id == max_frame;
+			if ( frame_id > 0 )
+				frame_id -= 1;
+			else
+				frame_id = restart ? max_frame : 0;
 		}
 
 		animation_frame = animation->get( frame_id );

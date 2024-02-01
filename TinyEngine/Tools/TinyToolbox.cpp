@@ -195,8 +195,12 @@ void TinyToolbox::Tick( TinyGame* game, TinyEngine& engine ) {
 
         ImGui::NewFrame( );
 
+        ImGuizmo::BeginFrame( );
+
         static bool show_demo_window = true;
         ImGui::ShowDemoWindow( &show_demo_window );
+
+        DrawGuizmo( engine );
 
         _tools.Tick( game, engine, tiny_self );
 
@@ -296,7 +300,11 @@ bool TinyToolbox::CreateImGuiContext( TinyWindow& window, TinyGraphicManager& gr
 void TinyToolbox::CreateImGuiTheme( ) {
     ImGui::StyleColorsDark( );
 
-    auto* colors = ImGui::GetStyle( ).Colors;
+    auto& style = ImGui::GetStyle( );
+
+    style.FramePadding = ImVec2{ 4.f, 4.f };
+
+    auto* colors = style.Colors;
 
     colors[ ImGuiCol_Text                  ] = ImVec4( 1.00f, 1.00f, 1.00f, 1.00f );
     colors[ ImGuiCol_TextDisabled          ] = ImVec4( 0.50f, 0.50f, 0.50f, 1.00f );
@@ -377,6 +385,34 @@ void TinyToolbox::CreateDevDir( TinyEngine& engine ) {
 
     if ( !filesystem.GetDirExist( dev_dir ) )
         filesystem.CreateDir( dev_dir );
+}
+
+void TinyToolbox::DrawGuizmo( TinyEngine& engine ) {
+    auto& io      = ImGui::GetIO( );
+    auto& ecs     = engine.GetECS( );
+    auto* cameras = ecs.GetSystemAs<TinyCameraSystem>( );
+    auto* common  = _tools.GetCategoryAs<TinyToolCommon>( TT_CATEGORY_COMMON );
+
+    if ( cameras && common ) {
+        auto& view   = cameras->GetViewMatrix( );
+        auto& proj   = cameras->GetProjectionMatrtix( );
+        auto& guizmo = common->GetGuizmo( );
+        auto* snap   = tiny_cast( nullptr, float* );
+
+        ImGuizmo::SetRect( .0f, .0f, io.DisplaySize.x, io.DisplaySize.y );
+        /*
+        ImGuizmo::Manipulate( 
+            tiny_rvalue( view[ 0 ][ 0 ] ), 
+            tiny_rvalue( proj[ 0 ][ 0 ] ),
+            guizmo.Tool,
+            guizmo.Mode, 
+            nullptr, 
+            nullptr, 
+            snap,
+            nullptr
+        );
+        */
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

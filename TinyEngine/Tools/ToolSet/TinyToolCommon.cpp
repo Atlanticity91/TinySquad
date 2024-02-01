@@ -23,39 +23,34 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyToolCommon::TinyToolCommon( ) 
-	: TinyToolCategory{ "Common" },
-    _show_guizmo{ true },
-    _use_snap{ false },
-    _mode{ TTWG_MODE_WORLD },
-    _tool{ TTWG_TOOL_TRANSLATE_2D },
-    _snap_translate{ 1.f },
-    _snap_rotate{ 1.f },
-    _snap_scale{ 1.f },
+TinyToolCommon::TinyToolCommon( )
+    : TinyToolCategory{ "Common" },
+    _guizmo{
+        true,
+        false,
+        ImGuizmo::MODE::WORLD,
+        ImGuizmo::OPERATION::TRANSLATE,
+        tiny_vec3{ 1.f },
+        tiny_vec3{ 1.f },
+        tiny_vec3{ 1.f }
+    },
     _modes{
         "Local", "World"
     },
     _tools{
         "Translate 2D",
         "Rotate 2D",
-        "Scale 2D",
-
-        "Translate 3D",
-        "Rotate 3D",
-        "Scale 3D"
+        "Scale 2D"
     }
 { }
 
-void TinyToolCommon::SetGuizmoMode( TinyToolboxWidgetGuizmoModes mode ) { _mode = mode; }
+void TinyToolCommon::SetGuizmoMode( ImGuizmo::MODE mode ) { _guizmo.Mode = mode; }
 
-void TinyToolCommon::SetGuizmoTool( TinyToolboxWidgetGuizmoTools tool ) { _tool = tool; }
+void TinyToolCommon::SetGuizmoTool( ImGuizmo::OPERATION tool ) { _guizmo.Tool = tool; }
 
-void TinyToolCommon::SetGuizmo(
-    TinyToolboxWidgetGuizmoModes mode, 
-    TinyToolboxWidgetGuizmoTools tool 
-) {
-    _mode = mode;
-    _tool = tool;
+void TinyToolCommon::SetGuizmo( ImGuizmo::MODE mode, ImGuizmo::OPERATION tool ) {
+    _guizmo.Mode = mode;
+    _guizmo.Tool = tool;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,32 +61,51 @@ void TinyToolCommon::OnTick(
 	TinyEngine& engine,
 	TinyToolbox& toolbox
 ) {
+    auto& filesystem = engine.GetFilesystem( );
+
+    TinyImGui::Collapsing(
+        "Config",
+        [ & ]( ) {
+            if ( TinyImGui::Button( "Set Game Icon", { -1.f, .0f } ) ) {
+            }
+        } 
+    );
+
     TinyImGui::Collapsing( 
         "Guizmo",
         [ & ]( ) {
             TinyImGui::BeginVars( );
 
             if ( TinyImGui::Dropdown( "Mode", _modes ) )
-                _mode = _modes.Index == 0 ? TTWG_MODE_LOCAL : TTWG_MODE_WORLD;
+                _guizmo.Mode = _modes.Index == 0 ? ImGuizmo::MODE::LOCAL : ImGuizmo::MODE::WORLD;
 
-            if ( TinyImGui::Dropdown( "Tool", _tools ) )
-                _tool = tiny_cast( _tools.Index, TinyToolboxWidgetGuizmoTools );
+            if ( TinyImGui::Dropdown( "Tool", _tools ) ) {
+                switch ( _tools.Index ) {
+                    case 0 : _guizmo.Tool = TinyGuizmoTranslate2D; break;
+                    case 1 : _guizmo.Tool = TinyGuizmoRotate2D;    break;
+                    case 2 : _guizmo.Tool = TinyGuizmoScale2D;     break;
 
-            auto is_orthographic = _tool == TTWG_TOOL_TRANSLATE_2D ||
-                                   _tool == TTWG_TOOL_ROTATE_2D    ||
-                                   _tool == TTWG_TOOL_SCALE_2D;
+                    default : break;
+                }
+
+                _guizmo.Tool = tiny_cast( _tools.Index, ImGuizmo::OPERATION );
+            }
+
+            auto is_orthographic = _guizmo.Tool == TinyGuizmoTranslate2D ||
+                                   _guizmo.Tool == TinyGuizmoRotate2D    ||
+                                   _guizmo.Tool == TinyGuizmoScale2D;
 
             TinyImGui::SeparatorText( "Snap Targets" );
-            TinyImGui::Checkbox( "Use Snap", _use_snap );
+            TinyImGui::Checkbox( "Use Snap", _guizmo.UseSnap );
 
             if ( is_orthographic ) {
-                TinyImGui::InputVector( "Translate", 2, tiny_rvalue( _snap_translate.x ) );
-                TinyImGui::InputScalar( "Rotate", _snap_rotate.x );
-                TinyImGui::InputVector( "Scale", 2, tiny_rvalue( _snap_scale.x ) );
+                TinyImGui::InputVector( "Translate", 2, tiny_rvalue( _guizmo.SnapTranslate.x ) );
+                TinyImGui::InputScalar( "Rotate", _guizmo.SnapRotate.x );
+                TinyImGui::InputVector( "Scale", 2, tiny_rvalue( _guizmo.SnapScale.x ) );
             } else {
-                TinyImGui::InputVec3( "Translate", _snap_translate );
-                TinyImGui::InputVec3( "Rotate", _snap_rotate );
-                TinyImGui::InputVec3( "Scale", _snap_scale );
+                TinyImGui::InputVec3( "Translate", _guizmo.SnapTranslate );
+                TinyImGui::InputVec3( "Rotate", _guizmo.SnapRotate );
+                TinyImGui::InputVec3( "Scale", _guizmo.SnapScale );
             }
 
             TinyImGui::EndVars( );
@@ -146,7 +160,6 @@ void TinyToolCommon::OnTick(
     TinyImGui::Collapsing(
         "Convert To C-Array",
         [ & ]( ) {
-            auto& filesystem = engine.GetFilesystem( );
             auto filters     = "TTF Fonts (*.ttf)\0*.ttf\0";
 
             tiny_buffer<256> buffer;
@@ -246,3 +259,8 @@ void TinyToolCommon::DrawPasses( TinyGraphicManager& graphics ) {
         }
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+TinyToolGuizmo& TinyToolCommon::GetGuizmo( ) { return _guizmo; }

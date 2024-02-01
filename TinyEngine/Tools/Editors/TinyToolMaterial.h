@@ -24,6 +24,9 @@
 
 te_class TinyToolMaterial final : tiny_inherit( TinyToolAssetEditor ) {
 
+private:
+	TinyMaterial* _material;
+
 public:
 	TinyToolMaterial( );
 
@@ -35,5 +38,22 @@ protected:
 	tiny_implement( bool OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) );
 
 	tiny_implement( void OnTick( TinyGame* game, TinyAssetManager& assets ) );
+
+private:
+	void DrawGenerals( );
+
+	void DrawDynamics( );
+
+	void DrawInputs( );
+
+	void DrawColorBlends( );
+
+	void DrawDepthStencil( );
+
+	void DrawDescriptors( );
+
+	void DrawConstants( );
+
+	void DrawShaders( );
 
 };

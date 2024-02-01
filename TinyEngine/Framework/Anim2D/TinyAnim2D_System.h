@@ -31,4 +31,7 @@ public:
 
 	tiny_implement( void RegisterInterop( TinyGame* game ) );
 
+protected:
+	tiny_implement( void PostTick( TinyGame* game, TinyEngine& engine ) );
+
 };

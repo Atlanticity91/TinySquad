@@ -109,6 +109,13 @@ public:
 
 public:
 	template<typename Type>
+	Type* GetAssetList( ) { 
+		auto asset_type = Type::GetType( );
+
+		return tiny_cast( _managers.GetManager( asset_type ), Type* );
+	};
+
+	template<typename Type>
 	Type* GetAssetAs( const TinyAsset& asset ) {
 		return tiny_cast( GetAsset( asset ), Type* );
 	};

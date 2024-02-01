@@ -56,7 +56,8 @@ TinyAnim2D& TinyAnim2D::SetCollection( TinyGame* game, const tiny_string& collec
 }
 
 TinyAnim2D& TinyAnim2D::SetAnimation( TinyGame* game, const tiny_string& animation ) {
-	_animation = animation;
+	_animation		= animation;
+	_animation_hash = tiny_hash{ animation };
 
 	return SetFrame( game, 0 );
 }
@@ -85,6 +86,30 @@ TinyAnim2D& TinyAnim2D::Pause( ) {
 	_flags ^= TA_FLAG_PLAYING;
 
 	return tiny_self;
+}
+
+void TinyAnim2D::Tick(
+	TinyAnimation2DManager* animations, 
+	TinyInputManager& inputs, 
+	TinyECS& ecs 
+) {
+	_frame_time += inputs.GetTimestep( ).GetElapsed( );
+
+	if ( _frame_duration - _frame_time > 0.f )
+		return;
+
+	auto* animation = tiny_cast( animations->GetAsset( _collection ), TinyAnimation2D* );
+	auto* frame		= animation->Next( _animation_hash, _frame_id, _flags & TA_FLAG_REVERSE, _flags & TA_FLAG_LOOPING );
+
+	if ( frame ) {
+		auto* skin = ecs.GetComponentAs<TinySkin2D>( _owner );
+
+		_frame_time		= .0f;
+		_frame_duration = frame->Duration;
+
+		skin->SetSprite( frame->Column, frame->Row );
+	} else
+		_flags ^= TA_FLAG_PLAYING;
 }
 
 void TinyAnim2D::Delete( TinyGame* game, TinyEngine& engine ) { }
@@ -158,6 +183,10 @@ void TinyAnim2D::SetFrame(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyAnim2D::GetIsActive( ) const { 
+	return TinyComponent::GetIsActive( ) && GetIsPlaying( ); 
+}
+
 TinyAsset& TinyAnim2D::GetCollection( ) { return _collection; }
 
 const tiny_string& TinyAnim2D::GetAnimation( ) const { return _animation; }

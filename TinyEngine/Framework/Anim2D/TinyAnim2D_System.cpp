@@ -49,3 +49,18 @@ void TinyAnim2DSystem::RegisterInterop( TinyGame* game ) {
 	if ( tli_createmeta( TINY_ANIM2D_NAME ) )
 		tli_createop( "__tostring", TinyLua::Anim2D::ToString );
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyAnim2DSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
+	auto& inputs	 = engine.GetInputs( );
+	auto& assets	 = engine.GetAssets( );
+	auto* animations = assets.GetAssetList<TinyAnimation2DManager>( );
+	auto& ecs		 = engine.GetECS( );
+
+	for ( auto& comp : _components ) {
+		if ( comp.GetIsActive( ) )
+			comp.Tick( animations, inputs, ecs );
+	}
+}

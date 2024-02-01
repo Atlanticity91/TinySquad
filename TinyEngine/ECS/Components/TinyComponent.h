@@ -53,6 +53,8 @@ public:
 
 	void Disable( TinyGame* game, TinyEngine& engine );
 
+	void Toggle( TinyGame* game, TinyEngine& engine );
+
 	tiny_virtual( void Delete( TinyGame* game, TinyEngine& engine ) );
 
 	virtual void DisplayWidget(

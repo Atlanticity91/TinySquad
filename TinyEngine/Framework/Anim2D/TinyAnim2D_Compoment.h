@@ -35,6 +35,7 @@ TINY_FRAMEWORK_COMP( TinyAnim2D ) {
 private:
 	TinyAsset	_collection;
 	tiny_string _animation;
+	tiny_hash	_animation_hash;
 	tiny_uint	_flags;
 	tiny_uint	_frame_id;
 	float		_frame_time;
@@ -59,6 +60,8 @@ public:
 
 	TinyAnim2D& Pause( );
 
+	void Tick( TinyAnimation2DManager* animations, TinyInputManager& inputs, TinyECS& ecs );
+
 	tiny_implement( void Delete( TinyGame* game, TinyEngine& engine ) );
 
 	tiny_implement( void DisplayWidget(
@@ -68,10 +71,16 @@ public:
 	) );
 
 private:
-	void SetFrame( TinyGame*game, tiny_uint frame_id, TinyAnimation2D::FrameCollection* frames );
+	void SetFrame( 
+		TinyGame*game, 
+		tiny_uint frame_id, 
+		TinyAnimation2D::FrameCollection* frames 
+	);
 
 public:
 	TINY_COMP_NAME( TinyAnim2D );
+
+	tiny_implement( bool GetIsActive( ) const );
 
 	TinyAsset& GetCollection( );
 	

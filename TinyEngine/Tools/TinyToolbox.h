@@ -95,4 +95,6 @@ private:
 
 	void CreateDevDir( TinyEngine& engine );
 
+	void DrawGuizmo( TinyEngine& engine );
+
 };

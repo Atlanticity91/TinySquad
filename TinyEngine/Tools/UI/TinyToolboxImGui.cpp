@@ -277,7 +277,7 @@ void TinyImGui::InputBegin( const tiny_string& label ) {
     ImGui::AlignTextToFramePadding( );
     ImGui::TextUnformatted( name );
     ImGui::NextColumn( );
-    ImGui::PushItemWidth( -1 );
+    ImGui::PushItemWidth( -1.f );
 }
 
 void TinyImGui::InputEnd( ) {

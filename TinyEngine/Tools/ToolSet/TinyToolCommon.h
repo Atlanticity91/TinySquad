@@ -22,48 +22,39 @@
 
 #include <TinyEngine/Tools/Categories/TinyToolManager.h>
 
-tiny_enum( TinyToolboxWidgetGuizmoModes ) {
+#define TinyGuizmoTranslate2D ( ImGuizmo::OPERATION::TRANSLATE_X |ImGuizmo::OPERATION::TRANSLATE_Y )
+#define TinyGuizmoRotate2D ( ImGuizmo::OPERATION::ROTATE_Z )
+#define TinyGuizmoScale2D ( ImGuizmo::OPERATION::SCALE_X | ImGuizmo::OPERATION::SCALE_Y )
 
-	TTWG_MODE_LOCAL = 0,
-	TTWG_MODE_WORLD
+te_struct TinyToolGuizmo {
 
-};
-
-tiny_enum( TinyToolboxWidgetGuizmoTools ) {
-
-	TTWG_TOOL_TRANSLATE_2D = 0,
-	TTWG_TOOL_ROTATE_2D,
-	TTWG_TOOL_SCALE_2D,
-
-	TTWG_TOOL_TRANSLATE_3D,
-	TTWG_TOOL_ROTATE_3D,
-	TTWG_TOOL_SCALE_3D,
+	bool Show;
+	bool UseSnap;
+	ImGuizmo::MODE Mode;
+	ImGuizmo::OPERATION Tool;
+	tiny_vec3 SnapTranslate;
+	tiny_vec3 SnapRotate;
+	tiny_vec3 SnapScale;
 
 };
 
 te_class TinyToolCommon final : tiny_inherit( TinyToolCategory ) { 
 
 private:
-	bool						 _show_guizmo;
-	bool						 _use_snap;
-	TinyToolboxWidgetGuizmoModes _mode;
-	TinyToolboxWidgetGuizmoTools _tool;
-	tiny_vec3					 _snap_translate;
-	tiny_vec3					 _snap_rotate;
-	tiny_vec3					 _snap_scale;
-	TinyImGui::DropdownContext	 _modes;
-	TinyImGui::DropdownContext	 _tools;
+	TinyToolGuizmo			   _guizmo;
+	TinyImGui::DropdownContext _modes;
+	TinyImGui::DropdownContext _tools;
 
 public:
 	TinyToolCommon( );
 
 	~TinyToolCommon( ) = default;
 
-	void SetGuizmoMode( TinyToolboxWidgetGuizmoModes mode );
+	void SetGuizmoMode( ImGuizmo::MODE mode );
 
-	void SetGuizmoTool( TinyToolboxWidgetGuizmoTools tool );
+	void SetGuizmoTool( ImGuizmo::OPERATION tool );
 
-	void SetGuizmo( TinyToolboxWidgetGuizmoModes mode, TinyToolboxWidgetGuizmoTools tool );
+	void SetGuizmo( ImGuizmo::MODE mode, ImGuizmo::OPERATION tool );
 
 protected:
 	tiny_implement( void OnTick( 
@@ -80,5 +71,8 @@ private:
 	void DrawSwapchain( TinyGraphicManager& graphics );
 
 	void DrawPasses( TinyGraphicManager& graphics );
+
+public:
+	TinyToolGuizmo& GetGuizmo( );
 
 };

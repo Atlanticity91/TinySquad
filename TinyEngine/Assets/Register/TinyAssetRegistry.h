@@ -49,6 +49,8 @@ public:
 	void Save( TinyFilesystem& filesystem, const tiny_string& path );
 
 public:
+	tiny_uint GetCount( ) const;
+
 	bool GetExist( const tiny_string& asset ) const;
 	
 	bool GetExist( const tiny_hash asset_hash ) const;

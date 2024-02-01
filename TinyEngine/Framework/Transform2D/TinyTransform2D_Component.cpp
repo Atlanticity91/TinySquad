@@ -116,7 +116,7 @@ TinyTransform2D& TinyTransform2D::Scale( float x, float y ) {
 TinyTransform2D& TinyTransform2D::ReCalculate( ) {
 	auto offset = GetCenter( );
 
-	_transform = glm::translate( tiny_vec3{ _location.x + offset.x, _location.y + offset.y, .0f } );
+	_transform = glm::translate( tiny_vec3{ _location.x + _scale.x, _location.y + _scale.y, .0f } );
 	_transform = glm::rotate( _transform, glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
 	_transform = glm::translate( _transform, tiny_vec3{ -offset.x, -offset.y, .0f } );
 	_transform = glm::scale( _transform, tiny_vec3{ _scale.x, _scale.y, 1.f } );

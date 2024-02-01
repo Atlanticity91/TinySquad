@@ -228,4 +228,7 @@ private:
 		return asset_id;
 	};
 
+public:
+	static tiny_uint GetType( ) { return tiny_cast( Type, tiny_uint ); };
+
 };

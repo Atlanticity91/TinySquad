@@ -86,9 +86,11 @@ void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& asse
 	TinyImGui::CollapsingOpen(
 		"Sprite Sheet",
 		[ & ]( ) {
+			TinyImGui::BeginVars( );
 			TinyImGui::InputScalar( "Columns", _texture->GetEditColumns( ) );
 			TinyImGui::InputScalar( "Rows", _texture->GetEditRows( ) );
 			TinyImGui::InputVec2( "UV", _texture->GetUV( ) );
+			TinyImGui::EndVars( );
 		}
 	);
 
@@ -99,6 +101,7 @@ void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& asse
 		[ & ]( ) {
 			ImGui::BeginDisabled( );
 
+			TinyImGui::BeginVars( );
 			TinyImGui::InputVulkan( "Format", properties.Format );
 			TinyImGui::InputVulkan( "Layout", properties.Layout );
 			TinyImGui::InputScalar( "Width", properties.Width );
@@ -109,6 +112,7 @@ void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& asse
 			TinyImGui::InputVulkan( "Samples", properties.Samples );
 			TinyImGui::InputVulkan( "Tiling", properties.Tiling );
 			TinyImGui::InputVulkan( "Usage", properties.Usage );
+			TinyImGui::EndVars( );
 
 			ImGui::EndDisabled( );
 		}
@@ -119,6 +123,7 @@ void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& asse
 		[ & ]( ) {
 			auto& sampler = properties.Sampler;
 
+			TinyImGui::BeginVars( );
 			TinyImGui::InputVulkan( "Mag Filter", sampler.MagFilter );
 			TinyImGui::InputVulkan( "Min Filter", sampler.MinFilter );
 			TinyImGui::InputVulkan( "Mipmap Mode", sampler.MipmapMode );
@@ -134,6 +139,7 @@ void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& asse
 			TinyImGui::Checkbox( "Use Anisotropy", sampler.UseAnisotropy );
 			TinyImGui::Checkbox( "Use Compare", sampler.UseCompare );
 			TinyImGui::Checkbox( "Unnormalized", sampler.Unnormalized );
+			TinyImGui::EndVars( );
 		}
 	);
 

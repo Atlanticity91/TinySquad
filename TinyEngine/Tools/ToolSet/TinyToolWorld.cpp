@@ -27,8 +27,7 @@ TinyToolWorld::TinyToolWorld( )
 	: TinyToolCategory{ "World" },
 	_new_entity{ "New Entity" },
 	_new_entity_id{ 0 },
-	_selection_hash{ },
-	_query_hash{ }
+	_delete_hash{ }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,91 +40,91 @@ void TinyToolWorld::OnTick(
 ) {
 	auto& ecs = engine.GetECS( );
 
-	TinyImGui::Collapsing( "Systems", DrawSystems, game, engine, ecs );
+	DrawNewEntity( ecs );
 
-	ImGui::SeparatorText( "Entities" );
+	ImGui::Separator( );
 
 	for ( auto& entity : ecs.GetEntities( ) )
 		DrawEntity( game, ecs, entity );
 
-	ImGui::Separator( );
+	if ( _delete_hash ) {
+		ecs.Kill( game, game->GetEngine( ), _delete_hash );
 
-	DrawNewEntity( ecs );
-
-	DrawAddComp( game, engine, ecs );
-
-	if ( _query_hash ) {
-		ecs.Kill( game, game->GetEngine( ), _query_hash );
-
-		_query_hash.empty( );
+		_delete_hash.empty( );
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolWorld::DrawAddComp( TinyGame* game, TinyEngine& engine, TinyECS& ecs ) {
-	if ( ImGui::BeginPopup( "AddComp" ) ) {
-		for ( auto& comp : ecs.GetComponentListFor( _selection_hash ) ) {
-			if ( ImGui::Button( comp.get( ) ) ) {
-				ecs.Append( game, engine, _selection_hash, comp );
-
-				_selection_hash.empty( );
-
-				ImGui::CloseCurrentPopup( );
-			}
-		}
-
-		ImGui::EndPopup( );
-	}
-}
-
 void TinyToolWorld::DrawEntity( 
 	TinyGame* game,
 	TinyECS& ecs, 
 	tiny_map_node<TinyEntity>& entity 
 ) {
 	const auto flags = ImGuiTreeNodeFlags_SpanAvailWidth |
-					   ImGuiTreeNodeFlags_AllowOverlap   |
+					   ImGuiTreeNodeFlags_AllowOverlap	 | 
 					   ImGuiTreeNodeFlags_FramePadding;
 
 	auto entity_name = tiny_buffer<32>{ entity.String };
 	auto* name_str   = entity_name.as_chars( );
 	auto region		 = ImGui::GetContentRegionAvail( );
 
-	ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, { 4.f, 4.f } );
-
-	auto open = ImGui::TreeNodeEx( name_str, flags, name_str );
-
-	ImGui::PopStyleVar( );
-
+	auto open		 = ImGui::TreeNodeEx( name_str, flags, name_str );
 	auto font_size   = ImGui::GetFontSize( );
 	auto& style	     = ImGui::GetStyle( );
 	auto line_height = font_size + style.FramePadding.y * 2.f;
 
-	ImGui::SameLine( region.x - line_height * 1.6f );
-
-	if ( TinyImGui::Button( TF_ICON_PLUS, { line_height, line_height } ) ) {
-		_selection_hash = entity.Hash;
-
-		ImGui::OpenPopup( "AddComp" );
-	}
-
-	ImGui::SameLine( region.x - line_height * .5f );
+	ImGui::SameLine( region.x - line_height * .6f );
 
 	if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
-		_query_hash = entity.Hash;
+		_delete_hash = entity.Hash;
 
 	if ( open ) {
-		auto components = ecs.GetComponents( entity.Hash );
-		auto& engine	= game->GetEngine( );
-		auto& toolbox	= game->GetToolbox( );
+		auto add_components = ecs.GetComponentListFor( entity.Hash );
+		auto components		= ecs.GetComponents( entity.Hash );
+		auto& engine		= game->GetEngine( );
+		auto& toolbox		= game->GetToolbox( );
+
+		ImGui::BeginDisabled( add_components.size( ) == 0 );
+		
+		if ( TinyImGui::Button( "Add Component", { -1.f, .0f } ) )
+			ImGui::OpenPopup( "AddComp" );
+
+		ImGui::Separator( );
+
+		if ( ImGui::BeginPopup( "AddComp" ) ) {
+			for ( auto& comp : add_components ) {
+				if ( ImGui::Button( comp.get( ) ) ) {
+					ecs.Append( game, engine, entity.Hash, comp );
+
+					ImGui::CloseCurrentPopup( );
+				}
+			}
+
+			ImGui::EndPopup( );
+		}
+
+		ImGui::EndDisabled( );
 
 		for ( auto& component : components ) {
 			auto comp_name = component->GetName( );
 			auto* name_str = comp_name.as_chars( );
+			auto is_active = component->GetIsActive( );
 
-			if ( ImGui::CollapsingHeader( name_str ) ) {
+			open = ImGui::CollapsingHeader( name_str, ImGuiTreeNodeFlags_AllowOverlap );
+
+			ImGui::SameLine( region.x - line_height * 1.8f );
+
+			if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH ) )
+				component->Toggle( game, engine );
+
+			ImGui::SameLine( region.x - line_height * .6f );
+
+			if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
+				ecs.Remove( game, engine, entity.Hash, comp_name );
+			
+			if ( open ) {
 				TinyImGui::BeginVars( );
 
 				component->DisplayWidget( game, engine, toolbox );
@@ -152,49 +151,5 @@ void TinyToolWorld::DrawNewEntity( TinyECS& ecs ) {
 			_new_entity.store( "New Entity %u", _new_entity_id++ );
 
 		ecs.Create( entity_name );
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PRIVATE STATIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolWorld::DrawSystems( TinyGame* game, TinyEngine& engine, TinyECS& ecs ) {
-	auto& systems	  = ecs.GetSystems( );
-	auto system_count = systems.size( );
-	auto systen_id	  = tiny_cast( 0, tiny_uint );
-
-	while ( systen_id < system_count ) {
-		auto* system   = systems[ systen_id ];
-		auto is_active = system->GetIsActive( );
-		auto* name_str = system->GetName( ).as_chars( );
-
-		ImGui::BeginDisabled( system_count - systen_id > 1 );
-
-		TINY_IMGUI_SCOPE_ID(
-			if ( ImGui::Button( TF_ICON_CHEVRON_UP ) )
-				ecs.Remap( name_str, systen_id - 1 );
-		);
-
-		ImGui::EndDisabled( );
-		ImGui::SameLine( );
-		ImGui::BeginDisabled( systen_id > 0 );
-
-		TINY_IMGUI_SCOPE_ID(
-			if ( ImGui::Button( TF_ICON_CHEVRON_DOWN ) )
-				ecs.Remap( name_str, systen_id + 1 );
-		);
-
-		ImGui::EndDisabled( );
-		ImGui::SameLine( );
-
-		TINY_IMGUI_SCOPE_ID(
-			if ( TinyImGui::Checkbox( IMGUI_NO_LABEL, is_active ) )
-				system->Toggle( game, engine );
-		);
-
-		ImGui::SameLine( );
-		ImGui::Text( name_str );
-
-		systen_id += 1;
 	}
 }

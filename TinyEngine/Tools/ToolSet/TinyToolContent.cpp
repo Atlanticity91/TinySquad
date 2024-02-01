@@ -28,8 +28,9 @@ TinyToolContent::TinyToolContent( )
     TinyToolDialog{ "Tiny Registry (*.tinyregistry)\0*.tinyregistry\0" },
     _has_changed{ false },
     _type_count{ TinyAssetTypes::TA_TYPE_COUNT },
+    _asset_count{ 0 },
     _type_to_string{ TinyToolContent::TypeToString },
-    _type_editors{ },
+    _type_editors{ TA_TYPE_ADDON - 1 },
     _action{ },
     _metadata{ nullptr }
 { }
@@ -39,8 +40,18 @@ void TinyToolContent::Create(
     TinyEngine& engine,
     TinyToolbox& toolbox
 ) {
-    Register<TinyToolTexture2D, TA_TYPE_CONFIG>( );
     Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
+    //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
+    //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_CUBEMAP>( );
+    //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_ATLAS>( );
+    //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_LUT>( );
+    //Register<TinyToolTexture2D, TA_TYPE_FONT>( );
+    //Register<TinyToolTexture2D, TA_TYPE_SHADER>( );
+    Register<TinyToolMaterial, TA_TYPE_MATERIAL>( );
+    //Register<TinyToolTexture2D, TA_TYPE_GEOMETRY>( );
+    //Register<TinyToolTexture2D, TA_TYPE_CUE>( );
+    //Register<TinyToolTexture2D, TA_TYPE_SCRIPT>( );
+    //Register<TinyToolTexture2D, TA_TYPE_ANIMATION_2D>( );
 }
 
 bool TinyToolContent::OpenAssetEditor( TinyGame* game, const tiny_string& asset_name ) {
@@ -61,7 +72,7 @@ bool TinyToolContent::OpenAssetEditor(
     auto state   = false;
 
     if ( GetHasEditor( metadata.Type ) && assets.Acquire( game, asset ) )
-        state = _type_editors[ metadata.Type ]->Open( game, name, asset );
+        state = _type_editors[ metadata.Type - 1 ]->Open( game, name, asset );
 
     return state;
 }
@@ -69,8 +80,10 @@ bool TinyToolContent::OpenAssetEditor(
 void TinyToolContent::RenderEditors( TinyGame* game ) {
     auto& assets = game->GetAssets( );
 
-    for ( auto& editor : _type_editors )
-        editor->Tick( game, assets );
+    for ( auto& editor : _type_editors ) {
+        if ( editor )
+            editor->Tick( game, assets );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,20 +101,26 @@ void TinyToolContent::OnTick(
     auto path_buffer = tiny_buffer<256>{ };
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
+    _has_changed = _asset_count == registry.GetCount( );
+
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
         if ( OpenDialog( filesystem ) ) {
             registry.Load( filesystem, _dialog_path );
 
             _has_changed = false;
+            _asset_count = registry.GetCount( );
         }
     }
 
     ImGui::SameLine( );
 
-    ImGui::BeginDisabled( !_has_changed );
+    ImGui::BeginDisabled( _has_changed );
     if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-        if ( SaveDialog( filesystem ) )
+        if ( SaveDialog( filesystem ) ) {
             registry.Save( filesystem, _dialog_path );
+
+            _asset_count = registry.GetCount( );
+        }
     }
     ImGui::EndDisabled( );
 
@@ -110,16 +129,16 @@ void TinyToolContent::OnTick(
         auto path = std::string{ dev_dir.as_chars( ) };
 
         if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", path_buffer.length( ), path_buffer ) ) {
-            _has_changed = !filesystem.GetIsFile( path_buffer, TINY_REGISTRY_EXT );
+            auto success = false;
 
-            if ( _has_changed ) {
+            if ( !filesystem.GetIsFile( path_buffer, TINY_REGISTRY_EXT ) ) {
                 if ( filesystem.GetIsAssetFile( path_buffer ) || filesystem.GetIsArchiveFile( path_buffer ) )
-                    _has_changed = assets.LoadPath( game, path_buffer );
+                    success = assets.LoadPath( game, path_buffer );
                 else
-                    _has_changed = assets.Import( game, path_buffer );
+                    success = assets.Import( game, path_buffer );
             }
 
-            if ( !_has_changed )
+            if ( !success )
                 ImGui::OpenPopup( "Import Failed" );
         }
     }
@@ -197,10 +216,12 @@ void TinyToolContent::OnTick(
 
                         ImGui::SameLine( .0f, spacing * .25f );
 
+                        ImGui::BeginDisabled( metadata->Data.Reference > 0 );
                         if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) ) {
                             _action = TTC_ACTION_REMOVE;
                             _metadata = metadata;
                         }
+                        ImGui::EndDisabled( );
                     }
 
                     ImGui::TreePop( );
@@ -229,6 +250,8 @@ void TinyToolContent::OnTick(
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyToolContent::GetHasEditor( tiny_uint asset_type ) const {
+    asset_type -= 1;
+
     return asset_type < _type_editors.size( ) && _type_editors[ asset_type ];
 }
 
@@ -239,15 +262,17 @@ c_string TinyToolContent::TypeToString( tiny_uint type ) {
     auto string = "";
 
     switch ( type ) {
-        case TA_TYPE_TEXTURE_2D   : string = "TEXTURE 2D";   break;
-        case TA_TYPE_TEXTURE_3D   : string = "TEXTURE 3D";   break;
-        case TA_TYPE_SHADER       : string = "SHADER";       break;
-        case TA_TYPE_MATERIAL     : string = "MATERIAL";     break;
-        case TA_TYPE_GEOMETRY     : string = "GEOMETRY";     break;
-        case TA_TYPE_CUE          : string = "CUE";          break;
-        case TA_TYPE_SCRIPT       : string = "SCRIPT";       break;
-        case TA_TYPE_ANIMATION_2D : string = "ANIMATION 2D"; break;
-        case TA_TYPE_ANIMATION_3D : string = "ANIMATION 3D"; break;
+        case TA_TYPE_TEXTURE_2D      : string = "TEXTURE 2D";   break;
+        case TA_TYPE_TEXTURE_CUBEMAP : string = "CUBE MAP";     break;
+        case TA_TYPE_TEXTURE_ATLAS   : string = "ATLAS";        break;
+        case TA_TYPE_TEXTURE_LUT     : string = "LUT";          break;
+        case TA_TYPE_FONT            : string = "FONTS";        break;
+        case TA_TYPE_SHADER          : string = "SHADER";       break;
+        case TA_TYPE_MATERIAL        : string = "MATERIAL";     break;
+        case TA_TYPE_GEOMETRY        : string = "GEOMETRY";     break;
+        case TA_TYPE_CUE             : string = "CUE";          break;
+        case TA_TYPE_SCRIPT          : string = "SCRIPT";       break;
+        case TA_TYPE_ANIMATION_2D    : string = "ANIMATION 2D"; break;
 
         default: break;
     }

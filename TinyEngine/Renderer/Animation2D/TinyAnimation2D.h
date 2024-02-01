@@ -97,7 +97,7 @@ public:
 		const tiny_hash animation_hash,
 		tiny_uint& frame_id, 
 		bool reverse,
-		bool& restart
+		bool restart
 	) const;
 
 };

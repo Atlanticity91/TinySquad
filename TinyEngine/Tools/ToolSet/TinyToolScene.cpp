@@ -42,6 +42,7 @@ void TinyToolScene::OnTick(
     auto& filesystem = engine.GetFilesystem( );
     auto& assets     = engine.GetAssets( );
     auto& registry   = assets.GetRegistry( );
+    auto& ecs        = engine.GetECS( );
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
@@ -61,7 +62,66 @@ void TinyToolScene::OnTick(
     }
     ImGui::EndDisabled( );
 
-    ImGui::SeparatorText( "Generals" );
+    ImGui::SeparatorText( "Systems" );
+
+	DrawSystems( game, engine, ecs );
+
+	ImGui::SeparatorText( "Generals" );
+
+	DrawGenerals( );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyToolScene::DrawSystems( TinyGame* game, TinyEngine& engine, TinyECS& ecs ) {
+	auto& systems	  = ecs.GetSystems( );
+	auto system_count = systems.size( );
+	auto system_id = tiny_cast( 0, tiny_uint );
+
+	while ( system_id < system_count ) {
+		auto* system   = systems[ system_id ];
+		auto is_active = system->GetIsActive( );
+		auto* name_str = system->GetName( ).as_chars( );
+
+		ImGui::BeginDisabled( system_id == 0 );
+		TINY_IMGUI_SCOPE_ID(
+			if ( ImGui::Button( TF_ICON_CHEVRON_UP ) )
+				ecs.Remap( name_str, system_id - 1 );
+		);
+		ImGui::EndDisabled( );
+		
+		ImGui::SameLine( );
+
+		ImGui::BeginDisabled( system_id == system_count - 1 );
+		TINY_IMGUI_SCOPE_ID(
+			if ( ImGui::Button( TF_ICON_CHEVRON_DOWN ) )
+				ecs.Remap( name_str, system_id + 1 );
+		);
+		ImGui::EndDisabled( );
+
+		ImGui::SameLine( );
+
+		TINY_IMGUI_SCOPE_ID(
+			if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH ) )
+				system->Toggle( game, engine );
+		);
+
+		ImGui::SameLine( );
+		ImGui::Text( name_str );
+
+		system_id += 1;
+	}
+}
+
+void TinyToolScene::DrawGenerals( ) {
+	TinyImGui::BeginVars( );
+
+	auto color = TinyPalettes::EMERALD;
+
+	TinyImGui::InputColor( "Ambient Light", color );
+
+	TinyImGui::EndVars( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

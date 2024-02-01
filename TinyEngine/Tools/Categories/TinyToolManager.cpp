@@ -48,6 +48,7 @@ bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
 void TinyToolManager::Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox ) {
 	if ( ImGui::Begin( "Tiny Editor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar ) ) {
 		auto tab_id = tiny_cast( 0, tiny_uint );
+
 		if ( ImGui::BeginTabBar( "__tiny_editor_tabs__", ImGuiTabBarFlags_None ) ) {
 			for ( auto& category : _categories ) {
 				if ( !category->Tick( game, engine, toolbox ) )

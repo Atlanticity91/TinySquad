@@ -116,6 +116,8 @@ void TinyAssetRegistry::Save( TinyFilesystem& filesystem, const tiny_string& pat
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+tiny_uint TinyAssetRegistry::GetCount( ) const { return _metadatas.size( ); }
+
 bool TinyAssetRegistry::GetExist( const tiny_string& asset ) const {
 	return _metadatas.find( asset );
 }

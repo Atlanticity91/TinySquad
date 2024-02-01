@@ -44,6 +44,11 @@ protected:
 		TinyToolbox& toolbox
 	) );
 
+private:
+	void DrawSystems( TinyGame* game, TinyEngine& engine, TinyECS& ecs );
+
+	void DrawGenerals( );
+
 public:
 	bool GetHasChanged( ) const;
 

@@ -48,6 +48,13 @@ void TinyComponent::Disable( TinyGame* game, TinyEngine& engine ) {
 	}
 }
 
+void TinyComponent::Toggle( TinyGame* game, TinyEngine& engine ) {
+	if ( _is_active )
+		Disable( game, engine );
+	else
+		Enable( game, engine );
+}
+
 void TinyComponent::DisplayWidget(
 	TinyGame* game,
 	TinyEngine& engine,
