@@ -51,6 +51,12 @@ public:
 
 	void Set( const tiny_vec2& location, float rotation, const tiny_vec2& scale );
 
+	void Set( 
+		const tiny_vec3& location, 
+		const tiny_vec3& rotation, 
+		const tiny_vec3& scale 
+	);
+
 	tiny_inline TinyTransform2D& Move( const tiny_vec2& offset );
 
 	TinyTransform2D& Move( float x, float y );
@@ -84,9 +90,9 @@ public:
 
 	const tiny_vec2& GetScale( ) const;
 
-	tiny_vec2 GetCenter( ) const;
+	tiny_vec2 GetHalfScale( ) const;
 
-	float GetRotator( ) const;
+	tiny_vec3 GetRotator( ) const;
 
 	const tiny_mat4& GetTransform( ) const;
 

@@ -195,14 +195,16 @@ void TinyToolbox::Tick( TinyGame* game, TinyEngine& engine ) {
 
         ImGui::NewFrame( );
 
+        //auto* dl = ImGui::GetBackgroundDrawList( );
+        //ImGuizmo::SetDrawlist( dl );
         ImGuizmo::BeginFrame( );
 
         static bool show_demo_window = true;
         ImGui::ShowDemoWindow( &show_demo_window );
 
-        DrawGuizmo( engine );
-
         _tools.Tick( game, engine, tiny_self );
+
+        DrawGuizmo( engine );
 
         ImGui::Render( );
 
@@ -388,30 +390,45 @@ void TinyToolbox::CreateDevDir( TinyEngine& engine ) {
 }
 
 void TinyToolbox::DrawGuizmo( TinyEngine& engine ) {
-    auto& io      = ImGui::GetIO( );
-    auto& ecs     = engine.GetECS( );
-    auto* cameras = ecs.GetSystemAs<TinyCameraSystem>( );
-    auto* common  = _tools.GetCategoryAs<TinyToolCommon>( TT_CATEGORY_COMMON );
+    auto& ecs       = engine.GetECS( );
+    auto* world     = _tools.GetCategoryAs<TinyToolWorld>( TT_CATEGORY_WORLD );
+    auto& entity    = world->GetEntity( );
+    auto* transform = ecs.GetComponentAs<TinyTransform2D>( entity );
 
-    if ( cameras && common ) {
-        auto& view   = cameras->GetViewMatrix( );
-        auto& proj   = cameras->GetProjectionMatrtix( );
-        auto& guizmo = common->GetGuizmo( );
-        auto* snap   = tiny_cast( nullptr, float* );
+    if ( transform ) {
+        auto& io      = ImGui::GetIO( );
+        auto* cameras = ecs.GetSystemAs<TinyCameraSystem>( );
+        auto* common  = _tools.GetCategoryAs<TinyToolCommon>( TT_CATEGORY_COMMON );
+        auto view     = cameras->GetViewMatrix( );
+        auto proj     = cameras->GetProjectionMatrtix( );
+        auto& guizmo  = common->GetGuizmo( );
+        auto* snap    = tiny_cast( nullptr, float* );
+        auto matrix   = transform->GetTransform( );
+        auto zoom     = cameras->GetProjection( ).GetParamter( );
+        auto size_y   = io.DisplaySize.y * zoom;
 
-        ImGuizmo::SetRect( .0f, .0f, io.DisplaySize.x, io.DisplaySize.y );
-        /*
-        ImGuizmo::Manipulate( 
-            tiny_rvalue( view[ 0 ][ 0 ] ), 
-            tiny_rvalue( proj[ 0 ][ 0 ] ),
+        if ( guizmo.Tool == TinyGuizmoTranslate2D )
+            snap = tiny_rvalue( guizmo.SnapTranslate.x );
+        else if ( guizmo.Tool == TinyGuizmoRotate2D )
+            snap = tiny_rvalue( guizmo.SnapRotate.x );
+        else if ( guizmo.Tool == TinyGuizmoScale2D )
+            snap = tiny_rvalue( guizmo.SnapScale.x );
+
+        proj[ 1 ][ 1 ] *= -1.f;
+
+        ImGuizmo::SetOrthographic( true );
+        ImGuizmo::SetRect( .0f, -size_y, io.DisplaySize.x * zoom, size_y );
+
+        ImGuizmo::Manipulate(
+            glm::value_ptr( view ),
+            glm::value_ptr( proj ),
             guizmo.Tool,
-            guizmo.Mode, 
-            nullptr, 
-            nullptr, 
+            guizmo.Mode,
+            glm::value_ptr( matrix ),
+            nullptr,
             snap,
             nullptr
         );
-        */
     }
 }
 

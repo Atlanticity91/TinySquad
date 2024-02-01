@@ -52,7 +52,7 @@ void TinyTransform2DSystem::RegisterInterop( TinyGame* game ) {
 	tli_createfn( "get_location", TinyLua::Transform2D::GetLocation );
 	tli_createfn( "get_rotation", TinyLua::Transform2D::GetRotation );
 	tli_createfn( "get_scale", TinyLua::Transform2D::GetScale );
-	tli_createfn( "get_center", TinyLua::Transform2D::GetCenter );
+	tli_createfn( "get_half_scale", TinyLua::Transform2D::GetHalfScale );
 	tli_createfn( "get_world_location", TinyLua::Transform2D::GetWorldLocation );
 	tli_createfn( "get_world_rotation", TinyLua::Transform2D::GetWorldRotation );
 	tli_createfn( "get_world_scale", TinyLua::Transform2D::GetWorldScale );

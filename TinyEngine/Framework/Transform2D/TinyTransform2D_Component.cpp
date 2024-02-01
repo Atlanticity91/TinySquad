@@ -81,6 +81,18 @@ void TinyTransform2D::Set(
 	ReCalculate( );
 }
 
+void TinyTransform2D::Set(
+	const tiny_vec3& location,
+	const tiny_vec3& rotation,
+	const tiny_vec3& scale
+) {
+	_location = location;
+	_rotation = glm::degrees( rotation.z );
+	_scale	  = scale;
+
+	ReCalculate( );
+}
+
 TinyTransform2D& TinyTransform2D::Move( const tiny_vec2& offset ) {
 	return Move( offset.x, offset.y );
 }
@@ -114,11 +126,10 @@ TinyTransform2D& TinyTransform2D::Scale( float x, float y ) {
 } 
 
 TinyTransform2D& TinyTransform2D::ReCalculate( ) {
-	auto offset = GetCenter( );
+	auto half_scale = _scale * .5f;
 
-	_transform = glm::translate( tiny_vec3{ _location.x + _scale.x, _location.y + _scale.y, .0f } );
+	_transform = glm::translate( tiny_vec3{ _location.x + half_scale.x, _location.y + half_scale.y, .0f } );
 	_transform = glm::rotate( _transform, glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
-	_transform = glm::translate( _transform, tiny_vec3{ -offset.x, -offset.y, .0f } );
 	_transform = glm::scale( _transform, tiny_vec3{ _scale.x, _scale.y, 1.f } );
 
 	return tiny_self;
@@ -131,9 +142,12 @@ void TinyTransform2D::DisplayWidget(
 ) { 
 	TinyComponent::DisplayWidget( game, engine, toolbox );
 
-	TinyImGui::InputVec2( "Location", _location );
-	TinyImGui::InputScalar( "Rotation", _rotation );
-	TinyImGui::InputVec2( "Scale", _scale );
+	if (
+		TinyImGui::InputVec2( "Location", _location )   ||
+		TinyImGui::InputScalar( "Rotation", _rotation ) ||
+		TinyImGui::InputVec2( "Scale", _scale )
+	)
+		ReCalculate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,10 +161,12 @@ float TinyTransform2D::GetRotation( ) { return _rotation; }
 
 tiny_vec2& TinyTransform2D::GetScale( ) { return _scale; }
 
-tiny_vec2 TinyTransform2D::GetCenter( ) const { return _scale * .5f; }
+tiny_vec2 TinyTransform2D::GetHalfScale( ) const { return _scale * .5f; }
 
 const tiny_vec2& TinyTransform2D::GetScale( ) const { return _scale; }
 
-float TinyTransform2D::GetRotator( ) const { return glm::radians( _rotation ); }
+tiny_vec3 TinyTransform2D::GetRotator( ) const {
+	return { .0f,.0f, glm::radians( _rotation ) };
+}
 
 const tiny_mat4& TinyTransform2D::GetTransform( ) const { return _transform; }

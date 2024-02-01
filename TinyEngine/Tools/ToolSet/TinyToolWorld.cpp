@@ -50,6 +50,9 @@ void TinyToolWorld::OnTick(
 	if ( _delete_hash ) {
 		ecs.Kill( game, game->GetEngine( ), _delete_hash );
 
+		if ( _selection_hash == _delete_hash )
+			_selection_hash.empty( );
+
 		_delete_hash.empty( );
 	}
 }
@@ -75,7 +78,7 @@ void TinyToolWorld::DrawEntity(
 	auto& style	     = ImGui::GetStyle( );
 	auto line_height = font_size + style.FramePadding.y * 2.f;
 
-	ImGui::SameLine( region.x - line_height * .6f );
+	ImGui::SameLine( region.x - line_height * .8f );
 
 	if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
 		_delete_hash = entity.Hash;
@@ -85,6 +88,8 @@ void TinyToolWorld::DrawEntity(
 		auto components		= ecs.GetComponents( entity.Hash );
 		auto& engine		= game->GetEngine( );
 		auto& toolbox		= game->GetToolbox( );
+
+		_selection_hash = entity.Hash;
 
 		ImGui::BeginDisabled( add_components.size( ) == 0 );
 		
@@ -107,33 +112,42 @@ void TinyToolWorld::DrawEntity(
 
 		ImGui::EndDisabled( );
 
-		for ( auto& component : components ) {
-			auto comp_name = component->GetName( );
-			auto* name_str = comp_name.as_chars( );
-			auto is_active = component->GetIsActive( );
+		TINY_IMGUI_SCOPE_ID(
+			ImGui::BeginGroup( );
 
-			open = ImGui::CollapsingHeader( name_str, ImGuiTreeNodeFlags_AllowOverlap );
+			for ( auto& component : components ) {
+				auto comp_name = component->GetName( );
+				auto* name_str = comp_name.as_chars( );
+				auto is_active = component->GetIsActive( );
 
-			ImGui::SameLine( region.x - line_height * 1.8f );
+				open = ImGui::CollapsingHeader( name_str, ImGuiTreeNodeFlags_AllowOverlap );
 
-			if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH ) )
-				component->Toggle( game, engine );
+				ImGui::SameLine( region.x - line_height * 3.1f );
 
-			ImGui::SameLine( region.x - line_height * .6f );
+				if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH ) )
+					component->Toggle( game, engine );
 
-			if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
-				ecs.Remove( game, engine, entity.Hash, comp_name );
-			
-			if ( open ) {
-				TinyImGui::BeginVars( );
+				ImGui::SameLine( region.x - line_height * 1.8f );
 
-				component->DisplayWidget( game, engine, toolbox );
+				if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
+					ecs.Remove( game, engine, entity.Hash, comp_name );
 
-				TinyImGui::EndVars( );
+				if ( open ) {
+					TinyImGui::BeginVars( );
 
-				ImGui::Separator( );
+					component->DisplayWidget( game, engine, toolbox );
+
+					TinyImGui::EndVars( );
+
+					ImGui::Separator( );
+				}
 			}
-		}
+
+			ImGui::EndGroup( );
+		);
+
+		if ( ImGui::IsItemClicked( ImGuiMouseButton_Left ) )
+			_selection_hash = entity.Hash;
 
 		ImGui::TreePop( );
 	}
@@ -153,3 +167,8 @@ void TinyToolWorld::DrawNewEntity( TinyECS& ecs ) {
 		ecs.Create( entity_name );
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+const tiny_hash& TinyToolWorld::GetEntity( ) const { return _selection_hash; }

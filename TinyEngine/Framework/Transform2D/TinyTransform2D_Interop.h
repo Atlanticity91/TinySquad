@@ -51,7 +51,7 @@ namespace TinyLua::Transform2D {
 	tiny_dll tli_prototypefn( GetLocation );
 	tiny_dll tli_prototypefn( GetRotation );
 	tiny_dll tli_prototypefn( GetScale );	
-	tiny_dll tli_prototypefn( GetCenter );
+	tiny_dll tli_prototypefn( GetHalfScale );
 
 	tiny_dll tli_prototypefn( GetWorldLocation );
 	tiny_dll tli_prototypefn( GetWorldRotation );

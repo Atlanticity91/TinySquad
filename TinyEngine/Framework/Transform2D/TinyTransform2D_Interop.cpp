@@ -259,12 +259,12 @@ tli_implementfn( TinyLua::Transform2D::GetScale ) {
 	return 1;
 }
 
-tli_implementfn( TinyLua::Transform2D::GetCenter ) {
+tli_implementfn( TinyLua::Transform2D::GetHalfScale ) {
 	auto* comp = Component::Get<TinyTransform2D>( context, tli_self );
 	auto value = tiny_vec2{ };
 
 	if ( comp )
-		value = comp->GetCenter( );
+		value = comp->GetHalfScale( );
 
 	TinyLua::Vec2::Create( context, value );
 
