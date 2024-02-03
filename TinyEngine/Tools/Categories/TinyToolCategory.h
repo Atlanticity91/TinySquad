@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Tools/UI/TinyToolboxImGui.h>
+#include <TinyEngine/Tools/UI/TinyToolboxGuizmo.h>
 
 te_class TinyToolCategory {
 

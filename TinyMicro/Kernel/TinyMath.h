@@ -48,3 +48,22 @@ TINY_GLM_REG( quat, quat );
 
 #define TINY_PI ( 3.1415926535897932384626433832795 )
 #define TINY_PIF tiny_cast( TINY_PI, float )
+
+namespace TinyMath { 
+
+	typedef tiny_vec3( *GrabSignature )( tiny_mat4& );
+
+	tiny_vec3 GrabTransform( tiny_mat4& matrix );
+	
+	tiny_vec3 GrabRotation( tiny_mat4& matrix );
+	
+	tiny_vec3 GrabScale( tiny_mat4& matrix );
+
+	void Decompose( 
+		tiny_mat4& matrix, 
+		tiny_vec3& transform, 
+		tiny_vec3& rotation,
+		tiny_vec3& scale
+	);
+
+};

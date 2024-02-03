@@ -24,34 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolCommon::TinyToolCommon( )
-    : TinyToolCategory{ "Common" },
-    _guizmo{
-        true,
-        false,
-        ImGuizmo::MODE::WORLD,
-        ImGuizmo::OPERATION::TRANSLATE,
-        tiny_vec3{ 1.f },
-        tiny_vec3{ 1.f },
-        tiny_vec3{ 1.f }
-    },
-    _modes{
-        "Local", "World"
-    },
-    _tools{
-        "Translate 2D",
-        "Rotate 2D",
-        "Scale 2D"
-    }
+    : TinyToolCategory{ "Common" }
 { }
-
-void TinyToolCommon::SetGuizmoMode( ImGuizmo::MODE mode ) { _guizmo.Mode = mode; }
-
-void TinyToolCommon::SetGuizmoTool( ImGuizmo::OPERATION tool ) { _guizmo.Tool = tool; }
-
-void TinyToolCommon::SetGuizmo( ImGuizmo::MODE mode, ImGuizmo::OPERATION tool ) {
-    _guizmo.Mode = mode;
-    _guizmo.Tool = tool;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
@@ -63,52 +37,12 @@ void TinyToolCommon::OnTick(
 ) {
     auto& filesystem = engine.GetFilesystem( );
 
-    TinyImGui::Collapsing(
-        "Config",
-        [ & ]( ) {
-            if ( TinyImGui::Button( "Set Game Icon", { -1.f, .0f } ) ) {
-            }
-        } 
-    );
-
     TinyImGui::Collapsing( 
         "Guizmo",
         [ & ]( ) {
-            TinyImGui::BeginVars( );
+            auto& guizmo = toolbox.GetGuizmo( );
 
-            if ( TinyImGui::Dropdown( "Mode", _modes ) )
-                _guizmo.Mode = _modes.Index == 0 ? ImGuizmo::MODE::LOCAL : ImGuizmo::MODE::WORLD;
-
-            if ( TinyImGui::Dropdown( "Tool", _tools ) ) {
-                switch ( _tools.Index ) {
-                    case 0 : _guizmo.Tool = TinyGuizmoTranslate2D; break;
-                    case 1 : _guizmo.Tool = TinyGuizmoRotate2D;    break;
-                    case 2 : _guizmo.Tool = TinyGuizmoScale2D;     break;
-
-                    default : break;
-                }
-
-                _guizmo.Tool = tiny_cast( _tools.Index, ImGuizmo::OPERATION );
-            }
-
-            auto is_orthographic = _guizmo.Tool == TinyGuizmoTranslate2D ||
-                                   _guizmo.Tool == TinyGuizmoRotate2D    ||
-                                   _guizmo.Tool == TinyGuizmoScale2D;
-
-            TinyImGui::SeparatorText( "Snap Targets" );
-            TinyImGui::Checkbox( "Use Snap", _guizmo.UseSnap );
-
-            if ( is_orthographic ) {
-                TinyImGui::InputVector( "Translate", 2, tiny_rvalue( _guizmo.SnapTranslate.x ) );
-                TinyImGui::InputScalar( "Rotate", _guizmo.SnapRotate.x );
-                TinyImGui::InputVector( "Scale", 2, tiny_rvalue( _guizmo.SnapScale.x ) );
-            } else {
-                TinyImGui::InputVec3( "Translate", _guizmo.SnapTranslate );
-                TinyImGui::InputVec3( "Rotate", _guizmo.SnapRotate );
-                TinyImGui::InputVec3( "Scale", _guizmo.SnapScale );
-            }
-
-            TinyImGui::EndVars( );
+            guizmo.DrawWidget( );
         }
     );
 
@@ -153,6 +87,14 @@ void TinyToolCommon::OnTick(
             TinyImGui::TextVar( "Blocks", "%u", memory.GetBlockCount( ) );
 
             TinyImGui::EndVars( );
+        }
+    );
+
+    TinyImGui::Collapsing(
+        "Config",
+        [ & ]( ) {
+            if ( TinyImGui::Button( "Set Game Icon", { -1.f, .0f } ) ) {
+            }
         }
     );
 
@@ -263,4 +205,3 @@ void TinyToolCommon::DrawPasses( TinyGraphicManager& graphics ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyToolGuizmo& TinyToolCommon::GetGuizmo( ) { return _guizmo; }

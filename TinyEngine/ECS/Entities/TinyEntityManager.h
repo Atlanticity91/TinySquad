@@ -25,7 +25,8 @@
 te_struct TinyEntityGhost {
 
 	tiny_hash Hash{ };
-	tiny_uint EntityID = 0;
+	tiny_uint EntityID	  = 0;
+	tiny_uint ComponentID = TINY_UINT_MAX;
 
 };
 

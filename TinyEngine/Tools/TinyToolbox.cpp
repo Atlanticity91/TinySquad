@@ -23,13 +23,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyToolbox::TinyToolbox( ) 
+TinyToolbox::TinyToolbox( )
     : _is_in_use{ true },
     _has_dir{ false },
+    _show_exemples{ true },
     _imgui{ nullptr },
     _local_pools{ nullptr },
     _fonts{ },
-    _tools{ }
+    _tools{ },
+    _guizmo{ }
 { }
 
 bool TinyToolbox::Initialize( TinyGame* game ) {
@@ -56,8 +58,9 @@ bool TinyToolbox::LoadFont(
     auto state = filesystem.GetFileExist( font.Path );
 
     if ( state ) {
-        auto& io = ImGui::GetIO( );
-        auto* _font = io.Fonts->AddFontFromFileTTF( tiny_cast( font.Path, c_string ), font.Size );
+        auto& io    = ImGui::GetIO( );
+        auto* path  = font.Path.as_chars( );
+        auto* _font = io.Fonts->AddFontFromFileTTF( path, font.Size );
 
         if ( _font ) {
             _fonts.emplace( font.Alias, _font );
@@ -160,6 +163,18 @@ void TinyToolbox::Hide( ) { _is_in_use = false; }
 
 void TinyToolbox::Toggle( ) { _is_in_use = !_is_in_use; }
 
+void TinyToolbox::ShowExemples( ) { _show_exemples = true; }
+
+void TinyToolbox::ShowGuizmo2D( const tiny_hash entity_hash ) {
+    _guizmo.Show( entity_hash, true );
+}
+
+void TinyToolbox::ShowGuizmo3D( const tiny_hash entity_hash ) {
+    _guizmo.Show( entity_hash, false );
+}
+
+void TinyToolbox::HideGuizmo( ) { _guizmo.Hide( ); }
+
 void TinyToolbox::DisplayAsset(
     TinyGame* game,
     const tiny_string& label,
@@ -194,17 +209,11 @@ void TinyToolbox::Tick( TinyGame* game, TinyEngine& engine ) {
         ImGui_ImplGlfw_NewFrame( );
 
         ImGui::NewFrame( );
+        _guizmo.DrawUI( game );
 
-        //auto* dl = ImGui::GetBackgroundDrawList( );
-        //ImGuizmo::SetDrawlist( dl );
-        ImGuizmo::BeginFrame( );
-
-        static bool show_demo_window = true;
-        ImGui::ShowDemoWindow( &show_demo_window );
+        ImGui::ShowDemoWindow( tiny_rvalue( _show_exemples ) );
 
         _tools.Tick( game, engine, tiny_self );
-
-        DrawGuizmo( engine );
 
         ImGui::Render( );
 
@@ -227,7 +236,7 @@ void TinyToolbox::Terminate( TinyGame* game ) {
             auto& graphics = game->GetGraphics( );
             auto& logical  = graphics.GetLogical( );
 
-            vkDestroyDescriptorPool( logical, _local_pools, VK_NULL_HANDLE );
+            vkDestroyDescriptorPool( logical, _local_pools, vk::GetAllocator( ) );
         }
     }
 }
@@ -267,7 +276,7 @@ bool TinyToolbox::CreateImGuiPools( TinyGraphicManager& graphics ) {
     pool_info.poolSizeCount = size;
     pool_info.pPoolSizes    = pool_sizes;
 
-    return vk::Check( vkCreateDescriptorPool( graphics.GetLogical( ), &pool_info, VK_NULL_HANDLE, &_local_pools ) );
+    return vk::Check( vkCreateDescriptorPool( graphics.GetLogical( ), tiny_rvalue( pool_info ), vk::GetAllocator( ), tiny_rvalue( _local_pools ) ) );
 }
 
 bool TinyToolbox::CreateImGuiContext( TinyWindow& window, TinyGraphicManager& graphics ) {
@@ -389,49 +398,9 @@ void TinyToolbox::CreateDevDir( TinyEngine& engine ) {
         filesystem.CreateDir( dev_dir );
 }
 
-void TinyToolbox::DrawGuizmo( TinyEngine& engine ) {
-    auto& ecs       = engine.GetECS( );
-    auto* world     = _tools.GetCategoryAs<TinyToolWorld>( TT_CATEGORY_WORLD );
-    auto& entity    = world->GetEntity( );
-    auto* transform = ecs.GetComponentAs<TinyTransform2D>( entity );
-
-    if ( transform ) {
-        auto& io      = ImGui::GetIO( );
-        auto* cameras = ecs.GetSystemAs<TinyCameraSystem>( );
-        auto* common  = _tools.GetCategoryAs<TinyToolCommon>( TT_CATEGORY_COMMON );
-        auto view     = cameras->GetViewMatrix( );
-        auto proj     = cameras->GetProjectionMatrtix( );
-        auto& guizmo  = common->GetGuizmo( );
-        auto* snap    = tiny_cast( nullptr, float* );
-        auto matrix   = transform->GetTransform( );
-        auto zoom     = cameras->GetProjection( ).GetParamter( );
-        auto size_y   = io.DisplaySize.y * zoom;
-
-        if ( guizmo.Tool == TinyGuizmoTranslate2D )
-            snap = tiny_rvalue( guizmo.SnapTranslate.x );
-        else if ( guizmo.Tool == TinyGuizmoRotate2D )
-            snap = tiny_rvalue( guizmo.SnapRotate.x );
-        else if ( guizmo.Tool == TinyGuizmoScale2D )
-            snap = tiny_rvalue( guizmo.SnapScale.x );
-
-        proj[ 1 ][ 1 ] *= -1.f;
-
-        ImGuizmo::SetOrthographic( true );
-        ImGuizmo::SetRect( .0f, -size_y, io.DisplaySize.x * zoom, size_y );
-
-        ImGuizmo::Manipulate(
-            glm::value_ptr( view ),
-            glm::value_ptr( proj ),
-            guizmo.Tool,
-            guizmo.Mode,
-            glm::value_ptr( matrix ),
-            nullptr,
-            snap,
-            nullptr
-        );
-    }
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+TinyToolboxGuizmo& TinyToolbox::GetGuizmo( ) { return _guizmo; }
+
+const tiny_hash TinyToolbox::GetGuizmoSelection( ) const { return _guizmo.GetSelection( ); }

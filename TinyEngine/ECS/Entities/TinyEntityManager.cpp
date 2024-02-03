@@ -67,7 +67,7 @@ void TinyEntityManager::Kill( const tiny_uint entity_id ) {
 	
 	entity.Data.Flags ^= TINY_LEFT_SHIFT( TE_FLAG_ALIVE );
 
-	_removed.create_back( entity.Hash, entity_id );
+	_removed.create_back( entity.Hash, entity_id, TINY_UINT_MAX );
 }
 
 void TinyEntityManager::Attach( const tiny_uint entity_id, const tiny_uint parent_id ) {
@@ -128,17 +128,21 @@ bool TinyEntityManager::Append(
 
 void TinyEntityManager::Remove( const tiny_uint entity_id, const tiny_uint component_id ) {
 	_entities.at( entity_id ).Components ^= TINY_LEFT_SHIFT( component_id );
+	_removed.create_back( _entities.node( entity_id ).Hash, entity_id, component_id );
 }
 
 void TinyEntityManager::Clean( ) {
-	auto entity_id = _entities.size( );
+	_removed.sort(
+		[]( auto& a, auto& b ) { return a.EntityID > b.EntityID; }
+	);
 
-	while ( entity_id-- > 0 ) {
-		if ( _entities.at( entity_id ).GetHasFlag( TE_FLAG_ALIVE ) )
+	for ( auto& entity : _removed ) {
+		if ( entity.ComponentID < TINY_UINT_MAX )
 			continue;
 
-		_entities.erase( entity_id );
+		_entities.erase( entity.EntityID );
 	}
+
 	_removed.clear( );
 }
 

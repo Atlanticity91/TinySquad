@@ -28,7 +28,6 @@ private:
 	tiny_buffer<32> _new_entity;
 	tiny_uint		_new_entity_id;
 	tiny_hash		_delete_hash;
-	tiny_hash		_selection_hash;
 
 public:
 	TinyToolWorld( );
@@ -46,8 +45,5 @@ private:
 	void DrawEntity( TinyGame* game, TinyECS& ecs, tiny_map_node<TinyEntity>& entity );
 
 	void DrawNewEntity( TinyECS& ecs );
-
-public:
-	const tiny_hash& GetEntity( ) const;
 
 };

@@ -37,11 +37,19 @@ public:
 
 	~TinyTransform2D( ) = default;
 	
+	TinyTransform2D& SetLocationX( float scalar );
+
+	TinyTransform2D& SetLocationY( float scalar );
+
 	tiny_inline TinyTransform2D& SetLocation( const tiny_vec2& location );
 
 	TinyTransform2D& SetLocation( float x, float y );
 
 	TinyTransform2D& SetRotation( float rotation );
+
+	TinyTransform2D& SetScaleX( float scalar );
+
+	TinyTransform2D& SetScaleY( float scalar );
 
 	tiny_inline TinyTransform2D& SetScale( float scalar );
 

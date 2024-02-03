@@ -175,7 +175,7 @@ public:
 		return tiny_self;
 	};
 
-	tiny_list& sort( std::function<bool( int, int )> compare ) {
+	tiny_list& sort( std::function<bool( Type&, Type& )> compare ) {
 		std::sort( _data.begin( ), _data.end( ), compare );
 
 		return tiny_self;

@@ -27,10 +27,12 @@ te_class TinyToolbox final {
 private:
 	bool			  _is_in_use;
 	bool			  _has_dir;
+	bool			  _show_exemples;
 	ImGuiContext*	  _imgui;
 	VkDescriptorPool  _local_pools;
 	tiny_map<ImFont*> _fonts;
 	TinyToolManager   _tools;
+	TinyToolboxGuizmo _guizmo;
 
 public:
 	TinyToolbox( );
@@ -76,6 +78,14 @@ public:
 
 	void Toggle( );
 
+	void ShowExemples( );
+
+	tiny_inline void ShowGuizmo2D( const tiny_hash entity_hash );
+
+	tiny_inline void ShowGuizmo3D( const tiny_hash entity_hash );
+
+	tiny_inline void HideGuizmo( );
+
 	void DisplayAsset( TinyGame* game, const tiny_string& label, TinyAsset& asset );
 
 	void Tick( TinyGame* game, TinyEngine& engine );
@@ -95,6 +105,9 @@ private:
 
 	void CreateDevDir( TinyEngine& engine );
 
-	void DrawGuizmo( TinyEngine& engine );
+public:
+	TinyToolboxGuizmo& GetGuizmo( );
+
+	const tiny_hash GetGuizmoSelection( ) const;
 
 };

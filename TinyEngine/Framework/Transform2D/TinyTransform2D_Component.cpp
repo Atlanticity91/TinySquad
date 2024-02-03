@@ -29,11 +29,25 @@ TinyTransform2D::TinyTransform2D( )
 
 TinyTransform2D::TinyTransform2D( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash },
-	_location{ },
+	_location{ .0f },
 	_rotation{ .0f },
 	_scale{ 1.f },
 	_transform{ 1.f }
-{ }
+{ 
+	ReCalculate( );
+}
+
+TinyTransform2D& TinyTransform2D::SetLocationX( float scalar ) {
+	_location.x = scalar;
+
+	return tiny_self;
+}
+
+TinyTransform2D& TinyTransform2D::SetLocationY( float scalar ) {
+	_location.y = scalar;
+
+	return tiny_self;
+}
 
 TinyTransform2D& TinyTransform2D::SetLocation( const tiny_vec2& location ) {
 	_location = location;
@@ -50,6 +64,18 @@ TinyTransform2D& TinyTransform2D::SetLocation( float x, float y ) {
 
 TinyTransform2D& TinyTransform2D::SetRotation( float rotation ) {
 	_rotation = rotation;
+
+	return tiny_self;
+}
+
+TinyTransform2D& TinyTransform2D::SetScaleX( float scalar ) {
+	_scale.x = scalar;
+
+	return tiny_self;
+}
+
+TinyTransform2D& TinyTransform2D::SetScaleY( float scalar ) {
+	_scale.y = scalar;
 
 	return tiny_self;
 }
@@ -128,9 +154,9 @@ TinyTransform2D& TinyTransform2D::Scale( float x, float y ) {
 TinyTransform2D& TinyTransform2D::ReCalculate( ) {
 	auto half_scale = _scale * .5f;
 
-	_transform = glm::translate( tiny_vec3{ _location.x + half_scale.x, _location.y + half_scale.y, .0f } );
-	_transform = glm::rotate( _transform, glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
-	_transform = glm::scale( _transform, tiny_vec3{ _scale.x, _scale.y, 1.f } );
+	_transform  = glm::translate( tiny_vec3{ _location.x + half_scale.x, _location.y + half_scale.y, .0f } );
+	_transform *= glm::rotate( glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
+	_transform *= glm::scale( tiny_vec3{ _scale.x, _scale.y, 1.f } );
 
 	return tiny_self;
 }

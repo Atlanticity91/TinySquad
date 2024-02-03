@@ -50,8 +50,8 @@ void TinyToolWorld::OnTick(
 	if ( _delete_hash ) {
 		ecs.Kill( game, game->GetEngine( ), _delete_hash );
 
-		if ( _selection_hash == _delete_hash )
-			_selection_hash.empty( );
+		if ( toolbox.GetGuizmoSelection( ) == _delete_hash )
+			toolbox.HideGuizmo( );
 
 		_delete_hash.empty( );
 	}
@@ -72,48 +72,46 @@ void TinyToolWorld::DrawEntity(
 	auto entity_name = tiny_buffer<32>{ entity.String };
 	auto* name_str   = entity_name.as_chars( );
 	auto region		 = ImGui::GetContentRegionAvail( );
+	auto& engine	 = game->GetEngine( );
+	auto& toolbox	 = game->GetToolbox( );
 
-	auto open		 = ImGui::TreeNodeEx( name_str, flags, name_str );
-	auto font_size   = ImGui::GetFontSize( );
-	auto& style	     = ImGui::GetStyle( );
-	auto line_height = font_size + style.FramePadding.y * 2.f;
+	TINY_IMGUI_SCOPE_ID(
+		ImGui::BeginGroup( );
 
-	ImGui::SameLine( region.x - line_height * .8f );
+		auto open		 = ImGui::TreeNodeEx( name_str, flags, name_str );
+		auto font_size   = ImGui::GetFontSize( );
+		auto& style	     = ImGui::GetStyle( );
+		auto line_height = font_size + style.FramePadding.y * 2.f;
 
-	if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
-		_delete_hash = entity.Hash;
+		ImGui::SameLine( region.x - line_height * .8f );
 
-	if ( open ) {
-		auto add_components = ecs.GetComponentListFor( entity.Hash );
-		auto components		= ecs.GetComponents( entity.Hash );
-		auto& engine		= game->GetEngine( );
-		auto& toolbox		= game->GetToolbox( );
+		if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
+			_delete_hash = entity.Hash;
 
-		_selection_hash = entity.Hash;
+		if ( open ) {
+			auto add_components = ecs.GetComponentListFor( entity.Hash );
+			auto components		= ecs.GetComponents( entity.Hash );
 
-		ImGui::BeginDisabled( add_components.size( ) == 0 );
+			ImGui::BeginDisabled( add_components.size( ) == 0 );
 		
-		if ( TinyImGui::Button( "Add Component", { -1.f, .0f } ) )
-			ImGui::OpenPopup( "AddComp" );
+			if ( TinyImGui::Button( "Add Component", { -1.f, .0f } ) )
+				ImGui::OpenPopup( "AddComp" );
 
-		ImGui::Separator( );
+			ImGui::Separator( );
 
-		if ( ImGui::BeginPopup( "AddComp" ) ) {
-			for ( auto& comp : add_components ) {
-				if ( ImGui::Button( comp.get( ) ) ) {
-					ecs.Append( game, engine, entity.Hash, comp );
+			if ( ImGui::BeginPopup( "AddComp" ) ) {
+				for ( auto& comp : add_components ) {
+					if ( ImGui::Button( comp.get( ) ) ) {
+						ecs.Append( game, engine, entity.Hash, comp );
 
-					ImGui::CloseCurrentPopup( );
+						ImGui::CloseCurrentPopup( );
+					}
 				}
+
+				ImGui::EndPopup( );
 			}
 
-			ImGui::EndPopup( );
-		}
-
-		ImGui::EndDisabled( );
-
-		TINY_IMGUI_SCOPE_ID(
-			ImGui::BeginGroup( );
+			ImGui::EndDisabled( );
 
 			for ( auto& component : components ) {
 				auto comp_name = component->GetName( );
@@ -129,8 +127,12 @@ void TinyToolWorld::DrawEntity(
 
 				ImGui::SameLine( region.x - line_height * 1.8f );
 
-				if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
+				if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) ) {
 					ecs.Remove( game, engine, entity.Hash, comp_name );
+
+					if ( comp_name == "TinyTransform2D" )
+						toolbox.HideGuizmo( );
+				}
 
 				if ( open ) {
 					TinyImGui::BeginVars( );
@@ -143,13 +145,17 @@ void TinyToolWorld::DrawEntity(
 				}
 			}
 
-			ImGui::EndGroup( );
-		);
+			ImGui::TreePop( );
+		}
 
-		if ( ImGui::IsItemClicked( ImGuiMouseButton_Left ) )
-			_selection_hash = entity.Hash;
+		ImGui::EndGroup( );
+	);
 
-		ImGui::TreePop( );
+	if ( entity.Hash != _delete_hash && ImGui::IsItemClicked( ImGuiMouseButton_Left ) ) {
+		if ( ecs.GetHasComponent<TinyTransform2D>( entity.Hash ) )
+			toolbox.ShowGuizmo2D( entity.Hash );
+		else
+			toolbox.HideGuizmo( );
 	}
 }
 
@@ -171,4 +177,3 @@ void TinyToolWorld::DrawNewEntity( TinyECS& ecs ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const tiny_hash& TinyToolWorld::GetEntity( ) const { return _selection_hash; }
