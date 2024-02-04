@@ -159,6 +159,16 @@ bool TinyAssetManager::Export(
 	return state;
 }
 
+bool TinyAssetManager::ReImport( TinyGame* game, const tiny_string& asset_name ) {
+	auto asset_hash = tiny_hash{ asset_name };
+
+	return ReImport( game, asset_hash );
+}
+
+bool TinyAssetManager::ReImport( TinyGame* game, const tiny_hash asset_hash ) {
+	return false;
+}
+
 bool TinyAssetManager::LoadRegistry( TinyGame* game, const tiny_string& path ) {
 	auto& filesystem = game->GetFilesystem( );
 
@@ -311,6 +321,24 @@ void TinyAssetManager::Release( TinyGame* game, TinyAsset& asset ) {
 	}
 }
 
+void TinyAssetManager::Remove( TinyGame* game, const tiny_string& asset_name ) {
+	auto asset_hash = tiny_hash{ asset_name };
+
+	Remove( game, asset_hash );
+}
+
+void TinyAssetManager::Remove( TinyGame* game, const tiny_hash asset_hash ) {
+	auto asset_id = tiny_cast( 0, tiny_uint );
+
+	if ( _registry.FindMetadata( asset_hash, asset_id ) ) {
+		auto& metadata = _registry[ asset_id ];
+
+		_managers.Unload( game, tiny_self, metadata );
+
+		_registry.Remove( asset_hash );
+	}
+}
+
 void TinyAssetManager::Terminate( TinyGame* game ) {
 	auto& graphics = game->GetGraphics( );
 	auto context   = graphics.GetContext( );
@@ -318,6 +346,9 @@ void TinyAssetManager::Terminate( TinyGame* game ) {
 	_managers.Terminate( game );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyAssetManager::LoadConfig( 
 	TinyFilesystem& filesystem, 
 	TinyGameConfig& game_config 

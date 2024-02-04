@@ -31,9 +31,57 @@ TinyRenderer::TinyRenderer( )
 
 bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem ) {
 	auto context = graphics.GetContext( );
-	
-	return  _uniforms.Create( graphics ) && 
-			_batchs.Initialize( context );
+	auto state   = _uniforms.Create( graphics ) && _batchs.Initialize( context );
+
+	if ( state ) {
+		graphics.AddCompilerMacros( 
+			{
+				// === SETS ===
+				{ "TinySetID_Core",	   TINY_STR( TINY_RENDER_SET_CORE )    },
+				{ "TinySetID_Render",  TINY_STR( TINY_RENDER_SET_RENDER )  },
+				{ "TinySetID_Texture", TINY_STR( TINY_RENDER_SET_TEXTURE ) },
+				{ "TinySetID_Light",   TINY_STR( TINY_RENDER_SET_LIGHT )   },
+
+				// === OUTPUTS ===
+				{ "TinyOutputID_Color",    TINY_STR( TINY_OUTPUT_COLOR )    },
+				{ "TinyOutputID_Position", TINY_STR( TINY_OUTPUT_POSITION ) },
+				{ "TinyOutputID_Normal",   TINY_STR( TINY_OUTPUT_NORMAL )   },
+				{ "TinyOutputID_Light",    TINY_STR( TINY_OUTPUT_LIGHT )    },
+				
+				// === TYPES HELPERS ===
+				{ 
+					"tiny_ubo( SET, BIND, NAME )", 
+					"layout( set=SET, binding=BIND ) uniform NAME " 
+				},
+				{
+					"tiny_ssbo_in( SET, BIND, NAME )"
+					"layout( std140, set=SET, binding=BIND ) readonly buffer NAME"
+				},
+				{
+					"tiny_ssbo_out( SET, BIND, NAME )"
+					"layout( std140, set=SET, binding=BIND ) buffer NAME"
+				},
+				{
+					"tiny_constant( NAME )",
+					"layout( push_constant ) uniform NAME"
+				},
+				{ 
+					"tiny_sampler2D( BIND, NAME )", 
+					"layout( set=TinySetID_Texture, binding=BIND ) uniform sampler2D NAME" 
+				},
+				{
+					"tiny_compute_in2D( BIND, FORMAT, NAME )",
+					"layout( binding=BIND, FORMAT ) uniform readonly image2D NAME"
+				},
+				{
+					"tiny_compute_out2D( BIND, FORMAT, NAME )",
+					"layout( binding=BIND, FORMAT ) uniform writeonly image2D NAME"
+				}
+			}
+		);
+	}
+
+	return state;
 }
 
 void TinyRenderer::Prepare( TinyGame* game, FlushMethod_t flush_method ) {

@@ -39,7 +39,7 @@ bool TinyGraphicShaderCompiler::Initialize( ) {
 	//_options.SetIncluder( std::make_unique<TinyGraphicShaderIncluder>( &_includer ) );
 	_options.SetTargetEnvironment( shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_3 );
 	_options.SetOptimizationLevel( shaderc_optimization_level_performance );
-	//_options.SetTargetSpirv( shaderc_spirv_version_1_6 );
+	_options.SetTargetSpirv( shaderc_spirv_version_1_6 );
 
 	return true;
 }
@@ -48,8 +48,19 @@ void TinyGraphicShaderCompiler::AddMacro(
 	const tiny_string& name,
 	const tiny_string& value 
 ) {
-	if ( !name.is_empty( ) )
-		_options.AddMacroDefinition( name.get( ), value.get( ) );
+	if ( !name.is_empty( ) && !value.is_empty( ) ) {
+		auto* name_str  = name.as_chars( );
+		auto name_len	= name.length( );
+		auto* value_str = value.as_chars( );
+		auto value_len  = value.length( );
+
+		_options.AddMacroDefinition( name_str, name_len, value_str, value_len );
+	}
+}
+
+void TinyGraphicShaderCompiler::AddMacros( tiny_init<TinyGraphicShaderMacro> macros ) {
+	for ( auto& macro : macros )
+		AddMacro( macro.Name, macro.Value );
 }
 
 bool TinyGraphicShaderCompiler::Compile(
@@ -139,6 +150,13 @@ bool TinyGraphicShaderCompiler::CompileGLSL(
 		printf( "[ VK ] Shader Compilation Error : %s\n%s\n", context.Name.get( ), preprocess.GetErrorMessage( ).c_str( ) );
 
 	return state;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+const shaderc::CompileOptions& TinyGraphicShaderCompiler::GetCompilerOptions( ) const {
+	return _options;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

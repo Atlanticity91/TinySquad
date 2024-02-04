@@ -47,6 +47,10 @@ public:
 		c_pointer& asset_builder 
 	);
 
+	tiny_inline bool ReImport( TinyGame* game, const tiny_string& asset_name );
+
+	bool ReImport( TinyGame* game, const tiny_hash asset_hash );
+
 	bool LoadRegistry( TinyGame* game, const tiny_string& path );
 
 	bool LoadPath( TinyGame* game, const tiny_string& path );
@@ -80,6 +84,10 @@ public:
 	bool Acquire( TinyGame* game, TinyAsset& asset, const tiny_string& new_asset );
 
 	void Release( TinyGame* game, TinyAsset& asset );
+
+	tiny_inline void Remove( TinyGame* game, const tiny_string& asset_name );
+
+	void Remove( TinyGame* game, const tiny_hash asset_hash );
 
 	void Terminate( TinyGame* game );
 

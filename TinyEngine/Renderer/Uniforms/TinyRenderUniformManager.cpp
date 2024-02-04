@@ -30,7 +30,7 @@ TinyRenderUniformManager::TinyRenderUniformManager( )
 bool TinyRenderUniformManager::Create( TinyGraphicManager& graphics ) {
 	auto context = TinyRenderUniformBuilder{
 		TGB_TYPE_UNIFORM, tiny_sizeof( TinyUBOContext ),
-		"ubo_context", TINY_RENDER_SET_CONTEXT, 0
+		"ubo_context", TINY_RENDER_SET_CORE, 0
 	}; 
 	auto transforms = TinyRenderUniformBuilder{
 		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchTransform_t::Size,

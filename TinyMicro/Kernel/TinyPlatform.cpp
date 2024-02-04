@@ -155,7 +155,7 @@ bool Tiny::GetIsFile( c_string path ) {
 	state = GetFileAttributesExA( path, GetFileExInfoStandard, tiny_rvalue( attribute_data ) ) == TRUE;
 	
 	if ( state )
-		state = !( attribute_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY );
+		state = ( attribute_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == 0;
 #	endif
 
 	return state;

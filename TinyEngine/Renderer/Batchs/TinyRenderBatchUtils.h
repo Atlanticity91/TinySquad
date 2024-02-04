@@ -27,10 +27,15 @@
 #define TINY_MAX_INDEX 6 * TINY_MAX_INSTANCE
 #define TINY_MAX_LIGHT 512
 
-#define TINY_RENDER_SET_CONTEXT 0 
+#define TINY_RENDER_SET_CORE 0 
 #define TINY_RENDER_SET_RENDER 1
 #define TINY_RENDER_SET_TEXTURE 2
 #define TINY_RENDER_SET_LIGHT 3
+
+#define TINY_OUTPUT_COLOR 0 
+#define TINY_OUTPUT_POSITION 1
+#define TINY_OUTPUT_NORMAL 2
+#define TINY_OUTPUT_LIGHT 3
 
 typedef tiny_mat4 TinyRenderTransform;
 typedef tiny_uint TinyRenderIndex;

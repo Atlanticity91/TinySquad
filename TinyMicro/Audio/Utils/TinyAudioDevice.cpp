@@ -50,7 +50,10 @@ bool TinyAudioDevice::Create( ) {
 	return state;
 }
 
-void TinyAudioDevice::Terminate( ) { _master->DestroyVoice( ); }
+void TinyAudioDevice::Terminate( ) { 
+	if ( _master )
+		_master->DestroyVoice( ); 
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

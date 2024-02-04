@@ -127,12 +127,8 @@ void TinyToolWorld::DrawEntity(
 
 				ImGui::SameLine( region.x - line_height * 1.8f );
 
-				if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) ) {
+				if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
 					ecs.Remove( game, engine, entity.Hash, comp_name );
-
-					if ( comp_name == "TinyTransform2D" )
-						toolbox.HideGuizmo( );
-				}
 
 				if ( open ) {
 					TinyImGui::BeginVars( );
@@ -151,7 +147,7 @@ void TinyToolWorld::DrawEntity(
 		ImGui::EndGroup( );
 	);
 
-	if ( entity.Hash != _delete_hash && ImGui::IsItemClicked( ImGuiMouseButton_Left ) ) {
+	if ( ImGui::IsItemClicked( ImGuiMouseButton_Left ) ) {
 		if ( ecs.GetHasComponent<TinyTransform2D>( entity.Hash ) )
 			toolbox.ShowGuizmo2D( entity.Hash );
 		else

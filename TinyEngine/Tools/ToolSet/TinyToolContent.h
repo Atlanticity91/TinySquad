@@ -44,6 +44,7 @@ private:
 	tiny_list<TinyToolAssetEditor*> _type_editors;
 	TinyToolContentActions			_action;
 	TinyAssetRegistry::MetaNode*	_metadata;
+	tiny_buffer<256>				_import_path;
 
 public:
 	TinyToolContent( );

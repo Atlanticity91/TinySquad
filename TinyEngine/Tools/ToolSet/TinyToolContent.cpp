@@ -32,7 +32,8 @@ TinyToolContent::TinyToolContent( )
     _type_to_string{ TinyToolContent::TypeToString },
     _type_editors{ TA_TYPE_ADDON - 1 },
     _action{ },
-    _metadata{ nullptr }
+    _metadata{ nullptr },
+    _import_path{ }
 { }
 
 void TinyToolContent::Create(
@@ -97,8 +98,6 @@ void TinyToolContent::OnTick(
     auto& filesystem = engine.GetFilesystem( );
     auto& assets     = engine.GetAssets( );
     auto& registry   = assets.GetRegistry( );
-
-    auto path_buffer = tiny_buffer<256>{ };
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
     _has_changed = _asset_count == registry.GetCount( );
@@ -128,14 +127,14 @@ void TinyToolContent::OnTick(
         auto dev_dir = filesystem.GetDevDir( );
         auto path = std::string{ dev_dir.as_chars( ) };
 
-        if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", path_buffer.length( ), path_buffer ) ) {
+        if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", _import_path.length( ), _import_path ) ) {
             auto success = false;
 
-            if ( !filesystem.GetIsFile( path_buffer, TINY_REGISTRY_EXT ) ) {
-                if ( filesystem.GetIsAssetFile( path_buffer ) || filesystem.GetIsArchiveFile( path_buffer ) )
-                    success = assets.LoadPath( game, path_buffer );
+            if ( !filesystem.GetIsFile( _import_path, TINY_REGISTRY_EXT ) ) {
+                if ( filesystem.GetIsAssetFile( _import_path ) || filesystem.GetIsArchiveFile( _import_path ) )
+                    success = assets.LoadPath( game, _import_path );
                 else
-                    success = assets.Import( game, path_buffer );
+                    success = assets.Import( game, _import_path );
             }
 
             if ( !success )
@@ -145,7 +144,7 @@ void TinyToolContent::OnTick(
 
     if ( TinyImGui::BeginModal( "Import Failed" ) ) {
         ImGui::Text( "Asset importation failed for :" );
-        ImGui::Text( path_buffer );
+        ImGui::Text( _import_path.as_chars( ) );
 
         ImGui::Separator( );
 
@@ -209,7 +208,7 @@ void TinyToolContent::OnTick(
 
                         ImGui::BeginDisabled( !can_edit );
                         if ( TinyImGui::Button( TF_ICON_EDIT ) ) {
-                            _action = TTC_ACTION_EDIT;
+                            _action   = TTC_ACTION_EDIT;
                             _metadata = metadata;
                         }
                         ImGui::EndDisabled( );
@@ -218,7 +217,7 @@ void TinyToolContent::OnTick(
 
                         ImGui::BeginDisabled( metadata->Data.Reference > 0 );
                         if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) ) {
-                            _action = TTC_ACTION_REMOVE;
+                            _action   = TTC_ACTION_REMOVE;
                             _metadata = metadata;
                         }
                         ImGui::EndDisabled( );

@@ -203,7 +203,7 @@ void TinyToolbox::Tick( TinyGame* game, TinyEngine& engine ) {
 
     if ( _is_in_use ) {
         if ( !_has_dir )
-            CreateDevDir( engine );
+            CreateDevDir( game );
 
         ImGui_ImplVulkan_NewFrame( );
         ImGui_ImplGlfw_NewFrame( );
@@ -390,12 +390,52 @@ bool TinyToolbox::CreateImGuiFont( ) {
     return state;
 }
 
-void TinyToolbox::CreateDevDir( TinyEngine& engine ) {
-    auto& filesystem = engine.GetFilesystem( );
+void TinyToolbox::CreateDevDir( TinyGame* game ) {
+    auto& filesystem = game->GetFilesystem( );
     auto dev_dir     = filesystem.GetDevDir( );
 
     if ( !filesystem.GetDirExist( dev_dir ) )
         filesystem.CreateDir( dev_dir );
+
+    auto vert_path = std::string{ dev_dir.as_chars( ) } + "sv_default.vert";
+    auto frag_path = std::string{ dev_dir.as_chars( ) } + "sf_default.frag";
+    auto mat_path  = std::string{ dev_dir.as_chars( ) } + "m_default.tinyasset";
+
+    if ( !filesystem.GetFileExist( vert_path ) )
+        filesystem.Dump( vert_path, TinyDefaultVertex );
+
+    if ( !filesystem.GetFileExist( frag_path ) )
+        filesystem.Dump( frag_path, TinyDefaultFragment );
+
+    if ( !filesystem.GetFileExist( mat_path ) ) {
+        auto material_path = tiny_string{ mat_path.c_str( ) };
+        auto& graphics     = game->GetGraphics( );
+        auto& assets       = game->GetAssets( );
+        auto material      = tiny_cast( graphics.CreatePipeline( TGP_TYPE_2D, "OutPass", 0 ), TinyMaterialBuilder );
+
+        material.InputBinding.clear( );
+        material.InputAttributes.clear( );
+
+        material.PassName = "OutPass";
+        material.ShaderStages = 2;
+        material.ShaderStages[ 0 ] = "sv_test";
+        material.ShaderStages[ 1 ] = "sf_test";
+
+        material.Descriptors = 3;
+        material.Descriptors[ 0 ] = 1;
+        material.Descriptors[ 1 ] = 2;
+        material.Descriptors[ 2 ] = 1;
+
+        _TinyCreateSetBind( material.Descriptors[ 0 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _TinyCreateSetBind( material.Descriptors[ 1 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _TinyCreateSetBind( material.Descriptors[ 1 ], 1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _TinyCreateSetBind( material.Descriptors[ 2 ], 0, TGBP_TYPE_COMBINED, TGS_STAGE_FRAGMENT );
+
+        auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
+
+        assets.Export( game, TA_TYPE_MATERIAL, material_path, material_addr );
+        assets.Remove( game, "m_default" );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

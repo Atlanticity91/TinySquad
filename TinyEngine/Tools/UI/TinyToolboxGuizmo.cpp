@@ -89,7 +89,9 @@ void TinyToolboxGuizmo::DrawWidget( ) {
 }
 
 void TinyToolboxGuizmo::DrawUI( TinyGame* game ) {
-    if ( _selection ) {
+    auto& ecs = game->GetECS( );
+
+    if ( ecs.GetIsAlive( _selection ) ) {
         auto* snap_target = PeekSnapTarget( );
         auto& io          = ImGui::GetIO( );
         auto& ecs         = game->GetECS( );
@@ -118,7 +120,8 @@ void TinyToolboxGuizmo::DrawUI( TinyGame* game ) {
             )
         )
             ApplyManipulation( transform, matrix );
-    }
+    } else
+        _selection.empty( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

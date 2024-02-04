@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "Fonts/TinyFont.h"
+#include "Utils/TinyDefaultCompute.h"
 
 te_class TinyToolbox final {
 
@@ -103,7 +103,7 @@ private:
 
 	bool CreateImGuiFont( );
 
-	void CreateDevDir( TinyEngine& engine );
+	void CreateDevDir( TinyGame* game );
 
 public:
 	TinyToolboxGuizmo& GetGuizmo( );

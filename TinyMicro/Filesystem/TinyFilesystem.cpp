@@ -144,7 +144,7 @@ bool TinyFilesystem::GetDirExist( const tiny_string& path ) const {
 }
 
 bool TinyFilesystem::GetFileExist( const tiny_string& path ) const {
-	return path.is_valid( ) && !Tiny::GetIsDir( path.get( ) );
+	return path.is_valid( ) && Tiny::GetIsFile( path.get( ) );
 }
 
 tiny_list<Tiny::FileEntry> TinyFilesystem::GetEntries( const tiny_string& path ) const {

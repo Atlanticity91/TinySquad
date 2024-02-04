@@ -53,6 +53,13 @@ public:
 
 	tiny_implement( bool Initialize( TinyFilesystem& file_system, TinyWindow& window ) );
 
+	tiny_inline void AddCompilerMacro(
+		const tiny_string& name, 
+		const tiny_string& value 
+	);
+
+	tiny_inline void AddCompilerMacros( tiny_init<TinyGraphicShaderMacro> macros );
+
 	tiny_inline bool CompileShader( 
 		const TinyPathInformation & path, 
 		tiny_storage& file, 
@@ -185,5 +192,7 @@ public:
 	VkPipelineCache GetPipelineCache( );
 
 	TinyGraphicRenderpass& GetRenderPass( const tiny_string& pass_name );
+
+	tiny_inline const shaderc::CompileOptions& GetCompilerOptions( ) const;
 	
 };

@@ -57,6 +57,17 @@ bool TinyGraphicManager::Initialize( TinyFilesystem& file_system, TinyWindow& wi
 			_compiler.Initialize( );
 }
 
+void TinyGraphicManager::AddCompilerMacro(
+	const tiny_string& name,
+	const tiny_string& value
+) {
+	_compiler.AddMacro( name, value );
+}
+
+void TinyGraphicManager::AddCompilerMacros( tiny_init<TinyGraphicShaderMacro> macros ) {
+	_compiler.AddMacros( macros );
+}
+
 bool TinyGraphicManager::CompileShader(
 	const TinyPathInformation& path,
 	tiny_storage& file, 
@@ -364,4 +375,8 @@ VkPipelineCache TinyGraphicManager::GetPipelineCache( ) { return _pipelines.GetC
 
 TinyGraphicRenderpass& TinyGraphicManager::GetRenderPass( const tiny_string& pass_name ) {
 	return _passes.GetPass( pass_name );
+}
+
+const shaderc::CompileOptions& TinyGraphicManager::GetCompilerOptions( ) const {
+	return _compiler.GetCompilerOptions( );
 }

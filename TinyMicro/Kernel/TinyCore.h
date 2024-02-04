@@ -120,7 +120,6 @@ extern "C" {
 #define tiny_no_implementv( RET, ... ) __VA_ARGS__ { return RET; }
 #define tiny_virtual( ... ) tiny_no_implement( virtual __VA_ARGS__ ) 
 #define tiny_virtualv( RET, ... ) tiny_no_implementv( RET, virtual __VA_ARGS__ ) 
-#define tiny_str( ... ) #__VA_ARGS__ 
 #define tiny_is_child_of( TYPE, BASE ) std::is_base_of<BASE, TYPE>::value
 #define tiny_has_contstuctor( TYPE, ARGS ) std::is_constructible<TYPE, ARGS...>::value
 #define tiny_enable_if( ... ) requires __VA_ARGS__
@@ -137,6 +136,9 @@ extern "C" {
 #define tiny_rvalue( REF ) ( &( REF ) )
 #define tiny_unused( VAR ) tiny_cast( VAR, void )
 #define tiny_self tiny_lvalue( this )
+
+#define TINY_XSTR( VALUE ) #VALUE 
+#define TINY_STR( ... ) TINY_XSTR( __VA_ARGS__ )
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Types Definition 

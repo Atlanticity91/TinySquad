@@ -22,12 +22,19 @@
 
 #include "TinyGraphicShaderIncluder.h"
 
+tm_struct TinyGraphicShaderMacro {
+
+	tiny_string Name  = "";
+	tiny_string Value = "";
+
+};
+
 tm_class TinyGraphicShaderCompiler final {
 
 private:
 	shaderc::Compiler			  _compiler;
 	shaderc::CompileOptions		  _options;
-	TinyGraphicShaderIncluder _includer;
+	TinyGraphicShaderIncluder	  _includer;
 	tiny_map<shaderc_shader_kind> _types;
 
 public:
@@ -38,6 +45,8 @@ public:
 	bool Initialize( );
 
 	void AddMacro( const tiny_string& name, const tiny_string& value );
+
+	void AddMacros( tiny_init<TinyGraphicShaderMacro> macros );
 
 	bool Compile(
 		const TinyPathInformation& path,
@@ -62,6 +71,9 @@ private:
 		TinyGraphicShaderProperties& properties,
 		const TinyGraphicShaderCompilationContext& context
 	);
+
+public:
+	const shaderc::CompileOptions& GetCompilerOptions( ) const;
 
 private:
 	shaderc_optimization_level GrabOptimization( 
