@@ -42,17 +42,16 @@ void TinyToolContent::Create(
     TinyToolbox& toolbox
 ) {
     Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
-    //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
     //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_CUBEMAP>( );
     //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_ATLAS>( );
     //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_LUT>( );
     //Register<TinyToolTexture2D, TA_TYPE_FONT>( );
-    //Register<TinyToolTexture2D, TA_TYPE_SHADER>( );
+    //Register<TinyToolShader, TA_TYPE_SHADER>( );
     Register<TinyToolMaterial, TA_TYPE_MATERIAL>( );
     //Register<TinyToolTexture2D, TA_TYPE_GEOMETRY>( );
     //Register<TinyToolTexture2D, TA_TYPE_CUE>( );
-    //Register<TinyToolTexture2D, TA_TYPE_SCRIPT>( );
-    //Register<TinyToolTexture2D, TA_TYPE_ANIMATION_2D>( );
+    Register<TinyToolLua, TA_TYPE_SCRIPT>( );
+    Register<TinyToolAnim2D, TA_TYPE_ANIMATION_2D>( );
 }
 
 bool TinyToolContent::OpenAssetEditor( TinyGame* game, const tiny_string& asset_name ) {

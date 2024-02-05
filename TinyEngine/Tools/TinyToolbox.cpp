@@ -418,8 +418,8 @@ void TinyToolbox::CreateDevDir( TinyGame* game ) {
 
         material.PassName = "OutPass";
         material.ShaderStages = 2;
-        material.ShaderStages[ 0 ] = "sv_test";
-        material.ShaderStages[ 1 ] = "sf_test";
+        material.ShaderStages[ 0 ] = "sv_default";
+        material.ShaderStages[ 1 ] = "sf_default";
 
         material.Descriptors = 3;
         material.Descriptors[ 0 ] = 1;

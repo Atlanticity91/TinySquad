@@ -37,7 +37,7 @@ bool TinyTexture2D::Create(
 	auto state   = TinyGraphicTexture::Create( context, builder, staging );
 
 	if ( state )
-		SetDimensions( builder.Rows, builder.Columns );
+		SetDimensions( builder.Columns, builder.Rows );
 
 	return state;
 }

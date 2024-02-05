@@ -114,14 +114,14 @@ tiny_uint tiny_hash::generate(
 	tiny_uint length 
 ) const {
 	// From https://stackoverflow.com/questions/2351087/what-is-the-best-32bit-hash-function-for-short-strings-tag-names
-	// Use 1717 as Prime Number
+	// Use 1721 as Prime Number from https://en.wikipedia.org/wiki/List_of_prime_numbers
 
 	auto hash = 0;
 
 	length = length <= string.length( ) ? length : string.length( );
 
 	while ( offset < length )
-		hash = 1717 * hash + string[ offset++ ];
+		hash = 1721 * hash + string[ offset++ ];
 
 	return hash;
 }

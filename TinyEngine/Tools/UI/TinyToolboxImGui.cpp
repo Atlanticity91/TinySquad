@@ -23,8 +23,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	INTERNAL ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+static ImVec2 img_tooltip    = ImVec2{ 128.f, 128.f };
 static c_string vec_axises[] = { "X", "Y", "Z", "W" };
-static ImU32 vec_colors[] = {
+static ImU32 vec_colors[]    = {
 
     IM_COL32( 168,  46,   2, 255 ),
     IM_COL32( 112, 162,  22, 255 ),
@@ -1342,6 +1343,33 @@ void TinyImGui::DestroyTextureID( ImTextureID& texture_id ) {
         ImGui_ImplVulkan_RemoveTexture( tiny_cast( texture_id, VkDescriptorSet ) );
 
         texture_id = nullptr;
+    }
+}
+
+void TinyImGui::SetImageTooltipSize( const ImVec2& size ) { img_tooltip = size; }
+
+void TinyImGui::Image( ImTextureID& image, const TinyTexture2D* texture, const ImVec2& dimensions ) {
+    ImGui::Image( image, dimensions, { .0f, 0.f }, { 1.f, 1.f } );
+    
+    auto cursor = ImGui::GetCursorScreenPos( );
+
+    if ( ImGui::BeginItemTooltip( ) ) {
+        auto columns = texture->GetColumns( );
+        auto rows    = texture->GetRows( );
+        auto& io     = ImGui::GetIO( );
+        auto uv      = tiny_vec2{ dimensions.x / columns, dimensions.y / rows };
+
+        cursor.y = cursor.y - dimensions.y;
+        columns  = tiny_cast( ( io.MousePos.x - cursor.x ) / uv.x, tiny_int );
+        rows     = tiny_cast( ( io.MousePos.y - cursor.y ) / uv.y, tiny_int );
+        uv       = texture->GetUV( );
+
+        auto uv0 = ImVec2{ columns * uv.x, rows  * uv.y };
+        auto uv1 = ImVec2{ uv0.x   + uv.x, uv0.y + uv.y };
+
+        ImGui::Image( image, img_tooltip, uv0, uv1 );
+
+        ImGui::EndTooltip( );
     }
 }
 

@@ -90,7 +90,7 @@ bool TinyTexture2DManager::OnCreate(
 
 		staging.UnMap( context );
 
-		state = texture.Create( graphics, *builder, staging );
+		state = texture.Create( graphics, tiny_lvalue( builder ), staging );
 
 		staging.Terminate( context );
 	}

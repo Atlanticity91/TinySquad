@@ -25,8 +25,8 @@
 te_class TinyTextureSpriteSheet {
 
 protected:
-	tiny_uint _rows;
 	tiny_uint _columns;
+	tiny_uint _rows;
 	tiny_vec2 _uv;
 
 public:
@@ -34,7 +34,9 @@ public:
 
 	virtual ~TinyTextureSpriteSheet( ) = default;
 	
-	void SetDimensions( tiny_uint rows, tiny_uint columns );
+	void SetDimensions( tiny_uint columns, tiny_uint rows );
+
+	void ReCalculate( );
 
 public:
 	tiny_uint GetRows( ) const;

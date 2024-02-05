@@ -25,9 +25,11 @@
 te_class TinyToolAnim2D final : tiny_inherit( TinyToolAssetEditor ) {
 
 private:
-	TinyAnimation2D* _animation;
+	TinyAnimation2D* _collection;
 	TinyTexture2D*	 _texture;
 	ImTextureID		 _image;
+	tiny_hash		 _animation;
+	tiny_uint		 _frame_id;
 
 public:
 	TinyToolAnim2D( );
@@ -43,6 +45,11 @@ protected:
 
 	tiny_implement( void OnClose( TinyGame* game, TinyAssetManager& assets ) );
 
+private:
 	void SetTexture( TinyAssetManager& assets );
+
+	void DrawNames( );
+
+	void DrawPlayer( );
 
 };

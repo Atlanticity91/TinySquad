@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolTexture2D::TinyToolTexture2D( )
-	: TinyToolAssetEditor{ "Texture2D" },
+	: TinyToolAssetEditor{ "Texture2D", { 908.f, 512.f } },
 	_texture{ nullptr },
 	_image{ nullptr }
 { }
@@ -87,8 +87,13 @@ void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& asse
 		"Sprite Sheet",
 		[ & ]( ) {
 			TinyImGui::BeginVars( );
-			TinyImGui::InputScalar( "Columns", _texture->GetEditColumns( ) );
-			TinyImGui::InputScalar( "Rows", _texture->GetEditRows( ) );
+
+			if (
+				TinyImGui::InputScalar( "Columns", _texture->GetEditColumns( ) ) ||
+				TinyImGui::InputScalar( "Rows", _texture->GetEditRows( ) )
+			)
+				_texture->ReCalculate( );
+
 			TinyImGui::InputVec2( "UV", _texture->GetUV( ) );
 			TinyImGui::EndVars( );
 		}
@@ -158,11 +163,18 @@ void TinyToolTexture2D::RenderImage( ) {
 	auto& properties = _texture->GetProperties( );
 	auto columns	 = _texture->GetColumns( );
 	auto rows		 = _texture->GetRows( );
+	auto aspect		 = tiny_min( 512.f / properties.Width, 512.f / properties.Height );
+	auto available   = ImVec2{ 512.f, ImGui::GetWindowHeight( ) };
 	auto cursor		 = ImGui::GetCursorScreenPos( );
+	auto size		 = ImVec2{ properties.Width * aspect, properties.Height * aspect };
 
-	ImGui::Image( _image, { 512, 512 }, { .0f, 0.f }, { 1.f, 1.f } );
-	
-	auto size = ImGui::GetItemRectSize( );
+	cursor = { 
+		cursor.x + ( available.x - size.x ) * .5f,
+		cursor.y + ( available.y - size.y ) * .5f
+	};
 
+	ImGui::SetCursorScreenPos( cursor );
+
+	TinyImGui::Image( _image, _texture, size );
 	TinyImGui::Grid( cursor, size, { columns, rows } );
 }

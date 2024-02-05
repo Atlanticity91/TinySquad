@@ -82,6 +82,22 @@ void TinySkin2D::DisplayWidget(
 	toolbox.DisplayAsset( game, "Texture", _texture );
 
 	TinyImGui::InputColor( "Color", _color );
+	TinyImGui::EndVars( );
+
+	ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, { 3.5f, 3.5f } );
+	
+	if ( ImGui::TreeNodeEx( "Sprite", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_SpanAllColumns ) ) {
+		ImGui::Separator( );
+
+		TinyImGui::BeginVars( );
+		TinyImGui::InputScalar( "Column", _sprite.x );
+		TinyImGui::InputScalar( "Row", _sprite.y );
+
+		ImGui::TreePop( );
+	} else 
+		TinyImGui::BeginVars( );
+
+	ImGui::PopStyleVar( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

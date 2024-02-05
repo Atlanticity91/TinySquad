@@ -370,6 +370,10 @@ namespace TinyImGui {
 
 	tiny_dll void DestroyTextureID( ImTextureID& texture_id );
 
+	tiny_dll void SetImageTooltipSize( const ImVec2& size );
+
+	tiny_dll void Image( ImTextureID& image, const TinyTexture2D* texture, const ImVec2& dimensions );
+	
 	tiny_dll void Grid( ImVec2 cursor, ImVec2 dimensions, const GridContext& context );
 
 };

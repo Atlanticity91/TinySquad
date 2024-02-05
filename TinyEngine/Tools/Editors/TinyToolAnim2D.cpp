@@ -24,10 +24,12 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolAnim2D::TinyToolAnim2D( )
-	: TinyToolAssetEditor{ "Animation 2D" },
-	_animation{ nullptr },
+	: TinyToolAssetEditor{ "Animation 2D", { 908.f, 512.f } },
+	_collection{ nullptr },
 	_texture{ nullptr },
-	_image{ nullptr }
+	_image{ nullptr },
+	_animation{ },
+	_frame_id{ 0 }
 { }
 
 void TinyToolAnim2D::Save( TinyGame* game ) {
@@ -37,7 +39,7 @@ void TinyToolAnim2D::Save( TinyGame* game ) {
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyToolAnim2D::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
-	_animation = tiny_cast( asset, TinyAnimation2D* );
+	_collection = tiny_cast( asset, TinyAnimation2D* );
 
 	if ( false ) {
 		auto& assets = game->GetAssets( );
@@ -45,16 +47,23 @@ bool TinyToolAnim2D::OnOpen( TinyGame* game, const tiny_string& name, c_pointer 
 		SetTexture( assets );
 	}
 
-	return _animation;
+	return _collection;
 }
 
 void TinyToolAnim2D::OnTick( TinyGame* game, TinyAssetManager& assets ) {
-	auto* animation = _animation->Get( "" );
-	auto& frame = tiny_lvalue( animation->get( 0 ) );
+	if ( ImGui::BeginTable( "##TinyToolAnim2D", 2, ImGuiTableFlags_BordersInnerV ) ) {
+		ImGui::TableNextRow( );
+		ImGui::TableNextColumn( );
 
-	auto uv = _texture->GetUV( frame.Column, frame.Row );
+		ImGui::BeginGroup( );
+		DrawNames();
+		ImGui::EndGroup( );
 
-	ImGui::Image( _image, {}, { uv.x, uv.y }, { uv.z, uv.w } );
+		ImGui::TableNextColumn( );
+		DrawPlayer( );
+
+		ImGui::EndTable( );
+	}
 }
 
 void TinyToolAnim2D::OnClose( TinyGame* game, TinyAssetManager& assets ) {
@@ -63,6 +72,9 @@ void TinyToolAnim2D::OnClose( TinyGame* game, TinyAssetManager& assets ) {
 	TinyImGui::DestroyTextureID( _image );
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
 void TinyToolAnim2D::SetTexture( TinyAssetManager& assets ) {
 	if ( _image )
 		TinyImGui::DestroyTextureID( _image );
@@ -71,4 +83,61 @@ void TinyToolAnim2D::SetTexture( TinyAssetManager& assets ) {
 
 	_texture = assets.GetAssetAs<TinyTexture2D>( asset );
 	_image   = TinyImGui::CreateTextureID( _texture );
+}
+
+void TinyToolAnim2D::DrawNames( ) {
+	auto& collection = _collection->GetCollection( );
+
+	for ( auto& animation : collection ) {
+		if ( animation.Hash != _animation )
+			ImGui::Text( animation.String.c_str( ) );
+		else
+			ImGui::Text( "# %s", animation.String.c_str( ) );
+	}
+
+	//ImGui::InputText( "Animation Name" )
+	//ImGui::SameLine( );
+
+	if ( ImGui::Button( "Add", { -1.f, .0f } ) ) { 
+	}
+}
+
+void TinyToolAnim2D::DrawPlayer( ) {
+	auto* animation = _collection->Get( _animation );
+
+	if ( animation ) {
+		auto& frame = tiny_lvalue( animation->get( _frame_id ) );
+
+		//auto aspect = tiny_min( 512.f / properties.Width, 512.f / properties.Height );
+		//auto size   = ImVec2{ properties.Width * aspect, properties.Height * aspect };
+		//auto uv	  = _texture->GetUV( frame.Column, frame.Row );
+
+		//ImGui::Image( _image, size, { uv.x, uv.y }, { uv.z, uv.w } );
+
+		ImGui::Separator( );
+
+		//TF_ICON_PLAY | TF_ICON_PAUSE
+		if ( ImGui::Button( "" ) ) {
+		}
+
+		// DRAW FRAMES
+		auto button_id = tiny_cast( 0, tiny_uint );
+		// TF_ICON_PLUS_CIRCLE | TF_ICON_MINUS_CIRCLE
+		if ( ImGui::Button( "" ) ) {
+			_frame_id = button_id;
+		}
+
+		if ( ImGui::Button( "" ) ) {
+		}
+
+		ImGui::Separator( );
+
+		TinyImGui::BeginVars( );
+
+		TinyImGui::InputScalar( "Duration", frame.Duration );
+		TinyImGui::InputScalar( "Column", frame.Column );
+		TinyImGui::InputScalar( "Row", frame.Row );
+
+		TinyImGui::EndVars( );
+	}
 }

@@ -24,13 +24,25 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolAssetEditor::TinyToolAssetEditor( const tiny_string& name )
+	: TinyToolAssetEditor{ name, { .0f, .0f } }
+{ }
+
+TinyToolAssetEditor::TinyToolAssetEditor( const tiny_string& name, const ImVec2& min_size )
 	: _in_use{ false },
+	_min_size{ min_size },
 	_name{ name },
 	_asset{ },
 	_asset_name{ "" }
 { }
 
 bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, TinyAsset& asset ) {
+	auto& assets = game->GetAssets( );
+
+	if ( _in_use ) {
+		Close( game );
+		OnClose( game, assets );
+	}
+
 	auto state = asset.GetIsValid( );
 
 	if ( state ) {
@@ -38,7 +50,6 @@ bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, TinyAss
 		_asset		= asset;
 		_asset_name = name;
 
-		auto& assets = game->GetAssets( );
 		auto* _asset = assets.GetAsset( asset );
 
 		state = _asset && OnOpen( game, name, _asset );
@@ -50,6 +61,7 @@ bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, TinyAss
 void TinyToolAssetEditor::Tick( TinyGame* game, TinyAssetManager& assets ) {
 	if ( _in_use ) {
 		auto* name_str = _name.as_chars( );
+		auto win_size  = TinyImGui::ScopeVars{ ImGuiStyleVar_WindowMinSize, _min_size };
 
 		if ( ImGui::Begin( name_str, tiny_rvalue( _in_use ), ImGuiWindowFlags_AlwaysVerticalScrollbar ) )
 			OnTick( game, assets );

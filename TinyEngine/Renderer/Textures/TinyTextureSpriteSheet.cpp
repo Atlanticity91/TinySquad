@@ -24,16 +24,21 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTextureSpriteSheet::TinyTextureSpriteSheet( ) 
-	: _rows{ 0 },
-	_columns{ 0 },
+	: _columns{ 0 }, 
+	_rows{ 0 },
 	_uv{ .0f, .0f }
 { }
 
-void TinyTextureSpriteSheet::SetDimensions( tiny_uint rows, tiny_uint columns ) {
-	_rows	 = rows;
+void TinyTextureSpriteSheet::SetDimensions( tiny_uint columns, tiny_uint rows ) {
 	_columns = columns;
-	_uv.x	 = 1.f / rows;
-	_uv.y	 = 1.f / columns;
+	_rows	 = rows;
+	
+	ReCalculate( );
+}
+
+void TinyTextureSpriteSheet::ReCalculate( ) {
+	_uv.x = 1.f / _columns;
+	_uv.y = 1.f / _rows;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,14 +55,14 @@ const tiny_vec4 TinyTextureSpriteSheet::GetUV( const tiny_upoint& sprite ) const
 }
 
 const tiny_vec4 TinyTextureSpriteSheet::GetUV( tiny_uint columns, tiny_uint rows ) const {
-	rows	= rows	  < _rows	 ? rows	   : _rows;
 	columns = columns < _columns ? columns : _columns;
+	rows	= rows	  < _rows	 ? rows	   : _rows;
 
 	return { 
-		_uv.x * rows,
-		_uv.y * columns,
-		_uv.x * rows    + _uv.x,
-		_uv.y * columns + _uv.y
+		_uv.x * columns,
+		_uv.y * rows,
+		_uv.x * columns + _uv.x,
+		_uv.y * rows	+ _uv.y
 	};
 }
 
