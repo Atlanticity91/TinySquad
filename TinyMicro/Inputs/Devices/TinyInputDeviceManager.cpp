@@ -31,8 +31,8 @@ TinyInputDeviceManager::TinyInputDeviceManager( )
 
 void TinyInputDeviceManager::Notify( const TinyInputNotification& notification ) {
 	switch ( notification.Descriptor.Device ) {
-		case TID_KEYBOARD : _keyboard.Notify( notification ); break;
-		case TID_MOUSE	  : _mouse.Notify( notification );	  break;
+		case TI_DEVICE_KEYBOARD : _keyboard.Notify( notification ); break;
+		case TI_DEVICE_MOUSE	: _mouse.Notify( notification );	break;
 
 		default : break;
 	}
@@ -42,9 +42,9 @@ bool TinyInputDeviceManager::Evaluate( const TinyInputQuery& query ) {
 	auto state = false;
 
 	switch ( query.Descriptor.Device ) { 
-		case TID_KEYBOARD : state = _keyboard.Evaluate( query ); break;
-		case TID_MOUSE	  : state = _mouse.Evaluate( query );	 break;
-		case TID_GAMEPAD  : state = _joystick.Evaluate( query );  break;
+		case TI_DEVICE_KEYBOARD : state = _keyboard.Evaluate( query ); break;
+		case TI_DEVICE_MOUSE	: state = _mouse.Evaluate( query );	   break;
+		case TI_DEVICE_GAMEPAD  : state = _joystick.Evaluate( query ); break;
 
 		default : break;
 	}
@@ -73,9 +73,9 @@ TinyInputValue TinyInputDeviceManager::GetValue( const TinyInputDescriptor& desc
 	auto value = TinyInputValue{ };
 
 	switch ( descriptor.Device ) {
-		case TID_KEYBOARD : value = _keyboard.GetValue( descriptor ); break;
-		case TID_MOUSE	  : value = _mouse.GetValue( descriptor );	  break;
-		case TID_GAMEPAD  : value = _joystick.GetValue( descriptor );  break;
+		case TI_DEVICE_KEYBOARD : value = _keyboard.GetValue( descriptor ); break;
+		case TI_DEVICE_MOUSE	: value = _mouse.GetValue( descriptor );	break;
+		case TI_DEVICE_GAMEPAD  : value = _joystick.GetValue( descriptor ); break;
 
 		default: break;
 	}
@@ -87,9 +87,9 @@ TinyInputValue TinyInputDeviceManager::GetValue( TinyInputDevices device, TinyIn
 	auto value = TinyInputValue{ };
 
 	switch ( device ) {
-		case TID_KEYBOARD : value = _keyboard.GetValue( key ); break;
-		case TID_MOUSE	  : value = _mouse.GetValue( key );	   break;
-		case TID_GAMEPAD  : value = _joystick.GetValue( key );  break;
+		case TI_DEVICE_KEYBOARD : value = _keyboard.GetValue( key ); break;
+		case TI_DEVICE_MOUSE	: value = _mouse.GetValue( key );	 break;
+		case TI_DEVICE_GAMEPAD  : value = _joystick.GetValue( key ); break;
 
 		default: break;
 	}

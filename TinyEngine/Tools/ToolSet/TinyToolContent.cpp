@@ -42,14 +42,14 @@ void TinyToolContent::Create(
     TinyToolbox& toolbox
 ) {
     Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
-    //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_CUBEMAP>( );
-    //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_ATLAS>( );
-    //Register<TinyToolTexture2D, TA_TYPE_TEXTURE_LUT>( );
-    //Register<TinyToolTexture2D, TA_TYPE_FONT>( );
+    //Register<TinyToolCubemap, TA_TYPE_TEXTURE_CUBEMAP>( );
+    //Register<TinyToolAtlas, TA_TYPE_TEXTURE_ATLAS>( );
+    //Register<TinyToolLUT, TA_TYPE_TEXTURE_LUT>( );
+    //Register<TinyToolFont, TA_TYPE_FONT>( );
     //Register<TinyToolShader, TA_TYPE_SHADER>( );
     Register<TinyToolMaterial, TA_TYPE_MATERIAL>( );
-    //Register<TinyToolTexture2D, TA_TYPE_GEOMETRY>( );
-    //Register<TinyToolTexture2D, TA_TYPE_CUE>( );
+    //Register<TinyToolGeometry, TA_TYPE_GEOMETRY>( );
+    //Register<TinyToolCue, TA_TYPE_CUE>( );
     Register<TinyToolLua, TA_TYPE_SCRIPT>( );
     Register<TinyToolAnim2D, TA_TYPE_ANIMATION_2D>( );
 }
@@ -127,16 +127,7 @@ void TinyToolContent::OnTick(
         auto path = std::string{ dev_dir.as_chars( ) };
 
         if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", _import_path.length( ), _import_path ) ) {
-            auto success = false;
-
-            if ( !filesystem.GetIsFile( _import_path, TINY_REGISTRY_EXT ) ) {
-                if ( filesystem.GetIsAssetFile( _import_path ) || filesystem.GetIsArchiveFile( _import_path ) )
-                    success = assets.LoadPath( game, _import_path );
-                else
-                    success = assets.Import( game, _import_path );
-            }
-
-            if ( !success )
+            if ( !assets.Import( game, _import_path ) )
                 ImGui::OpenPopup( "Import Failed" );
         }
     }

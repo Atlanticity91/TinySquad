@@ -31,17 +31,17 @@ void TinyInputDeviceKeyboard::Notify( const TinyInputNotification& notification 
 	auto& input = _news[ notification.Descriptor.Key ];
 
 	input.Modifier = notification.Modifiers;
-	input.IsDown   = notification.Value.AsButton == TIS_DOWN;
+	input.IsDown   = notification.Value.AsButton == TI_STATE_DOWN;
 }
 
 bool TinyInputDeviceKeyboard::Evaluate( const TinyInputQuery& query ) {
-	auto state = query.Descriptor.Type == TIT_BUTTON;
+	auto state = query.Descriptor.Type == TI_TYPE_BUTTON;
 
 	if ( state ) {
 		auto new_button = _news[ query.Descriptor.Key ];
 		auto old_button	= _olds[ query.Descriptor.Key ];
 	
-		state = ( query.Modifier == TIM_UNDEFINED || new_button.Modifier == query.Modifier ) && 
+		state = ( query.Modifier == TI_MODIFIER_UNDEFINED || new_button.Modifier == query.Modifier ) && 
 				query.State == ProcessButton( old_button.IsDown, new_button.IsDown );
 	}
 

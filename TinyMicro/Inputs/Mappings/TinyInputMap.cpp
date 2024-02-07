@@ -69,6 +69,8 @@ void TinyInputMap::Tick( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+tiny_map<TinyInputQueries>& TinyInputMap::Get( ) { return _queries; }
+
 const tiny_map<TinyInputQueries>& TinyInputMap::Get( ) const { return _queries; }
 
 bool TinyInputMap::Find( tiny_hash input_hash ) const { 

@@ -30,11 +30,11 @@ TinyInputDeviceMouse::TinyInputDeviceMouse( )
 { }
 
 void TinyInputDeviceMouse::Notify( const TinyInputNotification& notification ) {
-	if ( notification.Descriptor.Type != TIT_AXIS_2D ) {
+	if ( notification.Descriptor.Type != TI_TYPE_AXIS_2D ) {
 		auto& key = _news[ notification.Descriptor.Key ];
 
 		key.Modifier = notification.Modifiers;
-		key.IsDown   = notification.Value.AsButton == TIS_DOWN;
+		key.IsDown   = notification.Value.AsButton == TI_STATE_DOWN;
 	} else if ( notification.Descriptor.Key == TIK_MOUSE_CURSOR )
 		_cursor = notification.Value.AsAxis2D;
 	else if ( notification.Descriptor.Key == TIK_MOUSE_SCROLL )
@@ -42,13 +42,13 @@ void TinyInputDeviceMouse::Notify( const TinyInputNotification& notification ) {
 }
 
 bool TinyInputDeviceMouse::Evaluate( const TinyInputQuery& query ) {
-	auto state = query.Descriptor.Type == TIT_BUTTON;
+	auto state = query.Descriptor.Type == TI_TYPE_BUTTON;
 
 	if ( state ) {
 		auto new_button = _news[ query.Descriptor.Key ];
 		auto old_button = _olds[ query.Descriptor.Key ];
 	
-		state = ( query.Modifier == TIM_UNDEFINED || new_button.Modifier == query.Modifier ) &&
+		state = ( query.Modifier == TI_MODIFIER_UNDEFINED || new_button.Modifier == query.Modifier ) &&
 				query.State == ProcessButton( old_button.IsDown, new_button.IsDown );
 	}
 

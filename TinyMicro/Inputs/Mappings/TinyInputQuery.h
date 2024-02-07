@@ -24,9 +24,9 @@
 
 tm_struct TinyInputQuery {
 
-	TinyInputDescriptor Descriptor;
-	TinyInputStates State;
-	TinyInputModifier Modifier;
+	TinyInputDescriptor Descriptor{ };
+	TinyInputStates State	   = TI_STATE_PRESSED;
+	TinyInputModifier Modifier = TI_MODIFIER_UNDEFINED;
 
 };
 

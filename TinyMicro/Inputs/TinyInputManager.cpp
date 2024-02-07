@@ -122,6 +122,8 @@ bool TinyInputManager::GetIsActive( ) const { return _is_active; }
 
 const TinyTimestep& TinyInputManager::GetTimestep( ) const { return _timestep; }
 
+tiny_map<TinyInputQueries>& TinyInputManager::GetMap( ) { return _map.Get( ); }
+
 const tiny_map<TinyInputQueries>& TinyInputManager::GetMap( ) const { return _map.Get( ); }
 
 bool TinyInputManager::Find( tiny_string input_alias ) const {
@@ -153,7 +155,7 @@ bool TinyInputManager::GetButton( const TinyInputDescriptor& descriptor ) const 
 bool TinyInputManager::GetButton( bool& button, const TinyInputDescriptor& descriptor ) const {
 	button = GetButton( descriptor );
 
-	return descriptor.Type == TIT_BUTTON;
+	return descriptor.Type == TI_TYPE_BUTTON;
 }
 
 float TinyInputManager::GetAxis1D( const TinyInputDescriptor& descriptor ) const {
@@ -163,7 +165,7 @@ float TinyInputManager::GetAxis1D( const TinyInputDescriptor& descriptor ) const
 bool TinyInputManager::GetAxis1D( float& axis_1d, const TinyInputDescriptor& descriptor ) const {
 	axis_1d = GetAxis1D( descriptor );
 
-	return descriptor.Type == TIT_AXIS_1D;
+	return descriptor.Type == TI_TYPE_AXIS_1D;
 }
 
 tiny_vec2 TinyInputManager::GetAxis2D( const TinyInputDescriptor& descriptor ) const {
@@ -173,5 +175,5 @@ tiny_vec2 TinyInputManager::GetAxis2D( const TinyInputDescriptor& descriptor ) c
 bool TinyInputManager::GetAxis2D( tiny_vec2& axis_2d, const TinyInputDescriptor& descriptor ) const {
 	axis_2d = GetAxis2D( descriptor );
 
-	return descriptor.Type == TIT_AXIS_2D;
+	return descriptor.Type == TI_TYPE_AXIS_2D;
 }

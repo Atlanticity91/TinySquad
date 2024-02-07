@@ -65,15 +65,18 @@ void TinyToolWorld::DrawEntity(
 	TinyECS& ecs, 
 	tiny_map_node<TinyEntity>& entity 
 ) {
-	const auto flags = ImGuiTreeNodeFlags_SpanAvailWidth |
-					   ImGuiTreeNodeFlags_AllowOverlap	 | 
-					   ImGuiTreeNodeFlags_FramePadding;
+	auto flags = ImGuiTreeNodeFlags_SpanAvailWidth |
+				 ImGuiTreeNodeFlags_AllowOverlap   | 
+				 ImGuiTreeNodeFlags_FramePadding;
 
 	auto entity_name = tiny_buffer<32>{ entity.String };
 	auto* name_str   = entity_name.as_chars( );
 	auto region		 = ImGui::GetContentRegionAvail( );
 	auto& engine	 = game->GetEngine( );
 	auto& toolbox	 = game->GetToolbox( );
+
+	if ( entity.Hash == toolbox.GetGuizmoSelection( ) )
+		flags |= ImGuiTreeNodeFlags_Selected;
 
 	TINY_IMGUI_SCOPE_ID(
 		ImGui::BeginGroup( );
@@ -122,7 +125,9 @@ void TinyToolWorld::DrawEntity(
 
 				ImGui::SameLine( region.x - line_height * 3.1f );
 
-				if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH ) )
+				auto button_size = TinyImGui::CalcTextSize( TF_ICON_EYE_SLASH );
+
+				if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH, button_size ) )
 					component->Toggle( game, engine );
 
 				ImGui::SameLine( region.x - line_height * 1.8f );

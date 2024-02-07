@@ -63,8 +63,8 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 				_inputs.Register( 
 					"Show Dev", 
 					{ 
-						{ TinyInputs::KEY_F1, TIS_PRESSED, TIM_UNDEFINED },
-						{ TinyInputs::KEY_GRAVE_ACCENT, TIS_PRESSED, TIM_UNDEFINED },
+						{ TinyInputKey( KEY_F1 ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
+						{ TinyInputKey( KEY_GRAVE_ACCENT ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
 					} 
 				);
 			}
@@ -184,7 +184,7 @@ void TinyEngine::ProcessKey(
 ) {
 	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
 	auto& inputs    = engine->GetInputs( );
-	auto descriptor = TinyInputDescriptor{ TID_KEYBOARD, TIT_BUTTON, TinyInputs::ConvertKey( key ) };
+	auto descriptor = TinyInputDescriptor{ TI_DEVICE_KEYBOARD, TI_TYPE_BUTTON, TinyInputs::ConvertKey( key ) };
 
 	if ( descriptor.Key < TIK_KEY_COUNT ) {
 		inputs.Notify( {
@@ -198,10 +198,10 @@ void TinyEngine::ProcessKey(
 void TinyEngine::ProcessCursor( GLFWwindow* handle, double cursor_x, double cursor_y ) {
 	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
 	auto& inputs	= engine->GetInputs( );
-	auto descriptor = TinyInputDescriptor{ TID_MOUSE, TIT_AXIS_2D, TIK_MOUSE_CURSOR };
+	auto descriptor = TinyInputDescriptor{ TI_DEVICE_MOUSE, TI_TYPE_AXIS_2D, TIK_MOUSE_CURSOR };
 
 	inputs.Notify( 
-		{ descriptor, TIM_UNDEFINED, 
+		{ descriptor, TI_MODIFIER_UNDEFINED, 
 			{ 
 				tiny_cast( cursor_x, float ), 
 				tiny_cast( cursor_y, float )
@@ -218,7 +218,7 @@ void TinyEngine::ProcessMouse(
 ) {
 	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
 	auto& inputs	= engine->GetInputs( );
-	auto descriptor = TinyInputDescriptor{ TID_MOUSE, TIT_BUTTON, (TinyInputKeys)button };
+	auto descriptor = TinyInputDescriptor{ TI_DEVICE_MOUSE, TI_TYPE_BUTTON, (TinyInputKeys)button };
 
 	if ( descriptor.Key < TIK_MOUSE_COUNT ) {
 		inputs.Notify( { 
@@ -232,10 +232,10 @@ void TinyEngine::ProcessMouse(
 void TinyEngine::ProcessScroll( GLFWwindow* handle, double offset_x, double offset_y ) {
 	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
 	auto& inputs	= engine->GetInputs( );
-	auto descriptor = TinyInputDescriptor{ TID_MOUSE, TIT_AXIS_2D, TIK_MOUSE_SCROLL };
+	auto descriptor = TinyInputDescriptor{ TI_DEVICE_MOUSE, TI_TYPE_AXIS_2D, TIK_MOUSE_SCROLL };
 
 	inputs.Notify( 
-		{ descriptor, TIM_UNDEFINED, 
+		{ descriptor, TI_MODIFIER_UNDEFINED, 
 			{
 				tiny_cast( offset_x, float ),
 				tiny_cast( offset_y, float ) 

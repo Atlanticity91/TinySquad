@@ -68,6 +68,8 @@ public:
 
 	const TinyTimestep& GetTimestep( ) const;
 
+	tiny_map<TinyInputQueries>& GetMap( );
+
 	const tiny_map<TinyInputQueries>& GetMap( ) const;
 
 	bool Find( tiny_string input_alias ) const;

@@ -51,8 +51,8 @@ void TinyAssetRegistry::Remove( const tiny_string& name ) {
 
 bool TinyAssetRegistry::Load( TinyFilesystem& filesystem ) {
 #	ifdef TE_DEV
-	auto game_dir = filesystem.GetGameDir( );
-	auto dev_path = std::string{ game_dir.as_chars( ) } + "Dev\\Dev.tinyregistry";
+	auto dev_dir  = filesystem.GetDevDir( );
+	auto dev_path = std::string{ dev_dir.as_chars( ) } + "Dev\\Dev.tinyregistry";
 
 	return Load( filesystem, { dev_path } );
 #	endif
@@ -61,8 +61,6 @@ bool TinyAssetRegistry::Load( TinyFilesystem& filesystem ) {
 }
 
 bool TinyAssetRegistry::Load( TinyFilesystem& filesystem, const tiny_string& path ) {
-	_metadatas.clear( );
-
 	try {
 		auto node	  = YAML::LoadFile( path.get( ) );
 		auto rootNode = node[ "Registry" ];
@@ -112,6 +110,8 @@ void TinyAssetRegistry::Save( TinyFilesystem& filesystem, const tiny_string& pat
 
 	filesystem.Dump( path, emitter.c_string( ) );
 }
+
+void TinyAssetRegistry::Clear( ) { _metadatas.clear( ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===

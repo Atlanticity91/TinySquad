@@ -28,7 +28,7 @@ TinyInputNotification::TinyInputNotification( const TinyInputDescriptor& descrip
 	Modifiers{ modifiers },
 	Value{ }
 {
-	Value.AsButton = value ? TIS_DOWN : TIS_UP;
+	Value.AsButton = value ? TI_STATE_DOWN : TI_STATE_UP;
 }
 
 TinyInputNotification::TinyInputNotification( const TinyInputDescriptor& descriptor, tiny_uint modifiers, float value )

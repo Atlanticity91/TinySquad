@@ -53,8 +53,6 @@ public:
 
 	bool LoadRegistry( TinyGame* game, const tiny_string& path );
 
-	bool LoadPath( TinyGame* game, const tiny_string& path );
-
 	bool Load( TinyGame* game, const tiny_string& asset_name );
 
 	bool Load( TinyGame* game, const tiny_hash asset_hash );
@@ -89,9 +87,29 @@ public:
 
 	void Remove( TinyGame* game, const tiny_hash asset_hash );
 
+	void Clear( TinyGame* game );
+
 	void Terminate( TinyGame* game );
 
 private:
+	bool Import(
+		TinyGame* game,
+		TinyPathInformation& path_info,
+		tiny_storage& file_memory 
+	);
+
+	bool ImportAsset( 
+		TinyGame* game,
+		TinyPathInformation& path_info,
+		tiny_storage& file_memory
+	);
+
+	bool ImportYaml( 
+		TinyGame* game,
+		TinyPathInformation& path_info,
+		tiny_storage& file_memory
+	);
+
 	bool LoadConfig( TinyFilesystem& filesystem, TinyGameConfig& game_config );
 
 public:

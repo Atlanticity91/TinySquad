@@ -46,6 +46,8 @@ namespace TinyImGui {
 
 		DropdownContext( tiny_init<c_string> values, const tiny_hash value );
 
+		DropdownContext( const tiny_list<c_string>& values );
+
 		DropdownContext( const tiny_list<tiny_string>& values );
 
 		DropdownContext( const tiny_list<tiny_string>& values, const tiny_string& value );
@@ -105,6 +107,8 @@ namespace TinyImGui {
 	tiny_dll bool BeginModal( const tiny_string& label );
 
 	tiny_dll void EndModal( );
+
+	tiny_dll ImVec2 CalcTextSize( const tiny_string& text );
 
 	tiny_dll void BeginVars( );
 
@@ -300,6 +304,10 @@ namespace TinyImGui {
 		return InputText( Length, buffer_chars );
 	};
 
+	tiny_dll bool Combo( tiny_uint& index, const tiny_list<c_string>& list, const float width );
+
+	tiny_dll bool Combo( tiny_uint& index, const tiny_string_view& view, const float width );
+
 	tiny_dll bool Dropdown( const tiny_string& label, DropdownContext& context );
 
 	tiny_dll bool InputVulkan( const tiny_string& label, VkFormat& format );
@@ -358,10 +366,10 @@ namespace TinyImGui {
 
 	tiny_dll bool Knob( const tiny_string& label, float& scalar );
 
-	tiny_dll bool Knob( 
+	tiny_dll bool Knob(
 		const tiny_string& label,
 		float& scalar,
-		const KnobContext& context 
+		const KnobContext& context
 	);
 
 	tiny_dll ImTextureID CreateTextureID( TinyTexture2D* texture );

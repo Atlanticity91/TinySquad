@@ -102,8 +102,10 @@ void TinyToolScene::DrawSystems( TinyGame* game, TinyEngine& engine, TinyECS& ec
 
 		ImGui::SameLine( );
 
+		auto button_size = TinyImGui::CalcTextSize( TF_ICON_EYE_SLASH );
+
 		TINY_IMGUI_SCOPE_ID(
-			if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH ) )
+			if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH, button_size ) )
 				system->Toggle( game, engine );
 		);
 

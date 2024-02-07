@@ -45,6 +45,8 @@ public:
 	void Tick( );
 
 public:
+	tiny_map<TinyInputQueries>& Get( );
+	
 	const tiny_map<TinyInputQueries>& Get( ) const;
 
 	bool Find( tiny_hash input_hash ) const;

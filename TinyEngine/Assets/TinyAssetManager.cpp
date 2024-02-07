@@ -55,7 +55,6 @@ bool TinyAssetManager::Initialize(
 	//_managers.TAL_MAP( TinyArchive );
 	//_managers.TAL_MAP( TinySave );
 	//_managers.TAL_MAP( TinyAddon );
-	//_managers.TAL_MAP( TinyToolbox );
 
 	return LoadConfig( filesystem, game_config );
 }
@@ -79,19 +78,17 @@ bool TinyAssetManager::Import( TinyGame* game, const tiny_string& path ) {
 
 			if ( state ) {
 				auto path_info = filesystem.GetInformation( path );
-				auto builder   = tiny_storage{ };
 
-				GenerateMetadata( filesystem, path_info );
-
-				state = _importers.Import( game, path_info, file_memory, builder );
-
-				if ( state ) {
-					auto* asset_builder = builder.GetAddress( );
-
-					state = Export( game, path_info.Name, asset_builder );
-				}
-
-				tiny_deallocate( builder );
+				if ( path_info.Extension != TINY_ASSET_EXT ) {
+					if ( path_info.Extension != "yaml" ) {
+						if ( path_info.Extension != TINY_REGISTRY_EXT )
+							state = Import( game, path_info, file_memory );
+						else
+							state = _registry.Load( filesystem, path );
+					} else
+						state = ImportYaml( game, path_info, file_memory );
+				} else
+					state = ImportAsset( game, path_info, file_memory );					
 			}
 
 			tiny_deallocate( file_memory );
@@ -172,19 +169,9 @@ bool TinyAssetManager::ReImport( TinyGame* game, const tiny_hash asset_hash ) {
 bool TinyAssetManager::LoadRegistry( TinyGame* game, const tiny_string& path ) {
 	auto& filesystem = game->GetFilesystem( );
 
+	Clear( game );
+
 	return _registry.Load( filesystem, path );
-}
-
-bool TinyAssetManager::LoadPath( TinyGame* game, const tiny_string& path ) {
-	auto& filesystem = game->GetFilesystem( );
-	auto path_info   = filesystem.GetInformation( path );
-	auto asset_hash  = GenerateMetadata( filesystem, path_info );
-	auto state		 = Load( game, asset_hash );
-
-	if ( !state )
-		_registry.Remove( asset_hash );
-
-	return state;
 }
 
 bool TinyAssetManager::Load( TinyGame* game, const tiny_string& asset_name ) {
@@ -339,6 +326,11 @@ void TinyAssetManager::Remove( TinyGame* game, const tiny_hash asset_hash ) {
 	}
 }
 
+void TinyAssetManager::Clear( TinyGame* game ) {
+	_registry.Clear( );
+	_managers.Clear( game );
+}
+
 void TinyAssetManager::Terminate( TinyGame* game ) {
 	auto& graphics = game->GetGraphics( );
 	auto context   = graphics.GetContext( );
@@ -349,6 +341,51 @@ void TinyAssetManager::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyAssetManager::Import(
+	TinyGame* game, 
+	TinyPathInformation& path_info,
+	tiny_storage& file_memory 
+) {
+	auto& filesystem = game->GetFilesystem( );
+	auto builder	 = tiny_storage{ };
+
+	GenerateMetadata( filesystem, path_info );
+
+	auto state = _importers.Import( game, path_info, file_memory, builder );
+
+	if ( state ) {
+		auto* asset_builder = builder.GetAddress( );
+
+		state = Export( game, path_info.Name, asset_builder );
+	}
+
+	tiny_deallocate( builder );
+
+	return state;
+}
+
+bool TinyAssetManager::ImportAsset( 
+	TinyGame* game,
+	TinyPathInformation& path_info,
+	tiny_storage& file_memory
+) {
+	auto* header = file_memory.As<TinyAssetHeader>( );
+	auto state   = header->Type < TA_TYPE_COUNT;
+
+	if ( state )
+		_registry.Append( path_info.Name, { header->Type, path_info.Full, path_info.Full } );
+
+	return state;
+}
+
+bool TinyAssetManager::ImportYaml( 
+	TinyGame* game,
+	TinyPathInformation& path_info,
+	tiny_storage& file_memory
+) {
+	return false;
+}
+
 bool TinyAssetManager::LoadConfig( 
 	TinyFilesystem& filesystem, 
 	TinyGameConfig& game_config 

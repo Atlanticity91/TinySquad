@@ -52,16 +52,16 @@ public:
 
 protected:
 	TinyInputStates ProcessButton( bool old_state, bool new_state ) const { 
-		auto value = TIS_DOWN;
+		auto value = TI_STATE_DOWN;
 
 		if ( !old_state && !new_state )
-			value = TIS_UP;
+			value = TI_STATE_UP;
 
 		if ( !old_state && new_state )
-			value = TIS_PRESSED;
+			value = TI_STATE_PRESSED;
 
 		if ( old_state && !new_state )
-			value = TIS_RELEASED;
+			value = TI_STATE_RELEASED;
 
 		return value;
 	};

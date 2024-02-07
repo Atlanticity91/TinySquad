@@ -35,7 +35,7 @@ bool TinyInputDeviceJoystick::Evaluate( const TinyInputQuery& query ) {
     auto new_button = _news.Buttons[ query.Descriptor.Key ];
     auto old_button = _olds.Buttons[ query.Descriptor.Key ];
 
-    return  query.Descriptor.Type == TIT_BUTTON && 
+    return  query.Descriptor.Type == TI_TYPE_BUTTON && 
             query.State == ProcessButton( old_button, new_button );
 }
 
@@ -170,16 +170,16 @@ TinyInputValue TinyInputDeviceJoystick::GetValue( TinyInputKeys key ) const {
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyInputStates TinyInputDeviceJoystick::ProcessButton( bool old_state, bool new_state ) const {
-    auto value = TIS_DOWN;
+    auto value = TI_STATE_DOWN;
 
     if ( !old_state && !new_state )
-        value = TIS_UP;
+        value = TI_STATE_UP;
 
     if ( !old_state &&  new_state )
-        value = TIS_PRESSED;
+        value = TI_STATE_PRESSED;
 
     if (  old_state && !new_state )
-        value = TIS_RELEASED;
+        value = TI_STATE_RELEASED;
 
     return value;
 }

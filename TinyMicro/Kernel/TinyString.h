@@ -29,6 +29,13 @@ typedef tiny_ptr_base* tiny_ptr;
 
 typedef const char* c_string;
 
+tm_struct tiny_string_view {
+
+	const c_string* Address = nullptr;
+	tiny_uint Count   = 0;
+
+};
+
 tm_class tiny_string final {
 
 	using under_layer = c_string;

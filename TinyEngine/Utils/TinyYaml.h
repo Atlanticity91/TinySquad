@@ -115,7 +115,7 @@ namespace YAML {
             auto state = node.IsSequence( ) && node.size( ) == 4;
 
             if ( state ) {
-                auto count = (tiny_uint)node.size( );
+                auto count = tiny_cast( node.size( ), tiny_uint );
 
                 list = count;
 

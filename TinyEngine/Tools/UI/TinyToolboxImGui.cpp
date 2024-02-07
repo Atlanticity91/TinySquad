@@ -34,19 +34,9 @@ static ImU32 vec_colors[]    = {
 
 };
 
-ImVec2 Internal_CalcTextSize( c_string text ) { 
-    auto& style = ImGui::GetStyle( );
-    auto size   = ImGui::CalcTextSize( text );
-    
-    size.x += style.FramePadding.x * 2.f;
-    size.y += style.FramePadding.y * 2.f;
-
-    return size;
-}
-
 template<typename ImFunc>
 void Internal_Input( tiny_uint axis, ImFunc&& im_function ) {
-    auto text_size = Internal_CalcTextSize( vec_axises[ axis ] );
+    auto text_size = TinyImGui::CalcTextSize( vec_axises[ axis ] );
     auto style     = ImGui::GetStyle( );
 
     ImGui::AlignTextToFramePadding( );
@@ -115,6 +105,12 @@ TinyImGui::DropdownContext::DropdownContext(
 ) : DropdownContext{ values } 
 { 
     Find( value );
+}
+
+TinyImGui::DropdownContext::DropdownContext( const tiny_list<c_string>& values )
+    : DropdownContext{ { } }
+{ 
+    Values = values;
 }
 
 TinyImGui::DropdownContext::DropdownContext( const tiny_list<tiny_string>& values ) 
@@ -208,8 +204,19 @@ bool TinyImGui::BeginModal( const tiny_string& label ) {
 
 void TinyImGui::EndModal( ) { ImGui::EndPopup( ); }
 
+ImVec2 TinyImGui::CalcTextSize( const tiny_string& text ) {
+    auto* text_str = text.as_chars( );
+    auto& style    = ImGui::GetStyle( );
+    auto size      = ImGui::CalcTextSize( text_str );
+
+    size.x += style.FramePadding.x * 2.f;
+    size.y += style.FramePadding.y * 2.f;
+
+    return size;
+}
+
 void TinyImGui::BeginVars( ) {
-    auto size = Internal_CalcTextSize( "################" ).x;
+    auto size = TinyImGui::CalcTextSize( "################" ).x;
 
     ImGui::Columns( 2 );
     ImGui::SetColumnWidth( 0, size );
@@ -241,7 +248,7 @@ bool TinyImGui::Button( const tiny_string& label, const ImVec2& size ) {
 }
 
 bool TinyImGui::RightButton( const tiny_string& label ) {
-    auto offset = Internal_CalcTextSize( "############" ).x;
+    auto offset = TinyImGui::CalcTextSize( "############" ).x;
     auto cursor = ImGui::GetCursorPosX( ) + ImGui::GetContentRegionAvail( ).x;
 
     ImGui::SetCursorPosX( cursor - offset );
@@ -654,6 +661,28 @@ bool TinyImGui::InputText( tiny_uint length, char* buffer ) {
     TINY_IMGUI_SCOPE_ID(
         auto state = ImGui::InputText( IMGUI_NO_LABEL, buffer, length + 1 );
     );
+
+    return state;
+}
+
+bool TinyImGui::Combo( tiny_uint& index, const tiny_list<c_string>& list, const float width ) {
+    auto view = tiny_string_view{ list.data( ), list.size( ) };
+
+    return TinyImGui::Combo( index, view, width );
+}
+
+bool TinyImGui::Combo( tiny_uint& index, const tiny_string_view& view, const float width ) {
+    auto* _index = tiny_rvalue( index );
+
+    ImGui::PushItemWidth( width );
+    ImGui::BeginDisabled( view.Count < 1 );
+
+    TINY_IMGUI_SCOPE_ID(
+        auto state = ImGui::Combo( IMGUI_NO_LABEL, tiny_cast( _index, tiny_int* ), view.Address, view.Count );
+    );
+
+    ImGui::EndDisabled( );
+    ImGui::PopItemWidth( );
 
     return state;
 }

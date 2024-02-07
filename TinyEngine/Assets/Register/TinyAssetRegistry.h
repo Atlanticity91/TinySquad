@@ -48,6 +48,8 @@ public:
 
 	void Save( TinyFilesystem& filesystem, const tiny_string& path );
 
+	void Clear( );
+
 public:
 	tiny_uint GetCount( ) const;
 

@@ -163,8 +163,9 @@ void TinyToolTexture2D::RenderImage( ) {
 	auto& properties = _texture->GetProperties( );
 	auto columns	 = _texture->GetColumns( );
 	auto rows		 = _texture->GetRows( );
-	auto aspect		 = tiny_min( 512.f / properties.Width, 512.f / properties.Height );
-	auto available   = ImVec2{ 512.f, ImGui::GetWindowHeight( ) };
+	auto height		 = ImGui::GetWindowHeight( );
+	auto aspect		 = tiny_min( 512.f / properties.Width, height / properties.Height );
+	auto available   = ImVec2{ 512.f, height };
 	auto cursor		 = ImGui::GetCursorScreenPos( );
 	auto size		 = ImVec2{ properties.Width * aspect, properties.Height * aspect };
 

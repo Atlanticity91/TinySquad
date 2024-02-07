@@ -21,6 +21,185 @@
 #include <TinyMicro/__tiny_micro_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
+//		===	INTERNAL ===
+////////////////////////////////////////////////////////////////////////////////////////////
+static c_string Internal_InputList[] = {
+	// === TYPES ===
+	"Button",
+	"Axis 1D",
+	"Axis 2D",
+
+	// === STATES ===
+	"Pressed",
+	"Released",
+	"Down",
+	"Up",
+
+	// === MODIFIERS ===
+	"None",
+	"Shift",
+	"Ctrl",
+	"Alt",
+
+	// === UNDEFINED===
+	"UNDEFINED",
+
+	// === KEYBOARD KEYS ===
+	"A",
+	"B",
+	"C",
+	"D",
+	"E",
+	"F",
+	"G",
+	"H",
+	"I",
+	"J",
+	"K",
+	"L",
+	"M",
+	"N",
+	"O",
+	"P",
+	"Q",
+	"R",
+	"S",
+	"T",
+	"U",
+	"V",
+	"W",
+	"X",
+	"Y",
+	"Z",
+	"0",
+	"1",
+	"2",
+	"3",
+	"4",
+	"5",
+	"6",
+	"7",
+	"8",
+	"9",
+	"F1",
+	"F2",
+	"F3",
+	"F4",
+	"F5",
+	"F6",
+	"F7",
+	"F8",
+	"F9",
+	"F10",
+	"F11",
+	"F12",
+	"F13",
+	"F14",
+	"F15",
+	"F16",
+	"F17",
+	"F18",
+	"F19",
+	"F20",
+	"F21",
+	"F22",
+	"F23",
+	"F24",
+	"F25",
+	"SPACE",
+	"APOSTROPHE",
+	"COMMA",
+	"MINUS",
+	"PERIOD",
+	"SLASH",
+	"SEMICOLON",
+	"EQUAL",
+	"LEFT BRACKET",
+	"BACKSLASH",
+	"RIGHT BRACKET",
+	"GRAVE ACCENT",
+	"ESCAPE",
+	"ENTER",
+	"TAB",
+	"BACKSPACE",
+	"INSERT",
+	"DELETE",
+	"RIGHT",
+	"LEFT",
+	"DOWN",
+	"UP",
+	"PAGE UP",
+	"PAGE DOWN",
+	"HOME",
+	"END",
+	"CAPS LOCK",
+	"SCROLL LOCK",
+	"NUM LOCK",
+	"PRINT SCREEN",
+	"PAUSE",
+	"KP 0",
+	"KP 1",
+	"KP 2",
+	"KP 3",
+	"KP 4",
+	"KP 5",
+	"KP 6",
+	"KP 7",
+	"KP 8",
+	"KP 9",
+	"KP DECIMAL",
+	"KP DIVIDE",
+	"KP MULTIPLY",
+	"KP SUBTRACT",
+	"KP ADD",
+	"KP ENTER",
+	"KP EQUAL",
+	"LEFT SHIFT",
+	"LEFT CONTROL",
+	"LEFT ALT",
+	"LEFT SUPER",
+	"RIGHT SHIFT",
+	"RIGHT CONTROL",
+	"RIGHT ALT",
+	"RIGHT SUPER",
+	"MENU",
+
+	// === MOUSE KEYS ===
+	"LEFT",
+	"RIGHT",
+	"MIDDLE",
+	"CURSOR",
+	"SCROLL",
+
+	// === GAMEPAD KEYS ===
+	"A",
+	"B",
+	"X",
+	"Y",
+	"LEFT BUMPER",
+	"RIGHT BUMPER",
+	"BACK",
+	"START",
+	"GUIDE",
+	"LEFT THUMB",
+	"RIGHT THUMB",
+	"DPAD UP",
+	"DPAD RIGHT",
+	"DPAD DOWN",
+	"DPAD LEFT",
+	"AXIS LEFT X",
+	"AXIS LEFT Y",
+	"AXIS RIGHT X",
+	"AXIS RIGHT Y",
+	"AXIS LEFT TRIGGER",
+	"AXIS RIGHT TRIGGER",
+	"AXIS LEFT",
+	"AXIS RIGHT",
+	"AXIS TRIGGERS"
+
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 #define TINY_KEY( KEY )  case GLFW_KEY_##KEY : value = TIK_KEY_##KEY; break
@@ -157,4 +336,83 @@ TinyInputKeys TinyInputs::ConvertKey( tiny_int glfw_key ) {
 	}
 
 	return value;
+}
+
+tiny_string_view TinyInputs::GetInputTypeList( const TinyInputDevices device ) {
+	auto types = tiny_string_view{ tiny_rvalue( Internal_InputList[ 0 ] ), 1 };
+
+	switch ( device ) {
+		case TI_DEVICE_MOUSE   : types.Count = 2; break;
+		case TI_DEVICE_GAMEPAD : types.Count = 3; break;
+
+		default: break;
+	}
+
+	return types;
+}
+
+tiny_string_view TinyInputs::GetInputKeyList(
+	const TinyInputDevices device,
+	const TinyInputTypes type
+) {
+	auto keys = tiny_string_view{ tiny_rvalue( Internal_InputList[ 11 ] ), 1 };
+
+	switch ( device ) {
+		case TI_DEVICE_KEYBOARD :
+			keys.Address = tiny_rvalue( Internal_InputList[ 12 ] );
+			keys.Count   = 118;
+
+			break;
+
+		case TI_DEVICE_MOUSE : 
+			switch ( type ) {
+				case TI_TYPE_BUTTON  : 
+					keys.Address = tiny_rvalue( Internal_InputList[ 130 ] );
+					keys.Count   = 3;
+					break;
+
+				case TI_TYPE_AXIS_1D :
+					keys.Address = tiny_rvalue( Internal_InputList[ 133 ] );
+					keys.Count   = 2; 
+					break;
+
+				default: break;
+			}
+
+			break;
+
+		case TI_DEVICE_GAMEPAD :
+			switch ( type ) {
+				case TI_TYPE_BUTTON  :
+					keys.Address = tiny_rvalue( Internal_InputList[ 135 ] );
+					keys.Count   = 15;
+					break;
+
+				case TI_TYPE_AXIS_1D : 
+					keys.Address = tiny_rvalue( Internal_InputList[ 150 ] );
+					keys.Count = 6;
+					break;
+
+				case TI_TYPE_AXIS_2D : 
+					keys.Address = tiny_rvalue( Internal_InputList[ 156 ] );
+					keys.Count = 3;
+					break;
+
+				default: break;
+			}
+
+			break;
+
+		default : break;
+	}
+
+	return keys;
+}
+
+tiny_string_view TinyInputs::GetInputStateList( ) {
+	return tiny_string_view{ tiny_rvalue( Internal_InputList[ 3 ] ), 4 };
+}
+
+tiny_string_view TinyInputs::GetInputModifierList( ) {
+	return tiny_string_view{ tiny_rvalue( Internal_InputList[ 7 ] ), 4 };
 }
