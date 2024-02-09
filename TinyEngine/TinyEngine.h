@@ -35,6 +35,7 @@ private:
 	TinyInputManager	_inputs;
 	TinyAudioManager	_audio;
 	TinyGraphicManager	_graphics;
+	TinyNativeRegister  _natives;
 
 	// === MID LEVEL ===
 	TinyScriptManager   _scripts;
@@ -251,6 +252,13 @@ public:
 	 * @return : TinyGraphicManager
 	 **/
 	TinyGraphicManager& GetGraphics( );
+
+	/**
+	 * GetNatives function
+	 * @note : Get current native function register instance.
+	 * @return : TinyNativeRegister
+	 **/
+	TinyNativeRegister& GetNatives( );
 
 	/**
 	 * GetScripts function

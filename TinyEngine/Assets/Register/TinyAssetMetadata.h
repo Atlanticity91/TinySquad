@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Utils/TinyYaml.h>
+#include <TinyEngine/Utils/TinyNativeRegister.h>
 
 class TinyAssetRegistry;
 class TinyAssetManager;

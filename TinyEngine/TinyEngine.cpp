@@ -32,6 +32,7 @@ TinyEngine::TinyEngine( const tiny_string& title, TinyGameOrientations orientati
 	_inputs{ },
 	_audio{ },
 	_graphics{ orientation },
+	_natives{ },
 	_scripts{ },
 	//_localisation{ },
 	_renderer{ },
@@ -266,6 +267,8 @@ TinyInputManager& TinyEngine::GetInputs( ) { return _inputs; }
 TinyAudioManager& TinyEngine::GetAudio( ) { return _audio; }
 
 TinyGraphicManager& TinyEngine::GetGraphics( ) { return _graphics; }
+
+TinyNativeRegister& TinyEngine::GetNatives( ) { return _natives; }
 
 TinyScriptManager& TinyEngine::GetScripts( ) { return _scripts; }
 

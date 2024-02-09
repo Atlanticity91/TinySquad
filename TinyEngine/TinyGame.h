@@ -41,6 +41,10 @@ public:
 protected:
 	virtual bool ProcessArguments( tiny_int argc, char** argv );
 
+	tiny_virtual( void SetupBundles( TinyGraphicManager& graphics ) );
+
+	void SetupBundles2D( TinyGraphicManager& graphics );
+
 	tiny_virtualv( true, bool Initialize( TinyEngine& engine ) );
 	
 	tiny_virtual( void LoadInterop( TinyLuaContext& lua_context ) );
@@ -74,6 +78,8 @@ public:
 	tiny_inline TinyAudioManager& GetAudio( );
 
 	tiny_inline TinyGraphicManager& GetGraphics( );
+
+	tiny_inline TinyNativeRegister& GetNatives( );
 
 	tiny_inline TinyScriptManager& GetScripts( );
 

@@ -28,10 +28,17 @@ TinyGame::TinyGame( const tiny_string& title, TinyGameOrientations orientation )
 { }
 
 bool TinyGame::Start( tiny_int argc, char** argv ) {
-	auto state = _engine.Initialize( this, argc, argv ) && 
-				 ProcessArguments( argc, argv )		    &&
-				 Initialize( _engine );
+	auto state = _engine.Initialize( this, argc, argv );
 
+	if ( state ) {
+		auto& graphics = _engine.GetGraphics( );
+
+		SetupBundles( graphics );
+
+		graphics.ReCreate( );
+
+		state = ProcessArguments( argc, argv ) && Initialize( _engine );
+	}
 	if ( state )
 		Load( );
 
@@ -58,6 +65,41 @@ void TinyGame::Close( ) {
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGame::ProcessArguments( tiny_int argc, char** argv ) { return true; }
+
+void TinyGame::SetupBundles2D( TinyGraphicManager& graphics ) {
+	auto bundle_2d = TinyGraphicRenderBundle{ };
+
+	bundle_2d.Name = "Render2D Pass";
+
+	bundle_2d.Targets = 4;
+	bundle_2d.Targets[ 0 ].Name = "Color 2D";
+	bundle_2d.Targets[ 0 ].Type = TRT_TYPE_COLOR;
+	bundle_2d.Targets[ 0 ].Clear = TinyPalettes::ASBESTOS;
+
+	bundle_2d.Targets[ 1 ].Name  = "Position 2D";
+	bundle_2d.Targets[ 1 ].Type  = TRT_TYPE_COLOR;
+	bundle_2d.Targets[ 1 ].Clear = TinyPalettes::ASBESTOS;
+
+	bundle_2d.Targets[ 2 ].Name  = "Normal 2D";
+	bundle_2d.Targets[ 2 ].Type  = TRT_TYPE_COLOR;
+	bundle_2d.Targets[ 2 ].Clear = TinyPalettes::ASBESTOS;
+
+	bundle_2d.Targets[ 3 ].Name   = "Depth 2D";
+	bundle_2d.Targets[ 3 ].Type   = TRT_TYPE_DEPTH;
+	bundle_2d.Targets[ 3 ].Format = VK_FORMAT_D24_UNORM_S8_UINT;
+	bundle_2d.Targets[ 3 ].Clear  = { .0f, 0 };
+
+	bundle_2d.Passes = 1;
+	bundle_2d.Passes[ 0 ].Type	  = TGR_TYPE_RENDER;
+	bundle_2d.Passes[ 0 ].Stage	  = TGR_STAGE_BEGIN;
+	bundle_2d.Passes[ 0 ].Targets = 3;
+	bundle_2d.Passes[ 0 ].Targets[ 0 ] = { "Color 2D", TGR_ACCESS_WRITE };
+	bundle_2d.Passes[ 0 ].Targets[ 1 ] = { "Position 2D", TGR_ACCESS_WRITE };
+	bundle_2d.Passes[ 0 ].Targets[ 2 ] = { "Normal 2D", TGR_ACCESS_WRITE };
+	bundle_2d.Passes[ 0 ].Targets[ 2 ] = { "Depth 2D", TGR_ACCESS_WRITE };
+
+	graphics.AddBundle( bundle_2d );
+}
 
 void TinyGame::LoadDefault2D( TinyECS& ecs ) {
 	ecs._RegisterComp( TinyScript );
@@ -100,6 +142,8 @@ TinyInputManager& TinyGame::GetInputs( ) { return _engine.GetInputs( ); }
 TinyAudioManager& TinyGame::GetAudio( ) { return _engine.GetAudio( ); }
 
 TinyGraphicManager& TinyGame::GetGraphics( ) { return _engine.GetGraphics( ); }
+
+TinyNativeRegister& TinyGame::GetNatives( ) { return _engine.GetNatives( ); }
 
 TinyScriptManager& TinyGame::GetScripts( ) { return _engine.GetScripts( ); }
 

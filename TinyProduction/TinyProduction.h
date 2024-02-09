@@ -38,6 +38,13 @@ protected:
 	virtual bool Initialize( TinyEngine& engine ) override;
 
 	/**
+	 * SetupBundles method
+	 * @note : Optional override for custom passes.
+	 * @param graphics : Current graphic manager instance.
+	 **/
+	virtual void SetupBundles( TinyGraphicManager& graphics ) override;
+
+	/**
 	 * LoadInterop method
 	 * @note : Optional override for register custom Lua-C++ interop.
 	 * @param lua_context : Current game lua interop context instance.

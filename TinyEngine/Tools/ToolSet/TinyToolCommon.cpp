@@ -91,6 +91,41 @@ void TinyToolCommon::OnTick(
     );
 
     TinyImGui::Collapsing(
+        "Native Functions",
+        [ & ]( ) {
+            auto& natives    = game->GetNatives( );
+            auto& functions  = natives.GetNatives( );
+            auto font_size   = ImGui::GetFontSize( );
+            auto& style      = ImGui::GetStyle( );
+            auto line_height = font_size + style.FramePadding.y * 2.f;
+            auto to_remove   = tiny_hash{ };
+
+            TinyImGui::BeginVars( );
+
+            TinyImGui::TextVar( "Count", "%u", functions.size( ) );
+
+            TinyImGui::EndVars( );
+
+            ImGui::Separator( );
+
+            for ( auto& function : functions ) {
+                if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
+                    to_remove = function.Hash;
+
+                ImGui::SameLine( );
+
+                ImGui::Text( function.String.c_str( ) );
+            }
+
+            if ( to_remove ) {
+                natives.Remove( to_remove );
+
+                to_remove.empty( );
+            }
+        }
+    );
+
+    TinyImGui::Collapsing(
         "Config",
         [ & ]( ) {
             if ( TinyImGui::Button( "Set Game Icon", { -1.f, .0f } ) ) {

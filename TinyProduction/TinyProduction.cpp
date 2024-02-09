@@ -25,6 +25,12 @@ bool TinyProduction::Initialize( TinyEngine& engine ) {
 	return true; 
 }
 
+void TinyProduction::SetupBundles( TinyGraphicManager& graphics ) {
+	// DEFAULT RENDER PASS BUNDLES
+	// SETUP DEFAULT 2D CONFIGURATION
+	TinyGame::SetupBundles2D( graphics );
+}
+
 void TinyProduction::LoadInterop( TinyLuaContext& lua_context ) {
 	// CUSTOM LUA-C++ INTEROP CODE HERE
 }

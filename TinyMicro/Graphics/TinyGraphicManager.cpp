@@ -39,6 +39,15 @@ TinyGraphicManager::TinyGraphicManager( TinyGameOrientations orientation )
 	_work_context{ }
 { }
 
+void TinyGraphicManager::AddBundle( const TinyGraphicRenderBundle& bundle ) {
+	_passes.AddBundle( bundle );
+}
+
+void TinyGraphicManager::AddBundles( tiny_init<TinyGraphicRenderBundle> bundles ) {
+	for ( auto& bundle : bundles )
+		_passes.AddBundle( bundle );
+}
+
 bool TinyGraphicManager::Initialize( TinyFilesystem& file_system, TinyWindow& window ) {
 	_boundaries.ReCreate( window );
 

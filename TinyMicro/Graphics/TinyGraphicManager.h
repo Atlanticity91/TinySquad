@@ -51,6 +51,10 @@ public:
 
 	~TinyGraphicManager( ) = default;
 
+	tiny_inline void AddBundle( const TinyGraphicRenderBundle & bundle );
+
+	void AddBundles( tiny_init<TinyGraphicRenderBundle> bundle );
+
 	tiny_implement( bool Initialize( TinyFilesystem& file_system, TinyWindow& window ) );
 
 	tiny_inline void AddCompilerMacro(

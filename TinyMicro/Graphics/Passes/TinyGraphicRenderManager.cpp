@@ -126,7 +126,7 @@ void TinyGraphicRenderManager::CreateTargetTexture(
 	texture.Format  = target.Format;
 	texture.Width   = scissor.extent.width;
 	texture.Height  = scissor.extent.height;
-	texture.Depth   = 0;
+	texture.Depth   = 1;
 	texture.Levels  = 1;
 	texture.Samples = target.MSAA;
 	texture.Tiling  = VK_IMAGE_TILING_OPTIMAL;
