@@ -25,7 +25,7 @@
 tm_class TinyVirtualFile final { 
 
 private:
-	tiny_ptr  _memory;
+	tiny_pointer  _memory;
 	tiny_uint _offset;
 	tiny_uint _size;
 

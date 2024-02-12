@@ -70,9 +70,10 @@ tiny_string& tiny_string::asign( const std::string& string ) {
 }
 
 tiny_string& tiny_string::asign( const tiny_string& other ) {
-	auto* string = other.get( );
+	_handle = other.get( );
+	_length = other.length( );
 
-	return asign( string );
+	return tiny_self;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

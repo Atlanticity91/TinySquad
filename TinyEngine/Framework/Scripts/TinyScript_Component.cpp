@@ -85,33 +85,94 @@ TinyScript& TinyScript::SetPostTick( const tiny_string& function ) {
 	return tiny_self;
 }
 
+void TinyScript::DisplayWidget(
+	TinyGame* game,
+	TinyEngine& engine,
+	TinyToolbox& toolbox
+) {
+	TinyComponent::DisplayWidget( game, engine, toolbox );
+
+	TinyImGui::EndVars( );
+
+	DisplayMeta( game, "Pre Tick", _pre_tick );
+	DisplayMeta( game, "Post Tick", _post_tick );
+
+	TinyImGui::BeginVars( );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyScript::DisplayMeta( 
+	TinyGame* game, 
+	c_string label, 
+	TinyScriptMetadata& metadata 
+) {
+	auto is_open = ImGui::TreeNode( label );
+
+	if ( is_open ) {
+		TinyImGui::BeginVars( );
+
+		auto types = TinyImGui::DropdownContext{ metadata.Type, { "Native", "Lua" } };
+
+		if ( TinyImGui::Dropdown( "Type", types ) ) {
+			metadata.Type	  = tiny_cast( types.Index, TinyScriptTypes );
+			metadata.Function = "";
+		}
+
+		if ( metadata.Type == TS_TYPE_NATIVE ) {
+			auto& natives  = game->GetNatives( );
+			auto functions = TinyImGui::DropdownContext{ natives.GetList( ), metadata.Function };
+
+			if ( TinyImGui::Dropdown( "Function", functions ) ) {
+				metadata.Function = functions.Values[ functions.Index ];
+
+				_is_active = _is_active && functions.Index > 0;
+			}
+		} else {
+			auto& toolbox = game->GetToolbox( );
+			auto& lua	  = game->GetScripts( );
+
+			toolbox.DisplayAsset( game, "Module", metadata.Asset );
+
+			auto asset_state = metadata.Asset.GetIsValid( );
+
+			ImGui::BeginDisabled( !asset_state );
+
+			auto* lua_module = tiny_cast( lua.GetAsset( metadata.Asset ), TinyScriptLua* );
+
+			if ( lua_module ) {
+				auto functions = TinyImGui::DropdownContext{ lua_module->GetFunctions( ), metadata.Function };
+
+				if ( TinyImGui::Dropdown( "Function", functions ) ) {
+					metadata.Function = functions.Values[ functions.Index ];
+
+					_is_active = _is_active && functions.Index > 0;
+				}
+			} else {
+				auto functions = TinyImGui::DropdownContext{ };
+
+				TinyImGui::Dropdown( "Function", functions );
+			}
+
+			ImGui::EndDisabled( );
+		}
+
+		TinyImGui::EndVars( );
+
+		ImGui::TreePop( );
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyScript::GetHasPreTick( ) const {
-	auto state = false;
-
-	switch ( _pre_tick.Type ) {
-		case TS_TYPE_NATIVE : state = !_pre_tick.Function.is_empty( ); break;
-		case TS_TYPE_LUA	: state = _pre_tick.Asset.GetIsValid( );   break;
-
-		default: break;
-	}
-	
-	return state;
+bool TinyScript::GetHasPreTick( ) const { 
+	return GetIsActive( ) && _pre_tick.Function.is_valid( ); 
 }
 
-bool TinyScript::GetHasPostTick( ) const {
-	auto state = false;
-
-	switch ( _post_tick.Type ) {
-		case TS_TYPE_NATIVE : state = !_post_tick.Function.is_empty( ); break;
-		case TS_TYPE_LUA	: state = _post_tick.Asset.GetIsValid( );	break;
-
-		default: break;
-	}
-
-	return state;
+bool TinyScript::GetHasPostTick( ) const { 
+	return GetIsActive( ) && _post_tick.Function.is_valid( );
 }
 
 TinyScriptMetadata& TinyScript::GetPreTick( ) { return _pre_tick; }

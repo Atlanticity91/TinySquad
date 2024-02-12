@@ -42,8 +42,6 @@ public:
 
 	bool Compile( const tiny_string& source );
 
-	void SetGlobal( const tiny_string& name, c_pointer value );
-
 	void SetGlobal( const tiny_string& name, bool value );
 
 	void SetGlobal( const tiny_string& name, tiny_int value );
@@ -70,11 +68,28 @@ public:
 
 	void SetGlobal( const tiny_string& name, TinyLuaPrototype function );
 
-	bool Execute( TinyGame* game, TinyLuaExecution& execution );
-
-	bool Execute( TinyGame* game, const tiny_string& script, c_pointer instigator );
+	void Execute( TinyLuaExecution& execution );
 
 	void Terminate( );
+
+public:
+	template<typename Type>
+	void SetGlobal( const tiny_string& name, Type* value ) { 
+		if ( value ) {
+			auto name_str = name.as_chars( );
+
+			lua_pushlightuserdata( _lua_state, value );
+			lua_setglobal( _lua_state, name_str );
+		}
+	};
+
+private:
+	void PushInputs( const tiny_list<TinyLuaParameter>& inputs );
+
+	void PushOutputs( const tiny_list<TinyLuaParameter>& outputs );
+
+public:
+	bool GetExist( const tiny_string& function ) const;
 
 public:
 	operator lua_State* ( );

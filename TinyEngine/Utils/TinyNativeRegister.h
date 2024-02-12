@@ -22,7 +22,7 @@
 
 #include "TinyYaml.h"
 
-#define _nRegisterFunc( FUNC ) Register( TINY_STR( FUNC ), FUNC )
+#define _nRegister( FUNC ) Register( TINY_STR( FUNC ), FUNC )
 #define _nExecute Execute<void>
 
 te_class TinyNativeRegister final {
@@ -89,6 +89,8 @@ public:
 	bool GetExist( const tiny_string& function_alias ) const;
 
 	bool GetExist( const tiny_hash function_hash ) const;
+
+	tiny_list<c_string> GetList( ) const;
 
 	tiny_map<c_pointer>& GetNatives( );
 

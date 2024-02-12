@@ -56,6 +56,23 @@ bool TinyNativeRegister::GetExist( const tiny_hash function_hash ) const {
 	return _functions.find( function_hash );
 }
 
+tiny_list<c_string> TinyNativeRegister::GetList( ) const {
+	auto count = _functions.size( );
+	auto list  = tiny_list<c_string>{ };
+
+	list = count + 1;
+
+	list[ 0 ] = "Undefined";
+
+	while ( count-- > 0) {
+		auto& name = _functions.node( count ).String;
+
+		list[ count + 1 ] = name.c_str( );
+	}
+
+	return list;
+}
+
 tiny_map<c_pointer>& TinyNativeRegister::GetNatives( ) { return _functions; }
 
 const tiny_map<c_pointer>& TinyNativeRegister::GetNatives( ) const { return _functions; }

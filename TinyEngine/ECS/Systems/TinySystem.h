@@ -54,10 +54,10 @@ public:
 		: _flags{ 0 },
 		_components{ }
 	{ 
-		_flags = TS_FLAG_IS_ACTIVE				   | 
-				 use_clean   * TS_FLAG_USE_CLEAN   | 
-				 use_pretick * TS_FLAG_USE_PRETICK |
-				use_posttick * TS_FLAG_USE_POSTTICK;
+		_flags = TS_FLAG_IS_ACTIVE				    | 
+				 use_clean    * TS_FLAG_USE_CLEAN   | 
+				 use_pretick  * TS_FLAG_USE_PRETICK |
+				 use_posttick * TS_FLAG_USE_POSTTICK;
 	};
 
 	virtual ~TinySystem( ) = default;

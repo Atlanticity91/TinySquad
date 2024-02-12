@@ -24,12 +24,15 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyScriptLua::TinyScriptLua( )
-	: _source{ }
-{ }
+	: _source{ },
+	_functions{ }
+{ 
+	_functions.emplace_back( "Undefined" );
+}
 
 bool TinyScriptLua::Create( TinyLuaContext& context, TinyFile& file ) {
 	auto length = tiny_cast( 0, tiny_uint );
-	auto state  = file.Read( length ) > 0 && tiny_allocate( _source, length );
+	auto state  = file.Read( length ) > 0 && tiny_allocate( _source, length + 1 );
 
 	if ( state ) {
 		auto* address = _source.GetAddress( );
@@ -37,7 +40,11 @@ bool TinyScriptLua::Create( TinyLuaContext& context, TinyFile& file ) {
 		state = file.Read( length, address );
 
 		if ( state ) {
-			auto source = tiny_string{ _source.As<const char>( ) };
+			auto source = tiny_string{ _source.GetAddress( ), length + 1 };
+
+			source[ length ] = '\0';
+
+			PreProcess( source );
 
 			state = context.Compile( source );
 		}
@@ -46,21 +53,41 @@ bool TinyScriptLua::Create( TinyLuaContext& context, TinyFile& file ) {
 	return state;
 }
 
-bool TinyScriptLua::Create( TinyLuaContext& context, tiny_ptr source ) {
+bool TinyScriptLua::Create( TinyLuaContext& context, tiny_pointer source ) {
 	auto* address = tiny_cast( source, tiny_uint* );
 	auto state    = address != nullptr;
 
 	if ( state ) {
 		auto length = tiny_lvalue( address );
-		auto src	= tiny_string{ tiny_cast( address + 1 , c_pointer ), length };
+		auto source = tiny_string{ tiny_cast( address + 1 , c_pointer ), length };
 
-		state = context.Compile( src );
+		PreProcess( source );
+
+		state = context.Compile( source );
 	}
 
 	return state;
 }
 
 void TinyScriptLua::Terminate( TinyLuaContext& context ) {
-
 	tiny_deallocate( _source );
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyScriptLua::PreProcess( tiny_string& source ) {
+	auto keyword = "function";
+	auto char_id = tiny_cast( 0, tiny_uint );
+	auto char_offset = tiny_cast( 1, tiny_uint );
+
+	//while ( char_id < source.length( ) ) { }
+
+	_functions.emplace_back( { "Test" } );
+	_functions.emplace_back( { "Test01" } );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+const tiny_list<tiny_string>& TinyScriptLua::GetFunctions( ) const { return _functions; }

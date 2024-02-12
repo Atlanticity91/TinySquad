@@ -37,22 +37,14 @@ bool TinyLuaContext::Create( ) {
 }
 
 bool TinyLuaContext::Compile( c_string source ) {
-	return luaL_loadstring( _lua_state, source ) == LUA_OK;
+	return luaL_dostring( _lua_state, source ) == LUA_OK;
 }
 
 bool TinyLuaContext::Compile( const tiny_string& source ) {
 	auto* chars = source.as_chars( );
+	auto length = source.length( );
 
-	return Compile( chars );
-}
-
-void TinyLuaContext::SetGlobal( const tiny_string& name, c_pointer value ) {
-	if ( value ) {
-		auto name_str = name.as_chars( );
-
-		lua_pushlightuserdata( _lua_state, value );
-		lua_setglobal( _lua_state, name_str );
-	}
+	return luaL_loadbuffer( _lua_state, chars, length, NULL );
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, bool value ) {
@@ -153,32 +145,37 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, TinyLuaPrototype functi
 	}
 }
 
-bool TinyLuaContext::Execute( TinyGame* game, TinyLuaExecution& execution ) {
-	auto* name = execution.Function.as_chars( );
-	auto state = lua_getglobal( _lua_state, name ) == LUA_OK;
+void TinyLuaContext::Execute( TinyLuaExecution& execution ) {
+	if ( GetExist( execution.Function ) ) {
+		PushInputs( execution.Inputs );
 
-	if ( state && lua_isfunction( _lua_state, TINY_LUA_TOP ) ) {
-		SetGlobal( "game", tiny_cast( game, c_pointer ) );
-
-		state = lua_pcall( _lua_state, execution.Inputs.size( ), execution.Outputs.size( ), 0 ) == LUA_OK;
-
-		if ( state ) {
-			state = tiny_cast( lua_toboolean( _lua_state, TINY_LUA_TOP ), bool );
-		}
+		if ( lua_pcall( _lua_state, execution.Inputs.size( ), execution.Outputs.size( ), 0 ) == LUA_OK )
+			PushOutputs( execution.Outputs );
 	}
-
-	return state;
-}
-
-bool TinyLuaContext::Execute( TinyGame* game, const tiny_string& script, c_pointer instigator ) {
-	auto execution = TinyLuaExecution{ script };
-
-	return Execute( game, execution );
 }
 
 void TinyLuaContext::Terminate( ) {
 	if ( _lua_state )
 		lua_close( _lua_state );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyLuaContext::PushInputs( const tiny_list<TinyLuaParameter>& inputs ) { 
+}
+
+void TinyLuaContext::PushOutputs( const tiny_list<TinyLuaParameter>& outputs ) {
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyLuaContext::GetExist( const tiny_string& function ) const { 
+	auto* name_str = function.as_chars( );
+
+	return  lua_getglobal( _lua_state, name_str ) == LUA_OK &&
+			lua_isfunction( _lua_state, TINY_LUA_TOP ) == LUA_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

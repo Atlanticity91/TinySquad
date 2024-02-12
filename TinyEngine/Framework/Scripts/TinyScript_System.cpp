@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyScriptSystem::TinyScriptSystem( ) 
-	: TinySystem{ }
+	: TinySystem{ true, true }
 { }
 
 void TinyScriptSystem::RegisterInterop( TinyGame* game ) {
@@ -48,7 +48,39 @@ void TinyScriptSystem::RegisterInterop( TinyGame* game ) {
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyScriptSystem::PreTick( TinyGame* game, TinyEngine& engine ) { 
+	auto& natives = game->GetNatives( );
+	auto& lua	  = game->GetScripts( );
+
+	for ( auto& comp : _components ) {
+		if ( comp.GetHasPreTick( ) ) {
+			auto* pre_comp = tiny_rvalue( comp );
+			auto& pre_tick = comp.GetPreTick( );
+
+			switch ( pre_tick.Type ) {
+				case TS_TYPE_NATIVE : natives._nExecute( pre_tick.Function, game, pre_comp ); break;
+				case TS_TYPE_LUA	: lua.Execute( pre_tick.Function, game, pre_comp ); break;
+
+				default : break;
+			}
+		}
+	}
 }
 
 void TinyScriptSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
+	auto& natives = game->GetNatives( );
+	auto& lua	  = game->GetScripts( );
+
+	for ( auto& comp : _components ) {
+		if ( comp.GetHasPostTick( ) ) {
+			auto* post_comp = tiny_rvalue( comp );
+			auto& post_tick = comp.GetPostTick( );
+
+			switch ( post_tick.Type ) {
+				case TS_TYPE_NATIVE : natives._nExecute( post_tick.Function, game, post_comp ); break;
+				case TS_TYPE_LUA	: lua.Execute( post_tick.Function, game, post_comp ); break;
+
+				default: break;
+			}
+		}
+	}
 }

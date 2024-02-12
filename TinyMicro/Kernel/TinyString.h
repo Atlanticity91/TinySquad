@@ -24,8 +24,8 @@
 
 typedef void c_pointer_base;
 typedef c_pointer_base* c_pointer;
-typedef tiny_ubyte tiny_ptr_base;
-typedef tiny_ptr_base* tiny_ptr;
+typedef tiny_ubyte tiny_pointer_base;
+typedef tiny_pointer_base* tiny_pointer;
 
 typedef const char* c_string;
 

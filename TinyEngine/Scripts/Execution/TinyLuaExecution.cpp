@@ -10,46 +10,42 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 23/01/2024
- * @version  : 2024.1.1
+ * @creation : 10/01/2024
+ * @version  : 2024.2
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
+#pragma once
+
 #include <TinyEngine/__tiny_engine_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyNativeManager::TinyNativeManager( )
-	: _natives{ }
+TinyLuaExecution::TinyLuaExecution( )
+	: TinyLuaExecution{ "", { }, { } }
 { }
 
-void TinyNativeManager::Register( const tiny_string& name, TinyScriptNative exec_script ) {
-	if ( !name.is_empty( ) && exec_script && !_natives.find( name ) )
-		_natives.emplace( name, exec_script );
-}
+TinyLuaExecution::TinyLuaExecution( const tiny_string& function )
+	: TinyLuaExecution{ function, { }, { } }
+{ }
 
-bool TinyNativeManager::Execute( 
-	TinyGame* game,
-	const tiny_string& name,
-	c_pointer instigator
-) {
-	auto script_id = tiny_cast( 0, tiny_uint );
-	auto state = false;
-	
-	if ( _natives.find( name, script_id ) ) {
-		auto& function = _natives.at( script_id );
+TinyLuaExecution::TinyLuaExecution(
+	const tiny_string& function,
+	tiny_init<TinyLuaParameter> inputs 
+)
+	: TinyLuaExecution{ function, inputs, { } }
+{ }
 
-		state = std::invoke( function, game, instigator );
-	}
-
-	return state;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC GET ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyNativeManager::GetExist( const tiny_string& name ) const { return false; }
+TinyLuaExecution::TinyLuaExecution(
+	const tiny_string& function,
+	tiny_init<TinyLuaParameter> inputs,
+	tiny_init<TinyLuaParameter> outputs
+)
+	: Function{ function },
+	Inputs{ inputs },
+	Outputs{ outputs } 
+{ }

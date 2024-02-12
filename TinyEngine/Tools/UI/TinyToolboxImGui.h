@@ -48,6 +48,8 @@ namespace TinyImGui {
 
 		DropdownContext( const tiny_list<c_string>& values );
 
+		DropdownContext( const tiny_list<c_string>& values, const tiny_string& value );
+
 		DropdownContext( const tiny_list<tiny_string>& values );
 
 		DropdownContext( const tiny_list<tiny_string>& values, const tiny_string& value );

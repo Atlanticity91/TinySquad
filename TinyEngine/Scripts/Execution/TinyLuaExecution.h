@@ -20,27 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Assets/TinyAssetManager.h>
-
-tiny_enum( TinyLuaTypes ) {
-
-	TLT_BOOL = 0,
-	TLT_INT,
-	TLT_UINT,
-	TLT_LONG,
-	TLT_ULONG,
-	TLT_FLOAT,
-	TLT_DOUBLE,
-	TLT_USERDATA
-
-};
-
-te_struct TinyLuaParameter {
-
-	TinyLuaTypes Type = TLT_BOOL;
-	c_pointer Value		  = nullptr;
-
-};
+#include "TinyLuaParameter.h"
 
 te_struct TinyLuaExecution {
 
@@ -51,5 +31,13 @@ te_struct TinyLuaExecution {
 	TinyLuaExecution( );
 
 	TinyLuaExecution( const tiny_string& function );
+
+	TinyLuaExecution( const tiny_string& function, tiny_init<TinyLuaParameter> inputs );
+
+	TinyLuaExecution( 
+		const tiny_string& function,
+		tiny_init<TinyLuaParameter> inputs,
+		tiny_init<TinyLuaParameter> outputs
+	);
 
 };

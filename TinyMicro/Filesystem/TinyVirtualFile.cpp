@@ -69,7 +69,7 @@ tiny_uint TinyVirtualFile::Write( tiny_uint size, const c_pointer buffer ) {
 
 TinyVirtualFile& TinyVirtualFile::Asign( const tiny_storage& storage ) {
 	if ( storage ) {
-		_memory = tiny_cast( storage.GetAddress( ), tiny_ptr );
+		_memory = tiny_cast( storage.GetAddress( ), tiny_pointer );
 		_offset = 0;
 		_size   = tiny_cast( storage.Capacity, tiny_uint );
 	}

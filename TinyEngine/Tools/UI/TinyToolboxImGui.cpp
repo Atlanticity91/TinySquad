@@ -126,6 +126,17 @@ TinyImGui::DropdownContext::DropdownContext( const tiny_list<tiny_string>& value
     }
 }
 
+TinyImGui::DropdownContext::DropdownContext(
+    const tiny_list<c_string>& values, 
+    const tiny_string& value
+)
+    : DropdownContext{ values }
+{ 
+    auto hash = tiny_hash{ value };
+
+    Find( hash );
+}
+
 TinyImGui::DropdownContext::DropdownContext( 
     const tiny_list<tiny_string>& values, 
     const tiny_string& value 

@@ -24,9 +24,9 @@
 
 tm_struct TinyAppIcon {
 
-	tiny_int Width  = 0;
-	tiny_int Height = 0;
-	tiny_ptr Pixels = nullptr;
+	tiny_int Width		= 0;
+	tiny_int Height		= 0;
+	tiny_pointer Pixels = nullptr;
 
 };
 

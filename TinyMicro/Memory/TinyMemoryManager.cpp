@@ -178,7 +178,7 @@ c_pointer TinyMemoryManager::GetAddress( tiny_uint block ) const {
 	auto* address = tiny_cast( nullptr, c_pointer );
 
 	if ( block < MAX_BLOCKS ) {
-		auto* offset = tiny_cast( blocks + MAX_BLOCKS, tiny_ptr );
+		auto* offset = tiny_cast( blocks + MAX_BLOCKS, tiny_pointer );
 
 		address = tiny_cast( offset + blocks[ block ].Offset, c_pointer );
 	}

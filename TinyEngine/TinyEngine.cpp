@@ -44,6 +44,9 @@ TinyEngine::TinyEngine( const tiny_string& title, TinyGameOrientations orientati
 	_toolbox{ }
 { }
 
+void Test00( TinyGame* game, TinyScript* c ) { printf( "Hello Test 00\n" ); }
+void Test01( TinyGame* game, TinyScript* c ) { printf( "Hello Test 01\n" ); }
+
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 	auto game_config = TinyGameConfig{ };
 	
@@ -68,6 +71,9 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 						{ TinyInputKey( KEY_GRAVE_ACCENT ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
 					} 
 				);
+
+				_natives._nRegister( Test00 );
+				_natives._nRegister( Test01 );
 			}
 		}
 	}

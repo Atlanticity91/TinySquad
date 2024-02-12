@@ -129,8 +129,8 @@ void TinyRenderer::Compose( TinyGame* game ) {
 			Tiny::Memcpy( (const c_pointer)s->GetColor().Get(), (c_pointer)&core.Color.r, 4 * tiny_sizeof( float ) );
 
 
-			Tiny::Memcpy( (const c_pointer)glm::value_ptr( cache ), ( (tiny_ptr)_staging.GetAccess( ) ) +( (7-count) * tiny_sizeof( tiny_mat4 ) ), tiny_sizeof( tiny_mat4 ) );
-			Tiny::Memcpy( (const c_pointer)&core, ( (tiny_ptr)_staging.GetAccess( ) ) + ( 8 * tiny_sizeof( tiny_mat4 ) ) + ( ( 7 - count )* tiny_sizeof( TinyUBORenderCore ) ), tiny_sizeof( TinyUBORenderCore ) );
+			Tiny::Memcpy( (const c_pointer)glm::value_ptr( cache ), ( (tiny_pointer)_staging.GetAccess( ) ) +( (7-count) * tiny_sizeof( tiny_mat4 ) ), tiny_sizeof( tiny_mat4 ) );
+			Tiny::Memcpy( (const c_pointer)&core, ( (tiny_pointer)_staging.GetAccess( ) ) + ( 8 * tiny_sizeof( tiny_mat4 ) ) + ( ( 7 - count )* tiny_sizeof( TinyUBORenderCore ) ), tiny_sizeof( TinyUBORenderCore ) );
 		}
 	}
 

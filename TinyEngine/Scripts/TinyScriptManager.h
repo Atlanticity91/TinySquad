@@ -20,15 +20,14 @@
 
 #pragma once
 
-#include "Utils/TinyScriptContext.h"
+#include "Interop/TinyLuaEntity.h"
 
 te_class TinyScriptManager final 
 	: tiny_inherit( TinyAssetList<TA_TYPE_SCRIPT, TinyScriptLua> )
 {
 
 private:
-	TinyNativeManager _natives;
-	TinyLuaContext	  _lua;
+	TinyLuaContext _context;
 
 public:
 	TinyScriptManager( );
@@ -37,9 +36,37 @@ public:
 
 	bool Initialize( );
 
-	tiny_inline void Register( const tiny_string& name, TinyScriptNative script );
+	tiny_inline void SetGlobal( const tiny_string& name, c_pointer value );
 
-	bool Execute( TinyGame* game, c_pointer instigator, const TinyScriptContext& context );
+	tiny_inline void SetGlobal( const tiny_string& name, bool value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, tiny_int value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, tiny_uint value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, tiny_long value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, tiny_ulong value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, float value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, double value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, const tiny_point& value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, const tiny_vec2& value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, const tiny_vec3& value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, const tiny_vec4& value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, const tiny_color& value );
+
+	tiny_inline void SetGlobal( const tiny_string& name, TinyLuaPrototype function );
+
+	void Execute( const TinyLuaExecution& execution );
+
+	void Execute( const tiny_string& function, TinyGame* game, c_pointer component );
 
 	void Terminate( );
 
@@ -62,8 +89,14 @@ private:
 	void GenerateInterop( );
 
 public:
-	TinyLuaContext& GetLua( );
+	template<typename Type>
+	void SetGlobal( const tiny_string & name, Type * value ) {
+		_context.SetGlobal<Type>( name, value );
+	};
 
-	tiny_inline bool GetExist( const tiny_string & name ) const;
+public:
+	TinyLuaContext& GetContext( );
+
+	tiny_inline bool GetExist( const tiny_string& name ) const;
 
 };

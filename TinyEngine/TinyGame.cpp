@@ -115,7 +115,7 @@ void TinyGame::LoadDefault2D( TinyECS& ecs ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyGame::Load( ) {
 	auto& scripts = _engine.GetScripts( );
-	auto& context = scripts.GetLua( );
+	auto& context = scripts.GetContext( );
 	auto& assets  = _engine.GetAssets( );
 	auto& ecs	  = _engine.GetECS( );
 

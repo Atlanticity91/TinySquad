@@ -56,8 +56,8 @@ public:
 	const Type& GetRef( ) const { return tiny_lvalue( Get( ) ); };
 
 private:
-	tiny_ptr GetAddress( ) const {
-		return tiny_cast( tiny_get_address_of( _block ), tiny_ptr );
+	tiny_pointer GetAddress( ) const {
+		return tiny_cast( tiny_get_address_of( _block ), tiny_pointer );
 	};
 
 public:

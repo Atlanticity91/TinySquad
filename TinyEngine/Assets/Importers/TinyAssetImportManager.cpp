@@ -119,7 +119,7 @@ bool TinyAssetImportManager::ImportTexture2D(
 
 	if ( state ) {
 		auto* builder = storage.As<TinyTexture2DBuilder>( );
-		auto* buffer  = file.As<tiny_ptr_base>( );
+		auto* buffer  = file.As<tiny_pointer_base>( );
 		auto img_w	  = tiny_cast( 0, tiny_int );
 		auto img_h	  = tiny_cast( 0, tiny_int );
 		auto img_c    = tiny_cast( 0, tiny_int );
@@ -281,10 +281,10 @@ bool TinyAssetImportManager::ImportLua(
 	tiny_storage& file,
 	tiny_storage& storage
 ) {
-	auto state = tiny_allocate( storage, tiny_sizeof( tiny_uint ) + tiny_cast( file.Capacity, tiny_uint ) );
+	auto state = tiny_allocate( storage, tiny_sizeof( tiny_uint ) + file.Capacity );
 
 	if ( state ) {
-		auto* address = tiny_cast( storage.GetAddress( ), tiny_ptr );
+		auto* address = tiny_cast( storage.GetAddress( ), tiny_pointer );
 
 		tiny_lvalue( tiny_cast( address, tiny_uint* ) ) = tiny_cast( file.Capacity, tiny_uint );
 
@@ -306,6 +306,7 @@ bool TinyAssetImportManager::ExportLua( TinyGame* game, TinyFile& file, c_pointe
 		auto* source = tiny_cast( tiny_cast( asset, tiny_uint* ) + 1, c_pointer );
 
 		file.Write( TinyAssetHeader{ TA_TYPE_SCRIPT } );
+		file.Write( length );
 		file.Write( length, source );
 	}
 
@@ -360,7 +361,7 @@ bool TinyAssetImportManager::ImportWav(
 				if ( state ) {
 					builder = storage.As<TinyCueBuilder>( );
 
-					builder->Data = tiny_cast( builder + 1, tiny_ptr );
+					builder->Data = tiny_cast( builder + 1, tiny_pointer );
 
 					state = vfile.Read( builder->Size, builder->Data );
 				}

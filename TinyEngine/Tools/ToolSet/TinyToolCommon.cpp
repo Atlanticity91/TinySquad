@@ -227,6 +227,15 @@ void TinyToolCommon::DrawPasses( TinyGraphicManager& graphics ) {
                 name_str = target.Name.c_str( );
 
                 TinyImGui::InputColor( name_str, target.Clear.color );
+
+                /*
+                if ( ImGui::BeginItemTooltip( ) ) {
+                    TinyImGui::Image( );
+
+                    ImGui::EndTooltip( );
+                }
+                */
+
             }
 
             TinyImGui::EndVars( );

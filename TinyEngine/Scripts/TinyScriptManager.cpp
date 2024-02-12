@@ -24,12 +24,11 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyScriptManager::TinyScriptManager( ) 
-	: _natives{ },
-	_lua{ }
+	: _context{ }
 { }
 
 bool TinyScriptManager::Initialize( ) {
-	auto state = _lua.Create( );
+	auto state = _context.Create( );
 
 	if ( state )
 		GenerateInterop( );
@@ -37,28 +36,89 @@ bool TinyScriptManager::Initialize( ) {
 	return state;
 }
 
-void TinyScriptManager::Register( const tiny_string& name, TinyScriptNative script ) {
-	_natives.Register( name, script );
+void TinyScriptManager::SetGlobal( const tiny_string& name, c_pointer value ) {
+	_context.SetGlobal( name, value );
 }
 
-bool TinyScriptManager::Execute( 
-	TinyGame* game, 
-	c_pointer instigator, 
-	const TinyScriptContext& context
-) {
-	auto state = false;
+void TinyScriptManager::SetGlobal( const tiny_string& name, bool value ) {
+	_context.SetGlobal( name, value );
+}
 
-	switch ( context.Type ) {
-		case TS_TYPE_NATIVE : state = _natives.Execute( game, context.Name, instigator ); break;
-		case TS_TYPE_LUA	: state = _lua.Execute( game, context.Name, instigator );	  break;
+void TinyScriptManager::SetGlobal( const tiny_string& name, tiny_int value ) {
+	_context.SetGlobal( name, value );
+}
+	
+void TinyScriptManager::SetGlobal( const tiny_string& name, tiny_uint value ) {
+	_context.SetGlobal( name, value );
+}
+	
+void TinyScriptManager::SetGlobal( const tiny_string& name, tiny_long value ) {
+	_context.SetGlobal( name, value );
+}
 
-		default : break;
+void TinyScriptManager::SetGlobal( const tiny_string& name, tiny_ulong value ) {
+	_context.SetGlobal( name, value );
+}
+	
+void TinyScriptManager::SetGlobal( const tiny_string& name, float value ) {
+	_context.SetGlobal( name, value );
+}
+	
+void TinyScriptManager::SetGlobal( const tiny_string& name, double value ) {
+	_context.SetGlobal( name, value );
+}
+	
+void TinyScriptManager::SetGlobal( const tiny_string& name, const tiny_point& value ) {
+	_context.SetGlobal( name, value );
+}
+	
+void TinyScriptManager::SetGlobal( const tiny_string& name, const tiny_vec2& value ) {
+	_context.SetGlobal( name, value );
+}
+	
+void TinyScriptManager::SetGlobal( const tiny_string& name, const tiny_vec3& value ) {
+	_context.SetGlobal( name, value );
+}
+	
+void TinyScriptManager::SetGlobal( const tiny_string& name, const tiny_vec4& value ) {
+	_context.SetGlobal( name, value );
+}
+
+void TinyScriptManager::SetGlobal( const tiny_string& name, const tiny_color& value ) {
+	_context.SetGlobal( name, value );
+}
+
+void TinyScriptManager::SetGlobal( const tiny_string& name, TinyLuaPrototype function ) {
+	_context.SetGlobal( name, function );
+}
+
+void TinyScriptManager::Execute( const TinyLuaExecution& execution ) {
+	if ( !execution.Function.is_empty( ) ) {
+		auto _execution = execution;
+
+		_context.Execute( _execution );
 	}
-
-	return state;
 }
 
-void TinyScriptManager::Terminate( ) { _lua.Terminate( ); }
+void TinyScriptManager::Execute( 
+	const tiny_string& function_name,
+	TinyGame* game,
+	c_pointer component 
+) {
+	if ( !function_name.is_empty( ) ) {
+		auto execution = TinyLuaExecution{ 
+			function_name,
+			{ 
+				{ game },
+				{ component }
+			}
+		};
+
+		_context.Execute( execution );
+	}
+}
+
+void TinyScriptManager::Terminate( ) { _context.Terminate( ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
@@ -74,7 +134,7 @@ bool TinyScriptManager::OnLoad(
 	file.Read( header );
 
 	if ( header.Type == TA_TYPE_SCRIPT )
-		state = script.Create( _lua, file );
+		state = script.Create( _context, file );
 
 	return state;
 }
@@ -84,33 +144,33 @@ bool TinyScriptManager::OnCreate(
 	c_pointer asset_builder,
 	TinyScriptLua& script
 ) {
-	auto* address = tiny_cast( asset_builder, tiny_ptr );
+	auto* address = tiny_cast( asset_builder, tiny_pointer );
 
-	return script.Create( _lua, address );
+	return script.Create( _context, address );
 }
 
 void TinyScriptManager::OnUnLoad( TinyGame* game, TinyScriptLua& script ) {
-	script.Terminate( _lua );
+	script.Terminate( _context );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyScriptManager::GenerateInterop( ) {
-	TinyLua::Point::Register( _lua );
-	//TinyLua::Vec2::Register( _lua );
-	//TinyLua::Vec3::Register( _lua );
-	//TinyLua::Vec4::Register( _lua );
-	TinyLua::Color::Register( _lua );
-	TinyLua::Engine::Register( _lua );
-	//TinyLua::Entity::Register( _lua );
+	TinyLua::Point::Register( _context );
+	//TinyLua::Vec2::Register( _context );
+	//TinyLua::Vec3::Register( _context );
+	//TinyLua::Vec4::Register( _context );
+	TinyLua::Color::Register( _context );
+	TinyLua::Engine::Register( _context );
+	//TinyLua::Entity::Register( _context );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyLuaContext& TinyScriptManager::GetLua( ) { return _lua; }
+TinyLuaContext& TinyScriptManager::GetContext( ) { return _context; }
 
-bool TinyScriptManager::GetExist( const tiny_string& name ) const {
-	return _natives.GetExist( name );
+bool TinyScriptManager::GetExist( const tiny_string& function_name ) const {
+	return _context.GetExist( function_name );
 }

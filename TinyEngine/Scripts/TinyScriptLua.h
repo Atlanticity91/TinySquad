@@ -20,12 +20,13 @@
 
 #pragma once
 
-#include "TinyLuaContext.h"
+#include "Execution/TinyLuaContext.h"
 
 te_class TinyScriptLua final { 
 
 private:
-	tiny_storage _source;
+	tiny_storage		   _source;
+	tiny_list<tiny_string> _functions;
 
 public:
 	TinyScriptLua( );
@@ -34,8 +35,14 @@ public:
 
 	bool Create( TinyLuaContext& context, TinyFile& file );
 
-	bool Create( TinyLuaContext& context, tiny_ptr source );
+	bool Create( TinyLuaContext& context, tiny_pointer source );
 
 	void Terminate( TinyLuaContext& context );
+
+private:
+	void PreProcess( tiny_string& source );
+
+public:
+	const tiny_list<tiny_string>& GetFunctions( ) const;
 
 };
