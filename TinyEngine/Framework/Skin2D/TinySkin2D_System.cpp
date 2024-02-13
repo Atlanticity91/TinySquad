@@ -67,26 +67,52 @@ void TinySkin2DSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
 
 	renderer.Prepare( game, TinySkin2DSystem::Draw );
 
-	for ( auto& comp : _components ) {
-		auto owner = comp.GetOwner( );
+	for ( auto& component : _components ) {
+		auto owner = component.GetOwner( );
 
-		if ( ecs.GetHasFlag( owner, TE_FLAG_VISIBLE ) && comp.GetIsActive( ) ) {
+		if ( ecs.GetHasFlag( owner, TE_FLAG_VISIBLE ) && component.GetIsActive( ) ) {
 			auto* transform = ecs.GetComponentAs<TinyTransform2D>( owner );
 
 			if ( transform ) {
-				auto* texture = assets.GetAssetAs<TinyTexture2D>( comp.GetTexture( ) );
-
-				draw_context.Material	   = comp.GetMaterial( );
-				draw_context.Textures	   = 1;
-				draw_context.Textures[ 0 ] = texture;
-				draw_context.Sprite.Color  = comp.GetColor( );
-				draw_context.Sprite.UV     = texture->GetUV( comp.GetSprite( ) );
+				draw_context.Material	   = component.GetMaterial( );
+				draw_context.Sprite.Color  = component.GetColor( );
+				draw_context.Sprite.UV	   = ProcessTexture( assets, draw_context, component );
 				draw_context.Tranform	   = proj_view * transform->GetTransform( );
 
 				renderer.Draw( game, draw_context );
 			}
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+tiny_vec4 TinySkin2DSystem::ProcessTexture(
+	TinyAssetManager& assets,
+	TinyRenderDraw2DContext& draw_context,
+	TinySkin2D& component
+) {
+	auto& comp_texture = component.GetTexture( );
+	auto* texture	   = tiny_cast( nullptr, TinyTexture2D* );
+	auto& sprite	   = component.GetSprite( );
+
+	if ( comp_texture.Type == TA_TYPE_TEXTURE_2D ) {
+		draw_context.Textures = 1;
+		draw_context.Textures[ 0 ] = assets.GetAssetAs<TinyTexture2D>( comp_texture );
+	} else {
+		auto texture_id = tiny_cast( 0, tiny_uint );
+		auto* atlas		= assets.GetAssetAs<TinyTextureAtlas>( comp_texture );
+
+		draw_context.Textures = atlas->GetComponents( );
+
+		for ( auto* texture = atlas->begin( ); texture < atlas->end( ); texture++ )
+			draw_context.Textures[ texture_id++ ] = assets.GetAssetAs<TinyTexture2D>( tiny_lvalue( texture ) );
+	}
+
+	texture = draw_context.Textures[ 0 ];
+
+	return texture->GetUV( sprite );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

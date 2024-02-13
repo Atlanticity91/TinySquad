@@ -34,6 +34,13 @@ public:
 protected:
 	tiny_implement( void PostTick( TinyGame* game, TinyEngine& engine ) );
 
+private:
+	tiny_vec4 ProcessTexture( 
+		TinyAssetManager& assets,
+		TinyRenderDraw2DContext& draw_context,
+		TinySkin2D& component
+	);
+
 public:
 	static void Draw( 
 		TinyGraphicManager& graphics, 

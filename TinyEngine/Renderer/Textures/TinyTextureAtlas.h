@@ -25,28 +25,52 @@
 te_class TinyTextureAtlas final {
 
 private:
-	tiny_uint _albedo;
-	tiny_uint _normal;
-	tiny_uint _specular;
+	TinyAsset _albedo;
+	TinyAsset _normal;
+	TinyAsset _specular;
 
 public:
 	TinyTextureAtlas( );
 
 	~TinyTextureAtlas( ) = default;
 
-	TinyTextureAtlas& SetAlbedo( tiny_uint value );
+	TinyTextureAtlas& SetAlbedo( TinyGame* game, const tiny_string& name );
 
-	TinyTextureAtlas& SetNormal( tiny_uint value );
+	TinyTextureAtlas& SetAlbedo( TinyGame* game, const tiny_hash hash );
 
-	TinyTextureAtlas& SetSpecular( tiny_uint value );
+	TinyTextureAtlas& SetNormal( TinyGame* game, const tiny_string& name );
 
-	TinyTextureAtlas& Set( tiny_uint albedo, tiny_uint normal, tiny_uint specular );
+	TinyTextureAtlas& SetNormal( TinyGame* game, const tiny_hash hash );
+
+	TinyTextureAtlas& SetSpecular( TinyGame* game, const tiny_string& name );
+
+	TinyTextureAtlas& SetSpecular( TinyGame* game, const tiny_hash hash );
+
+	TinyTextureAtlas& Set( 
+		TinyGame* game,
+		const tiny_string& albedo,
+		const tiny_string& normal,
+		const tiny_string& specular
+	);
+
+	TinyTextureAtlas& Set(
+		TinyGame* game,
+		const tiny_hash albedo,
+		const tiny_hash normal,
+		const tiny_hash specular
+	);
 
 public:
-	tiny_uint GetAlbedo( ) const;
+	tiny_uint GetComponents( ) const;
 
-	tiny_uint GetNormal( ) const;
+	const TinyAsset& GetAlbedo( ) const;
+
+	const TinyAsset& GetNormal( ) const;
 	
-	tiny_uint GetSpecular( ) const;
+	const TinyAsset& GetSpecular( ) const;
+
+	const TinyAsset* begin( ) const;
+
+	const TinyAsset* end( ) const;
 
 };

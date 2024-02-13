@@ -24,37 +24,93 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTextureAtlas::TinyTextureAtlas( ) 
-	: _albedo{ 0 },
-	_normal{ 0 },
-	_specular{ 0 }
+	: _albedo{ TA_TYPE_TEXTURE_2D },
+	_normal{ TA_TYPE_TEXTURE_2D },
+	_specular{ TA_TYPE_TEXTURE_2D }
 { }
 
-TinyTextureAtlas& TinyTextureAtlas::SetAlbedo( tiny_uint value ) {
-	_albedo = value;
+TinyTextureAtlas& TinyTextureAtlas::SetAlbedo( TinyGame* game, const tiny_string& name ) {
+	auto hash = tiny_hash{ name };
+
+	return SetAlbedo( game, hash );
+}
+
+TinyTextureAtlas& TinyTextureAtlas::SetAlbedo( TinyGame* game, const tiny_hash hash ) {
+	auto& assets = game->GetAssets( );
+
+	if ( assets.GetExist( hash ) ) {
+		assets.Release( game, _albedo );
+
+		_albedo.Hash = hash;
+
+		assets.Acquire( game, _albedo );
+	}
 
 	return tiny_self;
 }
 
-TinyTextureAtlas& TinyTextureAtlas::SetNormal( tiny_uint value ) {
-	_normal = value;
-	
+TinyTextureAtlas& TinyTextureAtlas::SetNormal( TinyGame* game, const tiny_string& name ) {
+	auto hash = tiny_hash{ name };
+
+	return SetNormal( game, hash );
+}
+
+TinyTextureAtlas& TinyTextureAtlas::SetNormal( TinyGame* game, const tiny_hash hash ) {
+	auto& assets = game->GetAssets( );
+
+	if ( assets.GetExist( hash ) ) {
+		assets.Release( game, _normal );
+
+		_normal.Hash = hash;
+
+		assets.Acquire( game, _normal );
+	}
+
 	return tiny_self;
 }
 
-TinyTextureAtlas& TinyTextureAtlas::SetSpecular( tiny_uint value ) {
-	_specular = value;
+TinyTextureAtlas& TinyTextureAtlas::SetSpecular( TinyGame* game, const tiny_string& name ) {
+	auto hash = tiny_hash{ name };
+
+	return SetSpecular( game, hash );
+}
+
+TinyTextureAtlas& TinyTextureAtlas::SetSpecular( TinyGame* game, const tiny_hash hash ) {
+	auto& assets = game->GetAssets( );
+
+	if ( assets.GetExist( hash ) ) {
+		assets.Release( game, _specular );
+
+		_specular.Hash = hash;
+
+		assets.Acquire( game, _specular );
+	}
 
 	return tiny_self;
 }
 
-TinyTextureAtlas& TinyTextureAtlas::Set( 
-	tiny_uint albedo, 
-	tiny_uint normal, 
-	tiny_uint specular 
+TinyTextureAtlas& TinyTextureAtlas::Set(
+	TinyGame* game,
+	const tiny_string& albedo,
+	const tiny_string& normal,
+	const tiny_string& specular
 ) {
-	_albedo   = albedo;
-	_normal   = normal;
-	_specular = specular;
+	auto albedo_hash = tiny_hash{ albedo };
+	auto normal_hash = tiny_hash{ normal };
+	auto spec_hash = tiny_hash{ specular };
+
+	return Set( game, albedo_hash, normal_hash, spec_hash );
+}
+
+TinyTextureAtlas& TinyTextureAtlas::Set(
+	TinyGame* game,
+	const tiny_hash albedo,
+	const tiny_hash normal,
+	const tiny_hash specular
+) {
+	SetAlbedo( game, albedo );
+	SetNormal( game, normal );
+	SetSpecular( game, specular );
 
 	return tiny_self;
 }
@@ -62,8 +118,14 @@ TinyTextureAtlas& TinyTextureAtlas::Set(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_uint TinyTextureAtlas::GetAlbedo( ) const { return _albedo; }
+tiny_uint TinyTextureAtlas::GetComponents( ) const { return 3; }
 
-tiny_uint TinyTextureAtlas::GetNormal( ) const { return _normal; }
+const TinyAsset& TinyTextureAtlas::GetAlbedo( ) const { return _albedo; }
 
-tiny_uint TinyTextureAtlas::GetSpecular( ) const { return _specular; }
+const TinyAsset& TinyTextureAtlas::GetNormal( ) const { return _normal; }
+
+const TinyAsset& TinyTextureAtlas::GetSpecular( ) const { return _specular; }
+
+const TinyAsset* TinyTextureAtlas::begin( ) const { return tiny_rvalue( _albedo ); }
+
+const TinyAsset* TinyTextureAtlas::end( ) const { return tiny_rvalue( _specular ) + 1; }

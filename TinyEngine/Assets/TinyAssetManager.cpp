@@ -428,6 +428,10 @@ bool TinyAssetManager::GetExist( const tiny_string& asset ) const {
 	return _registry.GetExist( asset );
 }
 
+bool TinyAssetManager::GetExist( const tiny_hash& asset_hash ) const {
+	return _registry.GetExist( asset_hash );
+}
+
 bool TinyAssetManager::GetExist( const tiny_string& asset, tiny_hash& asset_hash ) const {
 	auto state = GetExist( asset );
 

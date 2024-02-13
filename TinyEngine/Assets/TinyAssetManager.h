@@ -123,6 +123,8 @@ public:
 
 	tiny_inline bool GetExist( const tiny_string& asset ) const;
 
+	bool GetExist( const tiny_hash& asset_hash ) const;
+
 	bool GetExist( const tiny_string& asset, tiny_hash& asset_hash ) const;
 
 	bool GetMetadata( const tiny_string& asset_name, TinyAssetMetadata& metadata );
