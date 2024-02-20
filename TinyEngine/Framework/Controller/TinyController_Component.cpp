@@ -31,17 +31,13 @@ TinyController::TinyController( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash }
 { }
 
-bool TinyController::Create( TinyGame* game, TinyEngine& engine ) {
+bool TinyController::Create( TinyGame* game ) {
 	return false;
 }
 
-void TinyController::Delete( TinyGame* game, TinyEngine& engine ) {
+void TinyController::Delete( TinyGame* game ) {
 }
 
-void TinyController::DisplayWidget(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) { 
-	TinyComponent::DisplayWidget( game, engine, toolbox );
+void TinyController::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
+	TinyComponent::DisplayWidget( game, toolbox );
 }

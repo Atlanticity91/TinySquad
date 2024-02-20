@@ -35,18 +35,14 @@ TinyCamera::TinyCamera( const tiny_hash entity_hash )
 	_scale{ 1.f }
 { }
 
-bool TinyCamera::Create( TinyGame* game, TinyEngine& engine ) { return true; }
+bool TinyCamera::Create( TinyGame* game ) { return true; }
 
-void TinyCamera::Delete( TinyGame* game, TinyEngine& engine ) { }
+void TinyCamera::Delete( TinyGame* game ) { }
 
-void TinyCamera::DisplayWidget(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) { 
-	TinyComponent::DisplayWidget( game, engine, toolbox );
+void TinyCamera::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
+	TinyComponent::DisplayWidget( game, toolbox );
 
-	auto& ecs = engine.GetECS( );
+	auto& ecs = game->GetECS( );
 
 	if ( TinyImGui::Checkbox( "Use Local", _use_local ) ) {
 		if ( !_use_local )

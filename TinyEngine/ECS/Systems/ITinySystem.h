@@ -22,55 +22,43 @@
 
 #include <TinyEngine/ECS/Components/TinyComponent_Interop.h>
 
-struct TinyEntityGhost;
+te_struct TinyEntityGhost {
+
+	tiny_hash Hash{ };
+	tiny_uint EntityID	  = 0;
+	tiny_uint ComponentID = TINY_UINT_MAX;
+
+};
 
 te_interface ITinySystem {
 
 	tiny_abstract( void RegisterInterop( TinyGame* game ) );
 
-	tiny_abstract( void Enable( TinyGame* game, TinyEngine& engine ) );
+	tiny_abstract( void Enable( TinyGame* game ) );
 
-	tiny_abstract( void Disable( TinyGame* game, TinyEngine& engine ) );
+	tiny_abstract( void Disable( TinyGame* game ) );
 
-	tiny_abstract( void Toggle( TinyGame* game, TinyEngine& engine ) );
+	tiny_abstract( void Toggle( TinyGame* game ) );
 
 	tiny_abstract( std::shared_ptr<TinyComponent> Create( const tiny_hash entity_hash ) );
 
-	tiny_abstract( TinyComponent* Append( 
-		TinyGame* game, 
-		TinyEngine& engine, 
-		const tiny_hash entity_hash 
-	) );
+	tiny_abstract( TinyComponent* Append( TinyGame* game, const tiny_hash entity_hash ) );
 
-	tiny_abstract( bool Append(
-		TinyGame* game,
-		TinyEngine& engine,
-		std::shared_ptr<TinyComponent> component
-	) );
+	tiny_abstract( bool Append( TinyGame* game, std::shared_ptr<TinyComponent> component ) );
 
-	tiny_abstract( bool Set(
-		TinyGame* game,
-		TinyEngine& engine,
-		std::shared_ptr<TinyComponent> component
-	) );
+	tiny_abstract( bool Set( TinyGame* game, std::shared_ptr<TinyComponent> component ) );
 
-	tiny_abstract( void Remove( 
-		TinyGame* game, 
-		TinyEngine& engine, 
-		const tiny_hash entity_hash 
-	) );
+	tiny_abstract( void Remove( TinyGame* game, const tiny_hash entity_hash ) );
 
-	tiny_abstract( void Clean( const tiny_list<TinyEntityGhost>& entities ) );
+	tiny_abstract( void Erase( const TinyEntityGhost& ghost ) );
 	
-	tiny_abstract( void PreTick( TinyGame* game, TinyEngine& engine ) );
+	tiny_abstract( void PreTick( TinyGame* game ) );
 
-	tiny_abstract( void PostTick( TinyGame* game, TinyEngine& engine ) );
+	tiny_abstract( void PostTick( TinyGame* game ) );
 
 	tiny_abstract( bool GetIsActive( ) const );
 
 	tiny_abstract( tiny_string GetName( ) const );
-
-	tiny_abstract( bool GetHasClean( ) const );
 
 	tiny_abstract( bool GetHasPreTick( ) const );
 

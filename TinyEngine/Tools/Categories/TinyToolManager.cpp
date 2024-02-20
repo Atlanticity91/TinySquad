@@ -21,7 +21,7 @@
 #include <TinyEngine/__tiny_engine_pch.h>
 
 #define _RegisterTool( TYPE, ID )\
-	Register< TYPE, ID >( game, engine, toolbox );
+	Register< TYPE, ID >( game, toolbox );
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
@@ -32,8 +32,6 @@ TinyToolManager::TinyToolManager( )
 { }
 
 bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
-	auto& engine = game->GetEngine( );
-
 	_RegisterTool( TinyToolCommon, TT_CATEGORY_COMMON );
 	_RegisterTool( TinyToolInputs, TT_CATEGORY_INPUTS );
 	_RegisterTool( TinyToolRender, TT_CATEGORY_RENDER );
@@ -45,13 +43,13 @@ bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
 	return true; 
 }
 
-void TinyToolManager::Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox ) {
+void TinyToolManager::Tick( TinyGame* game, TinyToolbox& toolbox ) {
 	if ( ImGui::Begin( "Tiny Editor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar ) ) {
 		auto tab_id = tiny_cast( 0, tiny_uint );
 
 		if ( ImGui::BeginTabBar( "__tiny_editor_tabs__", ImGuiTabBarFlags_None ) ) {
 			for ( auto& category : _categories ) {
-				if ( !category->Tick( game, engine, toolbox ) )
+				if ( !category->Tick( game, toolbox ) )
 					tab_id += 1;
 				else
 					_current = tab_id;
@@ -70,10 +68,8 @@ void TinyToolManager::Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& too
 }
 
 void TinyToolManager::Terminate( TinyGame* game ) {
-	auto& engine = game->GetEngine( );
-	
 	for ( auto& category : _categories ) {
-		category->Terminate( game, engine );
+		category->Terminate( game );
 
 		delete category;
 	}

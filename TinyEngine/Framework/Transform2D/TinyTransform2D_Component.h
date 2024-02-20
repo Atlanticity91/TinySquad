@@ -79,11 +79,7 @@ public:
 
 	TinyTransform2D& ReCalculate( );
 
-	tiny_implement( void DisplayWidget(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 public:
 	TINY_COMP_NAME( TinyTransform2D );

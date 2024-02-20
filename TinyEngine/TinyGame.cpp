@@ -102,12 +102,12 @@ void TinyGame::SetupBundles2D( TinyGraphicManager& graphics ) {
 }
 
 void TinyGame::LoadDefault2D( TinyECS& ecs ) {
-	ecs._RegisterComp( TinyScript );
-	ecs._RegisterComp( TinyTransform2D );
-	ecs._RegisterComp( TinySound2D );
-	ecs._RegisterComp( TinyCamera );
-	ecs._RegisterComp( TinyAnim2D );
-	ecs._RegisterComp( TinySkin2D );
+	ecs._eRegisterComp( TinyScript );
+	ecs._eRegisterComp( TinyTransform2D );
+	ecs._eRegisterComp( TinySound2D );
+	ecs._eRegisterComp( TinyCamera );
+	ecs._eRegisterComp( TinyAnim2D );
+	ecs._eRegisterComp( TinySkin2D );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

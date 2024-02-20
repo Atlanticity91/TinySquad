@@ -47,26 +47,22 @@ public:
 
 	virtual ~TinyComponent( ) = default;
 
-	tiny_virtualv( true, bool Create( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtualv( true, bool Create( TinyGame* game ) );
 
-	void Enable( TinyGame* game, TinyEngine& engine );
+	void Enable( TinyGame* game );
 
-	void Disable( TinyGame* game, TinyEngine& engine );
+	void Disable( TinyGame* game );
 
-	void Toggle( TinyGame* game, TinyEngine& engine );
+	void Toggle( TinyGame* game );
 
-	tiny_virtual( void Delete( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtual( void Delete( TinyGame* game ) );
 
-	virtual void DisplayWidget(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox 
-	);
+	virtual void DisplayWidget( TinyGame* game, TinyToolbox& toolbox );
 
 protected:
-	tiny_virtual( void OnEnable( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtual( void OnEnable( TinyGame* game ) );
 
-	tiny_virtual( void OnDisable( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtual( void OnDisable( TinyGame* game ) );
 
 public:
 	tiny_abstract( tiny_string GetName( ) const );

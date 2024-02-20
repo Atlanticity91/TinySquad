@@ -88,7 +88,7 @@ public:
 
 	void DisplayAsset( TinyGame* game, const tiny_string& label, TinyAsset& asset );
 
-	void Tick( TinyGame* game, TinyEngine& engine );
+	void Tick( TinyGame* game );
 
 	void Terminate( TinyGame* game );
 

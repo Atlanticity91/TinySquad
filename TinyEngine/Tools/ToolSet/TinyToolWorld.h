@@ -35,11 +35,7 @@ public:
 	~TinyToolWorld( ) = default;
 
 protected:
-	tiny_implement( void OnTick(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void OnTick( TinyGame* game, TinyToolbox& toolbox ) );
 
 private:
 	void DrawEntity( TinyGame* game, TinyECS& ecs, tiny_map_node<TinyEntity>& entity );

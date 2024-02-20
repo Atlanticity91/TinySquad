@@ -76,11 +76,7 @@ public:
 
 	TinyScript& SetPostTick( const tiny_string& function );
 
-	tiny_implement( void DisplayWidget(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 private:
 	void DisplayMeta( TinyGame* game, c_string label, TinyScriptMetadata& metadata );

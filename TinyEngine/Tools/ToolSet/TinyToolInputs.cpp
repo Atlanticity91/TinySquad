@@ -45,11 +45,7 @@ TinyToolInputs::TinyToolInputs( )
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolInputs::OnTick(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) { 
+void TinyToolInputs::OnTick( TinyGame* game, TinyToolbox& toolbox ) { 
     auto& inputs    = game->GetInputs( );
     auto& input_map = inputs.GetMap( );
 

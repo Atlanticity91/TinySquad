@@ -32,7 +32,7 @@ public:
 	tiny_implement( void RegisterInterop( TinyGame* game ) );
 
 protected:
-	tiny_implement( void PostTick( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( void PostTick( TinyGame* game ) );
 
 private:
 	tiny_vec4 ProcessTexture( 

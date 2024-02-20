@@ -47,18 +47,18 @@ public:
 
 	bool Initialize( TinyGame* game, TinyToolbox& toolbox );
 
-	void Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox );
+	void Tick( TinyGame* game, TinyToolbox& toolbox );
 
 	void Terminate( TinyGame* game );
 
 public:
 	template<typename Type, tiny_uint Alias>
 		requires tiny_is_child_of( Type, TinyToolCategory )
-	void Register( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox ) { 
+	void Register( TinyGame* game, TinyToolbox& toolbox ) { 
 		auto* category = new Type{ };
 
 		if ( category ) {
-			category->Create( game, engine, toolbox );
+			category->Create( game, toolbox );
 			
 			_categories.insert( Alias, category );
 		}

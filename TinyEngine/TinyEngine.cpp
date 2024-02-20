@@ -41,11 +41,8 @@ TinyEngine::TinyEngine( const tiny_string& title, TinyGameOrientations orientati
 	//_scenes{ },
 	_provider{ },
 	_addons{ },
-	_toolbox{ }
+	_toolbox{ } 
 { }
-
-void Test00( TinyGame* game, TinyScript* c ) { printf( "Hello Test 00\n" ); }
-void Test01( TinyGame* game, TinyScript* c ) { printf( "Hello Test 01\n" ); }
 
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 	auto game_config = TinyGameConfig{ };
@@ -71,9 +68,6 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 						{ TinyInputKey( KEY_GRAVE_ACCENT ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
 					} 
 				);
-
-				_natives._nRegister( Test00 );
-				_natives._nRegister( Test01 );
 			}
 		}
 	}
@@ -86,18 +80,18 @@ void TinyEngine::Stop( ) { _is_running = false; }
 void TinyEngine::PreTick( TinyGame* game ) {
 	_window.Tick( );
 	_addons.PreTick( game );
-	_ecs.PreTick( game, tiny_self );
+	_ecs.PreTick( game );
 }
 
 void TinyEngine::PostTick( TinyGame* game ) {
 	_graphics.Acquire( _window );
 	
 	_addons.PostTick( game );
-	_ecs.PostTick( game, tiny_self );
-	//_ux.Tick( game, tiny_self );
+	_ecs.PostTick( game );
+	//_ux.Tick( game );
 	_audio.Tick( _inputs );
 	_renderer.Compose( game );
-	_toolbox.Tick( game, tiny_self );
+	_toolbox.Tick( game );
 	_graphics.Present( _window );
 	_inputs.Tick( );
 }

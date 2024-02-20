@@ -37,9 +37,9 @@ public:
 
 	bool Remap( const tiny_string& component, tiny_uint target_id );
 
-	void Enable( TinyGame* game, TinyEngine& engine, const tiny_uint system_id );
+	void Enable( TinyGame* game, const tiny_uint system_id );
 
-	void Disable( TinyGame* game, TinyEngine& engine, const tiny_uint system_id );
+	void Disable( TinyGame* game, const tiny_uint system_id );
 
 	std::shared_ptr<TinyComponent> Create( 
 		const tiny_uint component_id, 
@@ -48,39 +48,35 @@ public:
 
 	TinyComponent* Append( 
 		TinyGame* game,
-		TinyEngine& engine, 
 		const tiny_hash entity_hash, 
 		const tiny_uint component_id 
 	);
 
 	bool Append(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_uint component_id,
 		std::shared_ptr<TinyComponent> component
 	);
 
 	bool Set( 
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_uint component_id,
 		std::shared_ptr<TinyComponent> component
 	);
 
 	void Remove( 
-		TinyGame* game, 
-		TinyEngine& engine, 
+		TinyGame* game,
 		const tiny_hash entity_hash,
 		const tiny_uint component_id 
 	);
 
-	void Kill( TinyGame* game, TinyEngine& engine, const tiny_hash entity_hash );
+	void Kill( TinyGame* game, const tiny_hash entity_hash );
 
 	void Clean( const tiny_list<TinyEntityGhost>& entities );
 
-	void PreTick( TinyGame* game, TinyEngine& engine );
+	void PreTick( TinyGame* games );
 
-	void PostTick( TinyGame* game, TinyEngine& engine );
+	void PostTick( TinyGame* game );
 
 	void Terminate( );
 

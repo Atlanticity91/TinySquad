@@ -71,6 +71,19 @@ bool TinyMaterial::Create(
 	return state;
 }
 
+void TinyMaterial::Submit(
+	TinyGraphicManager& graphics,
+	const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints,
+	const TinyGraphicPipelineDrawcall& draw_call
+) {
+	auto& work_context = graphics.GetWorkdContext( );
+	auto& logical	   = graphics.GetLogical( );
+
+	Mount( work_context );
+	Bind( logical, work_context, bindpoints );
+	Draw( work_context, draw_call );
+}
+
 void TinyMaterial::Terminate( 
 	TinyGame* game,
 	TinyAssetManager& assets, 

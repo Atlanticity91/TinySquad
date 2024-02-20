@@ -30,12 +30,8 @@ TinyToolCommon::TinyToolCommon( )
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolCommon::OnTick(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) {
-    auto& filesystem = engine.GetFilesystem( );
+void TinyToolCommon::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
+    auto& filesystem = game->GetFilesystem( );
 
     TinyImGui::Collapsing( 
         "Guizmo",
@@ -49,7 +45,7 @@ void TinyToolCommon::OnTick(
     TinyImGui::Collapsing( 
         "Graphics",
         [ & ]( ) {
-            auto& graphics = engine.GetGraphics( );
+            auto& graphics = game->GetGraphics( );
 
             if ( ImGui::Button( "ReCreate", { -1.f, 0.f } ) )
                 graphics.ReCreate( );
@@ -78,7 +74,7 @@ void TinyToolCommon::OnTick(
             auto& memory = TinyMemoryManager::GetSingleton( );
 
             auto occupancy = memory.GetOccupancy( );
-            auto capacity = memory.GetCapacity( );
+            auto capacity  = memory.GetCapacity( );
 
             TinyImGui::BeginVars( );
 
@@ -158,9 +154,9 @@ void TinyToolCommon::OnTick(
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyToolCommon::DrawHardware( TinyGraphicManager& graphics ) {
-    auto& physical = graphics.GetPhysical( );
+    auto& physical   = graphics.GetPhysical( );
     auto& properties = physical.GetProperties( );
-    auto vendor = physical.GetVendor( );
+    auto vendor      = physical.GetVendor( );
 
     char driver[ 128 ] = "";
     sprintf_s(

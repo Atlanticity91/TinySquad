@@ -44,7 +44,7 @@ public:
 	void SetCamera( const tiny_hash entity_hash );
 
 protected:
-	tiny_implement( void PostTick( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( void PostTick( TinyGame* game ) );
 
 public:
 	const TinyCameraProjection& GetProjection( ) const;

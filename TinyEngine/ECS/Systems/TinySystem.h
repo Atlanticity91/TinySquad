@@ -25,9 +25,8 @@
 tiny_enum( TinySystemFlags ) { 
 
 	TS_FLAG_IS_ACTIVE	 = TINY_LEFT_SHIFT( 0 ),
-	TS_FLAG_USE_CLEAN	 = TINY_LEFT_SHIFT( 1 ),
-	TS_FLAG_USE_PRETICK  = TINY_LEFT_SHIFT( 2 ),
-	TS_FLAG_USE_POSTTICK = TINY_LEFT_SHIFT( 3 ),
+	TS_FLAG_USE_PRETICK  = TINY_LEFT_SHIFT( 1 ),
+	TS_FLAG_USE_POSTTICK = TINY_LEFT_SHIFT( 2 ),
 
 };
 
@@ -43,19 +42,14 @@ protected:
 
 public:
 	TinySystem( ) 
-		: TinySystem{ false, false, false } 
+		: TinySystem{ false, false } 
 	{ };
 
 	TinySystem( bool use_pretick, bool use_posttick )
-		: TinySystem{ true, use_pretick, use_posttick }
-	{ };
-
-	TinySystem( bool use_clean, bool use_pretick, bool use_posttick )
 		: _flags{ 0 },
 		_components{ }
 	{ 
-		_flags = TS_FLAG_IS_ACTIVE				    | 
-				 use_clean    * TS_FLAG_USE_CLEAN   | 
+		_flags = TS_FLAG_IS_ACTIVE					|
 				 use_pretick  * TS_FLAG_USE_PRETICK |
 				 use_posttick * TS_FLAG_USE_POSTTICK;
 	};
@@ -64,27 +58,27 @@ public:
 
 	tiny_virtual( void RegisterInterop( TinyGame* game ) );
 
-	tiny_implement( void Enable( TinyGame* game, TinyEngine& engine ) ) { 
+	tiny_implement( void Enable( TinyGame* game ) ) { 
 		if ( !GetIsActive( ) ) {
 			_flags |= TS_FLAG_IS_ACTIVE;
 
-			OnEnable( game, engine );
+			OnEnable( game );
 		}
 	};
 
-	tiny_implement( void Disable( TinyGame* game, TinyEngine& engine ) ) {
+	tiny_implement( void Disable( TinyGame* game ) ) {
 		if ( GetIsActive( ) ) {
 			_flags ^= TS_FLAG_IS_ACTIVE;
 
-			OnDisable( game, engine );
+			OnDisable( game );
 		}
 	};
 
-	tiny_implement( void Toggle( TinyGame* game, TinyEngine& engine ) ) { 
+	tiny_implement( void Toggle( TinyGame* game ) ) { 
 		if ( GetIsActive( ) )
-			Disable( game, engine );
+			Disable( game );
 		else
-			Enable( game, engine );
+			Enable( game );
 	};
 
 	tiny_implement( std::shared_ptr<TinyComponent> Create( 
@@ -93,18 +87,14 @@ public:
 		return std::make_shared<Component>( entity_hash );
 	};
 
-	tiny_implement( TinyComponent* Append(
-		TinyGame* game,
-		TinyEngine& engine,
-		const tiny_hash entity_hash
-	) ) { 
+	tiny_implement( TinyComponent* Append( TinyGame* game, const tiny_hash entity_hash ) ) { 
 		auto comp_id = CreateID( entity_hash );
 
 		_components.insert( comp_id, { entity_hash } );
 
 		auto comp = tiny_rvalue( _components[ comp_id ] );
 
-		if ( !comp->Create( game, engine ) ) {
+		if ( !comp->Create( game ) ) {
 			_components.erase( comp_id );
 
 			comp = nullptr;
@@ -113,11 +103,7 @@ public:
 		return comp;
 	};
 
-	tiny_implement( bool Append(
-		TinyGame* game,
-		TinyEngine& engine,
-		std::shared_ptr<TinyComponent> component
-	) ) {
+	tiny_implement( bool Append( TinyGame* game, std::shared_ptr<TinyComponent> component ) ) {
 		auto entity_hash = component->GetOwner( );
 		auto comp_id	 = CreateID( entity_hash );
 
@@ -125,14 +111,10 @@ public:
 
 		Tiny::Memcpy( component.get( ), tiny_rvalue( _components[ comp_id ] ), tiny_sizeof( Component ) );
 
-		return _components[ comp_id ].Create( game, engine );
+		return _components[ comp_id ].Create( game );
 	};
 
-	tiny_implement( bool Set(
-		TinyGame* game,
-		TinyEngine& engine,
-		std::shared_ptr<TinyComponent> component
-	) ) { 
+	tiny_implement( bool Set( TinyGame* game, std::shared_ptr<TinyComponent> component ) ) { 
 		auto entity_hash = component->GetOwner( );
 		auto comp_id	 = FindID( entity_hash );
 		auto state		 = GetIsValid( comp_id ) && 
@@ -144,44 +126,33 @@ public:
 		return state;
 	};
 
-	tiny_implement( void Remove(
-		TinyGame* game,
-		TinyEngine& engine,
-		const tiny_hash entity_hash
-	) ) { 
+	tiny_implement( void Remove( TinyGame* game, const tiny_hash entity_hash ) ) { 
 		auto comp_id = FindID( entity_hash );
 
 		if ( GetIsValid( comp_id ) && _components[ comp_id ].GetOwner( ) == entity_hash )
-			_components[ comp_id ].Delete( game, engine );
+			_components[ comp_id ].Delete( game );
 	};
 
-	virtual void Clean( const tiny_list<TinyEntityGhost>& entities ) override {
-		for ( auto& ghost : entities ) {
-			auto entity_hash = ghost.Hash;
-			auto comp_id	 = FindID( entity_hash );
+	virtual void Erase( const TinyEntityGhost& ghost ) override {
+		auto comp_id = FindID( ghost.Hash );
 
-			if ( GetIsValid( comp_id ) && _components[ comp_id ].GetOwner( ) == entity_hash )
-				_components.erase( comp_id );
-		}
+		if ( GetIsValid( comp_id ) && _components[ comp_id ].GetOwner( ) == ghost.Hash )
+			_components.erase( comp_id );
 	};
 
-	tiny_virtual( void PreTick( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtual( void PreTick( TinyGame* game ) );
 
-	tiny_virtual( void PostTick( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtual( void PostTick( TinyGame* game ) );
 
 protected:
-	tiny_virtual( void OnEnable( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtual( void OnEnable( TinyGame* game ) );
 
-	tiny_virtual( void OnDisable( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtual( void OnDisable( TinyGame* game ) );
 
 public:
 	tiny_implement( bool GetIsActive( ) const ) { return ( _flags & TS_FLAG_IS_ACTIVE ); };
 
 	tiny_implement( tiny_string GetName( ) const ) { return Component::sGetName( ); };
-
-	tiny_implement( bool GetHasClean( ) const ) {
-		return ( _flags & TS_FLAG_IS_ACTIVE ) && ( _flags & TS_FLAG_USE_CLEAN);
-	};
 
 	tiny_implement( bool GetHasPreTick( ) const ) {
 		return ( _flags & TS_FLAG_IS_ACTIVE ) && ( _flags & TS_FLAG_USE_PRETICK );

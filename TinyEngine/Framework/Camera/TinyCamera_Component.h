@@ -37,15 +37,11 @@ public:
 
 	~TinyCamera( ) = default;
 
-	tiny_implement( bool Create( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( bool Create( TinyGame* game ) );
 
-	tiny_implement( void Delete( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( void Delete( TinyGame* game ) );
 
-	tiny_implement( void DisplayWidget( 
-		TinyGame* game, 
-		TinyEngine& engine,
-		TinyToolbox& toolbox 
-	) );
+	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 	tiny_mat4 Calculate( TinyECS& ecs );
 

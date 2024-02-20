@@ -53,11 +53,11 @@ void TinyAnim2DSystem::RegisterInterop( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyAnim2DSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
-	auto& inputs	 = engine.GetInputs( );
-	auto& assets	 = engine.GetAssets( );
+void TinyAnim2DSystem::PostTick( TinyGame* game ) {
+	auto& inputs	 = game->GetInputs( );
+	auto& assets	 = game->GetAssets( );
 	auto* animations = assets.GetAssetList<TinyAnimation2DManager>( );
-	auto& ecs		 = engine.GetECS( );
+	auto& ecs		 = game->GetECS( );
 
 	for ( auto& comp : _components ) {
 		if ( comp.GetIsActive( ) )

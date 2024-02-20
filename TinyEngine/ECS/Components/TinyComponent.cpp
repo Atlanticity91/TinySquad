@@ -32,34 +32,30 @@ TinyComponent::TinyComponent( const tiny_hash owner )
 	_owner{ owner } 
 { }
 
-void TinyComponent::Enable( TinyGame* game, TinyEngine& engine ) {
+void TinyComponent::Enable( TinyGame* game ) {
 	if ( !_is_active ) {
 		_is_active = true;
 
-		OnEnable( game, engine );
+		OnEnable( game );
 	}
 }
 
-void TinyComponent::Disable( TinyGame* game, TinyEngine& engine ) {
+void TinyComponent::Disable( TinyGame* game ) {
 	if ( _is_active ) {
 		_is_active = false;
 
-		OnDisable( game, engine );
+		OnDisable( game );
 	}
 }
 
-void TinyComponent::Toggle( TinyGame* game, TinyEngine& engine ) {
+void TinyComponent::Toggle( TinyGame* game ) {
 	if ( _is_active )
-		Disable( game, engine );
+		Disable( game );
 	else
-		Enable( game, engine );
+		Enable( game );
 }
 
-void TinyComponent::DisplayWidget(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) {
+void TinyComponent::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 	TinyImGui::Checkbox( "Is Active", _is_active );
 
 	ImGui::Separator( );

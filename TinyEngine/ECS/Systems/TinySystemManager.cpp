@@ -54,20 +54,12 @@ bool TinySystemManager::Remap( const tiny_string& component, tiny_uint target_id
 	return state;
 }
 
-void TinySystemManager::Enable( 
-	TinyGame* game, 
-	TinyEngine& engine, 
-	const tiny_uint system_id 
-) {
-	_systems[ system_id ]->Enable( game, engine );
+void TinySystemManager::Enable( TinyGame* game, const tiny_uint system_id ) {
+	_systems[ system_id ]->Enable( game );
 }
 
-void TinySystemManager::Disable( 
-	TinyGame* game, 
-	TinyEngine& engine, 
-	const tiny_uint system_id 
-) {
-	_systems[ system_id ]->Disable( game, engine );
+void TinySystemManager::Disable( TinyGame* game, const tiny_uint system_id ) {
+	_systems[ system_id ]->Disable( game );
 }
 
 std::shared_ptr<TinyComponent> TinySystemManager::Create( 
@@ -79,67 +71,65 @@ std::shared_ptr<TinyComponent> TinySystemManager::Create(
 
 TinyComponent* TinySystemManager::Append(
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_hash entity_hash, 
 	const tiny_uint component_id 
 ) {
-	return _systems[ component_id ]->Append( game, engine, entity_hash );
+	return _systems[ component_id ]->Append( game, entity_hash );
 }
 
 bool TinySystemManager::Append(
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_uint component_id,
 	std::shared_ptr<TinyComponent> component
 ) {
-	return _systems[ component_id ]->Append( game, engine, component );
+	return _systems[ component_id ]->Append( game, component );
 }
 
 bool TinySystemManager::Set(
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_uint component_id,
 	std::shared_ptr<TinyComponent> component
 ) {
-	return _systems[ component_id ]->Set( game, engine, component );
+	return _systems[ component_id ]->Set( game, component );
 }
 
 void TinySystemManager::Remove( 
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_hash entity_hash, 
 	const tiny_uint component_id
 ) {
-	_systems[ component_id ]->Remove( game, engine, entity_hash );
+	_systems[ component_id ]->Remove( game, entity_hash );
 }
 
-void TinySystemManager::Kill( 
-	TinyGame* game, 
-	TinyEngine& engine, 
-	const tiny_hash entity_hash
-) {
+void TinySystemManager::Kill( TinyGame* game, const tiny_hash entity_hash ) {
 	for ( auto& system : _systems )
-		system->Remove( game, engine, entity_hash );
+		system->Remove( game, entity_hash );
 }
 
 void TinySystemManager::Clean( const tiny_list<TinyEntityGhost>& entities ) {
-	for ( auto& system : _systems ) {
-		if ( system->GetHasClean( ) )
-			system->Clean( entities );
+	for ( auto& ghost : entities ) {
+		if ( ghost.ComponentID == TINY_UINT_MAX ) {
+			for ( auto* system : _systems ) 
+				system->Erase( ghost );
+		} else {
+			auto* system = _systems.at( ghost.ComponentID );
+
+			system->Erase( ghost );
+		}
 	}
 }
 
-void TinySystemManager::PreTick( TinyGame* game, TinyEngine& engine ) {
+void TinySystemManager::PreTick( TinyGame* game ) {
 	for ( auto& system : _systems ) {
 		if ( system->GetHasPreTick( ) )
-			system->PreTick( game, engine );
+			system->PreTick( game );
 	}
 }
 
-void TinySystemManager::PostTick( TinyGame* game, TinyEngine& engine ) {
+void TinySystemManager::PostTick( TinyGame* game ) {
 	for ( auto& system : _systems ) {
 		if ( system->GetHasPostTick( ) )
-			system->PostTick( game, engine );
+			system->PostTick( game );
 	}
 }
 

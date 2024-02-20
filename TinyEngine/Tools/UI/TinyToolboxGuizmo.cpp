@@ -94,7 +94,6 @@ void TinyToolboxGuizmo::DrawUI( TinyGame* game ) {
     if ( ecs.GetIsAlive( _selection ) ) {
         auto* snap_target = PeekSnapTarget( );
         auto& io          = ImGui::GetIO( );
-        auto& ecs         = game->GetECS( );
         auto* cameras     = ecs.GetSystemAs<TinyCameraSystem>( );
         auto* transform   = ecs.GetComponentAs<TinyTransform2D>( _selection );
         auto& view        = cameras->GetViewMatrix( );

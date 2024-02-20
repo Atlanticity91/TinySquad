@@ -41,7 +41,7 @@ tli_implementfn( TinyLua::Transform2D::Destroy ) {
 	auto* game = tli_get_game( tli_param_two );
 
 	if ( comp && game ) 
-		game->GetECS( ).Remove( game, game->GetEngine( ), comp );
+		game->GetECS( ).Remove( game, comp );
 
 	return 0;
 }

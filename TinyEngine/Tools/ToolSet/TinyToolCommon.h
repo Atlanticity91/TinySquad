@@ -30,11 +30,7 @@ public:
 	~TinyToolCommon( ) = default;
 
 protected:
-	tiny_implement( void OnTick( 
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox 
-	) );
+	tiny_implement( void OnTick( TinyGame* game, TinyToolbox& toolbox ) );
 
 private:
 	void DrawHardware( TinyGraphicManager& graphics );

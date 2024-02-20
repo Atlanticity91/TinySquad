@@ -53,11 +53,11 @@ void TinySkin2DSystem::RegisterInterop( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinySkin2DSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
+void TinySkin2DSystem::PostTick( TinyGame* game ) {
 	auto draw_context = TinyRenderDraw2DContext{ };
-	auto& renderer	  = engine.GetRenderer( );
-	auto& assets	  = engine.GetAssets( );
-	auto& ecs		  = engine.GetECS( );
+	auto& renderer	  = game->GetRenderer( );
+	auto& assets	  = game->GetAssets( );
+	auto& ecs		  = game->GetECS( );
 	auto* cameras	  = ecs.GetSystemAs<TinyCameraSystem>( );
 
 	if ( !cameras )
@@ -125,7 +125,6 @@ void TinySkin2DSystem::Draw(
 	TinyRenderBatchManager& batchs
 ) {
 	auto vertex_count = tiny_cast( 0, tiny_uint );
-	auto work_context = graphics.GetWorkdContext( );
 	auto* material	  = batchs.GetMaterial( assets );
 	auto textures	  = batchs.FlushTextures( );
 
@@ -135,7 +134,7 @@ void TinySkin2DSystem::Draw(
 		auto copies	   = batchs.Flush2D( context, vertex_count );
 
 		if ( vertex_count > 0 ) {
-			auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_DECODE };
+			auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
 
 			burner.Upload( stagging, uniforms.GetUniform( "ubo_transforms" ), copies[ 0 ] );
 			burner.Upload( stagging, uniforms.GetUniform( "ubo_sprites" ), copies[ 1 ] );
@@ -143,6 +142,8 @@ void TinySkin2DSystem::Draw(
 	}
 
 	if ( vertex_count > 0 ) {
+		auto work_context = graphics.GetWorkdContext( );
+
 		material->Mount( work_context );
 		material->Bind(
 			graphics.GetLogical( ),
@@ -150,12 +151,15 @@ void TinySkin2DSystem::Draw(
 			{
 				uniforms.GetUniform( "ubo_context" ),
 				uniforms.GetUniform( "ubo_transforms" ),
-				uniforms.GetUniform( "ubo_sprites" ),
-				( (TinyGraphicPipelineBindpoint*)batchs.GetTextures( ).GetData( ) )[ 0 ]
+				uniforms.GetUniform( "ubo_sprites" )
 			}
 		);
-
-		//material->Bind( graphics.GetLogical( ), context, );
+		material->Bind(
+			graphics.GetLogical( ),
+			work_context,
+			textures.Count,
+			tiny_cast( textures.Values, TinyGraphicPipelineBindpoint* )
+		);
 		material->Draw( work_context, { TGD_MODE_DIRECT, 6, vertex_count } );
 	}
 }

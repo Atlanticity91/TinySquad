@@ -66,7 +66,7 @@ void TinyTransform2DSystem::RegisterInterop( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyTransform2DSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
+void TinyTransform2DSystem::PostTick( TinyGame* game ) {
 	for ( auto& comp : _components )
 		comp.ReCalculate( );
 }

@@ -32,13 +32,13 @@ public:
 
 	virtual ~TinyToolCategory( ) = default;
 
-	tiny_virtual( void Create( TinyGame* game, TinyEngine& engine,TinyToolbox& toolbox ) );
+	tiny_virtual( void Create( TinyGame* game, TinyToolbox& toolbox ) );
 
-	virtual bool Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox );
+	virtual bool Tick( TinyGame* game, TinyToolbox& toolbox );
 
-	tiny_virtual( void Terminate( TinyGame* game, TinyEngine& engine ) );
+	tiny_virtual( void Terminate( TinyGame* game ) );
 
 protected:
-	tiny_virtual( void OnTick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox ) );
+	tiny_virtual( void OnTick( TinyGame* game, TinyToolbox& toolbox ) );
 
 };

@@ -45,7 +45,7 @@ tli_implementfn( TinyLua::Entity::Kill ) {
 		auto* game = tli_get_game( tli_param_two );
 
 		if ( hash && game ) 
-			game->GetECS( ).Kill( game, game->GetEngine( ), hash );
+			game->GetECS( ).Kill( game, hash );
 	}
 
 	return 1;
@@ -65,7 +65,7 @@ tli_implementfn( TinyLua::Entity::AddComp ) {
 		if ( hash && game ) {
 			auto comp_name = tiny_string{ lua_tostring( context, tli_param_three ) };
 
-			state = game->GetECS( ).Append( game, game->GetEngine( ), hash, comp_name ) != nullptr;
+			state = game->GetECS( ).Append( game, hash, comp_name ) != nullptr;
 		}
 	}
 	
@@ -86,7 +86,7 @@ tli_implementfn( TinyLua::Entity::RemComp ) {
 		if ( hash && game ) {
 			auto comp_name = tiny_string{ lua_tostring( context, tli_param_three ) };
 
-			game->GetECS( ).Remove( game, game->GetEngine( ), hash, comp_name );
+			game->GetECS( ).Remove( game, hash, comp_name );
 		}
 	}
 

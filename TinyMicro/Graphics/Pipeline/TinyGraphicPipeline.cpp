@@ -147,6 +147,31 @@ void TinyGraphicPipeline::Bind(
 	}
 }
 
+void TinyGraphicPipeline::Bind(
+	TinyGraphicLogical& logical,
+	TinyGraphicWorkContext& work_context,
+	tiny_uint count,
+	TinyGraphicPipelineBindpoint* bindpoints
+) {
+	auto descriptors = tiny_list<VkWriteDescriptorSet>{ };
+
+	descriptors = count;
+
+	while ( count-- > 0 ) {
+		GrabBindpoint(
+			descriptors[ count ],
+			tiny_lvalue( bindpoints + count ),
+			work_context.WorkID
+		);
+	}
+
+	vkUpdateDescriptorSets(
+		logical,
+		descriptors.size( ), descriptors.data( ),
+		0, VK_NULL_HANDLE
+	);
+}
+
 void TinyGraphicPipeline::Draw(
 	TinyGraphicWorkContext& work_context,
 	const TinyGraphicPipelineDrawcall& draw_call

@@ -30,11 +30,7 @@ TinyToolRender::TinyToolRender( )
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolRender::OnTick(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) {
+void TinyToolRender::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
 	TinyImGui::BeginVars( );
 
 	TinyImGui::InputScalar( "Pixelization", 0 );

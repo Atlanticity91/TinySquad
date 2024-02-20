@@ -35,12 +35,12 @@ TinySkin2D::TinySkin2D( const tiny_hash entity_hash )
 	_sprite{ 0, 0 }
 { }
 
-bool TinySkin2D::Create( TinyGame* game, TinyEngine& engine ) {
-	auto& ecs  = engine.GetECS( );
+bool TinySkin2D::Create( TinyGame* game ) {
+	auto& ecs  = game->GetECS( );
 	auto state = ecs.GetHasComponent( _owner, "TinyTransform2D" );
 
 	if ( !state )
-		state = ecs.Append( game, engine, _owner, "TinyTransform2D" ) != nullptr;
+		state = ecs.Append( game, _owner, "TinyTransform2D" ) != nullptr;
 
 	return state;
 }
@@ -64,19 +64,15 @@ TinySkin2D& TinySkin2D::SetSprite( tiny_uint column, tiny_uint row ) {
 	return tiny_self;
 }
 
-void TinySkin2D::Delete( TinyGame* game, TinyEngine& engine ) { 
-	auto& ecs = engine.GetECS( );
+void TinySkin2D::Delete( TinyGame* game ) { 
+	auto& ecs = game->GetECS( );
 
 	if ( ecs.GetHasComponent( _owner, "TinyAnim2D" ) )
-		ecs.Remove( game, engine, _owner, "TinyAnim2D" );
+		ecs.Remove( game, _owner, "TinyAnim2D" );
 }
 
-void TinySkin2D::DisplayWidget(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) {
-	TinyComponent::DisplayWidget( game, engine, toolbox );
+void TinySkin2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
+	TinyComponent::DisplayWidget( game, toolbox );
 
 	toolbox.DisplayAsset( game, "Material", _material );
 	toolbox.DisplayAsset( game, "Texture", _texture );

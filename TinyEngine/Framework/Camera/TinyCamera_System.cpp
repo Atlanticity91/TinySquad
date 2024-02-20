@@ -53,15 +53,15 @@ void TinyCameraSystem::SetCamera( const tiny_hash entity_hash ) {
 	_camera_comp = GetComponentID( entity_hash );
 }
 
-void TinyCameraSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
-	auto& graphics   = engine.GetGraphics( );
+void TinyCameraSystem::PostTick( TinyGame* game ) {
+	auto& graphics   = game->GetGraphics( );
 	auto& boundaries = graphics.GetBoundaries( );
 	auto* camera	 = tiny_cast( nullptr, TinyComponent* );
 	
 	_projection.Calculate( boundaries );
 
 	if ( GetComponent( _camera_comp, camera ) ) {
-		auto& ecs = engine.GetECS( );
+		auto& ecs = game->GetECS( );
 
 		_view = tiny_cast( camera, TinyCamera* )->Calculate( ecs );
 	} else

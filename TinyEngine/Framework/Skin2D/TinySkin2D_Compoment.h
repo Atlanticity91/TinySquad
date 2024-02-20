@@ -37,7 +37,7 @@ public:
 
 	~TinySkin2D( ) = default;
 
-	tiny_implement( bool Create( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( bool Create( TinyGame* game ) );
 
 	tiny_inline TinySkin2D& SetSpriteColumn( tiny_uint column );
 
@@ -47,13 +47,9 @@ public:
 
 	TinySkin2D& SetSprite( tiny_uint column, tiny_uint row );
 
-	tiny_implement( void Delete( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( void Delete( TinyGame* game ) );
 
-	tiny_implement( void DisplayWidget(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 public:
 	TINY_COMP_NAME( TinySkin2D );

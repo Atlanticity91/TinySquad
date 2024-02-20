@@ -48,7 +48,7 @@ public:
 
 	~TinyAnim2D( ) = default;
 
-	tiny_implement( bool Create( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( bool Create( TinyGame* game ) );
 
 	TinyAnim2D& SetCollection( TinyGame* game, const tiny_string& collection );
 
@@ -62,13 +62,9 @@ public:
 
 	void Tick( TinyAnimation2DManager* animations, TinyInputManager& inputs, TinyECS& ecs );
 
-	tiny_implement( void Delete( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( void Delete( TinyGame* game ) );
 
-	tiny_implement( void DisplayWidget(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 private:
 	void SetFrame( 

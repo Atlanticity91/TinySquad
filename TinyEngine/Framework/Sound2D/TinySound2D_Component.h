@@ -36,9 +36,9 @@ public:
 
 	~TinySound2D( ) = default;
 
-	tiny_implement( bool Create( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( bool Create( TinyGame* game ) );
 
-	tiny_implement( void Delete( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( void Delete( TinyGame* game ) );
 
 	bool SetCue( TinyGame* game, const tiny_string& cue_name );
 
@@ -48,11 +48,7 @@ public:
 
 	void Stop( TinyGame* game );
 
-	tiny_implement( void DisplayWidget(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 public:
 	TINY_COMP_NAME( TinySound2D );

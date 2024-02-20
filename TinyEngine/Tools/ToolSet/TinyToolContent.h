@@ -51,11 +51,7 @@ public:
 
 	~TinyToolContent( ) = default;
 
-	tiny_implement( void Create( 
-		TinyGame* game, 
-		TinyEngine& engine, 
-		TinyToolbox& toolbox 
-	) );
+	tiny_implement( void Create( TinyGame* game, TinyToolbox& toolbox ) );
 
 	bool OpenAssetEditor( TinyGame* game, const tiny_string& asset_name );
 
@@ -68,11 +64,7 @@ public:
 	void RenderEditors( TinyGame* game );
 
 protected:
-	tiny_implement( void OnTick(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void OnTick( TinyGame* game, TinyToolbox& toolbox ) );
 
 public:
 	template<typename Type, tiny_uint AssetType>

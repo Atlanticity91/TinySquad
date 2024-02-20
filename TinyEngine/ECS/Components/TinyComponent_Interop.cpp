@@ -30,7 +30,7 @@ tiny_int TinyLua::Component::Create( lua_State* context, const tiny_string& name
 		auto* name_str = name.as_chars( );
 		auto hash	   = Component::GetHash( context, tli_param_two );
 
-		game->GetECS( ).Append( game, game->GetEngine( ), hash, name_str );
+		game->GetECS( ).Append( game, hash, name_str );
 	} else
 		lua_pushnil( context );
 

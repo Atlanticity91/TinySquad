@@ -32,36 +32,28 @@ bool TinyECS::Remap( const tiny_string& component, tiny_uint target_id ) {
 	return _systems.Remap( component, target_id );
 }
 
-void TinyECS::Enable( TinyGame* game, TinyEngine& engine, const tiny_string& component ) {
+void TinyECS::Enable( TinyGame* game, const tiny_string& component ) {
 	auto component_id = tiny_cast( 0, tiny_uint );
 
 	if ( _systems.GetComponentID( component, component_id ) )
-		_systems.Enable( game, engine, component_id );
+		_systems.Enable( game, component_id );
 }
 
-void TinyECS::Enable( 
-	TinyGame* game,
-	TinyEngine& engine,
-	tiny_init<tiny_string> components 
-) {
+void TinyECS::Enable( TinyGame* game, tiny_init<tiny_string> components ) {
 	for ( auto& component : components )
-		Enable( game, engine, component );
+		Enable( game, component );
 }
 
-void TinyECS::Disable( TinyGame* game, TinyEngine& engine, const tiny_string& component ) {
+void TinyECS::Disable( TinyGame* game, const tiny_string& component ) {
 	auto component_id = tiny_cast( 0, tiny_uint );
 
 	if ( _systems.GetComponentID( component, component_id ) )
-		_systems.Disable( game, engine, component_id );
+		_systems.Disable( game, component_id );
 }
 
-void TinyECS::Disable( 
-	TinyGame* game,
-	TinyEngine& engine,
-	tiny_init<tiny_string> components
-) {
+void TinyECS::Disable( TinyGame* game, tiny_init<tiny_string> components ) {
 	for ( auto& component : components )
-		Disable( game, engine, component );
+		Disable( game, component );
 }
 
 tiny_uint TinyECS::Create( const tiny_string& entity_name ) {
@@ -113,27 +105,27 @@ bool TinyECS::Rename( const tiny_uint entity_id, const tiny_string& new_name ) {
 	return state;
 }
 
-void TinyECS::Kill( TinyGame* game, TinyEngine& engine, const tiny_string& entity_name ) {
+void TinyECS::Kill( TinyGame* game, const tiny_string& entity_name ) {
 	auto entity_hash = tiny_hash{ entity_name };
 
-	return Kill( game, engine, entity_hash );
+	return Kill( game, entity_hash );
 }
 
-void TinyECS::Kill( TinyGame* game, TinyEngine& engine, const tiny_hash entity_hash ) {
+void TinyECS::Kill( TinyGame* game, const tiny_hash entity_hash ) {
 	auto entity_id = tiny_cast( 0, tiny_uint );
 
 	if ( _entities.GetEntityID( entity_hash, entity_id ) ) {
 		_entities.Kill( entity_id );
-		_systems.Kill( game, engine, entity_hash );
+		_systems.Kill( game, entity_hash );
 	}
 }
 
-void TinyECS::Kill( TinyGame* game, TinyEngine& engine, const tiny_uint entity_id ) {
+void TinyECS::Kill( TinyGame* game, const tiny_uint entity_id ) {
 	auto entity_hash = tiny_hash{ };
 
 	if ( _entities.GetEntityHash( entity_id, entity_hash ) ) {
 		_entities.Kill( entity_id );
-		_systems.Kill( game, engine, entity_hash );
+		_systems.Kill( game, entity_hash );
 	}
 }
 
@@ -330,7 +322,6 @@ std::shared_ptr<TinyComponent> TinyECS::CreateComponent(
 
 TinyComponent* TinyECS::Append( 
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_string& entity_name,
 	const tiny_string& component
 ) {
@@ -338,14 +329,13 @@ TinyComponent* TinyECS::Append(
 	auto* comp     = tiny_cast( nullptr, TinyComponent* );
 
 	if ( GetEntityID( entity_name, entity_id ) )
-		comp = Append( game, engine, entity_id, component );
+		comp = Append( game, entity_id, component );
 
 	return comp;
 }
 
 TinyComponent* TinyECS::Append(
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_hash entity_hash,
 	const tiny_string& component 
 ) {
@@ -353,12 +343,11 @@ TinyComponent* TinyECS::Append(
 	
 	_entities.GetEntityID( entity_hash, entity_id );
 
-	return Append( game, engine, entity_id, component );
+	return Append( game, entity_id, component );
 }
 
 TinyComponent* TinyECS::Append(
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_uint entity_id,
 	const tiny_string& component
 ) {
@@ -370,7 +359,7 @@ TinyComponent* TinyECS::Append(
 		_systems.GetComponentID( component, comp_id ) &&
 		_entities.Append( entity_id, comp_id, entity_hash )
 	) {
-		comp = _systems.Append( game, engine, entity_hash, comp_id );
+		comp = _systems.Append( game, entity_hash, comp_id );
 
 		if ( !comp )
 			_entities.Remove( entity_id, comp_id );
@@ -379,11 +368,7 @@ TinyComponent* TinyECS::Append(
 	return comp;
 }
 
-bool TinyECS::Append(
-	TinyGame* game,
-	TinyEngine& engine,
-	std::shared_ptr<TinyComponent> component
-) {
+bool TinyECS::Append( TinyGame* game, std::shared_ptr<TinyComponent> component ) {
 	auto state = component.use_count( ) > 0;
 
 	if ( state ) {
@@ -399,20 +384,16 @@ bool TinyECS::Append(
 			if ( !_entities.GetHasComponent( entity_id, comp_id ) ) {
 				_entities.Append( entity_id, comp_id, entity_hash );
 
-				state = _systems.Append( game, engine, comp_id, component );
+				state = _systems.Append( game, comp_id, component );
 			} else
-				state = _systems.Set( game, engine, comp_id, component );
+				state = _systems.Set( game, comp_id, component );
 		}
 	}
 
 	return state;
 }
 
-bool TinyECS::Set(
-	TinyGame* game,
-	TinyEngine& engine,
-	std::shared_ptr<TinyComponent> component
-) {
+bool TinyECS::Set( TinyGame* game, std::shared_ptr<TinyComponent> component ) {
 	auto state = component.use_count( ) > 0;
 
 	if ( state ) {
@@ -424,7 +405,7 @@ bool TinyECS::Set(
 		state = _entities.GetEntityID( entity_hash, entity_id ) &&
 				_systems.GetComponentID( comp_name, comp_id )   &&
 				_entities.GetHasComponent( entity_id, comp_id ) &&
-				_systems.Set( game, engine, comp_id, component );
+				_systems.Set( game, comp_id, component );
 	}
 
 	return state;
@@ -432,31 +413,28 @@ bool TinyECS::Set(
 
 void TinyECS::Remove(
 	TinyGame* game, 
-	TinyEngine& engine,
 	const tiny_string& name, 
 	const tiny_string& component 
 ) {
 	auto entity_id = tiny_cast( 0, tiny_uint );
 
 	if ( _entities.GetEntityID( name, entity_id ) )
-		Remove( game, engine, entity_id, component );
+		Remove( game, entity_id, component );
 }
 
 void TinyECS::Remove(
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_hash entity_hash,
 	const tiny_string& component
 ) {
 	auto entity_id = tiny_cast( 0, tiny_uint );
 
 	if ( _entities.GetEntityID( entity_hash, entity_id ) )
-		Remove( game, engine, entity_id, component );
+		Remove( game, entity_id, component );
 }
 
 void TinyECS::Remove(
 	TinyGame* game,
-	TinyEngine& engine,
 	const tiny_uint entity_id,
 	const tiny_string& component
 ) {
@@ -468,34 +446,30 @@ void TinyECS::Remove(
 		_entities.GetEntityHash( entity_id, entity_hash )
 	) {
 		_entities.Remove( entity_id, comp_id );
-		_systems.Remove( game, engine, entity_hash, comp_id );
+		_systems.Remove( game, entity_hash, comp_id );
 	}
 }
 
-void TinyECS::Remove(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyComponent* component
-) {
+void TinyECS::Remove( TinyGame* game, TinyComponent* component ) {
 	if ( component ) {
 		auto owner = component->GetOwner( );
 		auto name  = component->GetName( );
 
-		Remove( game, engine, owner, name );
+		Remove( game, owner, name );
 	}
 }
 
-void TinyECS::PreTick( TinyGame* game, TinyEngine& engine ) {
+void TinyECS::PreTick( TinyGame* game ) {
 	auto& entities = _entities.GetRemoved( );
 
 	_systems.Clean( entities ); 
 	_entities.Clean( );
 
-	_systems.PreTick( game, engine );
+	_systems.PreTick( game );
 }
 
-void TinyECS::PostTick( TinyGame* game, TinyEngine& engine ) {
-	_systems.PostTick( game, engine );
+void TinyECS::PostTick( TinyGame* game ) {
+	_systems.PostTick( game );
 }
 
 void TinyECS::Terminate( ) { _systems.Terminate( ); }

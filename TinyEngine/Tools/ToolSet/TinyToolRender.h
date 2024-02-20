@@ -30,10 +30,6 @@ public:
 	~TinyToolRender( ) = default;
 
 protected:
-	tiny_implement( void OnTick(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void OnTick( TinyGame* game, TinyToolbox& toolbox ) );
 
 };

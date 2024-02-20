@@ -27,12 +27,12 @@ TinyToolCategory::TinyToolCategory( const tiny_string& name )
     : _name{ name }
 { }
 
-bool TinyToolCategory::Tick( TinyGame* game, TinyEngine& engine, TinyToolbox& toolbox ) {
+bool TinyToolCategory::Tick( TinyGame* game, TinyToolbox& toolbox ) {
     auto* name_str = _name.as_chars( );
     auto state     = ImGui::BeginTabItem( name_str );
     
     if ( state ) {
-        OnTick( game, engine, toolbox );
+        OnTick( game, toolbox );
 
         ImGui::EndTabItem( );
     }

@@ -38,14 +38,10 @@ public:
 	void MarkUnSaved( );
 
 protected:
-	tiny_implement( void OnTick(
-		TinyGame* game,
-		TinyEngine& engine,
-		TinyToolbox& toolbox
-	) );
+	tiny_implement( void OnTick( TinyGame* game, TinyToolbox& toolbox ) );
 
 private:
-	void DrawSystems( TinyGame* game, TinyEngine& engine, TinyECS& ecs );
+	void DrawSystems( TinyGame* game, TinyECS& ecs );
 
 	void DrawGenerals( );
 

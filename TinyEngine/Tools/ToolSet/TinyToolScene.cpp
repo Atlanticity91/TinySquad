@@ -34,15 +34,11 @@ void TinyToolScene::MarkUnSaved( ) { _has_changed = true; }
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolScene::OnTick(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) {
-    auto& filesystem = engine.GetFilesystem( );
-    auto& assets     = engine.GetAssets( );
+void TinyToolScene::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
+    auto& filesystem = game->GetFilesystem( );
+    auto& assets     = game->GetAssets( );
     auto& registry   = assets.GetRegistry( );
-    auto& ecs        = engine.GetECS( );
+    auto& ecs        = game->GetECS( );
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
@@ -64,7 +60,7 @@ void TinyToolScene::OnTick(
 
     ImGui::SeparatorText( "Systems" );
 
-	DrawSystems( game, engine, ecs );
+	DrawSystems( game, ecs );
 
 	ImGui::SeparatorText( "Generals" );
 
@@ -74,10 +70,10 @@ void TinyToolScene::OnTick(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolScene::DrawSystems( TinyGame* game, TinyEngine& engine, TinyECS& ecs ) {
+void TinyToolScene::DrawSystems( TinyGame* game, TinyECS& ecs ) {
 	auto& systems	  = ecs.GetSystems( );
 	auto system_count = systems.size( );
-	auto system_id = tiny_cast( 0, tiny_uint );
+	auto system_id	  = tiny_cast( 0, tiny_uint );
 
 	while ( system_id < system_count ) {
 		auto* system   = systems[ system_id ];
@@ -106,7 +102,7 @@ void TinyToolScene::DrawSystems( TinyGame* game, TinyEngine& engine, TinyECS& ec
 
 		TINY_IMGUI_SCOPE_ID(
 			if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH, button_size ) )
-				system->Toggle( game, engine );
+				system->Toggle( game );
 		);
 
 		ImGui::SameLine( );

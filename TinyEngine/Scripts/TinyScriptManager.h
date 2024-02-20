@@ -90,7 +90,7 @@ private:
 
 public:
 	template<typename Type>
-	void SetGlobal( const tiny_string & name, Type * value ) {
+	void SetGlobal( const tiny_string& name, Type* value ) {
 		_context.SetGlobal<Type>( name, value );
 	};
 

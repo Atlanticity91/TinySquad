@@ -85,12 +85,8 @@ TinyScript& TinyScript::SetPostTick( const tiny_string& function ) {
 	return tiny_self;
 }
 
-void TinyScript::DisplayWidget(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) {
-	TinyComponent::DisplayWidget( game, engine, toolbox );
+void TinyScript::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
+	TinyComponent::DisplayWidget( game, toolbox );
 
 	TinyImGui::EndVars( );
 

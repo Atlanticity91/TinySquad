@@ -42,7 +42,7 @@ void TinyProduction::LoadContent( TinyAssetManager& assets ) {
 void TinyProduction::LoadECS( TinyECS& ecs ) {
 	// DEFAULT ECS SETUP CODE HERE
 	// LOAD DEFAULT 2D CONFIGURATION
-	LoadDefault2D( ecs );
+	TinyGame::LoadDefault2D( ecs );
 }
 
 void TinyProduction::Tick( ) {

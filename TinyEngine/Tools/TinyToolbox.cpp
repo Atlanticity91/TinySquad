@@ -197,8 +197,10 @@ void TinyToolbox::DisplayAsset(
     }
 }
 
-void TinyToolbox::Tick( TinyGame* game, TinyEngine& engine ) {
-    if ( engine.GetInputs( ).Evaluate( "Show Dev", true ) )
+void TinyToolbox::Tick( TinyGame* game ) {
+    auto& inputs = game->GetInputs( );
+
+    if ( inputs.Evaluate( "Show Dev", true ) )
         _is_in_use = !_is_in_use;
 
     if ( _is_in_use ) {
@@ -213,12 +215,13 @@ void TinyToolbox::Tick( TinyGame* game, TinyEngine& engine ) {
 
         ImGui::ShowDemoWindow( tiny_rvalue( _show_exemples ) );
 
-        _tools.Tick( game, engine, tiny_self );
+        _tools.Tick( game, tiny_self );
 
         ImGui::Render( );
 
         auto* draw_data    = ImGui::GetDrawData( );
-        auto& work_context = engine.GetGraphics( ).GetWorkdContext( );
+        auto& graphics     = game->GetGraphics( );
+        auto& work_context = graphics.GetWorkdContext( );
 
         ImGui_ImplVulkan_RenderDrawData( draw_data, work_context.Queue->CommandBuffer );
     }
@@ -426,10 +429,10 @@ void TinyToolbox::CreateDevDir( TinyGame* game ) {
         material.Descriptors[ 1 ] = 2;
         material.Descriptors[ 2 ] = 1;
 
-        _TinyCreateSetBind( material.Descriptors[ 0 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _TinyCreateSetBind( material.Descriptors[ 1 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _TinyCreateSetBind( material.Descriptors[ 1 ], 1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _TinyCreateSetBind( material.Descriptors[ 2 ], 0, TGBP_TYPE_COMBINED, TGS_STAGE_FRAGMENT );
+        _pCreateSetBind( material.Descriptors[ 0 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _pCreateSetBind( material.Descriptors[ 1 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _pCreateSetBind( material.Descriptors[ 1 ], 1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _pCreateSetBind( material.Descriptors[ 2 ], 0, TGBP_TYPE_COMBINED, TGS_STAGE_FRAGMENT );
 
         auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
 

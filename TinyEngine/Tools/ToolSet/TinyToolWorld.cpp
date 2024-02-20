@@ -33,12 +33,8 @@ TinyToolWorld::TinyToolWorld( )
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolWorld::OnTick(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) {
-	auto& ecs = engine.GetECS( );
+void TinyToolWorld::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
+	auto& ecs = game->GetECS( );
 
 	DrawNewEntity( ecs );
 
@@ -48,7 +44,7 @@ void TinyToolWorld::OnTick(
 		DrawEntity( game, ecs, entity );
 
 	if ( _delete_hash ) {
-		ecs.Kill( game, game->GetEngine( ), _delete_hash );
+		ecs.Kill( game, _delete_hash );
 
 		if ( toolbox.GetGuizmoSelection( ) == _delete_hash )
 			toolbox.HideGuizmo( );
@@ -72,7 +68,6 @@ void TinyToolWorld::DrawEntity(
 	auto entity_name = tiny_buffer<32>{ entity.String };
 	auto* name_str   = entity_name.as_chars( );
 	auto region		 = ImGui::GetContentRegionAvail( );
-	auto& engine	 = game->GetEngine( );
 	auto& toolbox	 = game->GetToolbox( );
 
 	if ( entity.Hash == toolbox.GetGuizmoSelection( ) )
@@ -105,7 +100,7 @@ void TinyToolWorld::DrawEntity(
 			if ( ImGui::BeginPopup( "AddComp" ) ) {
 				for ( auto& comp : add_components ) {
 					if ( ImGui::Button( comp.get( ) ) ) {
-						ecs.Append( game, engine, entity.Hash, comp );
+						ecs.Append( game, entity.Hash, comp );
 
 						ImGui::CloseCurrentPopup( );
 					}
@@ -128,17 +123,17 @@ void TinyToolWorld::DrawEntity(
 				auto button_size = TinyImGui::CalcTextSize( TF_ICON_EYE_SLASH );
 
 				if ( TinyImGui::Button( is_active ? TF_ICON_EYE : TF_ICON_EYE_SLASH, button_size ) )
-					component->Toggle( game, engine );
+					component->Toggle( game );
 
 				ImGui::SameLine( region.x - line_height * 1.8f );
 
 				if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
-					ecs.Remove( game, engine, entity.Hash, comp_name );
+					ecs.Remove( game, entity.Hash, comp_name );
 
 				if ( open ) {
 					TinyImGui::BeginVars( );
 
-					component->DisplayWidget( game, engine, toolbox );
+					component->DisplayWidget( game, toolbox );
 
 					TinyImGui::EndVars( );
 

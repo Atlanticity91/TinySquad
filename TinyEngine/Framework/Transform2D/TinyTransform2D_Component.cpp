@@ -33,9 +33,7 @@ TinyTransform2D::TinyTransform2D( const tiny_hash entity_hash )
 	_rotation{ .0f },
 	_scale{ 1.f },
 	_transform{ 1.f }
-{ 
-	ReCalculate( );
-}
+{ }
 
 TinyTransform2D& TinyTransform2D::SetLocationX( float scalar ) {
 	_location.x = scalar;
@@ -103,8 +101,6 @@ void TinyTransform2D::Set(
 	_location = location;
 	_rotation = rotation;
 	_scale	  = scale;
-
-	ReCalculate( );
 }
 
 void TinyTransform2D::Set(
@@ -115,8 +111,6 @@ void TinyTransform2D::Set(
 	_location = location;
 	_rotation = glm::degrees( rotation.z );
 	_scale	  = scale;
-
-	ReCalculate( );
 }
 
 TinyTransform2D& TinyTransform2D::Move( const tiny_vec2& offset ) {
@@ -161,19 +155,21 @@ TinyTransform2D& TinyTransform2D::ReCalculate( ) {
 	return tiny_self;
 }
 
-void TinyTransform2D::DisplayWidget(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) { 
-	TinyComponent::DisplayWidget( game, engine, toolbox );
+void TinyTransform2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
+	TinyComponent::DisplayWidget( game, toolbox );
 
+	TinyImGui::InputVec2( "Location", _location );
+	TinyImGui::InputScalar( "Rotation", _rotation );
+	TinyImGui::InputVec2( "Scale", _scale );
+
+	/*
 	if (
 		TinyImGui::InputVec2( "Location", _location )   ||
 		TinyImGui::InputScalar( "Rotation", _rotation ) ||
 		TinyImGui::InputVec2( "Scale", _scale )
 	)
 		ReCalculate( );
+	*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

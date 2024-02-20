@@ -37,12 +37,12 @@ TinyAnim2D::TinyAnim2D( const tiny_hash entity_hash )
 	_frame_duration{ .0f }
 { }
 
-bool TinyAnim2D::Create( TinyGame* game, TinyEngine& engine ) {
-	auto& ecs  = engine.GetECS( );
+bool TinyAnim2D::Create( TinyGame* game ) {
+	auto& ecs  = game->GetECS( );
 	auto state = ecs.GetHasComponent( _owner, "TinySkin2D" );
 
 	if ( !state )
-		state = ecs.Append( game, engine, _owner, "TinySkin2D" ) != nullptr;
+		state = ecs.Append( game, _owner, "TinySkin2D" ) != nullptr;
 
 	return state;
 }
@@ -112,14 +112,10 @@ void TinyAnim2D::Tick(
 		_flags ^= TA_FLAG_PLAYING;
 }
 
-void TinyAnim2D::Delete( TinyGame* game, TinyEngine& engine ) { }
+void TinyAnim2D::Delete( TinyGame* game ) { }
 
-void TinyAnim2D::DisplayWidget(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) {
-	TinyComponent::DisplayWidget( game, engine, toolbox );
+void TinyAnim2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
+	TinyComponent::DisplayWidget( game, toolbox );
 
 	toolbox.DisplayAsset( game, "Collection", _collection );
 

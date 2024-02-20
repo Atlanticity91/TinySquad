@@ -47,7 +47,7 @@ void TinyScriptSystem::RegisterInterop( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyScriptSystem::PreTick( TinyGame* game, TinyEngine& engine ) { 
+void TinyScriptSystem::PreTick( TinyGame* game ) { 
 	auto& natives = game->GetNatives( );
 	auto& lua	  = game->GetScripts( );
 
@@ -66,7 +66,7 @@ void TinyScriptSystem::PreTick( TinyGame* game, TinyEngine& engine ) {
 	}
 }
 
-void TinyScriptSystem::PostTick( TinyGame* game, TinyEngine& engine ) {
+void TinyScriptSystem::PostTick( TinyGame* game ) {
 	auto& natives = game->GetNatives( );
 	auto& lua	  = game->GetScripts( );
 

@@ -31,17 +31,13 @@ TinyEmitter::TinyEmitter( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash }
 { }
 
-bool TinyEmitter::Create( TinyGame* game, TinyEngine& engine ) {
+bool TinyEmitter::Create( TinyGame* game ) {
 	return false;
 }
 
-void TinyEmitter::Delete( TinyGame* game, TinyEngine& engine ) {
+void TinyEmitter::Delete( TinyGame* game ) {
 }
 
-void TinyEmitter::DisplayWidget(
-	TinyGame* game,
-	TinyEngine& engine,
-	TinyToolbox& toolbox
-) { 
-	TinyComponent::DisplayWidget( game, engine, toolbox );
+void TinyEmitter::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
+	TinyComponent::DisplayWidget( game, toolbox );
 }

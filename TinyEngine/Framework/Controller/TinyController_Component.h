@@ -31,15 +31,11 @@ public:
 
 	~TinyController( ) = default;
 
-	tiny_implement( bool Create( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( bool Create( TinyGame* game ) );
 
-	tiny_implement( void Delete( TinyGame* game, TinyEngine& engine ) );
+	tiny_implement( void Delete( TinyGame* game ) );
 
-	tiny_implement( void DisplayWidget( 
-		TinyGame* game,
-		TinyEngine& engine, 
-		TinyToolbox& toolbox 
-	) );
+	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 public:
 	TINY_COMP_NAME( TinyController );

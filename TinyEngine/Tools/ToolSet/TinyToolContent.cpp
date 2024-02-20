@@ -36,11 +36,7 @@ TinyToolContent::TinyToolContent( )
     _import_path{ }
 { }
 
-void TinyToolContent::Create(
-    TinyGame* game,
-    TinyEngine& engine,
-    TinyToolbox& toolbox
-) {
+void TinyToolContent::Create( TinyGame* game, TinyToolbox& toolbox ) {
     Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
     //Register<TinyToolCubemap, TA_TYPE_TEXTURE_CUBEMAP>( );
     //Register<TinyToolAtlas, TA_TYPE_TEXTURE_ATLAS>( );
@@ -89,13 +85,9 @@ void TinyToolContent::RenderEditors( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyToolContent::OnTick(
-    TinyGame* game,
-    TinyEngine& engine,
-    TinyToolbox& toolbox
-) {
-    auto& filesystem = engine.GetFilesystem( );
-    auto& assets     = engine.GetAssets( );
+void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
+    auto& filesystem = game->GetFilesystem( );
+    auto& assets     = game->GetAssets( );
     auto& registry   = assets.GetRegistry( );
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 

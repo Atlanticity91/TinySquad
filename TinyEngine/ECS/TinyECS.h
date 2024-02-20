@@ -22,8 +22,8 @@
 
 #include "Entities/TinyEntityManager.h"
 
-#define _RegisterCompt( COMP, TARGET ) Register< ##COMP##System>( this, TARGET )
-#define _RegisterComp( COMP ) _RegisterCompt( COMP, TINY_UINT_MAX )
+#define _eRegisterCompt( COMP, TARGET ) Register< ##COMP##System>( this, TARGET )
+#define _eRegisterComp( COMP ) _eRegisterCompt( COMP, TINY_UINT_MAX )
 
 template<typename Component>
 concept TinyIsComponent = tiny_is_child_of( Component, TinyComponent );
@@ -48,13 +48,13 @@ public:
 
 	bool Remap( const tiny_string& component, tiny_uint target_id );
 
-	void Enable( TinyGame* game, TinyEngine& engine, const tiny_string& component );
+	void Enable( TinyGame* game, const tiny_string& component );
 
-	void Enable( TinyGame* game, TinyEngine& engine, tiny_init<tiny_string> components );
+	void Enable( TinyGame* game, tiny_init<tiny_string> components );
 
-	void Disable( TinyGame* game, TinyEngine& engine, const tiny_string& component );
+	void Disable( TinyGame* game, const tiny_string& component );
 
-	void Disable( TinyGame* game, TinyEngine& engine, tiny_init<tiny_string> components );
+	void Disable( TinyGame* game, tiny_init<tiny_string> components );
 
 	tiny_uint Create( const tiny_string& name );
 
@@ -70,11 +70,11 @@ public:
 
 	bool Rename( const tiny_uint entity_id, const tiny_string& new_name );
 
-	void Kill( TinyGame* game, TinyEngine& engine, const tiny_string& entity_name );
+	void Kill( TinyGame* game, const tiny_string& entity_name );
 
-	void Kill( TinyGame* game, TinyEngine& engine, const tiny_hash entity_hash );
+	void Kill( TinyGame* game, const tiny_hash entity_hash );
 
-	void Kill( TinyGame* game, TinyEngine& engine, const tiny_uint entity_id );
+	void Kill( TinyGame* game, const tiny_uint entity_id );
 
 	tiny_inline bool Attach( const tiny_string& entity_name, const tiny_string& parent );
 
@@ -141,67 +141,58 @@ public:
 
 	tiny_inline TinyComponent* Append(
 		TinyGame* game,
-		TinyEngine& engine, 
 		const tiny_string& name, 
 		const tiny_string& component 
 	);
 
 	tiny_inline TinyComponent* Append(
 		TinyGame* game,
-		TinyEngine& engine, 
 		const tiny_hash entity_hash, 
 		const tiny_string& component 
 	);
 
 	TinyComponent* Append(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_uint entity_id,
 		const tiny_string& component
 	);
 
 	bool Append( 
 		TinyGame* game,
-		TinyEngine& engine,
 		std::shared_ptr<TinyComponent> component
 	);
 
 	bool Set(
 		TinyGame* game,
-		TinyEngine& engine,
 		std::shared_ptr<TinyComponent> component
 	);
 
 	tiny_inline void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_string& name, 
 		const tiny_string& component
 	);
 
 	tiny_inline void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_hash entity_hash,
 		const tiny_string& component
 	);
 
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_uint entity_id,
 		const tiny_string& component
 	);
 
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		TinyComponent* component
 	);
 
-	void PreTick( TinyGame* game, TinyEngine& engine );
+	void PreTick( TinyGame* game );
 
-	void PostTick( TinyGame* game, TinyEngine& engine );
+	void PostTick( TinyGame* game );
 
 	void Terminate( );
 
@@ -220,46 +211,38 @@ public:
 
 	template<typename Component>
 		requires TinyIsComponent<Component>
-	void Enable( TinyGame* game, TinyEngine& engine ) {
+	void Enable( TinyGame* game ) {
 		auto comp_name = Component::sGetName( );
 		auto comp_id   = tiny_cast( 0, tiny_uint );
 
 		if ( _systems.GetComponentID( comp_name, comp_id ) )
-			_systems.Enable( game, engine, comp_id );
+			_systems.Enable( game, comp_id );
 	};
 
 	template<typename Component>
 		requires TinyIsComponent<Component>
-	void Disable( TinyGame* game, TinyEngine& engine ) {
+	void Disable( TinyGame* game ) {
 		auto comp_name = Component::sGetName( );
 		auto comp_id   = tiny_cast( 0, tiny_uint );
 
 		if ( _systems.GetComponentID( comp_name, comp_id ) )
-			_systems.Disable( game, engine, comp_id );
+			_systems.Disable( game, comp_id );
 	};
 
 	template<typename Component>
 		requires TinyIsComponent<Component>
-	Component* Append(
-		TinyGame* game,
-		TinyEngine& engine, 
-		const tiny_string& entity_name
-	) {
+	Component* Append( TinyGame* game, const tiny_string& entity_name ) {
 		auto component_name = Component::sGetName( );
-		auto* component		= Append( game, engine, entity_name, component_name );
+		auto* component		= Append( game, entity_name, component_name );
 
 		return tiny_cast( component, Component* );
 	};
 
 	template<typename Component>
 		requires TinyIsComponent<Component>
-	Component* Append(
-		TinyGame* game,
-		TinyEngine& engine,
-		const tiny_hash entity_hash
-	) {
+	Component* Append( TinyGame* game, const tiny_hash entity_hash ) {
 		auto component_name = Component::sGetName( );
-		auto* component		= Append( game, engine, entity_hash, component_name );
+		auto* component		= Append( game, entity_hash, component_name );
 
 		return tiny_cast( component, Component* );
 	};
@@ -269,7 +252,7 @@ public:
 		requires TinyIsComponent<Component>
 	Component* Append(
 		TinyGame* game,
-		TinyEngine& engine, 
+		 engine, 
 		const tiny_uint entity_id
 	) {
 		auto component_name = Component::sGetName( );
@@ -281,16 +264,44 @@ public:
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
-	tiny_list<TinyComponent*> Append(
-		TinyGame* game,
-		TinyEngine& engine,
-		const tiny_string& entity_name
-	) {
+	tiny_list<TinyComponent*> Append( TinyGame* game, const tiny_string& entity_name ) {
 		auto comps = tiny_list<TinyComponent*>{ };
 
 		( [ & ] {
 			auto component_name = Components::sGetName( );
-			auto* component		= tiny_cast( Append( game, engine, entity_name, component_name ), TinyComponent* );
+			auto* component		= tiny_cast( Append( game, entity_name, component_name ), TinyComponent* );
+
+			if ( component )
+				comps.emplace_back( component );
+		}( ), ... );
+
+		return comps;
+	};
+
+	template<typename... Components>
+		requires ( TinyIsComponent<Components> && ... )
+	tiny_list<TinyComponent*> Append( TinyGame* game, const tiny_hash entity_hash ) {
+		auto comps = tiny_list<TinyComponent*>{ };
+
+		( [ & ] {
+			auto component_name = Components::sGetName( );
+			auto* component		= tiny_cast( Append( game, entity_hash, component_name ), TinyComponent* );
+
+			if ( component )
+				comps.emplace_back( component );
+		}( ), ... );
+
+		return comps;
+	};
+
+	template<typename... Components>
+		requires ( TinyIsComponent<Components> && ... )
+	tiny_list<TinyComponent*> Append( TinyGame* game, const tiny_uint entity_id ) { 
+		auto comps = tiny_list<TinyComponent*>{ };
+
+		( [ & ] {
+			auto component_name = Components::sGetName( );
+			auto* component		= tiny_cast( Append( game, entity_id, component_name ), TinyComponent* );
 
 			if ( component )
 				comps.emplace_back( component );
@@ -303,172 +314,120 @@ public:
 		requires ( TinyIsComponent<Components> && ... )
 	tiny_list<TinyComponent*> Append(
 		TinyGame* game,
-		TinyEngine& engine,
-		const tiny_hash entity_hash
-	) {
-		auto comps = tiny_list<TinyComponent*>{ };
-
-		( [ & ] {
-			auto component_name = Components::sGetName( );
-			auto* component		= tiny_cast( Append( game, engine, entity_hash, component_name ), TinyComponent* );
-
-			if ( component )
-				comps.emplace_back( component );
-		}( ), ... );
-
-		return comps;
-	};
-
-	template<typename... Components>
-		requires ( TinyIsComponent<Components> && ... )
-	tiny_list<TinyComponent*> Append(
-		TinyGame* game,
-		TinyEngine& engine,
-		const tiny_uint entity_id
-	) { 
-		auto comps = tiny_list<TinyComponent*>{ };
-
-		( [ & ] {
-			auto component_name = Components::sGetName( );
-			auto* component		= tiny_cast( Append( game, engine, entity_id, component_name ), TinyComponent* );
-
-			if ( component )
-				comps.emplace_back( component );
-		}( ), ... );
-
-		return comps;
-	};
-
-	template<typename... Components>
-		requires ( TinyIsComponent<Components> && ... )
-	tiny_list<TinyComponent*> Append(
-		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_string& entity_name,
 		TinyComponentGroup<Components...>
 	) {
-		return Append<Components...>( game, engine, entity_name );
+		return Append<Components...>( game, entity_name );
 	};
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
 	tiny_list<TinyComponent*> Append(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_hash entity_hash,
 		TinyComponentGroup<Components...>
 	) {
-		return Append<Components...>( game, engine, entity_hash );
+		return Append<Components...>( game, entity_hash );
 	};
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
 	tiny_list<TinyComponent*> Append(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_uint entity_id,
 		TinyComponentGroup<Components...>
 	) {
-		return Append<Components...>( game, engine, entity_id );
+		return Append<Components...>( game, entity_id );
 	};
 
 	template<typename Component>
 		requires TinyIsComponent<Component>
 	void Remove( 
 		TinyGame* game,
-		TinyEngine& engine, 
 		const tiny_string& entity_name
 	) {
 		auto component_name = Component::sGetName( );
 
-		Remove( game, engine, entity_name, component_name );
+		Remove( game, entity_name, component_name );
 	};
 
 	template<typename Component>
 		requires TinyIsComponent<Component>
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_hash entity_hash
 	) {
 		auto component_name = Component::sGetName( );
 
-		Remove( game, engine, entity_hash, component_name );
+		Remove( game, entity_hash, component_name );
 	};
 
 	template<typename Component>
 		requires TinyIsComponent<Component>
 	void Remove( 
 		TinyGame* game,
-		TinyEngine& engine, 
 		const tiny_uint entity_id 
 	) {
 		auto component_name = Component::sGetName( );
 
-		Remove( game, engine, entity_id, component_name );
+		Remove( game, entity_id, component_name );
 	};
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_string& entity_name
 	) {
-		( Remove<Components>( game, engine, entity_name ), ... );
+		( Remove<Components>( game, entity_name ), ... );
 	};
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_hash entity_hash
 	) {
-		( Remove<Components>( game, engine, entity_hash ), ... );
+		( Remove<Components>( game, entity_hash ), ... );
 	};
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_uint entity_id
 	) {
-		( Remove<Components>( game, engine, entity_id ), ... );
+		( Remove<Components>( game, entity_id ), ... );
 	};
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_string& entity_name,
 		TinyComponentGroup<Components...>
 	) {
-		Remove<Components...>( game, engine, entity_name );
+		Remove<Components...>( game, entity_name );
 	};
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_hash entity_hash,
 		TinyComponentGroup<Components...>
 	) {
-		Remove<Components...>( game, engine, entity_hash );
+		Remove<Components...>( game, entity_hash );
 	};
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )
 	void Remove(
 		TinyGame* game,
-		TinyEngine& engine,
 		const tiny_uint entity_id,
 		TinyComponentGroup<Components...>
 	) {
-		Remove<Components...>( game, engine, entity_id );
+		Remove<Components...>( game, entity_id );
 	};
 
 public:

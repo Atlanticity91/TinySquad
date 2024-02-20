@@ -38,6 +38,12 @@ public:
 		TinyMaterialBuilder& builder 
 	);
 
+	void Submit( 
+		TinyGraphicManager& graphics, 
+		const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints,
+		const TinyGraphicPipelineDrawcall& draw_call
+	);
+
 	void Terminate(
 		TinyGame* game,
 		TinyAssetManager& assets, 
