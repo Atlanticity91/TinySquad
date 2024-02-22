@@ -145,7 +145,7 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, TinyLuaPrototype functi
 	}
 }
 
-void TinyLuaContext::Execute( TinyLuaExecution& execution ) {
+void TinyLuaContext::Execute( const TinyLuaExecution& execution ) {
 	if ( GetExist( execution.Function ) ) {
 		PushInputs( execution.Inputs );
 

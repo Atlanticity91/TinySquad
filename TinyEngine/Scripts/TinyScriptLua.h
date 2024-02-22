@@ -22,10 +22,19 @@
 
 #include "Execution/TinyLuaContext.h"
 
+te_struct TinyScriptExecution {
+
+	TinyAsset Script{ };
+	tiny_string Function = "";
+	c_pointer Component  = nullptr;
+
+};
+
 te_class TinyScriptLua final { 
 
 private:
 	tiny_storage		   _source;
+	tiny_string			   _table;
 	tiny_list<tiny_string> _functions;
 
 public:
@@ -37,12 +46,16 @@ public:
 
 	bool Create( TinyLuaContext& context, tiny_pointer source );
 
+	void Execute( TinyLuaContext& context, const TinyScriptExecution& execution );
+
 	void Terminate( TinyLuaContext& context );
 
 private:
 	void PreProcess( tiny_string& source );
 
 public:
+	const tiny_string& GetTable( ) const;
+
 	const tiny_list<tiny_string>& GetFunctions( ) const;
 
 };

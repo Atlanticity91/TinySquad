@@ -31,7 +31,7 @@ TinyAudioDevice::TinyAudioDevice( )
 bool TinyAudioDevice::Create( ) {
 	auto state = !FAILED( XAudio2Create( &_device, XAUDIO2_NO_FLAG, XAUDIO2_DEFAULT_PROCESSOR ) );
 
-	#	ifdef TM_DEBUG
+	#	ifdef TINY_DEBUG
 	if ( state ) {
 		auto autio_debug = XAUDIO2_DEBUG_CONFIGURATION{ };
 

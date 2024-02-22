@@ -58,7 +58,7 @@ void TinyScriptSystem::PreTick( TinyGame* game ) {
 
 			switch ( pre_tick.Type ) {
 				case TS_TYPE_NATIVE : natives._nExecute( pre_tick.Function, game, pre_comp ); break;
-				case TS_TYPE_LUA	: lua.Execute( pre_tick.Function, game, pre_comp ); break;
+				case TS_TYPE_LUA	: lua.Execute( game, { pre_tick.Asset, pre_tick.Function, pre_comp } ); break;
 
 				default : break;
 			}
@@ -77,9 +77,9 @@ void TinyScriptSystem::PostTick( TinyGame* game ) {
 
 			switch ( post_tick.Type ) {
 				case TS_TYPE_NATIVE : natives._nExecute( post_tick.Function, game, post_comp ); break;
-				case TS_TYPE_LUA	: lua.Execute( post_tick.Function, game, post_comp ); break;
+				case TS_TYPE_LUA	: lua.Execute( game, { post_tick.Asset, post_tick.Function, post_comp } ); break;
 
-				default: break;
+				default : break;
 			}
 		}
 	}

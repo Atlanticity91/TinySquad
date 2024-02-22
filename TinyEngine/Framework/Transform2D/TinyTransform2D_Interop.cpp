@@ -85,6 +85,18 @@ tli_implementfn( TinyLua::Transform2D::SetLocation ) {
 	return 0;
 }
 
+tli_implementfn( TinyLua::Transform2D::SetLayer ) {
+	auto* comp = Component::Get<TinyTransform2D>( context, tli_param_one );
+
+	if ( comp && lua_isnumber( context, tli_param_two ) ) {
+		auto value = lua_tonumber( context, tli_param_two );
+
+		comp->SetLayer( tiny_cast( value, float ) );
+	}
+
+	return 0;
+}
+
 tli_implementfn( TinyLua::Transform2D::SetRotation ) {
 	auto* comp = Component::Get<TinyTransform2D>( context, tli_param_one );
 

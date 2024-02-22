@@ -28,7 +28,6 @@ TinyToolContent::TinyToolContent( )
     TinyToolDialog{ "Tiny Registry (*.tinyregistry)\0*.tinyregistry\0" },
     _has_changed{ false },
     _type_count{ TinyAssetTypes::TA_TYPE_COUNT },
-    _asset_count{ 0 },
     _type_to_string{ TinyToolContent::TypeToString },
     _type_editors{ TA_TYPE_ADDON - 1 },
     _action{ },
@@ -91,25 +90,22 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     auto& registry   = assets.GetRegistry( );
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
-    _has_changed = _asset_count == registry.GetCount( );
-
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
         if ( OpenDialog( filesystem ) ) {
             registry.Load( filesystem, _dialog_path );
 
             _has_changed = false;
-            _asset_count = registry.GetCount( );
         }
     }
 
     ImGui::SameLine( );
 
-    ImGui::BeginDisabled( _has_changed );
+    ImGui::BeginDisabled( !_has_changed );
     if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
         if ( SaveDialog( filesystem ) ) {
             registry.Save( filesystem, _dialog_path );
 
-            _asset_count = registry.GetCount( );
+            _has_changed = false;
         }
     }
     ImGui::EndDisabled( );
@@ -119,7 +115,9 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
         auto path = std::string{ dev_dir.as_chars( ) };
 
         if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", _import_path.length( ), _import_path ) ) {
-            if ( !assets.Import( game, _import_path ) )
+            _has_changed = assets.Import( game, _import_path );
+
+            if ( !_has_changed )
                 ImGui::OpenPopup( "Import Failed" );
         }
     }
@@ -199,8 +197,9 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
 
                         ImGui::BeginDisabled( metadata->Data.Reference > 0 );
                         if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) ) {
-                            _action   = TTC_ACTION_REMOVE;
-                            _metadata = metadata;
+                            _has_changed = true;
+                            _action      = TTC_ACTION_REMOVE;
+                            _metadata    = metadata;
                         }
                         ImGui::EndDisabled( );
                     }

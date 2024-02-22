@@ -34,6 +34,7 @@ namespace TinyLua::Transform2D {
 	tiny_dll tli_prototypefn( SetLocationX );
 	tiny_dll tli_prototypefn( SetLocationY );
 	tiny_dll tli_prototypefn( SetLocation );
+	tiny_dll tli_prototypefn( SetLayer );
 	tiny_dll tli_prototypefn( SetRotation );
 	tiny_dll tli_prototypefn( SetScaleX );
 	tiny_dll tli_prototypefn( SetScaleY );

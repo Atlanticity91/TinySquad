@@ -25,6 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyScriptLua::TinyScriptLua( )
 	: _source{ },
+	_table{ },
 	_functions{ }
 { 
 	_functions.emplace_back( "Undefined" );
@@ -69,7 +70,28 @@ bool TinyScriptLua::Create( TinyLuaContext& context, tiny_pointer source ) {
 	return state;
 }
 
+void TinyScriptLua::Execute( TinyLuaContext& context, const TinyScriptExecution& execution ) {
+	auto* function = execution.Function.as_chars( );
+	auto* table	   = _table.as_chars( );
+
+	lua_getglobal( context, table );
+	lua_pushstring( context, function );
+	
+	auto type = lua_gettable( context, -2 );
+
+	if ( lua_isfunction( context, type ) ) {
+		TinyLua::Script::Convert( context, tiny_cast( execution.Component, TinyComponent* ) );
+
+		lua_pcall( context, 1, 0, 0 );
+	}
+}
+
 void TinyScriptLua::Terminate( TinyLuaContext& context ) {
+	auto* table_str = _table.as_chars( );
+
+	lua_pushnil( context );
+	lua_setglobal( context, table_str );
+
 	tiny_deallocate( _source );
 }
 
@@ -90,4 +112,6 @@ void TinyScriptLua::PreProcess( tiny_string& source ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+const tiny_string& TinyScriptLua::GetTable( ) const { return _table; }
+
 const tiny_list<tiny_string>& TinyScriptLua::GetFunctions( ) const { return _functions; }

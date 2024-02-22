@@ -31,6 +31,7 @@ TinyTransform2D::TinyTransform2D( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash },
 	_location{ .0f },
 	_rotation{ .0f },
+	_layer{ .0f },
 	_scale{ 1.f },
 	_transform{ 1.f }
 { }
@@ -56,6 +57,12 @@ TinyTransform2D& TinyTransform2D::SetLocation( const tiny_vec2& location ) {
 TinyTransform2D& TinyTransform2D::SetLocation( float x, float y ) {
 	_location.x = x;
 	_location.y = y;
+
+	return tiny_self;
+}
+
+TinyTransform2D& TinyTransform2D::SetLayer( float layer ) {
+	_layer = layer;
 
 	return tiny_self;
 }
@@ -148,7 +155,7 @@ TinyTransform2D& TinyTransform2D::Scale( float x, float y ) {
 TinyTransform2D& TinyTransform2D::ReCalculate( ) {
 	auto half_scale = _scale * .5f;
 
-	_transform  = glm::translate( tiny_vec3{ _location.x + half_scale.x, _location.y + half_scale.y, .0f } );
+	_transform  = glm::translate( tiny_vec3{ _location.x + half_scale.x, _location.y + half_scale.y, _layer } );
 	_transform *= glm::rotate( glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
 	_transform *= glm::scale( tiny_vec3{ _scale.x, _scale.y, 1.f } );
 
@@ -159,17 +166,9 @@ void TinyTransform2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 	TinyComponent::DisplayWidget( game, toolbox );
 
 	TinyImGui::InputVec2( "Location", _location );
+	TinyImGui::InputScalar( "Layer", _layer );
 	TinyImGui::InputScalar( "Rotation", _rotation );
 	TinyImGui::InputVec2( "Scale", _scale );
-
-	/*
-	if (
-		TinyImGui::InputVec2( "Location", _location )   ||
-		TinyImGui::InputScalar( "Rotation", _rotation ) ||
-		TinyImGui::InputVec2( "Scale", _scale )
-	)
-		ReCalculate( );
-	*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +177,8 @@ void TinyTransform2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 tiny_vec2& TinyTransform2D::GetLocation( ) { return _location; }
 
 const tiny_vec2& TinyTransform2D::GetLocation( ) const { return _location; }
+
+float TinyTransform2D::GetLayer( ) const { return _layer; }
 
 float TinyTransform2D::GetRotation( ) { return _rotation; }
 

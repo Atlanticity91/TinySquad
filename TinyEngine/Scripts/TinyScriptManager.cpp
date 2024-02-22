@@ -92,29 +92,20 @@ void TinyScriptManager::SetGlobal( const tiny_string& name, TinyLuaPrototype fun
 	_context.SetGlobal( name, function );
 }
 
-void TinyScriptManager::Execute( const TinyLuaExecution& execution ) {
+void TinyScriptManager::Execute( TinyGame* game, const TinyLuaExecution& execution ) {
 	if ( !execution.Function.is_empty( ) ) {
-		auto _execution = execution;
-
-		_context.Execute( _execution );
+		_context.SetGlobal( TinyLuaGameVar, tiny_cast( game, c_pointer ) );
+		_context.Execute( execution );
 	}
 }
 
-void TinyScriptManager::Execute( 
-	const tiny_string& function_name,
-	TinyGame* game,
-	c_pointer component 
-) {
-	if ( !function_name.is_empty( ) ) {
-		auto execution = TinyLuaExecution{ 
-			function_name,
-			{ 
-				{ game },
-				{ component }
-			}
-		};
+void TinyScriptManager::Execute( TinyGame* game, const TinyScriptExecution& execution ) {
+	auto* script = tiny_cast( GetAsset( execution.Script ), TinyScriptLua* );
 
-		_context.Execute( execution );
+	if ( script ) {
+		_context.SetGlobal( TinyLuaGameVar, tiny_cast( game, c_pointer ) );
+
+		script->Execute( _context, execution );
 	}
 }
 

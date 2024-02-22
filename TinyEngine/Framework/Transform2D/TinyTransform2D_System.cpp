@@ -37,6 +37,7 @@ void TinyTransform2DSystem::RegisterInterop( TinyGame* game ) {
 	tli_createfn( "set_location_x", TinyLua::Transform2D::SetLocationX );
 	tli_createfn( "set_location_y", TinyLua::Transform2D::SetLocationY );
 	tli_createfn( "set_location", TinyLua::Transform2D::SetLocation );
+	tli_createfn( "set_layer", TinyLua::Transform2D::SetLayer );
 	tli_createfn( "set_rotation", TinyLua::Transform2D::SetRotation );
 	tli_createfn( "set_scale_x", TinyLua::Transform2D::SetScaleX );
 	tli_createfn( "set_scale_y", TinyLua::Transform2D::SetScaleY );

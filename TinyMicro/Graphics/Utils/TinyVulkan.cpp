@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 VkAllocationStas vk_allocation_stats = { 0, 0, 0, 0 };
 
-#	ifdef TM_DEBUG
+#	ifdef TINY_DEBUG
 VkDebugReportCallbackEXT vk_debug = VK_NULL_HANDLE;
 #	endif
 
@@ -99,7 +99,7 @@ c_pointer vk_AllocationFunction(
 ) {
     auto* memory = malloc( size );
     
-#   ifdef TM_DEBUG
+#   ifdef TINY_DEBUG
     if ( memory ) {
         vk_allocation_stats.Size  += size;
         vk_allocation_stats.Alloc += 1;
@@ -121,7 +121,7 @@ c_pointer vk_ReallocationFunction(
     if ( original ) {
         memory = realloc( original, size );
 
-#       ifdef TM_DEBUG
+#       ifdef TINY_DEBUG
         vk_allocation_stats.ReAlloc += 1;
 #       endif
     }
@@ -131,7 +131,7 @@ c_pointer vk_ReallocationFunction(
 
 void vk_FreeFunction( c_pointer user_data, c_pointer memory ) {
     if ( memory ) {
-#       ifdef TM_DEBUG
+#       ifdef TINY_DEBUG
         vk_allocation_stats.Size -= 1;
         vk_allocation_stats.Free += 1;
 #       endif
@@ -146,7 +146,7 @@ void vk_InternalAllocationNotification(
     VkInternalAllocationType type,
     VkSystemAllocationScope scope 
 ) {
-#   ifdef TM_DEBUG
+#   ifdef TINY_DEBUG
     auto scope_str = vkGetScopeString( scope );
 
     printf( "[ VK ] INTERNAL ALLOC : %llu for %s\n", size, scope_str.get( ) );
@@ -159,7 +159,7 @@ void vk_InternalFreeNotification(
     VkInternalAllocationType type,
     VkSystemAllocationScope scope 
 ) {
-#   ifdef TM_DEBUG
+#   ifdef TINY_DEBUG
     auto scope_str = vkGetScopeString( scope );
 
     printf( "[ VK ] INTERNAL FREE : %llu of %s\n", size, scope_str.get( ) );
@@ -244,7 +244,7 @@ bool vk::Check( VkResult result ) {
             break;
     }
 
-#   ifdef TM_DEBUG
+#   ifdef TINY_DEBUG
     auto vk_string = vkGetResultString( result );
 
     if ( vk_string.length( ) > 0 )
@@ -259,7 +259,7 @@ VkAllocationCallbacks* vk::GetAllocator( ) { return &vk_allocator; }
 VkAllocationStas* vk::GetAllocationStas( ) { return &vk_allocation_stats; }
 
 void vk::DumpAllocationStats( ) {
-#   ifdef TM_DEBUG
+#   ifdef TINY_DEBUG
     printf( 
         "Allocation Stats:\nAllocation : %llu\nFree : %llu\nSize : %llu\n", 
         vk_allocation_stats.Alloc, 
@@ -270,7 +270,7 @@ void vk::DumpAllocationStats( ) {
 }
 
 bool vk::CreateDebugReport( VkInstance instance ) {
-#   ifdef TM_DEBUG
+#   ifdef TINY_DEBUG
     auto vk_function = tiny_cast( vkGetInstanceProcAddr( instance, "vkCreateDebugReportCallbackEXT" ), PFN_vkCreateDebugReportCallbackEXT );
     auto state       = vk_function != nullptr;
 
@@ -292,7 +292,7 @@ bool vk::CreateDebugReport( VkInstance instance ) {
 }
 
 void vk::DestroyDebugReport( VkInstance instance ) {
-#   ifdef TM_DEBUG
+#   ifdef TINY_DEBUG
     auto vk_function = tiny_cast( vkGetInstanceProcAddr( instance, "vkDestroyDebugReportCallbackEXT" ), PFN_vkDestroyDebugReportCallbackEXT );
 
     if ( vk_function )

@@ -22,7 +22,7 @@
 
 #include "TinyString.h"
 
-#ifdef TM_DEBUG
+#ifdef TINY_DEBUG
 #	define tiny_dump_leaks( ) Tiny::DumpLeaks( )
 #else
 #	define tiny_dump_leaks( )

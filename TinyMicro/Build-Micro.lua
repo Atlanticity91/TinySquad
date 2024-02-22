@@ -27,12 +27,12 @@ project "TinyMicro"
        defines { "WINDOWS" }
 
    filter "configurations:Debug"
-       defines { "DEBUG", "TM_DEBUG", "TM_DEV" }
+       defines { "DEBUG", "TINY_DEBUG" }
        runtime "Debug"
        symbols "On"
 
    filter "configurations:Release"
-       defines { "RELEASE", "TM_DEBUG", "TM_DEV" }
+       defines { "RELEASE", "TINY_DEBUG" }
        runtime "Release"
        optimize "On"
        symbols "On"

@@ -65,7 +65,7 @@ tiny_list<c_string> TinyGraphicInstance::GetExtensions( ) const {
     auto* required       = glfwGetRequiredInstanceExtensions( &extension_count );
     auto extensions      = tiny_list<c_string>{ };
 
-#   ifdef TM_DEBUG
+#   ifdef TINY_DEBUG
     extensions = extension_count + 1;
 
     extensions[ extension_count ] = VK_EXT_DEBUG_REPORT_EXTENSION_NAME;

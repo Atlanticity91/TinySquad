@@ -26,6 +26,7 @@ TINY_FRAMEWORK_COMP( TinyTransform2D ) {
 
 private:
 	tiny_vec2 _location;
+	float	  _layer;
 	float	  _rotation;
 	tiny_vec2 _scale;
 	tiny_mat4 _transform;
@@ -44,6 +45,8 @@ public:
 	tiny_inline TinyTransform2D& SetLocation( const tiny_vec2& location );
 
 	TinyTransform2D& SetLocation( float x, float y );
+
+	TinyTransform2D& SetLayer( float layer );
 
 	TinyTransform2D& SetRotation( float rotation );
 
@@ -88,6 +91,8 @@ public:
 
 	const tiny_vec2& GetLocation( ) const;
 	
+	float GetLayer( ) const;
+
 	float GetRotation( );
 
 	tiny_vec2& GetScale( );

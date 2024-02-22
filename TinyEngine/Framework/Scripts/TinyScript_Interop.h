@@ -25,4 +25,7 @@
 #define TINY_SCRIPT_NAME "TinyScript"
 
 namespace TinyLua::Script { 
+
+	tiny_dll void Convert( lua_State* context, TinyComponent* component );
+
 };

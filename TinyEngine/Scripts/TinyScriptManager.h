@@ -22,6 +22,8 @@
 
 #include "Interop/TinyLuaEntity.h"
 
+#define TinyLuaGameVar "TinyGame"
+
 te_class TinyScriptManager final 
 	: tiny_inherit( TinyAssetList<TA_TYPE_SCRIPT, TinyScriptLua> )
 {
@@ -64,9 +66,9 @@ public:
 
 	tiny_inline void SetGlobal( const tiny_string& name, TinyLuaPrototype function );
 
-	void Execute( const TinyLuaExecution& execution );
+	void Execute( TinyGame* game, const TinyLuaExecution& execution );
 
-	void Execute( const tiny_string& function, TinyGame* game, c_pointer component );
+	void Execute( TinyGame* game, const TinyScriptExecution& execution );
 
 	void Terminate( );
 
@@ -98,5 +100,11 @@ public:
 	TinyLuaContext& GetContext( );
 
 	tiny_inline bool GetExist( const tiny_string& name ) const;
+
+public:
+	template<typename Type>
+	Type GetGlobal( const tiny_string& name ) {
+		return _context.GetGlobal<Type>( name );
+	};
 
 };

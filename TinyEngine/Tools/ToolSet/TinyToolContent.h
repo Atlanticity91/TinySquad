@@ -39,7 +39,6 @@ te_class TinyToolContent final
 private:
 	bool							_has_changed;
 	tiny_uint						_type_count;
-	tiny_uint						_asset_count;
 	AssetTypeToString				_type_to_string;
 	tiny_list<TinyToolAssetEditor*> _type_editors;
 	TinyToolContentActions			_action;

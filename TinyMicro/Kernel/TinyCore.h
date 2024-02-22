@@ -62,7 +62,6 @@ extern "C" {
 
 #ifdef _WIN64
 #	define TINY_WIN
-#	define tiny_breakpoint __debugbreak( )
 #	ifdef TM_BUILD
 #		define tm_dll __declspec( dllexport )
 #	else
@@ -71,6 +70,21 @@ extern "C" {
 #	define USING_XAUDIO2_9
 #	define VK_USE_PLATFORM_WIN32_KHR
 #	define GLFW_EXPOSE_NATIVE_WIN32
+
+#	ifdef TINY_DEBUG
+#	define tiny_breakpoint __debugbreak( )
+#	define tiny_assert( TEST, FORMAT, ... )\
+	do {\
+        if (\
+            !( TEST ) &&\
+            ( 1 == _CrtDbgReport( _CRT_ASSERT, __FILE__, __LINE__, #TEST, FORMAT, __VA_ARGS__ ) )\
+        )\
+            _CrtDbgBreak( );\
+    } while( 0 )
+#	else
+#		define tiny_breakpoint 
+#		define tiny_assert( ... ) 
+#	endif
 #elif __linux__ || __linux || linux
 #	define TINY_LINUX
 #	define tm_dll
@@ -122,7 +136,12 @@ extern "C" {
 #define tiny_virtualv( RET, ... ) tiny_no_implementv( RET, virtual __VA_ARGS__ ) 
 #define tiny_is_child_of( TYPE, BASE ) std::is_base_of<BASE, TYPE>::value
 #define tiny_has_contstuctor( TYPE, ARGS ) std::is_constructible<TYPE, ARGS...>::value
-#define tiny_enable_if( ... ) requires __VA_ARGS__
+#define tiny_is_int( TYPE ) std::is_integral<TYPE>::value
+#define tiny_is_float( TYPE ) std::is_floating_point<TYPE>::value 
+#define tiny_is_pointer( TYPE ) std::is_pointer<TYPE>::value
+#define tiny_compile_if( ... ) if constexpr ( __VA_ARGS__ )
+#define tiny_compile_elif( ... ) else tiny_compile_if( __VA_ARGS__ )
+#define tiny_compile_else else
 #define tiny_deprecated( SINCE, FOR ) [[deprecated( "Deprecated since " #SINCE "; Use instead : " #FOR )]]
 #define tiny_nodiscard [[nodiscard]]
 #define tiny_inline inline

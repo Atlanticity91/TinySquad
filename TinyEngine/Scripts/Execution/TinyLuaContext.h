@@ -68,7 +68,7 @@ public:
 
 	void SetGlobal( const tiny_string& name, TinyLuaPrototype function );
 
-	void Execute( TinyLuaExecution& execution );
+	void Execute( const TinyLuaExecution& execution );
 
 	void Terminate( );
 
@@ -90,6 +90,27 @@ private:
 
 public:
 	bool GetExist( const tiny_string& function ) const;
+
+public:
+	template<typename Type>
+	Type GetGlobal( const tiny_string& name ) {
+		auto* name_str = name.as_chars( );
+		auto value	   = Type{ };
+
+		lua_getglobal( _lua_state, name_str );
+
+		tiny_compile_if( tiny_is_int( Type ) ) {
+			value = tiny_cast( lua_tointeger( _lua_state, TINY_LUA_TOP ), Type );
+		} tiny_compile_elif( tiny_is_float( Type ) ) {
+			value = tiny_cast( lua_tonumber( _lua_state, TINY_LUA_TOP ), Type );
+		} tiny_compile_elif( tiny_is_pointer( Type ) ) {
+			value = tiny_cast( lua_topointer( _lua_state, TINY_LUA_TOP ), Type );
+		}
+
+		lua_pop( _lua_state, 1 );
+
+		return value;
+	};
 
 public:
 	operator lua_State* ( );

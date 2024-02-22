@@ -64,7 +64,7 @@ public:
 
 		auto function_id = tiny_cast( 0, tiny_uint );
 
-		if constexpr ( std::is_same<Return, void>::value ) { 
+		tiny_compile_if( std::is_same<Return, void>::value ) {
 			auto state = _functions.find( function_hash, function_id );
 
 			if ( state ) {
@@ -74,7 +74,7 @@ public:
 			}
 
 			return state;
-		} else {
+		} tiny_compile_else {
 			if ( _functions.find( function_hash, function_id ) ) {
 				auto* function = tiny_cast( _functions.at( function_id ), Signature );
 
