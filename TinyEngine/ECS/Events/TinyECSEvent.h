@@ -10,24 +10,33 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/01/2024
- * @version  : 2024.2
+ * @creation : 22/02/2024
+ * @version  : 2024.2.3
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
-#include <TinyEngine/__tiny_engine_pch.h>
+#pragma once
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-void TinyLua::Script::Convert( lua_State* context, TinyComponent* component ) {
-	auto* tmp = tiny_cast( component, c_pointer );
-	
-	tli_create_new(
-		TINY_SCRIPT_NAME,
-		tli_create_field( "value", tmp );
-	);
-}
+#include <TinyEngine/ECS/Entities/TinyEntityManager.h>
+
+class TinyECS;
+
+te_class TinyECSEvent {
+
+private:
+	tiny_uint _type;
+
+public:
+	TinyECSEvent( tiny_uint type );
+
+	virtual ~TinyECSEvent( ) = default;
+
+	tiny_abstract( void Execute( TinyGame* game, TinyECS& ecs ) );
+
+public:
+	tiny_uint GetType( ) const;
+
+};

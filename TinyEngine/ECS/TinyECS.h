@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "Entities/TinyEntityManager.h"
+#include "Events/TinyECSDispatch.h"
 
 #define _eRegisterCompt( COMP, TARGET ) Register< ##COMP##System>( this, TARGET )
 #define _eRegisterComp( COMP ) _eRegisterCompt( COMP, TINY_UINT_MAX )
@@ -40,6 +40,7 @@ te_class TinyECS final {
 private:
 	TinyEntityManager _entities;
 	TinySystemManager _systems;
+	TinyECSDispatch	  _dispatcher;
 
 public:
 	TinyECS( );
@@ -47,6 +48,10 @@ public:
 	~TinyECS( ) = default;
 
 	bool Remap( const tiny_string& component, tiny_uint target_id );
+
+	tiny_inline void RegisterCallback( tiny_uint type, c_pointer callback );
+
+	tiny_inline void RegisterCallback( tiny_uint type, tiny_init<c_pointer> callbacks );
 
 	void Enable( TinyGame* game, const tiny_string& component );
 
@@ -428,6 +433,12 @@ public:
 		TinyComponentGroup<Components...>
 	) {
 		Remove<Components...>( game, entity_id );
+	};
+
+	template<typename Event, typename... Args>
+		requires tiny_is_child_of( Event, TinyECSEvent )
+	void Raise( TinyGame* game, Args... args ) {
+		_dispatcher.Raise<Event, Args...>( game, args... );
 	};
 
 public:

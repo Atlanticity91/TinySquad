@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/01/2024
- * @version  : 2024.2
+ * @creation : 23/02/2024
+ * @version  : 2024.2.3
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,11 +23,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyLua::Script::Convert( lua_State* context, TinyComponent* component ) {
-	auto* tmp = tiny_cast( component, c_pointer );
-	
-	tli_create_new(
-		TINY_SCRIPT_NAME,
-		tli_create_field( "value", tmp );
-	);
+TinyECSDispatch::TinyECSDispatch( ) 
+	: _callbacks{ }
+{ }
+
+void TinyECSDispatch::Register( tiny_uint type, c_pointer callback ) {
+	Register( type, { callback } );
+}
+
+void TinyECSDispatch::Register( tiny_uint type, tiny_init<c_pointer> callbacks ) {
+	if ( type >= _callbacks.size( ) )
+		_callbacks.create( type );
+
+	_callbacks[ type ].emplace_back( callbacks );
 }
