@@ -31,17 +31,26 @@ public:
 
 	~TinyGraphicRenderpass( ) = default;
 
-	bool Create( const TinyGraphicLogical& logical, const TinyGraphicRenderpassBundle& bundle );
+	bool Create( 
+		const TinyGraphicLogical& logical, 
+		const TinyGraphicRenderpassBundle& bundle
+	);
 
 	tiny_inline void SetClearValue( tiny_uint attachement, const tiny_color& color );
 
 	tiny_inline void SetClearValue( tiny_uint attachement, const VkClearColorValue& color );
 
-	tiny_inline void SetClearValue( tiny_uint attachement, const VkClearDepthStencilValue& depth_value );
+	tiny_inline void SetClearValue( 
+		tiny_uint attachement, 
+		const VkClearDepthStencilValue& depth_value 
+	);
 
 	void SetClearValue( tiny_uint attachement, const VkClearValue& clear_value );
 
-	TinyGraphicRenderpass& Begin( TinyGraphicWorkContext& work_context, const TinyGraphicRenderFrameManager& frames );
+	TinyGraphicRenderpass& Begin(
+		TinyGraphicWorkContext& work_context,
+		const TinyGraphicRenderFrameManager& frames 
+	);
 
 	void Terminate( const TinyGraphicLogical& logical );
 

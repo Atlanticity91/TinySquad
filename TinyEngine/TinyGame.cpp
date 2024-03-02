@@ -69,8 +69,6 @@ bool TinyGame::ProcessArguments( tiny_int argc, char** argv ) { return true; }
 void TinyGame::SetupBundles2D( TinyGraphicManager& graphics ) {
 	auto bundle_2d = TinyGraphicRenderBundle{ };
 
-	bundle_2d.Name = "Render2D Pass";
-
 	bundle_2d.Targets = 4;
 	bundle_2d.Targets[ 0 ].Name = "Color 2D";
 	bundle_2d.Targets[ 0 ].Type = TRT_TYPE_COLOR;
@@ -98,7 +96,7 @@ void TinyGame::SetupBundles2D( TinyGraphicManager& graphics ) {
 	bundle_2d.Passes[ 0 ].Targets[ 2 ] = { "Normal 2D", TGR_ACCESS_WRITE };
 	bundle_2d.Passes[ 0 ].Targets[ 2 ] = { "Depth 2D", TGR_ACCESS_WRITE };
 
-	graphics.AddBundle( bundle_2d );
+	graphics.AddBundle( "Render2DPass", bundle_2d );
 }
 
 void TinyGame::LoadDefault2D( TinyECS& ecs ) {

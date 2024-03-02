@@ -71,11 +71,11 @@ bool TinyScriptLua::Create( TinyLuaContext& context, tiny_pointer source ) {
 }
 
 void TinyScriptLua::Execute( TinyLuaContext& context, const TinyScriptExecution& execution ) {
-	auto* function = execution.Function.as_chars( );
-	auto* table	   = _table.as_chars( );
+	auto* function_str = execution.Function.as_chars( );
+	auto* table_str	   = _table.as_chars( );
 
-	lua_getglobal( context, table );
-	lua_pushstring( context, function );
+	lua_getglobal( context, table_str );
+	lua_pushstring( context, function_str );
 	
 	auto type = lua_gettable( context, -2 );
 

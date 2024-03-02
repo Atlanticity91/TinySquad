@@ -39,13 +39,13 @@ TinyGraphicManager::TinyGraphicManager( TinyGameOrientations orientation )
 	_work_context{ }
 { }
 
-void TinyGraphicManager::AddBundle( const TinyGraphicRenderBundle& bundle ) {
-	_passes.AddBundle( bundle );
-}
+TinyGraphicManager& TinyGraphicManager::AddBundle(
+	const tiny_string& name,
+	const TinyGraphicRenderBundle& bundle
+) {
+	_passes.AddBundle( name, bundle );
 
-void TinyGraphicManager::AddBundles( tiny_init<TinyGraphicRenderBundle> bundles ) {
-	for ( auto& bundle : bundles )
-		_passes.AddBundle( bundle );
+	return tiny_self;
 }
 
 bool TinyGraphicManager::Initialize( TinyFilesystem& file_system, TinyWindow& window ) {
@@ -130,6 +130,22 @@ bool TinyGraphicManager::BeginPass( const tiny_hash pass_hash ) {
 	EndPass( );
 
 	return _passes.Begin( pass_hash, _work_context );
+}
+
+void TinyGraphicManager::Clear(
+	const tiny_hash pass_name,
+	TinyGraphicWorkContext& work_context,
+	tiny_init<TinyGraphicClearRegion> attachements
+) {
+	_passes.Clear( pass_name, work_context, attachements );
+}
+
+void TinyGraphicManager::Clear(
+	const tiny_hash pass_name,
+	TinyGraphicWorkContext& work_context,
+	tiny_init<TinyGraphicClearAttachement> attachements
+) {
+	_passes.Clear( pass_name, work_context, attachements );
 }
 
 void TinyGraphicManager::SetViewport( const VkViewport& viewport ) {

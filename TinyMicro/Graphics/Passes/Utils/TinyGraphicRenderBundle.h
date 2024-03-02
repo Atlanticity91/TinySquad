@@ -97,7 +97,6 @@ tm_struct TinyGraphicRenderpassDescriptor {
 
 tm_struct TinyGraphicRenderBundle {
 
-	std::string Name = "";
 	tiny_list<TinyGraphicRenderTargetDescriptor> Targets{ };
 	tiny_list<TinyGraphicRenderpassDescriptor> Passes{ };
 

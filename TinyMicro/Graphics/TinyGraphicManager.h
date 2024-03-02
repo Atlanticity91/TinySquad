@@ -51,9 +51,10 @@ public:
 
 	~TinyGraphicManager( ) = default;
 
-	tiny_inline void AddBundle( const TinyGraphicRenderBundle & bundle );
-
-	void AddBundles( tiny_init<TinyGraphicRenderBundle> bundle );
+	TinyGraphicManager& AddBundle(
+		const tiny_string& name,
+		const TinyGraphicRenderBundle& bundle 
+	);
 
 	tiny_implement( bool Initialize( TinyFilesystem& file_system, TinyWindow& window ) );
 
@@ -88,6 +89,18 @@ public:
 	tiny_inline bool BeginPass( const tiny_string& pass_name );
 
 	bool BeginPass( const tiny_hash pass_hash );
+
+	void Clear(
+		const tiny_hash pass_name,
+		TinyGraphicWorkContext& work_context,
+		tiny_init<TinyGraphicClearRegion> attachements
+	);
+
+	void Clear(
+		const tiny_hash pass_name,
+		TinyGraphicWorkContext& work_context,
+		tiny_init<TinyGraphicClearAttachement> attachements
+	);
 
 	tiny_inline void SetViewport( const VkViewport& viewport );
 

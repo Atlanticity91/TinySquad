@@ -214,12 +214,12 @@ void TinyToolCommon::DrawPasses( TinyGraphicManager& graphics ) {
     auto& bundles = passes.GetBundles( );
 
     for ( auto& bundle : bundles ) {
-        auto* name_str = bundle.Name.c_str( );
+        auto* name_str = bundle.String.c_str( );
 
         if ( ImGui::CollapsingHeader( name_str, 0 ) ) {
             TinyImGui::BeginVars( );
 
-            for ( auto& target : bundle.Targets ) {
+            for ( auto& target : bundle.Data.Targets ) {
                 name_str = target.Name.c_str( );
 
                 TinyImGui::InputColor( name_str, target.Clear.color );

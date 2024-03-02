@@ -31,8 +31,11 @@ TinyGraphicRenderManager::TinyGraphicRenderManager( )
 	_frames{ }
 { }
 
-void TinyGraphicRenderManager::AddBundle( const TinyGraphicRenderBundle& bundle ) {
-	_bundles.emplace_back( bundle );
+void TinyGraphicRenderManager::AddBundle(
+	const tiny_string& name, 
+	const TinyGraphicRenderBundle& bundle
+) {
+	_bundles.emplace( name, bundle );
 }
 
 bool TinyGraphicRenderManager::Create( TinyGraphicContext& graphic ) {
@@ -46,7 +49,10 @@ void TinyGraphicRenderManager::ReCreate( TinyGraphicContext& graphic ) {
 	InternalCreate( graphic );
 }
 
-bool TinyGraphicRenderManager::Begin( tiny_hash pass_name, TinyGraphicWorkContext& work_context ) {
+bool TinyGraphicRenderManager::Begin( 
+	const tiny_hash pass_name, 
+	TinyGraphicWorkContext& work_context 
+) {
 	auto state = _passes.GetExist( pass_name );
 
 	if ( state ) {
@@ -85,6 +91,66 @@ void TinyGraphicRenderManager::End( TinyGraphicWorkContext& work_context ) {
 	work_context.WorkRender = 0;
 }
 
+void TinyGraphicRenderManager::Clear(
+	const tiny_hash pass_name,
+	TinyGraphicWorkContext& work_context,
+	tiny_init<TinyGraphicClearRegion> attachements
+) {
+	auto* _attachements = attachements.begin( );
+	auto& bundle		= _bundles[ pass_name ];
+	auto count			= tiny_cast( attachements.size( ), tiny_uint );
+	auto images			= tiny_list<VkClearAttachment>{ count };
+	auto bounds			= tiny_list<VkClearRect>{ count };
+
+	while ( count-- ) {
+		auto& attachement = _attachements[ count ];
+		auto& target	  = bundle.Targets[ attachement.Target ];
+		auto& image		  = images[ count ];
+
+		if ( target.Type == TRT_TYPE_OUT || target.Type == TRT_TYPE_COLOR )
+			image.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		else
+			image.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+
+		image.colorAttachment = attachement.Target;
+
+		Tiny::Memcpy( tiny_rvalue( target.Clear ), tiny_rvalue( image.clearValue ) );
+		Tiny::Memcpy( tiny_rvalue( attachement.Bounding ), tiny_rvalue( bounds[ count ] ) );
+	}
+
+	ClearAttachements( work_context, images, bounds );
+}
+
+void TinyGraphicRenderManager::Clear(
+	const tiny_hash pass_name,
+	TinyGraphicWorkContext& work_context,
+	tiny_init<TinyGraphicClearAttachement> attachements
+) {
+	auto* _attachements = attachements.begin( );
+	auto& bundle		= _bundles[ pass_name ];
+	auto count			= tiny_cast( attachements.size( ), tiny_uint );
+	auto images			= tiny_list<VkClearAttachment>{ count };
+	auto bounds			= tiny_list<VkClearRect>{ count };
+
+	while ( count-- ) {
+		auto& attachement = _attachements[ count ];
+		auto image_type   = bundle.Targets[ attachement.Target ].Type;
+		auto& image		  = images[ count ];
+
+		if ( image_type == TRT_TYPE_OUT || image_type == TRT_TYPE_COLOR )
+			image.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		else
+			image.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+
+		image.colorAttachment = attachement.Target;
+
+		Tiny::Memcpy( tiny_rvalue( attachement.Clear ), tiny_rvalue( image.clearValue ) );
+		Tiny::Memcpy( tiny_rvalue( attachement.Bounding ), tiny_rvalue( bounds[ count ] ) );
+	}
+
+	ClearAttachements( work_context, images, bounds );
+}
+
 void TinyGraphicRenderManager::Terminate( TinyGraphicContext& graphic ) {
 	InternalTerminate( graphic );
 }
@@ -94,8 +160,6 @@ void TinyGraphicRenderManager::Terminate( TinyGraphicContext& graphic ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyGraphicRenderManager::CreateOutPass( ) {
 	auto out_bundle = TinyGraphicRenderBundle{ };
-
-	out_bundle.Name = "OutPass";
 
 	out_bundle.Targets = 1;
 	out_bundle.Targets[ 0 ].Name  = "OutTarget";
@@ -114,7 +178,7 @@ void TinyGraphicRenderManager::CreateOutPass( ) {
 	out_bundle.Passes[ 1 ].Targets = 1;
 	out_bundle.Passes[ 1 ].Targets[ 0 ] = { "OutTarget", TGR_ACCESS_WRITE };
 
-	_bundles.emplace_front( out_bundle );
+	AddBundle( "OutPass", out_bundle );
 }
 
 void TinyGraphicRenderManager::CreateTargetTexture(
@@ -161,7 +225,7 @@ bool TinyGraphicRenderManager::CreateTargets(
 				for ( auto& texture : textures )
 					CreateTargetTexture( texture, scissor, target );
 			} else {
-				auto swap_target = (tiny_uint)0;
+				auto swap_target = tiny_cast( 0, tiny_uint );
 
 				for ( auto& texture : textures )
 					texture = graphic.Swapchain.GetTargetProperties( swap_target++ );
@@ -235,14 +299,14 @@ TinyGraphicRenderReferences TinyGraphicRenderManager::CreatePassReferences(
 	const TinyGraphicRenderBundle& bundle
 ) {
 	auto references = TinyGraphicRenderReferences{ };
-	auto pass_id	= (tiny_uint)0;
+	auto pass_id	= tiny_cast( 0, tiny_uint );
 
 	references.Passes = bundle.Passes.size( );
 
 	for ( auto& pass : bundle.Passes ) {
 		auto& reference = references.Passes[ pass_id++ ];
 
-		reference.Bindpoint   = (VkPipelineBindPoint)pass.Type;
+		reference.Bindpoint   = tiny_cast( pass.Type, VkPipelineBindPoint );
 		reference.InputOffset = references.References.size( );
 		reference.ColorOffset = reference.InputOffset;
 
@@ -279,7 +343,7 @@ tiny_list<VkAttachmentDescription> TinyGraphicRenderManager::CreatePassAttachmen
 	const TinyGraphicRenderBundle& bundle 
 ) {
 	auto attachements = tiny_list<VkAttachmentDescription>{ };
-	auto target_id	  = (tiny_uint)0;
+	auto target_id	  = tiny_cast( 0, tiny_uint );
 
 	attachements = bundle.Targets.size( );
 
@@ -290,7 +354,7 @@ tiny_list<VkAttachmentDescription> TinyGraphicRenderManager::CreatePassAttachmen
 		attachement.flags		  = VK_NULL_FLAGS;
 		attachement.format		  = target.Format;
 		attachement.samples		  = target.MSAA;
-		attachement.loadOp		  = (VkAttachmentLoadOp)target.Load;
+		attachement.loadOp		  = tiny_cast( target.Load, VkAttachmentLoadOp );
 		attachement.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		if ( target.Type != TRT_TYPE_DEPTH ) {
@@ -314,7 +378,7 @@ tiny_list<VkSubpassDescription> TinyGraphicRenderManager::CreatePassSubpasses(
 ) {
 
 	auto subpass = tiny_list<VkSubpassDescription>{ };
-	auto pass_id = (tiny_uint)0;
+	auto pass_id = tiny_cast( 0, tiny_uint );
 
 	subpass = references.Passes.size( );
 
@@ -347,7 +411,7 @@ tiny_list<VkSubpassDependency> TinyGraphicRenderManager::CreatePassDependencies(
 	const TinyGraphicRenderBundle& bundle 
 ) {
 	auto dependencies  = tiny_list<VkSubpassDependency>{ };
-	auto dependency	   = (tiny_uint)0;
+	auto dependency	   = tiny_cast( 0, tiny_uint );
 	
 	dependencies = bundle.Passes.size( ) + 1;
 
@@ -417,24 +481,24 @@ bool TinyGraphicRenderManager::CreatePasse(
 	TinyGraphicContext& graphic,
 	const VkViewport& viewport,
 	const VkScissor& scissor,
-	const TinyGraphicRenderBundle& bundle
+	const BundleNode& bundle
 ) {
 	auto renderpass = TinyGraphicRenderpassBundle{ };
-	auto references = CreatePassReferences( bundle );
-	auto* name_str  = bundle.Name.c_str( );
+	auto references = CreatePassReferences( bundle.Data );
+	auto* name_str  = bundle.String.c_str( );
 	
 	renderpass.Frame		= _frames.GetCount( );
 	renderpass.Viewport		= viewport;
 	renderpass.Scissor		= scissor;
-	renderpass.ClearValues  = CreatePassClears( bundle );
-	renderpass.Attachments  = CreatePassAttachments( bundle );
+	renderpass.ClearValues  = CreatePassClears( bundle.Data );
+	renderpass.Attachments  = CreatePassAttachments( bundle.Data );
 	renderpass.Subpasses    = CreatePassSubpasses( references );
-	renderpass.Dependencies = CreatePassDependencies( bundle );
+	renderpass.Dependencies = CreatePassDependencies( bundle.Data );
 
 	auto state = _passes.Create( graphic.Logical, name_str, renderpass );
 	
 	if ( state ) 
-		CreateBarriers( bundle, references );
+		CreateBarriers( bundle.Data, references );
 
 	return state;
 }
@@ -442,9 +506,9 @@ bool TinyGraphicRenderManager::CreatePasse(
 bool TinyGraphicRenderManager::CreateFrame(
 	TinyGraphicContext& graphic,
 	const VkScissor& scissor,
-	const TinyGraphicRenderBundle& bundle
+	const BundleNode& bundle
 ) {
-	auto* name_str = bundle.Name.c_str( );
+	auto* name_str = bundle.String.c_str( );
 	auto frame	   = TinyGraphicRenderFrameProperties{ };
 
 	frame.Pass	  = GetPass( name_str );
@@ -452,7 +516,7 @@ bool TinyGraphicRenderManager::CreateFrame(
 	frame.Height  = scissor.extent.height;
 	frame.Targets = graphic.Swapchain.GetProperties( ).Capacity;
 
-	for ( auto& target : bundle.Targets ) {
+	for ( auto& target : bundle.Data.Targets ) {
 		name_str = target.Name.c_str( );
 
 		auto views	 = _targets.GetViews( name_str );
@@ -465,15 +529,27 @@ bool TinyGraphicRenderManager::CreateFrame(
 	return _frames.Create( graphic.Logical, frame );
 }
 
+void TinyGraphicRenderManager::ClearAttachements(
+	TinyGraphicWorkContext& work_context,
+	const tiny_list<VkClearAttachment>& images,
+	const tiny_list<VkClearRect>& bounds
+) {
+	vkCmdClearAttachments(
+		work_context.Queue->CommandBuffer,
+		images.size( ), images.data( ),
+		bounds.size( ), bounds.data( )
+	);
+}
+
 bool TinyGraphicRenderManager::InternalCreate( TinyGraphicContext& graphic ) {
 	auto state = false;
 
 	for ( const auto& bundle : _bundles ) {
-		auto use_out   = GetUseOut( bundle );
+		auto use_out   = GetUseOut( bundle.Data );
 		auto& viewport = use_out ? graphic.Boundaries.GetSwapViewport( ) : graphic.Boundaries.GetViewport( );
 		auto& scissor  = use_out ? graphic.Boundaries.GetSwapScissor( )  : graphic.Boundaries.GetScissor( );
 
-		state = CreateTargets( graphic, scissor, bundle.Targets );
+		state = CreateTargets( graphic, scissor, bundle.Data.Targets );
 
 		if ( state ) state = CreatePasse( graphic, viewport, scissor, bundle );
 		if ( state ) state = CreateFrame( graphic, scissor, bundle );
@@ -495,7 +571,7 @@ void TinyGraphicRenderManager::InternalTerminate( TinyGraphicContext& graphic ) 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const tiny_list<TinyGraphicRenderBundle>& TinyGraphicRenderManager::GetBundles( ) const {
+const TinyGraphicRenderManager::BundleMap& TinyGraphicRenderManager::GetBundles( ) const {
 	return _bundles;
 }
 
@@ -522,7 +598,7 @@ bool TinyGraphicRenderManager::GetUseOut( const TinyGraphicRenderBundle& bundle 
 			auto find = false;
 
 			for ( auto& bundle : _bundles ) {
-				for ( auto& pass_target : bundle.Targets ) {
+				for ( auto& pass_target : bundle.Data.Targets ) {
 					if ( target.Name != pass_target.Name )
 						continue;
 

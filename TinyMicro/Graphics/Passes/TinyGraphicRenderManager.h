@@ -20,12 +20,15 @@
 
 #pragma once
 
-#include "Utils/TinyGraphicRenderBundle.h"
+#include "Utils/TinyGraphicClearAttachement.h"
 
 tm_class TinyGraphicRenderManager final {
 
+	using BundleMap  = tiny_map<TinyGraphicRenderBundle>;
+	using BundleNode = BundleMap::under_node;
+
 private:
-	tiny_list<TinyGraphicRenderBundle> _bundles;
+	BundleMap _bundles;
 	TinyGraphicRenderTargetManager	   _targets;
 	TinyGraphicRenderBarrierManager	   _barriers;
 	TinyGraphicRenderpassManager	   _passes;
@@ -36,17 +39,29 @@ public:
 
 	~TinyGraphicRenderManager( ) = default;
 
-	void AddBundle( const TinyGraphicRenderBundle& bundle );
+	void AddBundle( const tiny_string& name, const TinyGraphicRenderBundle& bundle );
 
 	bool Create( TinyGraphicContext& graphic );
 
 	void ReCreate( TinyGraphicContext& graphic );
 
-	bool Begin( tiny_hash pass_name, TinyGraphicWorkContext& work_context );
+	bool Begin( const tiny_hash pass_name, TinyGraphicWorkContext& work_context );
 
 	bool NextSubpass( TinyGraphicWorkContext& work_context );
 
 	void End( TinyGraphicWorkContext& work_context );
+
+	void Clear(
+		const tiny_hash pass_name,
+		TinyGraphicWorkContext& work_context,
+		tiny_init<TinyGraphicClearRegion> attachements
+	);
+
+	void Clear(
+		const tiny_hash pass_name,
+		TinyGraphicWorkContext& work_context,
+		tiny_init<TinyGraphicClearAttachement> attachements
+	);
 
 	void Terminate( TinyGraphicContext& graphic );
 
@@ -79,27 +94,39 @@ private:
 
 	tiny_list<VkClearValue> CreatePassClears( const TinyGraphicRenderBundle& bundle );
 
-	TinyGraphicRenderReferences CreatePassReferences( const TinyGraphicRenderBundle& bundle );
+	TinyGraphicRenderReferences CreatePassReferences( 
+		const TinyGraphicRenderBundle& bundle 
+	);
 	
-	tiny_list<VkAttachmentDescription> CreatePassAttachments( const TinyGraphicRenderBundle& bundle );
+	tiny_list<VkAttachmentDescription> CreatePassAttachments( 
+		const TinyGraphicRenderBundle& bundle
+	);
 	
 	tiny_list<VkSubpassDescription> CreatePassSubpasses( 
 		const TinyGraphicRenderReferences& references
 	);
 
-	tiny_list<VkSubpassDependency> CreatePassDependencies( const TinyGraphicRenderBundle& bundle );
+	tiny_list<VkSubpassDependency> CreatePassDependencies( 
+		const TinyGraphicRenderBundle& bundle 
+	);
 
 	bool CreatePasse( 
 		TinyGraphicContext& graphic,
 		const VkViewport& viewport,
 		const VkScissor& scissor,
-		const TinyGraphicRenderBundle& bundle
+		const BundleNode& bundle
 	);
 
 	bool CreateFrame( 
 		TinyGraphicContext& graphic,
 		const VkScissor& scissor,
-		const TinyGraphicRenderBundle& bundle
+		const BundleNode& bundle
+	);
+
+	tiny_inline void ClearAttachements(
+		TinyGraphicWorkContext& work_context,
+		const tiny_list<VkClearAttachment>& images,
+		const tiny_list<VkClearRect>& bounds
 	);
 
 	bool InternalCreate( TinyGraphicContext& graphic );
@@ -107,7 +134,7 @@ private:
 	void InternalTerminate( TinyGraphicContext& graphic );
 
 public:
-	const tiny_list<TinyGraphicRenderBundle>& GetBundles( ) const;
+	const BundleMap& GetBundles( ) const;
 
 	TinyGraphicRenderpass& GetPass( const tiny_string& pass_name );
 
