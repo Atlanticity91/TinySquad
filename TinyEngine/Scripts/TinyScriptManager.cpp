@@ -36,6 +36,14 @@ bool TinyScriptManager::Initialize( ) {
 	return state;
 }
 
+void TinyScriptManager::Register( const tiny_string& name, TinyLuaPrototype prototype ) {
+	_context.Register( name, prototype );
+}
+
+void TinyScriptManager::UnRegister( const tiny_string& name ) {
+	_context.UnRegister( name ); 
+}
+
 void TinyScriptManager::SetGlobal( const tiny_string& name, c_pointer value ) {
 	_context.SetGlobal( name, value );
 }
@@ -88,25 +96,29 @@ void TinyScriptManager::SetGlobal( const tiny_string& name, const tiny_color& va
 	_context.SetGlobal( name, value );
 }
 
-void TinyScriptManager::SetGlobal( const tiny_string& name, TinyLuaPrototype function ) {
-	_context.SetGlobal( name, function );
+void TinyScriptManager::RemoveGlobal( const tiny_string& name ) { 
+	_context.RemoveGlobal( name ); 
 }
 
-void TinyScriptManager::Execute( TinyGame* game, const TinyLuaExecution& execution ) {
-	if ( !execution.Function.is_empty( ) ) {
-		_context.SetGlobal( TinyLuaGameVar, tiny_cast( game, c_pointer ) );
-		_context.Execute( execution );
-	}
+void TinyScriptManager::Push( const TinyLuaParameter& parameter ) { 
+	_context.Push( parameter );
+}
+
+bool TinyScriptManager::Pop( TinyLuaParameter& parameter ) {
+	return _context.Pop( parameter );
+}
+
+bool TinyScriptManager::Execute( c_string source ) { return _context.Execute( source ); }
+
+bool TinyScriptManager::Execute( const tiny_string& source ) { 
+	return _context.Execute( source ); 
 }
 
 void TinyScriptManager::Execute( TinyGame* game, const TinyScriptExecution& execution ) {
 	auto* script = tiny_cast( GetAsset( execution.Script ), TinyScriptLua* );
 
-	if ( script ) {
-		_context.SetGlobal( TinyLuaGameVar, tiny_cast( game, c_pointer ) );
-
+	if ( script )
 		script->Execute( _context, execution );
-	}
 }
 
 void TinyScriptManager::Terminate( ) { _context.Terminate( ); }

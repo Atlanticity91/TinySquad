@@ -33,7 +33,7 @@
 /// INCLUDES 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 extern "C" {
-	
+
 	#include <stdlib.h>
 	#include <stdio.h>
 	#include <string.h>
@@ -53,6 +53,7 @@ extern "C" {
 #include <new>
 #include <queue>
 #include <random>
+#include <regex>
 #include <set>
 #include <string>
 #include <thread>

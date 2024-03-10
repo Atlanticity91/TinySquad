@@ -38,6 +38,10 @@ public:
 
 	bool Initialize( );
 
+	tiny_inline void Register( const tiny_string& name, TinyLuaPrototype prototype );
+
+	tiny_inline void UnRegister( const tiny_string& name );
+
 	tiny_inline void SetGlobal( const tiny_string& name, c_pointer value );
 
 	tiny_inline void SetGlobal( const tiny_string& name, bool value );
@@ -64,9 +68,15 @@ public:
 
 	tiny_inline void SetGlobal( const tiny_string& name, const tiny_color& value );
 
-	tiny_inline void SetGlobal( const tiny_string& name, TinyLuaPrototype function );
+	tiny_inline void RemoveGlobal( const tiny_string& name );
 
-	void Execute( TinyGame* game, const TinyLuaExecution& execution );
+	tiny_inline void Push( const TinyLuaParameter& parameter );
+
+	tiny_inline bool Pop( TinyLuaParameter& parameter );
+
+	tiny_inline bool Execute( c_string source );
+
+	tiny_inline bool Execute( const tiny_string& source );
 
 	void Execute( TinyGame* game, const TinyScriptExecution& execution );
 

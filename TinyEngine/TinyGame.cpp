@@ -39,6 +39,7 @@ bool TinyGame::Start( tiny_int argc, char** argv ) {
 
 		state = ProcessArguments( argc, argv ) && Initialize( _engine );
 	}
+
 	if ( state )
 		Load( );
 

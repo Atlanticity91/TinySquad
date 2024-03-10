@@ -92,6 +92,16 @@ void TinyRenderer::Draw( TinyGame* game, const TinyRenderDraw2DContext& draw_con
 	_batchs.Draw( game, draw_context );
 }
 
+void TinyRenderer::Draw( TinyGame* game, const TinyRenderLine2DContext& context ) {
+}
+
+void TinyRenderer::Draw(
+	TinyGame* game,
+	tiny_init<tiny_vec2> points,
+	const tiny_color& color
+) {
+}
+
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderDraw3DContext& draw_context ) {
 	_batchs.Draw( game, draw_context );
 }

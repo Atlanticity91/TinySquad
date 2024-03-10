@@ -45,9 +45,7 @@ bool TinyScriptLua::Create( TinyLuaContext& context, TinyFile& file ) {
 
 			source[ length ] = '\0';
 
-			PreProcess( source );
-
-			state = context.Compile( source );
+			state = true;// context.Compile( source );
 		}
 	}
 
@@ -62,9 +60,9 @@ bool TinyScriptLua::Create( TinyLuaContext& context, tiny_pointer source ) {
 		auto length = tiny_lvalue( address );
 		auto source = tiny_string{ tiny_cast( address + 1 , c_pointer ), length };
 
-		PreProcess( source );
+		source[ length ] = '\0';
 
-		state = context.Compile( source );
+		state = context.Compile( _table, source );
 	}
 
 	return state;
@@ -74,16 +72,12 @@ void TinyScriptLua::Execute( TinyLuaContext& context, const TinyScriptExecution&
 	auto* function_str = execution.Function.as_chars( );
 	auto* table_str	   = _table.as_chars( );
 
+	TinyLua::Script::Convert( context, tiny_cast( execution.Component, TinyComponent* ) );
+
 	lua_getglobal( context, table_str );
-	lua_pushstring( context, function_str );
-	
-	auto type = lua_gettable( context, -2 );
-
-	if ( lua_isfunction( context, type ) ) {
-		TinyLua::Script::Convert( context, tiny_cast( execution.Component, TinyComponent* ) );
-
-		lua_pcall( context, 1, 0, 0 );
-	}
+	lua_getfield( context, TINY_LUA_TOP, function_str );
+	lua_pushvalue( context, -2 );
+	lua_pcall( context, 1, 0, 0 );
 }
 
 void TinyScriptLua::Terminate( TinyLuaContext& context ) {
@@ -93,20 +87,6 @@ void TinyScriptLua::Terminate( TinyLuaContext& context ) {
 	lua_setglobal( context, table_str );
 
 	tiny_deallocate( _source );
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PRIVATE ===
-////////////////////////////////////////////////////////////////////////////////////////////
-void TinyScriptLua::PreProcess( tiny_string& source ) {
-	auto keyword = "function";
-	auto char_id = tiny_cast( 0, tiny_uint );
-	auto char_offset = tiny_cast( 1, tiny_uint );
-
-	//while ( char_id < source.length( ) ) { }
-
-	_functions.emplace_back( { "Test" } );
-	_functions.emplace_back( { "Test01" } );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

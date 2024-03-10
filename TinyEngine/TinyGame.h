@@ -28,67 +28,215 @@ protected:
 	TinyEngine _engine;
 
 public:
+	/**
+	 * Constructor
+	 * @param title : Game window title.
+	 * @param orientation : Desired game orientation for graphics adaptation.
+	 **/
 	TinyGame( const tiny_string& title, TinyGameOrientations orientation );
 
+	/**
+	 * Destructor
+	 **/
 	virtual ~TinyGame( ) = default;
-
+	
+	/**
+	 * Start function
+	 * @note : Get current engine instance.
+	 * @param argc : Current argument count.
+	 * @param argv : Current argument values.
+	 * @return : bool
+	 **/
 	bool Start( tiny_int argc, char** argv );
 
+	/**
+	 * Run method
+	 * @note : Run the current game.
+	 **/
 	void Run( );
 
+	/**
+	 * Close method
+	 * @note : Close current game.
+	 **/
 	void Close( );
 
 protected:
+	/**
+	 * ProcessArguments function
+	 * @note : Process passed argument.
+	 * @param argc : Current argument count.
+	 * @param argv : Current argument values.
+	 * @return : bool
+	 **/
 	virtual bool ProcessArguments( tiny_int argc, char** argv );
 
+	/**
+	 * SetupBundles method
+	 * @note : Setup graphic bundle for rendering.
+	 * @param graphics : Default Graphic manager instance.
+	 **/
 	tiny_virtual( void SetupBundles( TinyGraphicManager& graphics ) );
 
+	/**
+	 * SetupBundles method
+	 * @note : Default 2D graphic bundle for rendering.
+	 * @param graphics : Default Graphic manager instance.
+	 **/
 	void SetupBundles2D( TinyGraphicManager& graphics );
 
+	/**
+	 * Initialize function
+	 * @note : Initialize current game instance.
+	 * @param engine : Current Engine instance.
+	 * @return : bool
+	 **/
 	tiny_virtualv( true, bool Initialize( TinyEngine& engine ) );
 	
+	/**
+	 * LoadInterop method
+	 * @note : Load game LUA Inter-Operation.
+	 * @param lua_context : Current LUA context instance.
+	 **/
 	tiny_virtual( void LoadInterop( TinyLuaContext& lua_context ) );
 
+	/**
+	 * LoadContent method
+	 * @note : Load game default content.
+	 * @param assets : Current asset manager instance.
+	 **/
 	tiny_virtual( void LoadContent( TinyAssetManager& assets ) );
 
+	/**
+	 * LoadDefault2D method
+	 * @note : Load default 2D ECS components and systems.
+	 * @param ecs : Current ECS instance.
+	 **/
 	void LoadDefault2D( TinyECS& ecs );
 
+	/**
+	 * LoadECS method
+	 * @note : Load default game ECS configuration.
+	 * @param ecs : Current ECS instance.
+	 **/
 	tiny_virtual( void LoadECS( TinyECS& ecs ) );
 
+	/**
+	 * Tick method
+	 * @note : Tick current game.
+	 **/
 	tiny_virtual( void Tick( ) );
 
+	/**
+	 * Terminate method
+	 * @note : Terminate current game.
+	 **/
 	tiny_virtual( void Terminate( ) );
 
 private:
+	/**
+	 * Load method
+	 * @note : Load Default ECS, Content & LUA Inter-Operation.
+	 **/
 	void Load( );
 
 public:
+	/**
+	 * GetEngine function
+	 * @note : Get current engine instance.
+	 * @return : TinyEngine
+	 **/
 	TinyEngine& GetEngine( );
 
+	/**
+	 * GetJobs function
+	 * @note : Get current job manager instance.
+	 * @return : TinyJobManager
+	 **/
 	tiny_inline TinyJobManager& GetJobs( );
 
+	/**
+	 * GetFilesystem function
+	 * @note : Get current file system instance.
+	 * @return : TinyFilesystem
+	 **/
 	tiny_inline TinyFilesystem& GetFilesystem( );
 
+	/**
+	 * GetAssets function
+	 * @note : Get current asset manager instance.
+	 * @return : TinyAssetManager
+	 **/
 	tiny_inline TinyAssetManager& GetAssets( );
 
+	/**
+	 * GetWindow function
+	 * @note : Get current window instance.
+	 * @return : TinyWindow
+	 **/
 	tiny_inline TinyWindow& GetWindow( );
-
+	
+	/**
+	 * GetInputs function
+	 * @note : Get current input manager instance.
+	 * @return : TinyInputManager
+	 **/
 	tiny_inline TinyInputManager& GetInputs( );
 
+	/**
+	 * GetAudio function
+	 * @note : Get current audio manager instance.
+	 * @return : TinyAudioManager
+	 **/
 	tiny_inline TinyAudioManager& GetAudio( );
 
+	/**
+	 * GetGraphics function
+	 * @note : Get current graphic manager instance.
+	 * @return : TinyGraphicManager
+	 **/
 	tiny_inline TinyGraphicManager& GetGraphics( );
 
+	/**
+	 * GetNatives function
+	 * @note : Get current native function register instance.
+	 * @return : TinyNativeRegister
+	 **/
 	tiny_inline TinyNativeRegister& GetNatives( );
 
+	/**
+	 * GetScripts function
+	 * @note : Get current script manager instance.
+	 * @return : TinyScriptManager
+	 **/
 	tiny_inline TinyScriptManager& GetScripts( );
 
+	/**
+	 * GetRenderer function
+	 * @note : Get current renderer instance.
+	 * @return : TinyRenderer
+	 **/
 	tiny_inline TinyRenderer& GetRenderer( );
 	
+	/**
+	 * GetECS function
+	 * @note : Get current entity component system instance.
+	 * @return : TinyECS
+	 **/
 	tiny_inline TinyECS& GetECS( );
-
+	
+	/**
+	 * GetAddons function
+	 * @note : Get current addon manager instance.
+	 * @return : TinyAddonManager
+	 **/
 	tiny_inline TinyAddonManager& GetAddons( );
 	
+	/**
+	 * GetToolbox function
+	 * @note : Get current toolbox instance.
+	 * @return : TinyToolbox
+	 **/
 	tiny_inline TinyToolbox& GetToolbox( );
 
 };

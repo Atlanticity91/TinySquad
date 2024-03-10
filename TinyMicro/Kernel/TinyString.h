@@ -38,8 +38,9 @@ tm_struct tiny_string_view {
 
 tm_class tiny_string final {
 
-	using under_layer = c_string;
-	using iterator	  = tiny_iterator<char>;
+	using under_layer	 = c_string;
+	using iterator		 = tiny_iterator<char>;
+	using regex_iterator = std::cregex_iterator;
 
 private:
 	under_layer _handle;
@@ -102,6 +103,10 @@ public:
 	const iterator begin( ) const;
 
 	const iterator end( ) const;
+
+	regex_iterator begin_regex( const tiny_string& regex ) const;
+
+	regex_iterator end_regex( ) const;
 
 private:
 	bool is_valid( under_layer string ) const;

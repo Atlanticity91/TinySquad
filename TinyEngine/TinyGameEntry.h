@@ -22,6 +22,12 @@
 
 #include "TinyGame.h"
 
+/**
+ * TINY_GAME_ENTRY_IMP macro
+ * @param GAME : Game class instance type name.
+ * @param MEM_SIZE : Total Game Memory size ( can be inferior if size exceed memory 
+ *					 capacity )
+ **/
 #define TINY_GAME_ENTRY_IMP( GAME, MEM_SIZE )\
 	tiny_int main( tiny_int argc, char** argv ) {\
 		if ( tiny_initialize( MEM_SIZE ) ) {\

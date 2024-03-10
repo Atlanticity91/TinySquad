@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyLuaExecution.h"
+#include "TinyLuaParameter.h"
 
 #define TINY_LUA_TOP -1
 
@@ -38,9 +38,13 @@ public:
 
 	bool Create( );
 
-	bool Compile( c_string source );
+	bool Compile( c_string alias, c_string source );
 
-	bool Compile( const tiny_string& source );
+	tiny_inline bool Compile( const tiny_string& alias, const tiny_string& source );
+
+	void Register( const tiny_string& name, TinyLuaPrototype prototype );
+
+	tiny_inline void UnRegister( const tiny_string& name );
 
 	void SetGlobal( const tiny_string& name, bool value );
 
@@ -66,9 +70,15 @@ public:
 	
 	void SetGlobal( const tiny_string& name, const tiny_color& value );
 
-	void SetGlobal( const tiny_string& name, TinyLuaPrototype function );
+	void RemoveGlobal( const tiny_string& name );
 
-	void Execute( const TinyLuaExecution& execution );
+	void Push( const TinyLuaParameter& parameter );
+
+	bool Pop( TinyLuaParameter& parameter );
+
+	bool Execute( c_string source );
+
+	tiny_inline bool Execute( const tiny_string& source );
 
 	void Terminate( );
 
@@ -83,13 +93,8 @@ public:
 		}
 	};
 
-private:
-	void PushInputs( const tiny_list<TinyLuaParameter>& inputs );
-
-	void PushOutputs( const tiny_list<TinyLuaParameter>& outputs );
-
 public:
-	bool GetExist( const tiny_string& function ) const;
+	bool GetExist( const tiny_string& name ) const;
 
 public:
 	template<typename Type>

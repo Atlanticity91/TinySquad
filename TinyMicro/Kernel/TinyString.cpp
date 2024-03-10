@@ -79,7 +79,7 @@ tiny_string& tiny_string::asign( const tiny_string& other ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool tiny_string::is_valid( ) const { return is_valid( _handle ); }
+bool tiny_string::is_valid( ) const { return _handle && _length > 0; }
 
 tiny_string::under_layer tiny_string::get( ) const { return _handle; }
 
@@ -154,6 +154,14 @@ const tiny_string::iterator tiny_string::begin( ) const { return { as_chars( ) }
 const tiny_string::iterator tiny_string::end( ) const { 
 	return { as_chars( ) + ( _length + 1 ) };
 }
+
+tiny_string::regex_iterator tiny_string::begin_regex( const tiny_string& regex ) const {
+	auto expression = std::regex{ regex.as_chars( ), regex.length( ) };
+
+	return regex_iterator{ _handle, tiny_rvalue( _handle[ _length + 1 ] ), expression };
+}
+
+tiny_string::regex_iterator tiny_string::end_regex( ) const { return regex_iterator{ }; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===

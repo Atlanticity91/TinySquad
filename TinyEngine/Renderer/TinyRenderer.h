@@ -40,6 +40,14 @@ public:
 
 	tiny_inline void Draw( TinyGame* game, const TinyRenderDraw2DContext& draw_context );
 
+	void Draw( TinyGame* game, const TinyRenderLine2DContext& context );
+
+	void Draw( 
+		TinyGame* game, 
+		tiny_init<tiny_vec2> points,
+		const tiny_color& color 
+	);
+
 	tiny_inline void Draw( TinyGame* game, const TinyRenderDraw3DContext& draw_context );
 
 	tiny_inline void Flush( TinyGame* game );

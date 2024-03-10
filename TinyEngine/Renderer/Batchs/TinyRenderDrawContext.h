@@ -31,6 +31,14 @@ te_struct TinyRenderDraw2DContext {
 
 };
 
+te_struct TinyRenderLine2DContext {
+
+	tiny_vec2 Begin{ };
+	tiny_vec2 End{ };
+	tiny_color Color{ };
+
+};
+
 te_struct TinyRenderDraw3DContext {
 
 	TinyAsset Material{ };

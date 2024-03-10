@@ -50,9 +50,6 @@ public:
 
 	void Terminate( TinyLuaContext& context );
 
-private:
-	void PreProcess( tiny_string& source );
-
 public:
 	const tiny_string& GetTable( ) const;
 
