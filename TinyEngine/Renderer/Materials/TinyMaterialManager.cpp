@@ -48,7 +48,7 @@ bool TinyMaterialManager::OnLoad(
 		file.Read( builder.Type );
 		file.Read( builder.PassType );
 		file.Read( builder.PassName );
-		file.Read( builder.PassIndex );
+		file.Read( builder.Subpass );
 		file.Read( builder.ShaderStages );
 		file.Read( builder.InputBinding );
 		file.Read( builder.InputAttributes );

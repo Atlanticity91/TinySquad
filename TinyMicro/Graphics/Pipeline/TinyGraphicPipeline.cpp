@@ -251,7 +251,7 @@ bool TinyGraphicPipeline::CreateRenderPipeline(
 	pipeline_info.pDynamicState		  = tiny_rvalue( dynamics );
 	pipeline_info.layout			  = _layout;
 	pipeline_info.renderPass		  = bundle.Pass;
-	pipeline_info.subpass			  = bundle.PassIndex;
+	pipeline_info.subpass			  = bundle.Subpass;
 	pipeline_info.basePipelineHandle  = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex   = 0;
 

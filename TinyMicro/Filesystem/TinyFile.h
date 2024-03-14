@@ -197,6 +197,18 @@ public:
 		return count;
 	};
 
+	template<typename... Args>
+	tiny_uint Write( const tiny_string& format, Args... args ) {
+		auto buffer = tiny_buffer<256>{ };
+		
+		Tiny::Sprintf( buffer, format, std::forward<Args>( args )... );
+
+		auto length = buffer.size( );
+		auto* data  = buffer.get( );
+
+		return Write( length, data );
+	};
+
 public:
 	bool GetIsValid( ) const;
 

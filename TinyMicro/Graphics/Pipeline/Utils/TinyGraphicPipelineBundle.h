@@ -61,7 +61,7 @@ tm_struct TinyGraphicPipelineBundle {
 
 	TinyGraphicPipelineTypes Type;
 	TinyGraphicRenderpassTypes PassType;
-	tiny_uint PassIndex;
+	tiny_uint Subpass;
 	VkRenderPass Pass;
 	tiny_list<VkPipelineShaderStageCreateInfo> Shaders;
 	tiny_list<VkVertexInputBindingDescription> InputBinding;

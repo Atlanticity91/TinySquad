@@ -67,7 +67,7 @@ public:
 
 	tiny_inline bool CompileShader( 
 		const TinyPathInformation & path, 
-		tiny_storage& file, 
+		tiny_storage& file,
 		TinyGraphicShaderProperties& properties 
 	);
 

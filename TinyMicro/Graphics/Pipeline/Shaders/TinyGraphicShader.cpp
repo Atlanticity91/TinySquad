@@ -73,7 +73,7 @@ bool TinyGraphicShader::GetShaderModule(
     shader_info.codeSize = properties.Code.size( );
     shader_info.pCode    = tiny_cast( properties.Code.data( ), const tiny_uint* );
 
-    return vk::Check( vkCreateShaderModule( logical, &shader_info, vk::GetAllocator( ), &_pipeline_stage.module ) );
+    return vk::Check( vkCreateShaderModule( logical, tiny_rvalue( shader_info ), vk::GetAllocator( ), tiny_rvalue( _pipeline_stage.module ) ) );
 }
 
 void TinyGraphicShader::GetProperties( const TinyGraphicShaderProperties& properties ) {

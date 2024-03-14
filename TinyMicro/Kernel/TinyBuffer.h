@@ -69,9 +69,7 @@ struct tiny_buffer {
 
 	template<typename... Args>
 	bool store( const tiny_string& format, Args&&... args ) { 
-		auto buffer = tiny_string{ Values, Length };
-
-		return Tiny::Sprintf( buffer, format, std::forward<Args>( args )... );
+		return Tiny::Sprintf( tiny_self, format, std::forward<Args>( args )... );
 	};
 
 	bool unstore( tiny_uint length, c_pointer data ) { 
@@ -110,6 +108,8 @@ struct tiny_buffer {
 	};
 
 	tiny_uint length( ) const { return Length; };
+
+	tiny_uint size( ) const { return Cursor; };
 
 	c_pointer get( ) { return tiny_cast( Values, c_pointer ); };
 

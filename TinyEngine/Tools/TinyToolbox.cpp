@@ -286,7 +286,7 @@ bool TinyToolbox::CreateImGuiContext( TinyWindow& window, TinyGraphicManager& gr
     auto& queues      = graphics.GetQueues( );
     auto* queue       = queues.Acquire( VK_QUEUE_TYPE_GRAPHIC );
     auto queue_family = queues.GetPhysicalQueue( VK_QUEUE_TYPE_GRAPHIC ).Family;
-    auto& render_pass = graphics.GetRenderPass( "OutTarget" );
+    auto& render_pass = graphics.GetRenderPass( TINY_OUTPASS_NAME );
     auto init_info    = ImGui_ImplVulkan_InitInfo{ };
 
     init_info.Instance        = graphics.GetInstance( );
@@ -414,12 +414,12 @@ void TinyToolbox::CreateDevDir( TinyGame* game ) {
         auto material_path = tiny_string{ mat_path.c_str( ) };
         auto& graphics     = game->GetGraphics( );
         auto& assets       = game->GetAssets( );
-        auto material      = tiny_cast( graphics.CreatePipeline( TGP_TYPE_2D, "OutPass", 0 ), TinyMaterialBuilder );
+        auto material      = tiny_cast( graphics.CreatePipeline( TGP_TYPE_2D, TINY_OUTPASS_NAME, 0 ), TinyMaterialBuilder );
 
         material.InputBinding.clear( );
         material.InputAttributes.clear( );
 
-        material.PassName = "OutPass";
+        material.PassName = TINY_OUTPASS_NAME;
         material.ShaderStages = 2;
         material.ShaderStages[ 0 ] = "sv_default";
         material.ShaderStages[ 1 ] = "sf_default";

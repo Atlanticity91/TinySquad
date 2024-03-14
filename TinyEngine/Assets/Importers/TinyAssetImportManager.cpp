@@ -249,7 +249,7 @@ bool TinyAssetImportManager::ExportMaterial( TinyGame* game, TinyFile& file, c_p
 		file.Write( builder->Type );
 		file.Write( builder->PassType );
 		file.Write( builder->PassName );
-		file.Write( builder->PassIndex );
+		file.Write( builder->Subpass );
 		file.Write( builder->ShaderStages );
 		file.Write( builder->InputBinding );
 		file.Write( builder->InputAttributes );

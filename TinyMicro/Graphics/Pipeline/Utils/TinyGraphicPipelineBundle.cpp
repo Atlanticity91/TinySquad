@@ -26,7 +26,7 @@
 TinyGraphicPipelineBundle::TinyGraphicPipelineBundle( ) 
 	: Type{ TGP_TYPE_2D },
 	PassType{ TGR_TYPE_RENDER },
-	PassIndex{ 0 },
+	Subpass{ 0 },
 	Pass{ VK_NULL_HANDLE },
 	Shaders{ },
 	InputBinding{ },

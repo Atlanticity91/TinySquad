@@ -65,7 +65,7 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 
 	auto proj_view = cameras->GetProjViewMatrix( );
 
-	renderer.Prepare( game, TinySkin2DSystem::Draw );
+	renderer.Prepare( game, TINY_OUTPASS_HASH, TinySkin2DSystem::Draw );
 
 	for ( auto& component : _components ) {
 		auto owner = component.GetOwner( );
@@ -127,13 +127,16 @@ void TinySkin2DSystem::Draw(
 	auto vertex_count = tiny_cast( 0, tiny_uint );
 	auto* material	  = batchs.GetMaterial( assets );
 	auto textures	  = batchs.FlushTextures( );
+	auto can_draw	  = false;
 
 	{
 		auto& stagging = batchs.GetStaging( );
 		auto context   = graphics.GetContext( );
 		auto copies	   = batchs.Flush2D( context, vertex_count );
 
-		if ( vertex_count > 0 ) {
+		can_draw = vertex_count > 0;
+
+		if ( can_draw ) {
 			auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
 
 			burner.Upload( stagging, uniforms.GetUniform( "ubo_transforms" ), copies[ 0 ] );
@@ -141,7 +144,7 @@ void TinySkin2DSystem::Draw(
 		}
 	}
 
-	if ( vertex_count > 0 ) {
+	if ( can_draw ) {
 		auto work_context = graphics.GetWorkdContext( );
 
 		material->Mount( work_context );

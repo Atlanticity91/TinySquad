@@ -25,13 +25,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderer::TinyRenderer( )
 	: _uniforms{ },
-	_batchs{ }/*, 
+	_batchs{ },
+	_debug{ }/*
 	_post_process{ }*/
 { }
 
 bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem ) {
-	auto context = graphics.GetContext( );
-	auto state   = _uniforms.Create( graphics ) && _batchs.Initialize( context );
+	auto state = _uniforms.Create( graphics )   && 
+				 _batchs.Initialize( graphics ) &&
+				 _debug.Initialize( graphics );
 
 	if ( state ) {
 		graphics.AddCompilerMacros( 
@@ -84,22 +86,26 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 	return state;
 }
 
-void TinyRenderer::Prepare( TinyGame* game, FlushMethod_t flush_method ) {
-	_batchs.Prepare( game, flush_method );
+void TinyRenderer::Prepare(
+	TinyGame* game,
+	const tiny_string& render_pass,
+	FlushMethod_t flush_method
+) {
+	auto render_hash = tiny_hash{ render_pass };
+
+	_batchs.Prepare( game, render_hash, flush_method );
+}
+
+void TinyRenderer::Prepare(
+	TinyGame* game,
+	const tiny_hash render_pass,
+	FlushMethod_t flush_method 
+) {
+	_batchs.Prepare( game, render_pass, flush_method );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderDraw2DContext& draw_context ) {
 	_batchs.Draw( game, draw_context );
-}
-
-void TinyRenderer::Draw( TinyGame* game, const TinyRenderLine2DContext& context ) {
-}
-
-void TinyRenderer::Draw(
-	TinyGame* game,
-	tiny_init<tiny_vec2> points,
-	const tiny_color& color
-) {
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderDraw3DContext& draw_context ) {
@@ -108,14 +114,21 @@ void TinyRenderer::Draw( TinyGame* game, const TinyRenderDraw3DContext& draw_con
 
 void TinyRenderer::Flush( TinyGame* game ) { _batchs.Flush( game ); }
 
+void TinyRenderer::DrawDebug( TinyGame* game, const TinyRenderDebugPrimitive& primitive ) {
+	_debug.Draw( game, primitive );
+}
+
 void TinyRenderer::Compose( TinyGame* game ) {
+	Flush( game );
+	
 	auto& graphics = game->GetGraphics( );
 	
-	//_post_process.Compose( graphics, assets );
-	graphics.BeginPass( "OutPass" );
+	graphics.NextSubpass( );
 
-	Flush( game );
+	_debug.Draw( game, { { 10.f, 10.f }, { 730.f, 10.f } } );
 
+	//_post_process.Compose( game ); <- graphics.NextSubpass( );
+	_debug.Flush( game, _batchs );
 	/*
 	auto ctx   = graphics.GetContext( );
 	auto& ecs  = game->GetECS( );
@@ -184,14 +197,11 @@ void TinyRenderer::Compose( TinyGame* game ) {
 		}
 	}
 	*/
-
-	graphics.NextSubpass( );
 }
 
 void TinyRenderer::Terminate( TinyGraphicManager& graphics ) {
-	auto context = graphics.GetContext( );
-
-	_batchs.Terminate( context );
+	_debug.Terminate( graphics );
+	_batchs.Terminate( graphics );
 	_uniforms.Terminate( graphics );
 }
 

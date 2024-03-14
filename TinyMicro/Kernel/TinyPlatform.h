@@ -28,9 +28,13 @@
 #	define tiny_dump_leaks( )
 #endif
 
-#define TINY_NO_CFILE (c_file)nullptr
+#define TINY_NO_CFILE tiny_cast( nullptr, c_file )
 
 typedef FILE* c_file;
+
+template<tiny_uint Length> 
+	requires ( Length > 0 ) 
+struct tiny_buffer;
 
 namespace Tiny {
 
@@ -120,19 +124,18 @@ namespace Tiny {
 		return Memcpy( src, dst, 1 );
 	};
 
-	template<typename... Args>
-	bool Sprintf( const tiny_string& buffer, const tiny_string& format, Args&&... args ) { 
+	template<tiny_uint Length, typename... Args >
+	bool Sprintf( tiny_buffer<Length>& buffer, const tiny_string& format, Args&&... args ) { 
 #		ifdef TINY_WIN
 		auto* buffer_str = buffer.as_chars( );
-		auto buffer_len  = buffer.length( );
 		auto* format_str = format.as_chars( );
 
-		return sprintf_s( buffer_str, buffer_len, format_str, std::forward<Args>( args )... ) > -1;
+		buffer.Cursor = sprintf_s( buffer_str, Length, format_str, std::forward<Args>( args )... );
 #		else
-		return sprintf( buffer_str, format_str, args... ) != EOF;
+		buffer.Cursor = sprintf( buffer_str, format_str, args... );
 #		endif
 
-		return false;
+		return buffer.Cursor > 0;
 	};
 
 	tm_dll std::string GetWorkingDir( );

@@ -178,7 +178,7 @@ void TinyGraphicRenderManager::CreateOutPass( ) {
 	out_bundle.Passes[ 1 ].Targets = 1;
 	out_bundle.Passes[ 1 ].Targets[ 0 ] = { "OutTarget", TGR_ACCESS_WRITE };
 
-	AddBundle( "OutPass", out_bundle );
+	AddBundle( TINY_OUTPASS_NAME, out_bundle );
 }
 
 void TinyGraphicRenderManager::CreateTargetTexture(

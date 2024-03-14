@@ -48,6 +48,7 @@ public:
 	using BatchLight_t	   = TinyRenderBatch<TinyRenderLight, TINY_MAX_LIGHT>;
 
 private:
+	tiny_hash				 _render_pass;
 	TinyGraphicBufferStaging _staging;
 	BatchTransform_t		 _transforms;
 	BatchIndex_t			 _indexes;
@@ -63,9 +64,9 @@ public:
 
 	~TinyRenderBatchManager( ) = default;
 
-	bool Initialize( TinyGraphicContext& context );
+	bool Initialize( TinyGraphicManager& graphics );
 
-	void Prepare( TinyGame* game, FlushMethod_t flush_method );
+	void Prepare( TinyGame* game, const tiny_hash render_pass, FlushMethod_t flush_method );
 
 	void Draw( TinyGame* game, const TinyRenderDraw2DContext& draw_context );
 
@@ -88,7 +89,7 @@ public:
 
 	void Flush( TinyGame* game );
 
-	void Terminate( TinyGraphicContext& context );
+	void Terminate( TinyGraphicManager& graphics );
 
 public:
 	TinyGraphicBufferStaging& GetStaging( );

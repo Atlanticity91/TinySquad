@@ -99,7 +99,7 @@ TinyGraphicPipelineBundle TinyGraphicManager::CreatePipeline(
 ) {
 	auto pipeline = _pipelines.Create( type );
 
-	pipeline.PassIndex		 = subpass;
+	pipeline.Subpass		 = subpass;
 	pipeline.Pass			 = _passes.GetPass( renderpass );
 	pipeline.DescriptorCount = _swapchain.GetProperties( ).Capacity;
 

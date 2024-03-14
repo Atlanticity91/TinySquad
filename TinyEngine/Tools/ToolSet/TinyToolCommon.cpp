@@ -133,16 +133,26 @@ void TinyToolCommon::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     TinyImGui::Collapsing(
         "Convert To C-Array",
         [ & ]( ) {
-            auto filters     = "TTF Fonts (*.ttf)\0*.ttf\0";
+            auto ttf_filters    = "TTF Fonts (*.ttf)\0*.ttf\0";
+            auto shader_filters = "GLSL (*.glsl)\0*.glsl\0Vertex (*.vert)\0*.vert\0Fragment (*.frag)\0*.frag\0";
 
             tiny_buffer<256> buffer;
 
-            if ( ImGui::Button( "Convert TTF", { -1, 0.f } ) ) {
-                if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, filters, buffer.length( ), buffer.as_chars( ) ) ) {
+            if ( ImGui::Button( "Convert TTF", { -1.f, 0.f } ) ) {
+                if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, ttf_filters, buffer.length( ), buffer.as_chars( ) ) ) {
                     auto info = filesystem.GetInformation( buffer.as_chars( ) );
-                    auto path = info.Path + "\\" + info.Name + ".cpp";
+                    auto path = info.Path + "\\" + info.Name + "_to_array.cpp";
 
                     ImGui::CompressTTF( buffer.as_chars( ), path.c_str( ), false, true, true );
+                }
+            }
+
+            if ( ImGui::Button( "Convert Shader", { -1.f, .0f } ) ) {
+                if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, shader_filters, buffer.length( ), buffer.as_chars( ) ) ) {
+                    auto info = filesystem.GetInformation( buffer.as_chars( ) );
+                    auto path = info.Path + "\\" + info.Name + "_to_array.cpp";
+
+                    ConvertShader( game, info, path );
                 }
             }
         }
@@ -240,6 +250,40 @@ void TinyToolCommon::DrawPasses( TinyGraphicManager& graphics ) {
                 ImGui::Separator( );
         }
     }
+}
+
+void TinyToolCommon::ConvertShader( 
+    TinyGame* game,
+    const TinyPathInformation& in_path,
+    const std::string& out_path 
+) {
+    auto& filesystem = game->GetFilesystem( );
+    auto& graphic    = game->GetGraphics( );
+    auto file_memory = tiny_storage{ };
+    auto shader      = TinyGraphicShaderProperties{ };
+
+    auto file = filesystem.OpenFile( in_path.Full.as_chars( ), Tiny::TF_ACCESS_READ );
+    auto size = file.GetSize( );
+
+    if ( size > 0 && tiny_allocate( file_memory, size ) ) {
+        auto* buffer = file_memory.GetAddress( );
+        
+        if ( file.ReadAll( size, buffer ) && graphic.CompileShader( in_path, file_memory, shader ) ) {
+            auto file = filesystem.OpenFile( out_path, Tiny::FileAccesses::TF_ACCESS_WRITE );
+
+            size = shader.Code.size( );
+
+            file.Write( "static const tiny_uint TinyShaderSize = %u;\n", size );
+            file.Write( "static const tiny_uint TinyShader[ TinyShaderSize ] = {" ); 
+            
+            for ( auto idx = tiny_cast( 0, tiny_uint ); idx < size; idx++ )
+                file.Write( "%s0x%08x%c", ( idx % 4 == 0 ) ? "\n\t" : " ", shader.Code[ idx ], ( idx < size - 1 ) ? ',' : ' ' );
+            
+            file.Write( "\n};\n" );
+        }
+    }
+
+    tiny_deallocate( file_memory );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

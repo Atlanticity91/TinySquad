@@ -22,6 +22,10 @@
 
 #include "Utils/TinyGraphicClearAttachement.h"
 
+#define TINY_OUTPASS_NAME "OutPass"
+
+static const tiny_hash TINY_OUTPASS_HASH = tiny_hash{ TINY_OUTPASS_NAME };
+
 tm_class TinyGraphicRenderManager final {
 
 	using BundleMap  = tiny_map<TinyGraphicRenderBundle>;

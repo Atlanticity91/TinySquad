@@ -109,7 +109,7 @@ bool TinyGraphicPipelineManager::CreateCache(
 	cache_info.initialDataSize = cache_data.size( );
 	cache_info.pInitialData	   = cache_data.data( );
 
-	return vk::Check( vkCreatePipelineCache( logical, &cache_info, vk::GetAllocator( ), &_cache ) );
+	return vk::Check( vkCreatePipelineCache( logical, tiny_rvalue( cache_info ), vk::GetAllocator( ), tiny_rvalue( _cache ) ) );
 }
 
 void TinyGraphicPipelineManager::CreateDescriptorLimits( ) {
@@ -127,7 +127,7 @@ TinyGraphicPipelineBundle TinyGraphicPipelineManager::CreatePipeline2D( ) {
 	auto pipeline = TinyGraphicPipelineBundle{ };
 
 	pipeline.InputBinding = 1;
-	pipeline.InputBinding[ 0 ].binding   = (tiny_uint)0;
+	pipeline.InputBinding[ 0 ].binding   = tiny_cast( 0, tiny_uint );
 	pipeline.InputBinding[ 0 ].stride	 = tiny_sizeof( VkVertex2D );
 	pipeline.InputBinding[ 0 ].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
@@ -149,7 +149,7 @@ TinyGraphicPipelineBundle TinyGraphicPipelineManager::CreatePipeline3D( ) {
 	auto pipeline = TinyGraphicPipelineBundle{ };
 
 	pipeline.InputBinding = 1;
-	pipeline.InputBinding[ 0 ].binding   = (tiny_uint)0;
+	pipeline.InputBinding[ 0 ].binding   = tiny_cast( 0, tiny_uint );
 	pipeline.InputBinding[ 0 ].stride    = tiny_sizeof( VkVertex3D );
 	pipeline.InputBinding[ 0 ].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 

@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderBatchManager::TinyRenderBatchManager( ) 
-	: _staging{ },
+	: _render_pass{ },
+	_staging{ },
 	_transforms{ },
 	_indexes{ },
 	_vertices{ },
@@ -35,11 +36,12 @@ TinyRenderBatchManager::TinyRenderBatchManager( )
 	_flush_context{ }
 { }
 
-bool TinyRenderBatchManager::Initialize( TinyGraphicContext& context ) {
+bool TinyRenderBatchManager::Initialize( TinyGraphicManager& graphics ) {
 	constexpr auto size_2d = BatchTransform_t::Size + BatchSprite_t::Size;
 	constexpr auto size_3d = BatchIndex_t::Size + BatchVertex_t::Size + BatchUV_t::Size;
 	constexpr auto size	   = size_2d < size_3d ? size_3d : size_2d;
 
+	auto context = graphics.GetContext( );
 	auto state = _staging.Create( context, size ) &&
 				 _transforms.Create( )			  &&
 				 _indexes.Create( )				  &&
@@ -57,8 +59,20 @@ bool TinyRenderBatchManager::Initialize( TinyGraphicContext& context ) {
 	return state;
 }
 
-void TinyRenderBatchManager::Prepare( TinyGame* game, FlushMethod_t flush_method ) {
+void TinyRenderBatchManager::Prepare(
+	TinyGame* game, 
+	const tiny_hash render_pass, 
+	FlushMethod_t flush_method 
+) {
 	Flush( game );
+
+	if ( render_pass != _render_pass ) {
+		auto& graphics = game->GetGraphics( );
+
+		graphics.BeginPass( render_pass );
+
+		_render_pass = render_pass;
+	}
 
 	_flush_context.Flush = flush_method;
 }
@@ -190,9 +204,13 @@ void TinyRenderBatchManager::Flush( TinyGame* game ) {
 	
 		std::invoke( _flush_context.Flush, graphics, assets, uniforms, tiny_self );
 	}
+
+	_render_pass.empty( );
 }
 
-void TinyRenderBatchManager::Terminate( TinyGraphicContext& context ) {
+void TinyRenderBatchManager::Terminate( TinyGraphicManager& graphics ) {
+	auto context = graphics.GetContext( );
+
 	_staging.Terminate( context );
 	_transforms.Terminate( );
 	_indexes.Terminate( );

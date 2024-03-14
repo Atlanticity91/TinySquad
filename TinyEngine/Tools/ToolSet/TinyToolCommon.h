@@ -41,4 +41,10 @@ private:
 
 	void DrawPasses( TinyGraphicManager& graphics );
 
+	void ConvertShader( 
+		TinyGame* game, 
+		const TinyPathInformation& in_path,
+		const std::string& out_path 
+	);
+
 };
