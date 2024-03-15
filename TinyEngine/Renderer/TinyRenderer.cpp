@@ -26,8 +26,8 @@
 TinyRenderer::TinyRenderer( )
 	: _uniforms{ },
 	_batchs{ },
-	_debug{ }/*
-	_post_process{ }*/
+	_debug{ },
+	_post_process{ }
 { }
 
 bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem ) {
@@ -123,16 +123,10 @@ void TinyRenderer::DrawDebug( TinyGame* game, const TinyRenderDebugPrimitive& pr
 void TinyRenderer::Compose( TinyGame* game ) {
 	Flush( game );
 	
-	auto& graphics = game->GetGraphics( );
-	
-	graphics.NextSubpass( );
-
-	_debug.Draw( game, { { 10.f, 10.f }, { 730.f, 10.f } } );
-
-	//_post_process.Compose( game ); <- graphics.NextSubpass( );
+	_post_process.Compose( game, _uniforms, _batchs );
 
 	if ( _debug )
-		_debug.Flush( game, _batchs );
+		_debug.Flush( game, _uniforms, _batchs );
 }
 
 void TinyRenderer::Terminate( TinyGraphicManager& graphics ) {
@@ -148,4 +142,6 @@ TinyRenderUniformManager& TinyRenderer::GetUniforms( ) { return _uniforms; }
 
 TinyRenderBatchManager& TinyRenderer::GetBatchs( ) { return _batchs; }
 
-//TinyRenderPostProcessor& TinyRenderer::GetPostProcess( ) { return _post_process; }
+TinyRenderPostProcessor& TinyRenderer::GetPostProcess( ) { return _post_process; }
+
+float TinyRenderer::GetDebugLineWidth( ) const { return _debug.GetLineWidth( ); }

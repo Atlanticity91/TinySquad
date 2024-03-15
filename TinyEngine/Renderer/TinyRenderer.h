@@ -28,7 +28,7 @@ private:
 	TinyRenderUniformManager _uniforms;
 	TinyRenderBatchManager   _batchs;
 	TinyRenderDebugManager	 _debug;
-	//TinyRenderPostProcessor _post_process;
+	TinyRenderPostProcessor  _post_process;
 
 public:
 	TinyRenderer( );
@@ -68,6 +68,8 @@ public:
 
 	TinyRenderBatchManager& GetBatchs( );
 
-	//TinyRenderPostProcessor& GetPostProcess( );
+	TinyRenderPostProcessor& GetPostProcess( );
+
+	tiny_inline float GetDebugLineWidth( ) const;
 
 };
