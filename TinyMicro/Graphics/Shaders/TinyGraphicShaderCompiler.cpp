@@ -26,19 +26,12 @@
 TinyGraphicShaderCompiler::TinyGraphicShaderCompiler( ) 
 	: _compiler{ },
 	_options{ },
-	_includer{ },
-	_types{ }
+	_includer{ }
 { }
 
 bool TinyGraphicShaderCompiler::Initialize( ) {
-	_types.emplace( "vert", shaderc_vertex_shader  );
-	_types.emplace( "frag", shaderc_fragment_shader );
-	_types.emplace( "geom", shaderc_geometry_shader );
-	_types.emplace( "comp", shaderc_compute_shader  );
-
 	//_options.SetIncluder( std::make_unique<TinyGraphicShaderIncluder>( &_includer ) );
 	_options.SetTargetEnvironment( shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_3 );
-	_options.SetOptimizationLevel( shaderc_optimization_level_performance );
 	_options.SetTargetSpirv( shaderc_spirv_version_1_6 );
 
 	return true;
@@ -64,92 +57,56 @@ void TinyGraphicShaderCompiler::AddMacros( tiny_init<TinyGraphicShaderMacro> mac
 }
 
 bool TinyGraphicShaderCompiler::Compile(
-	const TinyPathInformation& path,
-	tiny_storage& file,
-	TinyGraphicShaderProperties& properties 
+	const TinyGraphicShaderCompilationContext& context,
+	TinyGraphicShaderProperties& properties
 ) {
-	auto source = tiny_string{ file.GetAddress( ), tiny_cast( file.Capacity, tiny_uint ) };
-	auto type	= shaderc_glsl_infer_from_source;
-	auto name	= tiny_string{ path.Name };
-
-	if ( path.Extension != "glsl" ) {
-		type = _types[ path.Extension ];
-
-		properties.Type = GrabType( type );
-	} else
-		properties.Type = GrabType( path.Name[ 0 ] );
-
-	return CompileGLSL( type, name, source, properties );
-}
-
-bool TinyGraphicShaderCompiler::Compile(
-	TinyGraphicShaderProperties& properties,
-	const TinyGraphicShaderCompilationContext& context
-) {
-	auto state = false;
-
-	if ( !context.IsHLSL )
-		state = CompileGLSL( properties, context );
-
-	return state;
+	return context.IsHLSL ? CompileHLSL( context, properties ) : CompileGLSL( context, properties );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicShaderCompiler::CompileGLSL(
-	shaderc_shader_kind type,
-	const tiny_string& name,
-	const tiny_string& source,
+	const TinyGraphicShaderCompilationContext& context,
 	TinyGraphicShaderProperties& properties
 ) {
+	auto optimization = GrabOptimization( context.Optimization );
+
 	_options.SetSourceLanguage( shaderc_source_language_glsl );
+	_options.SetOptimizationLevel( shaderc_optimization_level_performance );
+
+	auto* source_str = context.Source.as_chars( );
+	auto source_len  = context.Source.length( );
+	auto* name_str   = context.Name.as_chars( );
+	auto preprocess  = _compiler.PreprocessGlsl( source_str, source_len, shaderc_glsl_infer_from_source, name_str, _options );
+	auto status		 = preprocess.GetCompilationStatus( );
 	
-	auto preprocess = _compiler.PreprocessGlsl( source.get( ), source.length( ), type, name.get( ), _options );
-	auto state		= preprocess.GetCompilationStatus( ) == shaderc_compilation_status_success;
+	if ( status == shaderc_compilation_status_success ) {
+		auto spirv = _compiler.CompileGlslToSpv( preprocess.begin( ), shaderc_glsl_infer_from_source, name_str, _options );
 
-	if ( state ) {
-		auto spirv = _compiler.CompileGlslToSpv( preprocess.begin( ), type, name.get( ), _options );
+		status = spirv.GetCompilationStatus( );
+		
+		if ( status == shaderc_compilation_status_success ) {
+			auto size = tiny_cast( spirv.end( ) - spirv.begin( ), tiny_uint );
 
-		state = spirv.GetCompilationStatus( ) == shaderc_compilation_status_success;
+			properties.Type  = PeekType( context.Source );
+			properties.Entry = context.Entry.as_string( );
+			properties.Code  = size * tiny_sizeof( tiny_uint );
 
-		if ( state ) {
-			properties.Code = (tiny_uint)( spirv.end( ) - spirv.begin( ) ) * tiny_sizeof( tiny_uint );
-
-			Tiny::Memcpy( (const c_pointer)spirv.begin( ), (c_pointer)properties.Code.data( ), properties.Code.size( ) );
+			Tiny::Memcpy( spirv.begin( ), properties.Code.data( ), size );
 		} else
-			printf( "[ VK ] Shader Compilation Error : %s\n%s\n", name.get( ), spirv.GetErrorMessage( ).c_str( ) );
-	} else
-		printf( "[ VK ] Shader Preprocess Error : %s\n%s\n", name.get( ), preprocess.GetErrorMessage( ).c_str( ) );
+			printf( "[ VK ] Shader Compilation Error : %s\n%s\n", name_str, spirv.GetErrorMessage( ).c_str( ) );
+	} else 
+		printf( "[ VK ] Shader Compilation Error : %s\n%s\n", name_str, preprocess.GetErrorMessage( ).c_str( ) );
 
-	return state;
+	return status == shaderc_compilation_status_success;
 }
 
-bool TinyGraphicShaderCompiler::CompileGLSL(
-	TinyGraphicShaderProperties& properties,
-	const TinyGraphicShaderCompilationContext& context
+bool TinyGraphicShaderCompiler::CompileHLSL(
+	const TinyGraphicShaderCompilationContext& context,
+	TinyGraphicShaderProperties& properties
 ) {
-	_options.SetSourceLanguage( shaderc_source_language_glsl );
-
-	auto preprocess = _compiler.PreprocessGlsl( context.Source, shaderc_glsl_infer_from_source, context.Name, _options );
-	auto state		= preprocess.GetCompilationStatus( ) == shaderc_compilation_status_success;
-
-	if ( state ) {
-		auto spirv = _compiler.CompileGlslToSpv( preprocess.begin( ), shaderc_glsl_infer_from_source, context.Name, _options );
-
-		state = spirv.GetCompilationStatus( ) == shaderc_compilation_status_success;
-
-		if ( state ) {
-			properties.Entry = std::string{ context.Entry.get( ) };
-			properties.Code  = (tiny_uint)( spirv.end( ) - spirv.begin( ) ) * tiny_sizeof( tiny_uint );
-
-			Tiny::Memcpy( (const c_pointer)spirv.begin( ), (c_pointer)properties.Code.data( ), properties.Code.size( ) );
-		} else
-			printf( "[ VK ] Shader Compilation Error : %s\n%s\n", context.Name.get( ), spirv.GetErrorMessage( ).c_str( ) );
-	} else 
-		printf( "[ VK ] Shader Compilation Error : %s\n%s\n", context.Name.get( ), preprocess.GetErrorMessage( ).c_str( ) );
-
-	return state;
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,63 +132,22 @@ shaderc_optimization_level TinyGraphicShaderCompiler::GrabOptimization(
 	return optimization;
 }
 
-TinyGraphicShaderTypes TinyGraphicShaderCompiler::GrabType( 
-	shaderc_shader_kind kind 
+TinyGraphicShaderTypes TinyGraphicShaderCompiler::PeekType(
+	const tiny_string& source 
 ) const {
-	auto type = TGS_TYPE_VERTEX;
+	auto* type_str = source.sub_chars( "shader_stage(", true );
+	auto type	   = TGS_TYPE_VERTEX;
 
-	switch ( kind ) {
-		case shaderc_fragment_shader : type = TGS_TYPE_FRAGMENT; break;
-		case shaderc_geometry_shader : type = TGS_TYPE_GEOMETRY; break;
-		case shaderc_compute_shader  : type = TGS_TYPE_COMPUTE;  break;
+	while ( type_str[ 0 ] == ' ' && type_str[ 0 ] != '\0' )
+		type_str += 1;
 
-		default : break;
-	}
-
-	return type;
-}
-
-TinyGraphicShaderTypes TinyGraphicShaderCompiler::GrabType( char identifier ) const {
-	auto type = TGS_TYPE_VERTEX;
-
-	switch ( identifier ) {
+	switch ( type_str[ 0 ] ) {
 		case 'f' : type = TGS_TYPE_FRAGMENT; break;
 		case 'g' : type = TGS_TYPE_GEOMETRY; break;
 		case 'c' : type = TGS_TYPE_COMPUTE;  break;
 
-		default: break;
-	}
-
-	return type;
-}
-
-shaderc_shader_kind TinyGraphicShaderCompiler::GrabKind(
-	TinyGraphicShaderTypes type 
-) const {
-	auto kind = shaderc_vertex_shader;
-
-	switch ( type ) {
-		case TGS_TYPE_FRAGMENT : kind = shaderc_fragment_shader; break;
-		case TGS_TYPE_GEOMETRY : kind = shaderc_geometry_shader; break;
-		case TGS_TYPE_COMPUTE  : kind = shaderc_compute_shader;  break;
-
 		default : break;
 	}
 
-	return kind;
-}
-
-TinyGraphicShaderProperties TinyGraphicShaderCompiler::GrabProperties( 
-	TinyGraphicShaderTypes type,
-	const std::string entry,
-	const shaderc::SpvCompilationResult& result
-) {
-	auto properties = TinyGraphicShaderProperties{ type, entry };
-	auto length		= (tiny_uint)( result.end( ) - result.begin( ) );
-
-	properties.Code = length;
-
-	Tiny::Memcpy( (const c_pointer)result.begin( ), (c_pointer)properties.Code.data( ), length * tiny_sizeof( tiny_uint ) );
-
-	return properties;
+	return type;
 }

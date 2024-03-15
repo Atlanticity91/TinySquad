@@ -266,9 +266,13 @@ void TinyToolCommon::ConvertShader(
     auto size = file.GetSize( );
 
     if ( size > 0 && tiny_allocate( file_memory, size ) ) {
+        auto context = TinyGraphicShaderCompilationContext{ };
         auto* buffer = file_memory.GetAddress( );
+
+        context.Name   = in_path.Name;
+        context.Source = tiny_string{ buffer, tiny_cast( file_memory.Capacity, tiny_uint ) };
         
-        if ( file.ReadAll( size, buffer ) && graphic.CompileShader( in_path, file_memory, shader ) ) {
+        if ( file.ReadAll( size, buffer ) && graphic.CompileShader( context, shader ) ) {
             auto file = filesystem.OpenFile( out_path, Tiny::FileAccesses::TF_ACCESS_WRITE );
 
             size = shader.Code.size( );

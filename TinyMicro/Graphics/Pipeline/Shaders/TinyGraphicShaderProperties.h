@@ -34,7 +34,7 @@ tiny_enum( TinyGraphicShaderTypes ) {
 tm_struct TinyGraphicShaderProperties {
 
 	TinyGraphicShaderTypes Type = TGS_TYPE_VERTEX;
-	std::string Entry			= "main";
-	tiny_list<tiny_ubyte> Code{ };
+	std::string Entry			= "";
+	tiny_list<tiny_uint> Code{ };
 
 };

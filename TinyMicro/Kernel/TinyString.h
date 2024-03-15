@@ -84,6 +84,10 @@ public:
 
 	bool is_empty( ) const;
 
+	under_layer sub_chars( const tiny_string& sequence, bool cut_after ) const;
+
+	tiny_string sub_string( const tiny_string& sequence, bool cut_after ) const;
+
 	bool equal( under_layer string ) const;
 
 	bool equal( const tiny_string& other ) const;

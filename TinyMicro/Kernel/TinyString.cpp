@@ -57,6 +57,9 @@ tiny_string& tiny_string::asign( under_layer string ) {
 
 		if ( _length > 0 )
 			_handle = string;
+	} else {
+		_handle = nullptr;
+		_length = 0;
 	}
 
 	return tiny_self;
@@ -110,7 +113,38 @@ std::string tiny_string::make_string( char start, char stop ) const {
 
 tiny_uint tiny_string::length( ) const { return _length; }
 
-bool tiny_string::is_empty( ) const { return is_valid( ) && length( ) == 0; }
+bool tiny_string::is_empty( ) const { return _handle && length( ) == 0; }
+
+tiny_string::under_layer tiny_string::sub_chars( 
+	const tiny_string& sequence, 
+	bool cut_after
+) const {
+	auto* sub = tiny_cast( nullptr, under_layer );
+
+	if ( is_valid( ) && sequence.is_valid( ) ) {
+		sub = strstr( _handle, sequence.as_chars( ) );
+
+		if ( sub && cut_after )
+			sub += sequence.length( );
+	}
+
+	return sub;
+}
+
+tiny_string tiny_string::sub_string( const tiny_string& sequence, bool cut_after ) const {
+	auto sub = tiny_string{ };
+
+	if ( is_valid( ) && sequence.is_valid( ) ) {
+		auto* tmp = strstr( _handle, sequence.as_chars( ) );
+
+		if ( tmp && cut_after )
+			tmp += sequence.length( );
+
+		sub = tmp;
+	}
+
+	return sub;
+}
 
 bool tiny_string::equal( under_layer string ) const {
 	auto state = is_valid( string ) && length( ) > 0;

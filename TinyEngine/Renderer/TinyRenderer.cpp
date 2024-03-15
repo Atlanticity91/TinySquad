@@ -31,9 +31,7 @@ TinyRenderer::TinyRenderer( )
 { }
 
 bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem ) {
-	auto state = _uniforms.Create( graphics )   && 
-				 _batchs.Initialize( graphics ) &&
-				 _debug.Initialize( graphics );
+	auto state = _uniforms.Create( graphics ) && _batchs.Initialize( graphics );
 
 	if ( state ) {
 		graphics.AddCompilerMacros( 
@@ -81,10 +79,14 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 				}
 			}
 		);
+
+		state = _debug.Initialize( graphics );
 	}
 
 	return state;
 }
+
+void TinyRenderer::SetDebugLineWidth( float width ) { _debug.SetLineWidth( width ); }
 
 void TinyRenderer::Prepare(
 	TinyGame* game,
@@ -128,75 +130,9 @@ void TinyRenderer::Compose( TinyGame* game ) {
 	_debug.Draw( game, { { 10.f, 10.f }, { 730.f, 10.f } } );
 
 	//_post_process.Compose( game ); <- graphics.NextSubpass( );
-	_debug.Flush( game, _batchs );
-	/*
-	auto ctx   = graphics.GetContext( );
-	auto& ecs  = game->GetECS( );
-	auto count = ecs.GetEntityCount( );
 
-	auto* camera = ecs.GetSystemAs<TinyCameraSystem>( );
-
-	_staging.Map( ctx, tiny_sizeof( tiny_mat4 ) );
-
-	while ( count-- > 0 ) {
-		auto* t = ecs.GetCompomemtAs<TinyTransform2D>( count );
-		auto* s = ecs.GetCompomemtAs<TinySkin2D>( count );
-
-		if ( t && s ) {
-			auto cache = camera->GetProjViewMatrix( ) * t->GetLocal( );
-			auto core  = TinyUBORenderCore{
-				{ 1.f, 1.f, 1.f, 1.f },
-				{ .0f, .0f, 1.f, 1.f }
-			};
-
-			Tiny::Memcpy( (const c_pointer)s->GetColor().Get(), (c_pointer)&core.Color.r, 4 * tiny_sizeof( float ) );
-
-
-			Tiny::Memcpy( (const c_pointer)glm::value_ptr( cache ), ( (tiny_pointer)_staging.GetAccess( ) ) +( (7-count) * tiny_sizeof( tiny_mat4 ) ), tiny_sizeof( tiny_mat4 ) );
-			Tiny::Memcpy( (const c_pointer)&core, ( (tiny_pointer)_staging.GetAccess( ) ) + ( 8 * tiny_sizeof( tiny_mat4 ) ) + ( ( 7 - count )* tiny_sizeof( TinyUBORenderCore ) ), tiny_sizeof( TinyUBORenderCore ) );
-		}
-	}
-
-	_staging.UnMap( ctx );
-
-	count = ecs.GetEntityCount( );
-
-	auto burn = TinyGraphicBurner{ ctx, VK_QUEUE_TYPE_GRAPHIC };
-	auto r = VkBufferCopy{ 0, 0, 8 * tiny_sizeof( tiny_mat4 ) };
-
-	burn.Upload( _staging, _uniforms.GetUniform( "ubo_transforms" ), r );
-	
-	r.srcOffset = 8 * tiny_sizeof( tiny_mat4 );
-	r.size      = 8 * tiny_sizeof( TinyUBORenderCore );
-	
-	burn.Upload( _staging, _uniforms.GetUniform( "ubo_render_core" ), r );
-
-
-	auto* skin = ecs.GetCompomemtAs<TinySkin2D>( 0 );
-
-	if ( skin ) {
-		auto* material = assets.GetAssetAs<TinyMaterial>( skin->GetMaterial( ) );
-		auto* texture  = assets.GetAssetAs<TinyTexture2D>( skin->GetTexture( ) );
-
-		if ( material && texture ) {
-			auto draw_call = TinyGraphicPipelineDrawcall{ TGD_MODE_DIRECT, 6, 8 };
-			auto& context  = graphics.GetWorkdContext( );
-			
-			material->Mount( context );
-			material->Bind( 
-				graphics.GetLogical( ),
-				context,
-				{
-					_uniforms.GetUniform( "ubo_context" ),
-					_uniforms.GetUniform( "ubo_transforms" ),
-					_uniforms.GetUniform( "ubo_render_core" ),
-					{ 2, 0, tiny_lvalue( texture ) }
-				}
-			);
-			material->Draw( context, draw_call );
-		}
-	}
-	*/
+	if ( _debug )
+		_debug.Flush( game, _batchs );
 }
 
 void TinyRenderer::Terminate( TinyGraphicManager& graphics ) {

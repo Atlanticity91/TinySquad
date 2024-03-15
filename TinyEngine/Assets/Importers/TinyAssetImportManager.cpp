@@ -203,13 +203,18 @@ bool TinyAssetImportManager::ImportGLSL(
 	auto state = tiny_make_storage( storage, TinyGraphicShaderProperties );
 
 	if ( state ) {
-		auto& graphics  = game->GetGraphics( );
-		auto* tmp		= file.GetAddress( );
-		auto* builder   = storage.As<TinyGraphicShaderProperties>( );
+		auto& graphics = game->GetGraphics( );
+		auto* builder  = storage.As<TinyGraphicShaderProperties>( );
+		auto* source   = file.GetAddress( );
+		auto context   = TinyGraphicShaderCompilationContext{ };
 
-		builder->Entry = "main";
+		context.Name   = path.Name;
+		context.Source = tiny_string{ source, tiny_cast( file.Capacity, tiny_uint ) };
 
-		state = graphics.CompileShader( path, file, tiny_lvalue( builder ) );
+		if ( path.Extension == "hlsl" )
+			context.IsHLSL = true;
+
+		state = graphics.CompileShader( context, tiny_lvalue( builder ) );
 	}
 
 	return state;

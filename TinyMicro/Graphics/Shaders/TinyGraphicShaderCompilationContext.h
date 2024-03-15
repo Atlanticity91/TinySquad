@@ -32,10 +32,30 @@ tiny_enum( TinyGraphicShaderOptimizations ) {
 
 tm_struct TinyGraphicShaderCompilationContext {
 
-	TinyGraphicShaderOptimizations Optimization = TGS_OPTIMIZATION_PERF;
-	tiny_string Entry							= "main";
-	tiny_string Name							= "";
-	tiny_string Source							= "";
-	bool IsHLSL									= false;
+	TinyGraphicShaderOptimizations Optimization;
+	tiny_string Name;
+	tiny_string Entry;
+	tiny_string Source;
+	bool IsHLSL;
+
+	TinyGraphicShaderCompilationContext( );
+
+	TinyGraphicShaderCompilationContext( 
+		const tiny_string& name,
+		const tiny_string& source 
+	);
+
+	TinyGraphicShaderCompilationContext( 
+		const tiny_string& name,
+		const tiny_string& entry,
+		const tiny_string& source 
+	);
+
+	TinyGraphicShaderCompilationContext(
+		TinyGraphicShaderOptimizations optimization,
+		const tiny_string& name,
+		const tiny_string& entry,
+		const tiny_string& source
+	);
 
 };

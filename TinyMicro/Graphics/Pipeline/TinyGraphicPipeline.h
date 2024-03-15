@@ -53,6 +53,110 @@ public:
 
 	void Mount( TinyGraphicWorkContext& work_context );
 
+	tiny_inline void SetViewport( 
+		TinyGraphicWorkContext& work_context,
+		const VkViewport& viewport 
+	);
+
+	void SetViewport( 
+		TinyGraphicWorkContext& work_context, 
+		tiny_init<VkViewport> viewport 
+	);
+
+	tiny_inline void SetScissor( 
+		TinyGraphicWorkContext& work_context, 
+		const VkScissor& scissor 
+	);
+
+	void SetScissor( 
+		TinyGraphicWorkContext& work_context, 
+		tiny_init<VkScissor> scissor 
+	);
+
+	void SetCullMode(
+		TinyGraphicWorkContext& work_context, 
+		VkCullModeFlags cull_mode 
+	);
+
+	void SetFrontFace( 
+		TinyGraphicWorkContext& work_context, 
+		VkFrontFace front_face 
+	);
+
+	void SetPrimitiveRestartEnable( 
+		TinyGraphicWorkContext& work_context, 
+		bool is_active 
+	);
+
+	void SetPrimitiveTopology( 
+		TinyGraphicWorkContext& work_context, 
+		VkPrimitiveTopology topology 
+	);
+
+	void SetRasterizerDiscardEnable(
+		TinyGraphicWorkContext& work_context, 
+		bool is_active 
+	);
+
+	void SetBlendConstants( 
+		TinyGraphicWorkContext& work_context, 
+		const float* constants 
+	);
+
+	void SetBlendConstants( 
+		TinyGraphicWorkContext& work_context, 
+		const tiny_vec4& constant 
+	);
+
+	void SetDepthTestEnable( 
+		TinyGraphicWorkContext& work_context, 
+		bool is_active 
+	);
+
+	void SetDepthCompareOp( TinyGraphicWorkContext& work_context, VkCompareOp operation );
+
+	void SetDepthWriteEnable( TinyGraphicWorkContext& work_context, bool is_active );
+
+	void SetDepthBias( 
+		TinyGraphicWorkContext& work_context,
+		float constant,
+		float clamp, 
+		float slope 
+	);
+
+	void SetDepthBounds( TinyGraphicWorkContext& work_context, float minimum, float maximum );
+
+	void SetDeviceMask( TinyGraphicWorkContext& work_context, tiny_uint mask );
+
+	void SetLineWidth( TinyGraphicWorkContext& work_context, float width );
+
+	void SetStencilOp(
+		TinyGraphicWorkContext& work_context,
+		VkStencilFaceFlags face_mask,
+		VkStencilOp fail_operation,
+		VkStencilOp pass_operation,
+		VkStencilOp depth_fail_operation,
+		VkCompareOp compare_operation
+	);
+
+	void SetStencilCompareMask( 
+		TinyGraphicWorkContext& work_context, 
+		VkStencilFaceFlags face_mask, 
+		tiny_uint compare_mask 
+	);
+
+	void SetStencilReference( 
+		TinyGraphicWorkContext& work_context, 
+		VkStencilFaceFlags face_mask, 
+		tiny_uint reference 
+	);
+
+	void SetStencilWriteMask(
+		TinyGraphicWorkContext& work_context, 
+		VkStencilFaceFlags face_mask, 
+		tiny_uint write_mask 
+	);
+
 	void Push( 
 		TinyGraphicWorkContext& work_context, 
 		const TinyGraphicPipelineConstant& constant 

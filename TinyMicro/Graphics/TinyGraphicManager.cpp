@@ -73,23 +73,19 @@ void TinyGraphicManager::AddCompilerMacro(
 	_compiler.AddMacro( name, value );
 }
 
+void TinyGraphicManager::AddCompilerMacro( const TinyGraphicShaderMacro& macro ) {
+	_compiler.AddMacro( macro.Name, macro.Value );
+}
+
 void TinyGraphicManager::AddCompilerMacros( tiny_init<TinyGraphicShaderMacro> macros ) {
 	_compiler.AddMacros( macros );
 }
 
 bool TinyGraphicManager::CompileShader(
-	const TinyPathInformation& path,
-	tiny_storage& file, 
-	TinyGraphicShaderProperties& properties 
+	const TinyGraphicShaderCompilationContext& context,
+	TinyGraphicShaderProperties& properties
 ) {
-	return _compiler.Compile( path, file, properties );
-}
-
-bool TinyGraphicManager::CompileShader(
-	TinyGraphicShaderProperties& properties,
-	const TinyGraphicShaderCompilationContext& context
-) {
-	return _compiler.Compile( properties, context );
+	return _compiler.Compile( context, properties );
 }
 
 TinyGraphicPipelineBundle TinyGraphicManager::CreatePipeline(
@@ -146,128 +142,6 @@ void TinyGraphicManager::Clear(
 	tiny_init<TinyGraphicClearAttachement> attachements
 ) {
 	_passes.Clear( pass_name, work_context, attachements );
-}
-
-void TinyGraphicManager::SetViewport( const VkViewport& viewport ) {
-	SetViewport( { viewport } );
-}
-
-void TinyGraphicManager::SetViewport( tiny_init<VkViewport> viewports ) {
-	if ( viewports.size( ) > 0 ) {
-		vkCmdSetViewport(
-			_work_context.Queue->CommandBuffer,
-			0, tiny_cast( viewports.size( ), tiny_uint ),
-			viewports.begin( )
-		);
-	}
-}
-
-void TinyGraphicManager::SetScissor( const VkScissor& scissor ) {
-	SetScissor( { scissor } );
-}
-
-void TinyGraphicManager::SetScissor( tiny_init<VkScissor> scissors ) {
-	if ( scissors.size( ) > 0 ) {
-		vkCmdSetScissor(
-			_work_context.Queue->CommandBuffer,
-			0, tiny_cast( scissors.size( ), tiny_uint ),
-			scissors.begin( )
-		);
-	}
-}
-
-void TinyGraphicManager::SetCullMode( VkCullModeFlags cull_mode ) {
-	vkCmdSetCullMode( _work_context.Queue->CommandBuffer, cull_mode );
-}
-
-void TinyGraphicManager::SetFrontFace( VkFrontFace front_face ) {
-	vkCmdSetFrontFace( _work_context.Queue->CommandBuffer, front_face );
-}
-
-void TinyGraphicManager::SetPrimitiveRestartEnable( bool is_active ) {
-	vkCmdSetPrimitiveRestartEnable( _work_context.Queue->CommandBuffer, is_active ? VK_TRUE : VK_FALSE );
-}
-
-void TinyGraphicManager::SetPrimitiveTopology( VkPrimitiveTopology topology ) {
-	vkCmdSetPrimitiveTopology( _work_context.Queue->CommandBuffer, topology );
-}
-
-void TinyGraphicManager::SetRasterizerDiscardEnable( bool is_active ) {
-	vkCmdSetRasterizerDiscardEnable( _work_context.Queue->CommandBuffer, is_active ? VK_TRUE : VK_FALSE );
-}
-
-void TinyGraphicManager::SetBlendConstants( const float* constants ) {
-	vkCmdSetBlendConstants( _work_context.Queue->CommandBuffer, constants );
-}
-
-void TinyGraphicManager::SetBlendConstants( const tiny_vec4& constant ) {
-	vkCmdSetBlendConstants( _work_context.Queue->CommandBuffer, tiny_rvalue( constant.r ) );
-}
-
-void TinyGraphicManager::SetDepthTestEnable( bool is_active ) {
-	vkCmdSetDepthTestEnable( _work_context.Queue->CommandBuffer, is_active ? VK_TRUE : VK_FALSE );
-}
-
-void TinyGraphicManager::SetDepthCompareOp( VkCompareOp operation ) {
-	vkCmdSetDepthCompareOp( _work_context.Queue->CommandBuffer, operation );
-}
-
-void TinyGraphicManager::SetDepthWriteEnable( bool is_active ) {
-	vkCmdSetDepthWriteEnable( _work_context.Queue->CommandBuffer, is_active ? VK_TRUE : VK_FALSE );
-}
-
-void TinyGraphicManager::SetDepthBias( float constant, float clamp, float slope ) {
-	vkCmdSetDepthBias( _work_context.Queue->CommandBuffer, constant, clamp, slope );
-}
-
-void TinyGraphicManager::SetDepthBounds( float minimum, float maximum ) {
-	vkCmdSetDepthBounds( _work_context.Queue->CommandBuffer, minimum, maximum );
-}
-
-void TinyGraphicManager::SetDeviceMask( tiny_uint mask ) {
-	vkCmdSetDeviceMask( _work_context.Queue->CommandBuffer, mask );
-}
-
-void TinyGraphicManager::SetLineWidth( float width ) {
-	vkCmdSetLineWidth( _work_context.Queue->CommandBuffer, width );
-}
-
-void TinyGraphicManager::SetStencilOp( 
-	VkStencilFaceFlags face_mask,
-	VkStencilOp fail_operation,
-	VkStencilOp pass_operation,
-	VkStencilOp depth_fail_operation,
-	VkCompareOp compare_operation
-) {
-	vkCmdSetStencilOp( 
-		_work_context.Queue->CommandBuffer,
-		face_mask,
-		fail_operation,
-		pass_operation,
-		depth_fail_operation,
-		compare_operation
-	);
-}
-
-void TinyGraphicManager::SetStencilCompareMask( 
-	VkStencilFaceFlags face_mask, 
-	tiny_uint compare_mask 
-) {
-	vkCmdSetStencilCompareMask( _work_context.Queue->CommandBuffer, face_mask, compare_mask );
-}
-
-void TinyGraphicManager::SetStencilReference( 
-	VkStencilFaceFlags face_mask, 
-	tiny_uint reference 
-) {
-	vkCmdSetStencilReference( _work_context.Queue->CommandBuffer, face_mask, reference );
-}
-
-void TinyGraphicManager::SetStencilWriteMask( 
-	VkStencilFaceFlags face_mask,
-	tiny_uint write_mask 
-) {
-	vkCmdSetStencilWriteMask( _work_context.Queue->CommandBuffer, face_mask, write_mask );
 }
 
 void TinyGraphicManager::Draw(

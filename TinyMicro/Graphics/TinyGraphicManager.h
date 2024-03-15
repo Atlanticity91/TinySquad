@@ -63,17 +63,13 @@ public:
 		const tiny_string& value 
 	);
 
+	tiny_inline void AddCompilerMacro( const TinyGraphicShaderMacro& macro );
+
 	tiny_inline void AddCompilerMacros( tiny_init<TinyGraphicShaderMacro> macros );
 
-	tiny_inline bool CompileShader( 
-		const TinyPathInformation & path, 
-		tiny_storage& file,
-		TinyGraphicShaderProperties& properties 
-	);
-
 	tiny_inline bool CompileShader(
-		TinyGraphicShaderProperties& properties,
-		const TinyGraphicShaderCompilationContext& context
+		const TinyGraphicShaderCompilationContext& context,
+		TinyGraphicShaderProperties& properties
 	);
 
 	TinyGraphicPipelineBundle CreatePipeline(
@@ -101,56 +97,6 @@ public:
 		TinyGraphicWorkContext& work_context,
 		tiny_init<TinyGraphicClearAttachement> attachements
 	);
-
-	tiny_inline void SetViewport( const VkViewport& viewport );
-
-	void SetViewport( tiny_init<VkViewport> viewport );
-
-	tiny_inline void SetScissor( const VkScissor& scissor );
-
-	void SetScissor( tiny_init<VkScissor> scissor );
-
-	void SetCullMode( VkCullModeFlags cull_mode );
-
-	void SetFrontFace( VkFrontFace front_face );
-
-	void SetPrimitiveRestartEnable( bool is_active );
-
-	void SetPrimitiveTopology( VkPrimitiveTopology topology );
-
-	void SetRasterizerDiscardEnable( bool is_active );
-
-	void SetBlendConstants( const float* constants );
-
-	void SetBlendConstants( const tiny_vec4& constant );
-
-	void SetDepthTestEnable( bool is_active );
-	
-	void SetDepthCompareOp( VkCompareOp operation );
-
-	void SetDepthWriteEnable( bool is_active );
-
-	void SetDepthBias( float constant, float clamp, float slope );
-
-	void SetDepthBounds( float minimum, float maximum );
-
-	void SetDeviceMask( tiny_uint mask );
-
-	void SetLineWidth( float width );
-
-	void SetStencilOp(
-		VkStencilFaceFlags face_mask,
-		VkStencilOp fail_operation,
-		VkStencilOp pass_operation,
-		VkStencilOp depth_fail_operation,
-		VkCompareOp compare_operation
-	);
-
-	void SetStencilCompareMask( VkStencilFaceFlags face_mask, tiny_uint compare_mask );
-
-	void SetStencilReference( VkStencilFaceFlags face_mask, tiny_uint reference );
-	
-	void SetStencilWriteMask( VkStencilFaceFlags face_mask, tiny_uint write_mask );
 
 	void Draw(
 		const TinyGraphicPipelineDrawcall & drawcall,

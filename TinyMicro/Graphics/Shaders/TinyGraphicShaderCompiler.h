@@ -32,10 +32,9 @@ tm_struct TinyGraphicShaderMacro {
 tm_class TinyGraphicShaderCompiler final {
 
 private:
-	shaderc::Compiler			  _compiler;
-	shaderc::CompileOptions		  _options;
-	TinyGraphicShaderIncluder	  _includer;
-	tiny_map<shaderc_shader_kind> _types;
+	shaderc::Compiler		  _compiler;
+	shaderc::CompileOptions	  _options;
+	TinyGraphicShaderIncluder _includer;
 
 public:
 	TinyGraphicShaderCompiler( );
@@ -49,27 +48,19 @@ public:
 	void AddMacros( tiny_init<TinyGraphicShaderMacro> macros );
 
 	bool Compile(
-		const TinyPathInformation& path,
-		tiny_storage& file,
-		TinyGraphicShaderProperties& properties 
-	);
-
-	bool Compile(
-		TinyGraphicShaderProperties& properties,
-		const TinyGraphicShaderCompilationContext& context
+		const TinyGraphicShaderCompilationContext& context,
+		TinyGraphicShaderProperties& properties
 	);
 
 private:
 	bool CompileGLSL(
-		shaderc_shader_kind type,
-		const tiny_string& name,
-		const tiny_string& source,
+		const TinyGraphicShaderCompilationContext& context,
 		TinyGraphicShaderProperties& properties
 	);
 
-	bool CompileGLSL(
-		TinyGraphicShaderProperties& properties,
-		const TinyGraphicShaderCompilationContext& context
+	bool CompileHLSL(
+		const TinyGraphicShaderCompilationContext& context,
+		TinyGraphicShaderProperties& properties
 	);
 
 public:
@@ -80,16 +71,6 @@ private:
 		TinyGraphicShaderOptimizations value 
 	) const;
 
-	TinyGraphicShaderTypes GrabType( shaderc_shader_kind kind ) const;
-
-	TinyGraphicShaderTypes GrabType( char identifier ) const;
-
-	shaderc_shader_kind GrabKind( TinyGraphicShaderTypes type ) const;
-
-	TinyGraphicShaderProperties GrabProperties(
-		TinyGraphicShaderTypes type,
-		const std::string entry,
-		const shaderc::SpvCompilationResult& code
-	);
+	TinyGraphicShaderTypes PeekType( const tiny_string& source ) const;
 
 };

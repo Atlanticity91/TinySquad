@@ -67,6 +67,191 @@ void TinyGraphicPipeline::Mount( TinyGraphicWorkContext& work_context ) {
 	}
 }
 
+void TinyGraphicPipeline::SetViewport( 
+	TinyGraphicWorkContext& work_context,
+	const VkViewport& viewport 
+) {
+	SetViewport( work_context, { viewport } );
+}
+
+void TinyGraphicPipeline::SetViewport( 
+	TinyGraphicWorkContext& work_context, 
+	tiny_init<VkViewport> viewports 
+) {
+	if ( viewports.size( ) > 0 ) {
+		vkCmdSetViewport(
+			work_context.Queue->CommandBuffer,
+			0, 
+			tiny_cast( viewports.size( ), tiny_uint ),
+			viewports.begin( )
+		);
+	}
+}
+
+void TinyGraphicPipeline::SetScissor( 
+	TinyGraphicWorkContext& work_context, 
+	const VkScissor& scissor 
+) {
+	SetScissor( work_context, { scissor } );
+}
+
+void TinyGraphicPipeline::SetScissor( 
+	TinyGraphicWorkContext& work_context, 
+	tiny_init<VkScissor> scissors 
+) {
+	if ( scissors.size( ) > 0 ) {
+		vkCmdSetScissor(
+			work_context.Queue->CommandBuffer,
+			0, 
+			tiny_cast( scissors.size( ), tiny_uint ),
+			scissors.begin( )
+		);
+	}
+}
+
+void TinyGraphicPipeline::SetCullMode( 
+	TinyGraphicWorkContext& work_context, 
+	VkCullModeFlags cull_mode 
+) {
+	vkCmdSetCullMode( work_context.Queue->CommandBuffer, cull_mode );
+}
+
+void TinyGraphicPipeline::SetFrontFace( 
+	TinyGraphicWorkContext& work_context, 
+	VkFrontFace front_face 
+) {
+	vkCmdSetFrontFace( work_context.Queue->CommandBuffer, front_face );
+}
+
+void TinyGraphicPipeline::SetPrimitiveRestartEnable( 
+	TinyGraphicWorkContext& work_context, 
+	bool is_active 
+) {
+	vkCmdSetPrimitiveRestartEnable( work_context.Queue->CommandBuffer, is_active ? VK_TRUE : VK_FALSE );
+}
+
+void TinyGraphicPipeline::SetPrimitiveTopology( 
+	TinyGraphicWorkContext& work_context, 
+	VkPrimitiveTopology topology 
+) {
+	vkCmdSetPrimitiveTopology( work_context.Queue->CommandBuffer, topology );
+}
+
+void TinyGraphicPipeline::SetRasterizerDiscardEnable( 
+	TinyGraphicWorkContext& work_context, 
+	bool is_active 
+) {
+	vkCmdSetRasterizerDiscardEnable( work_context.Queue->CommandBuffer, is_active ? VK_TRUE : VK_FALSE );
+}
+
+void TinyGraphicPipeline::SetBlendConstants( 
+	TinyGraphicWorkContext& work_context, 
+	const float* constants 
+) {
+	vkCmdSetBlendConstants( work_context.Queue->CommandBuffer, constants );
+}
+
+void TinyGraphicPipeline::SetBlendConstants(
+	TinyGraphicWorkContext& work_context, 
+	const tiny_vec4& constant 
+) {
+	vkCmdSetBlendConstants( work_context.Queue->CommandBuffer, tiny_rvalue( constant.r ) );
+}
+
+void TinyGraphicPipeline::SetDepthTestEnable( 
+	TinyGraphicWorkContext& work_context, 
+	bool is_active 
+) {
+	vkCmdSetDepthTestEnable( work_context.Queue->CommandBuffer, is_active ? VK_TRUE : VK_FALSE );
+}
+
+void TinyGraphicPipeline::SetDepthCompareOp( 
+	TinyGraphicWorkContext& work_context, 
+	VkCompareOp operation 
+) {
+	vkCmdSetDepthCompareOp( work_context.Queue->CommandBuffer, operation );
+}
+
+void TinyGraphicPipeline::SetDepthWriteEnable( 
+	TinyGraphicWorkContext& work_context, 
+	bool is_active 
+) {
+	vkCmdSetDepthWriteEnable( work_context.Queue->CommandBuffer, is_active ? VK_TRUE : VK_FALSE );
+}
+
+void TinyGraphicPipeline::SetDepthBias( 
+	TinyGraphicWorkContext& work_context, 
+	float constant, 
+	float clamp, 
+	float slope 
+) {
+	vkCmdSetDepthBias( work_context.Queue->CommandBuffer, constant, clamp, slope );
+}
+
+void TinyGraphicPipeline::SetDepthBounds( 
+	TinyGraphicWorkContext& work_context, 
+	float minimum, 
+	float maximum 
+) {
+	vkCmdSetDepthBounds( work_context.Queue->CommandBuffer, minimum, maximum );
+}
+
+void TinyGraphicPipeline::SetDeviceMask( 
+	TinyGraphicWorkContext& work_context, 
+	tiny_uint mask 
+) {
+	vkCmdSetDeviceMask( work_context.Queue->CommandBuffer, mask );
+}
+
+void TinyGraphicPipeline::SetLineWidth(
+	TinyGraphicWorkContext& work_context, 
+	float width 
+) {
+	vkCmdSetLineWidth( work_context.Queue->CommandBuffer, width );
+}
+
+void TinyGraphicPipeline::SetStencilOp(
+	TinyGraphicWorkContext& work_context,
+	VkStencilFaceFlags face_mask,
+	VkStencilOp fail_operation,
+	VkStencilOp pass_operation,
+	VkStencilOp depth_fail_operation,
+	VkCompareOp compare_operation
+) {
+	vkCmdSetStencilOp(
+		work_context.Queue->CommandBuffer,
+		face_mask,
+		fail_operation,
+		pass_operation,
+		depth_fail_operation,
+		compare_operation
+	);
+}
+
+void TinyGraphicPipeline::SetStencilCompareMask(
+	TinyGraphicWorkContext& work_context,
+	VkStencilFaceFlags face_mask,
+	tiny_uint compare_mask
+) {
+	vkCmdSetStencilCompareMask( work_context.Queue->CommandBuffer, face_mask, compare_mask );
+}
+
+void TinyGraphicPipeline::SetStencilReference(
+	TinyGraphicWorkContext& work_context,
+	VkStencilFaceFlags face_mask,
+	tiny_uint reference
+) {
+	vkCmdSetStencilReference( work_context.Queue->CommandBuffer, face_mask, reference );
+}
+
+void TinyGraphicPipeline::SetStencilWriteMask(
+	TinyGraphicWorkContext& work_context,
+	VkStencilFaceFlags face_mask,
+	tiny_uint write_mask
+) {
+	vkCmdSetStencilWriteMask( work_context.Queue->CommandBuffer, face_mask, write_mask );
+}
+
 void TinyGraphicPipeline::Push(
 	TinyGraphicWorkContext& work_context,
 	const TinyGraphicPipelineConstant& constant 
@@ -366,7 +551,17 @@ VkPipelineInputAssemblyStateCreateInfo TinyGraphicPipeline::GetInputAssemblyStat
 	assembly_state.pNext				  = VK_NULL_HANDLE;
 	assembly_state.flags				  = VK_NULL_FLAGS;
 	assembly_state.topology				  = bundle.Topology;
-	assembly_state.primitiveRestartEnable = VK_TRUE;
+
+	if (
+		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_LINE_STRIP				   ||
+		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP			   ||
+		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN			   ||
+		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY ||
+		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY
+	)
+		assembly_state.primitiveRestartEnable = VK_TRUE;
+	else 
+		assembly_state.primitiveRestartEnable = VK_FALSE;
 
 	return assembly_state;
 }

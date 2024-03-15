@@ -37,6 +37,8 @@ public:
 
 	bool Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem );
 
+	tiny_inline void SetDebugLineWidth( float width );
+
 	void Prepare( 
 		TinyGame* game, 
 		const tiny_string& render_pass,
