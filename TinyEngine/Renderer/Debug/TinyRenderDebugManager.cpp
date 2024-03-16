@@ -171,7 +171,7 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 
 void TinyRenderDebugManager::DrawLines(
 	TinyGraphicManager& graphics,
-	TinyGraphicWorkContext& work_context, 
+	TinyRenderCameraManager& cameras,
 	TinyRenderUniformManager& uniforms,
 	TinyRenderBatchManager& batchs 
 ) {
