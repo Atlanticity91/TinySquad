@@ -63,9 +63,19 @@ TinyGraphicPipelineBindpoint& TinyRenderUniform::GetBindpoint( ) {
 	return _bind_point; 
 }
 
+const TinyGraphicPipelineBindpoint& TinyRenderUniform::GetBindpoint( ) const {
+	_bind_point.Value = tiny_cast( _buffer.GetDescriptor( ), c_pointer );
+
+	return _bind_point;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderUniform::operator TinyGraphicBuffer& ( ) { return GetBuffer( ); }
 
 TinyRenderUniform::operator TinyGraphicPipelineBindpoint& ( ) { return GetBindpoint( ); }
+
+TinyRenderUniform::operator const TinyGraphicPipelineBindpoint& ( ) const { 
+	return GetBindpoint( ); 
+}

@@ -20,31 +20,13 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Cameras/TinyRenderCameraManager.h>
-
-te_struct TinyRenderUniformBuilder : tiny_inherit( TinyGraphicBufferProperties ) {
-
-	tiny_string Name  = "";
-	tiny_uint Set	  = 0;
-	tiny_uint Binding = 0;
-
-};
-
-te_struct TinyUBOContext {
-
-	tiny_mat4 Projection;
-	tiny_mat4 View;
-	tiny_mat4 ProjView;
-	float Time_f;
-	double Time_d;
-
-};
+#include "TinyRenderUniformBuilder.h"
 
 te_class TinyRenderUniform final {
 
 private:
 	TinyGraphicBuffer			 _buffer;
-	TinyGraphicPipelineBindpoint _bind_point;
+	mutable TinyGraphicPipelineBindpoint _bind_point;
 
 public:
 	TinyRenderUniform( );
@@ -64,9 +46,13 @@ public:
 
 	TinyGraphicPipelineBindpoint& GetBindpoint( );
 
+	const TinyGraphicPipelineBindpoint& GetBindpoint( ) const;
+
 public:
 	operator TinyGraphicBuffer& ( );
 
 	operator TinyGraphicPipelineBindpoint& ( );
+
+	operator const TinyGraphicPipelineBindpoint& ( ) const;
 
 };

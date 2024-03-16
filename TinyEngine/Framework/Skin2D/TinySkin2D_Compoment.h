@@ -51,6 +51,9 @@ public:
 
 	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
+protected:
+	tiny_implement( void OnEnable( TinyGame* game ) );
+
 public:
 	TINY_COMP_NAME( TinySkin2D );
 

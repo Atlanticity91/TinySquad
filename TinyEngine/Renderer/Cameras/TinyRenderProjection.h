@@ -34,6 +34,7 @@ te_class TinyRenderProjection final {
 
 private:
 	TinyRenderProjectionTypes _type;
+	float					  _parameter;
 	tiny_mat4				  _matrix;
 
 public:
@@ -43,9 +44,9 @@ public:
 
 	TinyRenderProjection& SetType( TinyRenderProjectionTypes type );
 
-	TinyRenderProjection& SetOrthographic( );
+	TinyRenderProjection& SetOrthographic( float zoom );
 
-	TinyRenderProjection& SetPerspective( );
+	TinyRenderProjection& SetPerspective( float fov );
 
 	TinyRenderProjection& SetCustom( const tiny_mat4& projection );
 
@@ -56,7 +57,11 @@ public:
 
 	const tiny_mat4& Get( ) const;
 
+	const float* GetBuffer( ) const;
+
 public:
 	operator const tiny_mat4& ( ) const;
+
+	operator const float* ( ) const;
 
 };

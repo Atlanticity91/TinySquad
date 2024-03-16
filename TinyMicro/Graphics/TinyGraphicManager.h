@@ -157,5 +157,8 @@ public:
 	TinyGraphicRenderpass& GetRenderPass( const tiny_string& pass_name );
 
 	tiny_inline const shaderc::CompileOptions& GetCompilerOptions( ) const;
-	
+
+public:
+	operator TinyGraphicContext ( );
+
 };

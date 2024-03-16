@@ -22,6 +22,8 @@
 
 #include "TinyRenderProjection.h"
 
+class TinyRenderer;
+
 te_class TinyRenderCamera final {
 
 private:
@@ -34,6 +36,10 @@ public:
 	TinyRenderCamera( );
 
 	~TinyRenderCamera( ) = default;
+
+	TinyRenderCamera& SetProjection( const tiny_hash& projection );
+
+	void Set( const TinyRenderCamera& other );
 
 	void SetTransform(
 		const tiny_vec2& location,
@@ -51,6 +57,8 @@ public:
 
 public:
 	const tiny_hash GetProjection( ) const;
+
+	tiny_inline const tiny_mat4 GetProjection( TinyRenderer& renderer ) const;
 
 	const tiny_mat4& Get( ) const;
 	

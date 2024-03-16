@@ -45,7 +45,7 @@ void TinyRenderDebugManager::Draw( const TinyRenderDebugPrimitive& primitive ) {
 		_lines.emplace_back( { { primitive.Src.x, primitive.Src.y, .0f, 1.f }, primitive.Color } );
 		_lines.emplace_back( { { primitive.Dst.x, primitive.Dst.y, .0f, 1.f }, primitive.Color } );
 	} else {
-		_lines.emplace_back( {
+		_circles.emplace_back( {
 			{
 				primitive.Src.x,
 				primitive.Src.y,
@@ -70,6 +70,8 @@ void TinyRenderDebugManager::Flush(
 
 		_lines.clear( );
 	}
+
+
 
 	if ( _circles.size( ) > 0 ) {
 		DrawCircles( graphics, work_context, uniforms, batchs );
@@ -145,7 +147,7 @@ bool TinyRenderDebugManager::BuildShaders( TinyGraphicManager& graphics ) {
 bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 	auto context = graphics.GetContext( );
 	auto limits  = graphics.GetPipelineLimits( );
-	auto bundle  = TinyGraphicPipelineBundle{ };
+	auto bundle  = graphics.CreatePipeline( TGP_TYPE_2D, TINY_OUTPASS_NAME, 1 );
 
 	bundle.Subpass		 = 1;
 	bundle.Pass			 = graphics.GetRenderPass( TINY_OUTPASS_NAME );
@@ -174,10 +176,17 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 	bundle.StencilEnable = false;
 	bundle.Dynamics.emplace_back( VK_DYNAMIC_STATE_LINE_WIDTH );
 
+	bundle.DescriptorCount  = graphics.GetImageCount( );
+	bundle.Descriptors		= 1;
+	bundle.Descriptors[ 0 ] = 1;
+	_pCreateSetBind( bundle.Descriptors[ 0 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+
 	auto state = _pipelines[ 0 ].Create( context, limits, bundle );
 
 	if ( state ) {
 		bundle.Topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+		bundle.Shaders[ 0 ] = _shaders[ 2 ];
+		bundle.Shaders[ 1 ] = _shaders[ 3 ];
 
 		state = _pipelines[ 1 ].Create( context, limits, bundle );
 	}
@@ -191,25 +200,30 @@ void TinyRenderDebugManager::DrawLines(
 	TinyRenderUniformManager& uniforms,
 	TinyRenderBatchManager& batchs 
 ) {
-	auto& pipeline = _pipelines[ 0 ];
-	auto& uniform  = uniforms.GetUniform( "ubo_transforms" );
+	auto& ubo_context = uniforms.GetUniform( "ubo_context" );
+	auto& transforms  = uniforms.GetUniform( "ib_vertex" );
+	auto& pipeline	  = _pipelines[ 0 ];
+	auto& logical	  = graphics.GetLogical( );
+	auto& staging	  = batchs.GetStaging( );
 
 	pipeline.Mount( work_context );
 	pipeline.SetLineWidth( work_context, _line_width );
 
-	/*
 	{
-		auto& stagging = batchs.GetStaging( );
 		auto context = graphics.GetContext( );
-		auto copies = batchs.Flush2D( context, vertex_count );
+		auto burner  = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		auto size	 = _lines.size( ) * tiny_sizeof( TinyRenderDebugVertex );
+		auto copie   = VkBufferCopy{ 0, 0, size };
 
-		auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		staging.Map( context, size );
+		Tiny::Memcpy( _lines.data( ), staging.GetAccess( ), size );
+		staging.UnMap( context );
 
-		burner.Upload( stagging, uniform, copies[ 0 ] );
+		burner.Upload( staging, transforms, copie );
 	}
-	*/
-	
-	pipeline.BindVertex( work_context, uniform );
+
+	pipeline.BindVertex( work_context, transforms );
+	pipeline.Bind( logical, work_context, ubo_context );
 	pipeline.Draw( work_context, { TGD_MODE_DIRECT, _lines.size( ) } );
 }
 
@@ -219,10 +233,30 @@ void TinyRenderDebugManager::DrawCircles(
 	TinyRenderUniformManager& uniforms,
 	TinyRenderBatchManager& batchs 
 ) {
-	auto& pipeline = _pipelines[ 1 ];
-	auto& uniform  = uniforms.GetUniform( "ubo_transforms" );
+	auto& ubo_context = uniforms.GetUniform( "ubo_context" );
+	auto& transforms  = uniforms.GetUniform( "ib_vertex" );
+	auto& pipeline	  = _pipelines[ 1 ]; 
+	auto& logical	  = graphics.GetLogical( );
+	auto& staging	  = batchs.GetStaging( );
 
 	pipeline.Mount( work_context );
+	pipeline.SetLineWidth( work_context, _line_width );
+
+	{
+		auto context = graphics.GetContext( );
+		auto burner  = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		auto size	 = _circles.size( ) * tiny_sizeof( TinyRenderDebugVertex );
+		auto copie   = VkBufferCopy{ 0, 0, size };
+
+		staging.Map( context, size );
+		Tiny::Memcpy( _circles.data( ), staging.GetAccess( ), size );
+		staging.UnMap( context );
+
+		burner.Upload( staging, transforms, copie );
+	}
+
+	pipeline.BindVertex( work_context, transforms );
+	pipeline.Bind( logical, work_context, ubo_context );
 	pipeline.Draw( work_context, { TGD_MODE_DIRECT, 6, _circles.size( ) } );
 }
 

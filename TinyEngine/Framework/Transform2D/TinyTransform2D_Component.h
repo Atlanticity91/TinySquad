@@ -82,6 +82,8 @@ public:
 
 	TinyTransform2D& ReCalculate( );
 
+	tiny_implement( void Delete( TinyGame* game ) );
+
 	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 public:

@@ -94,10 +94,11 @@ void TinyToolboxGuizmo::DrawUI( TinyGame* game ) {
     if ( ecs.GetIsAlive( _selection ) ) {
         auto* snap_target = PeekSnapTarget( );
         auto& io          = ImGui::GetIO( );
-        auto* cameras     = ecs.GetSystemAs<TinyCameraSystem>( );
+        auto& renderer    = game->GetRenderer( );
+        auto& cameras     = renderer.GetCurrentCamera( );
         auto* transform   = ecs.GetComponentAs<TinyTransform2D>( _selection );
-        auto& view        = cameras->GetViewMatrix( );
-        auto proj         = cameras->GetProjectionMatrtix( );
+        auto& view        = cameras.Get( );
+        auto proj         = tiny_mat4{ renderer.GetCurrentProjection( ) };
         auto matrix       = transform->GetTransform( );
 
         ImGuizmo::BeginFrame( );

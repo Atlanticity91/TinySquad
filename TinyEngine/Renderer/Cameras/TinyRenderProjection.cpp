@@ -25,6 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderProjection::TinyRenderProjection( )
 	: _type{ TRP_TYPE_ORTHOGRAPHIC },
+	_parameter{ 1.f },
 	_matrix{ 1.f }
 { }
 
@@ -34,16 +35,16 @@ TinyRenderProjection& TinyRenderProjection::SetType( TinyRenderProjectionTypes t
 	return tiny_self;
 }
 
-TinyRenderProjection& TinyRenderProjection::SetOrthographic(
-) {
-	_type = TRP_TYPE_ORTHOGRAPHIC;
+TinyRenderProjection& TinyRenderProjection::SetOrthographic( float zoom ) {
+	_type	   = TRP_TYPE_ORTHOGRAPHIC;
+	_parameter = zoom;
 
 	return tiny_self;
 }
 
-TinyRenderProjection& TinyRenderProjection::SetPerspective(
-) {
-	_type = TRP_TYPE_PERSPECTIVE;
+TinyRenderProjection& TinyRenderProjection::SetPerspective( float fov ) {
+	_type	   = TRP_TYPE_PERSPECTIVE;
+	_parameter = fov;
 
 	return tiny_self;
 }
@@ -60,11 +61,10 @@ void TinyRenderProjection::ReCalculate( TinyGraphicBoundaries& boundaries ) {
 		auto aspect_ratio = boundaries.GetAspect( );
 		auto& viewport    = boundaries.GetViewport( );
 
-		/*
 		switch ( _type ) {
 			case TRP_TYPE_ORTHOGRAPHIC:
 				_matrix = glm::ortho(
-					.0f, viewport.width * _parameter,
+					.0f, viewport.width  * _parameter,
 					.0f, viewport.height * _parameter,
 					viewport.minDepth, viewport.maxDepth
 				);
@@ -80,7 +80,6 @@ void TinyRenderProjection::ReCalculate( TinyGraphicBoundaries& boundaries ) {
 
 			default: break;
 		}
-		*/
 	}
 }
 
@@ -91,7 +90,11 @@ TinyRenderProjectionTypes TinyRenderProjection::GetType( ) const { return _type;
 
 const tiny_mat4& TinyRenderProjection::Get( ) const { return _matrix; }
 
+const float* TinyRenderProjection::GetBuffer( ) const { return glm::value_ptr( _matrix ); }
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderProjection::operator const tiny_mat4& ( ) const { return Get( ); }
+
+TinyRenderProjection::operator const float* ( ) const { return GetBuffer( ); }

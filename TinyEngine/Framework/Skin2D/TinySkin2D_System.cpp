@@ -58,12 +58,7 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 	auto& renderer	  = game->GetRenderer( );
 	auto& assets	  = game->GetAssets( );
 	auto& ecs		  = game->GetECS( );
-	auto* cameras	  = ecs.GetSystemAs<TinyCameraSystem>( );
-
-	if ( !cameras )
-		return;
-
-	auto proj_view = cameras->GetProjViewMatrix( );
+	auto camera		  = renderer.GetCameraMatrix( );
 
 	renderer.Prepare( game, TINY_OUTPASS_HASH, TinySkin2DSystem::Draw );
 
@@ -73,14 +68,12 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 		if ( ecs.GetHasFlag( owner, TE_FLAG_VISIBLE ) && component.GetIsActive( ) ) {
 			auto* transform = ecs.GetComponentAs<TinyTransform2D>( owner );
 
-			if ( transform ) {
-				draw_context.Material	   = component.GetMaterial( );
-				draw_context.Sprite.Color  = component.GetColor( );
-				draw_context.Sprite.UV	   = ProcessTexture( assets, draw_context, component );
-				draw_context.Tranform	   = proj_view * transform->GetTransform( );
+			draw_context.Material	  = component.GetMaterial( );
+			draw_context.Sprite.Color = component.GetColor( );
+			draw_context.Sprite.UV	  = ProcessTexture( assets, draw_context, component );
+			draw_context.Tranform	  = camera * transform->GetTransform( );
 
-				renderer.Draw( game, draw_context );
-			}
+			renderer.Draw( game, draw_context );
 		}
 	}
 }

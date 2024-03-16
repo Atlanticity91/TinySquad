@@ -22,6 +22,10 @@
 
 #include "TinyRenderCamera.h"
 
+#define TinyRenderDefaultCamera "_DefaultCamera"
+
+class TinyRenderUniformManager;
+
 te_class TinyRenderCameraManager final {
 
 private:
@@ -34,6 +38,8 @@ public:
 
 	~TinyRenderCameraManager( ) = default;
 
+	void Initialize( );
+
 	TinyRenderProjection& CreateProjection( const tiny_string& alias );
 
 	void RemoveProjection( const tiny_string& alias );
@@ -42,29 +48,65 @@ public:
 
 	TinyRenderCamera& CreateCamera( const tiny_string& entity_name );
 
-	tiny_inline bool RemoveCamera( const tiny_string& entity_name );
+	TinyRenderCamera& CreateCamera( 
+		const tiny_string& entity_name, 
+		const tiny_string& projection
+	);
 
-	bool RemoveCamera( const tiny_hash entity_hash );
+	tiny_inline void RemoveCamera( const tiny_string& entity_name );
 
-	void Prepare( TinyGraphicBoundaries& boundaries );
+	void RemoveCamera( const tiny_hash entity_hash );
+
+	void Prepare( 
+		TinyGraphicManager& graphics,
+		TinyGraphicBufferStaging& staging,
+		TinyRenderUniformManager& uniforms
+	);
 
 	void ReCalculate( );
 
 	void ReCalculate( const tiny_hash entity_hash );
 
-	tiny_inline  void ReCalculateCurrent( );
+	tiny_inline void ReCalculateCurrent( );
 
 public:
+	bool FindProjection( const tiny_string& alias ) const;
+
+	bool FindProjection( const tiny_hash hash ) const;
+
+	bool FindCamera( const tiny_string& entity_name ) const;
+
+	bool FindCamera( const tiny_hash entity_hash ) const;
+
 	TinyRenderProjection& GetProjection( const tiny_string& alias );
+
+	const TinyRenderProjection& GetProjection( const tiny_string& alias ) const;
 
 	TinyRenderProjection& GetProjection( const tiny_hash hash );
 
+	const TinyRenderProjection& GetProjection( const tiny_hash hash ) const;
+
 	TinyRenderCamera& GetCamera( const tiny_string& entity_name );
+
+	const TinyRenderCamera& GetCamera( const tiny_string& entity_name ) const;
 
 	TinyRenderCamera& GetCamera( const tiny_hash entity_hash );
 
-	TinyRenderCamera& GetCurrent( );
+	const TinyRenderCamera& GetCamera( const tiny_hash entity_hash ) const;
+
+	TinyRenderProjection& GetCurrentProjection( );
+
+	const TinyRenderProjection& GetCurrentProjection( ) const;
+
+	TinyRenderCamera& GetCurrentCamera( );
+
+	const TinyRenderCamera& GetCurrentCamera( ) const;
 
 	tiny_inline const tiny_mat4& GetCurrentMatrix( ) const;
+
+private:
+	const float* GetProjectionBuffer( ) const;
+
+	const float* GetCameraBuffer( ) const;
 
 };

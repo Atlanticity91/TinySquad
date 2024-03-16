@@ -24,61 +24,23 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyCameraSystem::TinyCameraSystem( ) 
-	: TinySystem{ false, true },
-	_projection{ },
-	_view{ 1.f },
-	_proj_view{ 1.f },
-	_camera_comp{ TINY_UINT_MAX }
+	: TinySystem{ false, true }
 { }
 
-void TinyCameraSystem::SetProjectionType( TinyProjectionTypes type ) {
-	_projection.SetType( type );
+void TinyCameraSystem::RegisterInterop( TinyGame* game ) {
 }
 
-void TinyCameraSystem::SetProjecrionParameter( float value ) {
-	_projection.SetParameter( value );
-}
-
-void TinyCameraSystem::SetProjection( TinyProjectionTypes type, float scalar ) {
-	_projection.Set( type, scalar );
-}
-
-void TinyCameraSystem::SetCamera( const tiny_string& entity_name ) {
-	auto entity_hash = tiny_hash{ entity_name };
-
-	SetCamera( entity_hash );
-}
-
-void TinyCameraSystem::SetCamera( const tiny_hash entity_hash ) {
-	_camera_comp = GetComponentID( entity_hash );
-}
-
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
 void TinyCameraSystem::PostTick( TinyGame* game ) {
-	auto& graphics   = game->GetGraphics( );
-	auto& boundaries = graphics.GetBoundaries( );
-	auto* camera	 = tiny_cast( nullptr, TinyComponent* );
-	
-	_projection.Calculate( boundaries );
+	//_renderer.Prepare( _graphics );
+	auto& graphics = game->GetGraphics( );
+	auto& renderer = game->GetRenderer( );
 
-	if ( GetComponent( _camera_comp, camera ) ) {
-		auto& ecs = game->GetECS( );
-
-		_view = tiny_cast( camera, TinyCamera* )->Calculate( ecs );
-	} else
-		_view = tiny_mat4{ 1.f };
-
-	_proj_view = _projection.GetMatrix( ) * _view;
+	renderer.Prepare( graphics );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const TinyCameraProjection& TinyCameraSystem::GetProjection( ) const { return _projection; }
-
-const tiny_mat4& TinyCameraSystem::GetProjectionMatrtix( ) const {
-	return _projection.GetMatrix( );
-}
-
-const tiny_mat4& TinyCameraSystem::GetViewMatrix( ) const { return _view; }
-
-const tiny_mat4& TinyCameraSystem::GetProjViewMatrix( ) const { return _proj_view; }

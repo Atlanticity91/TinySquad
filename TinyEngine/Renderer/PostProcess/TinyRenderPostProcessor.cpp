@@ -34,8 +34,4 @@ void TinyRenderPostProcessor::Compose(
 	auto& graphics = game->GetGraphics( );
 
 	graphics.NextSubpass( );
-
-	auto& renderer = game->GetRenderer( );
-
-	renderer.DrawDebug( game, { { 10.f, 10.f }, { 730.f, 10.f } } );
 }

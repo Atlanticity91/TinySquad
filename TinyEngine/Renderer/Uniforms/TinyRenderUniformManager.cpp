@@ -44,11 +44,16 @@ bool TinyRenderUniformManager::Create( TinyGraphicManager& graphics ) {
 		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchSprite_t::Size,
 		"ubo_lights", TINY_RENDER_SET_LIGHT, 0
 	};
+	auto vertex = TinyRenderUniformBuilder{
+		TGB_TYPE_VERTEX, TinyRenderBatchManager::BatchTransform_t::Size,
+		"ib_vertex", 0, 0
+	};
 
 	return  Create( graphics, context    ) &&
 			Create( graphics, transforms ) &&
 			Create( graphics, sprites	 ) &&
-			Create( graphics, lights );
+			Create( graphics, lights	 ) &&
+			Create( graphics, vertex );
 }
 
 bool TinyRenderUniformManager::Create(

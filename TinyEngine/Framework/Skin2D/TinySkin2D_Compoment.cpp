@@ -96,6 +96,13 @@ void TinySkin2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 	ImGui::PopStyleVar( );
 }
 
+void TinySkin2D::OnEnable( TinyGame* game ) {
+	auto& ecs = game->GetECS( );
+
+	if ( !ecs.GetHasComponent( _owner, "TinyTransform2D" ) )
+		_is_active = false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////

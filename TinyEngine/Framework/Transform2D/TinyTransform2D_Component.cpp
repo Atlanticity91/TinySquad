@@ -162,6 +162,14 @@ TinyTransform2D& TinyTransform2D::ReCalculate( ) {
 	return tiny_self;
 }
 
+void TinyTransform2D::Delete( TinyGame* game ) {
+	auto& ecs  = game->GetECS( );
+	auto* skin = ecs.GetComponentAs<TinySkin2D>( _owner );
+
+	if ( skin )
+		skin->Disable( game );
+}
+
 void TinyTransform2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
 	TinyComponent::DisplayWidget( game, toolbox );
 

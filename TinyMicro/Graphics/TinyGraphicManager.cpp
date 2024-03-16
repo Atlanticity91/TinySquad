@@ -277,3 +277,8 @@ TinyGraphicRenderpass& TinyGraphicManager::GetRenderPass( const tiny_string& pas
 const shaderc::CompileOptions& TinyGraphicManager::GetCompilerOptions( ) const {
 	return _compiler.GetCompilerOptions( );
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	OPERATOR ===
+////////////////////////////////////////////////////////////////////////////////////////////
+TinyGraphicManager::operator TinyGraphicContext ( ) { return GetContext( ); }

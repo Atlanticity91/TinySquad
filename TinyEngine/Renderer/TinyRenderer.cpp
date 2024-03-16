@@ -32,6 +32,8 @@ TinyRenderer::TinyRenderer( )
 { }
 
 bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem ) {
+	_cameras.Initialize( );
+
 	auto state = _uniforms.Create( graphics ) && _batchs.Initialize( graphics );
 
 	if ( state ) {
@@ -60,6 +62,10 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 				},
 				{
 					"tiny_ssbo_out( SET, BIND, NAME )"
+					"layout( std140, set=SET, binding=BIND ) writeonly buffer NAME"
+				},
+				{
+					"tiny_ssbo_io( SET, BIND, NAME )"
 					"layout( std140, set=SET, binding=BIND ) buffer NAME"
 				},
 				{
@@ -87,12 +93,49 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 	return state;
 }
 
+TinyRenderProjection& TinyRenderer::CreateProjection( const tiny_string& alias ) {
+	return _cameras.CreateProjection( alias );
+}
+
+void TinyRenderer::RemoveProjection( const tiny_string& alias ) {
+	_cameras.RemoveProjection( alias );
+}
+
+void TinyRenderer::RemoveProjection( const tiny_hash hash ) {
+	_cameras.RemoveProjection( hash );
+}
+
+TinyRenderCamera& TinyRenderer::CreateCamera( const tiny_string& entity_name ) {
+	return _cameras.CreateCamera( entity_name );
+}
+
+TinyRenderCamera& TinyRenderer::CreateCamera(
+	const tiny_string& entity_name,
+	const tiny_string& projection
+) {
+	return _cameras.CreateCamera( entity_name, projection );
+}
+
+void TinyRenderer::RemoveCamera( const tiny_string& entity_name ) {
+	_cameras.RemoveCamera( entity_name );
+}
+
+void TinyRenderer::RemoveCamera( const tiny_hash entity_hash ) {
+	_cameras.RemoveCamera( entity_hash );
+}
+
+void TinyRenderer::ReCalculate( ) { _cameras.ReCalculate( ); }
+
+void TinyRenderer::ReCalculate( const tiny_hash entity_hash ) { 
+	_cameras.ReCalculate( entity_hash ); 
+}
+
+void TinyRenderer::ReCalculateCurrent( ) { _cameras.ReCalculateCurrent( ); }
+
 void TinyRenderer::SetDebugLineWidth( float width ) { _debug.SetLineWidth( width ); }
 
 void TinyRenderer::Prepare( TinyGraphicManager& graphics ) {
-	auto& boundaries = graphics.GetBoundaries( );
-
-	_cameras.Prepare( boundaries );
+	_cameras.Prepare( graphics, _batchs.GetStaging( ), _uniforms );
 }
 
 void TinyRenderer::Prepare(
@@ -152,5 +195,73 @@ TinyRenderUniformManager& TinyRenderer::GetUniforms( ) { return _uniforms; }
 TinyRenderBatchManager& TinyRenderer::GetBatchs( ) { return _batchs; }
 
 TinyRenderPostProcessor& TinyRenderer::GetPostProcess( ) { return _post_process; }
+
+bool TinyRenderer::FindProjection( const tiny_string& alias ) const { 
+	return _cameras.FindProjection( alias );
+}
+
+bool TinyRenderer::FindProjection( const tiny_hash hash ) const {
+	return _cameras.FindProjection( hash );
+}
+
+bool TinyRenderer::FindCamera( const tiny_string& entity_name ) const {
+	return _cameras.FindCamera( entity_name );
+}
+
+bool TinyRenderer::FindCamera( const tiny_hash entity_hash ) const {
+	return _cameras.FindCamera( entity_hash );
+}
+
+TinyRenderProjection& TinyRenderer::GetProjection( const tiny_string& alias ) {
+	return _cameras.GetProjection( alias );
+}
+
+const TinyRenderProjection& TinyRenderer::GetProjection( const tiny_string& alias ) const {
+	return _cameras.GetProjection( alias );
+}
+
+TinyRenderProjection& TinyRenderer::GetProjection( const tiny_hash hash ) {
+	return _cameras.GetProjection( hash );
+}
+
+const TinyRenderProjection& TinyRenderer::GetProjection( const tiny_hash hash ) const {
+	return _cameras.GetProjection( hash );
+}
+
+TinyRenderCamera& TinyRenderer::GetCamera( const tiny_string& entity_name ) {
+	return _cameras.GetCamera( entity_name );
+}
+
+const TinyRenderCamera& TinyRenderer::GetCamera( const tiny_string& entity_name ) const {
+	return _cameras.GetCamera( entity_name );
+}
+
+TinyRenderCamera& TinyRenderer::GetCamera( const tiny_hash entity_hash ) {
+	return _cameras.GetCamera( entity_hash );
+}
+
+const TinyRenderCamera& TinyRenderer::GetCamera( const tiny_hash entity_hash ) const {
+	return _cameras.GetCamera( entity_hash );
+}
+
+TinyRenderProjection& TinyRenderer::GetCurrentProjection( ) {
+	return _cameras.GetCurrentProjection( );
+}
+
+const TinyRenderProjection& TinyRenderer::GetCurrentProjection( ) const {
+	return _cameras.GetCurrentProjection( );
+}
+
+TinyRenderCamera& TinyRenderer::GetCurrentCamera( ) {
+	return _cameras.GetCurrentCamera( );
+}
+
+const TinyRenderCamera& TinyRenderer::GetCurrentCamera( ) const {
+	return _cameras.GetCurrentCamera( ); 
+}
+
+const tiny_mat4& TinyRenderer::GetCameraMatrix( ) const { 
+	return _cameras.GetCurrentMatrix( ); 
+}
 
 float TinyRenderer::GetDebugLineWidth( ) const { return _debug.GetLineWidth( ); }

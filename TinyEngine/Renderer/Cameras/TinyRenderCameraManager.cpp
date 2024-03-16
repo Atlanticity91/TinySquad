@@ -26,8 +26,13 @@
 TinyRenderCameraManager::TinyRenderCameraManager( )
 	: _projections{ },
 	_cameras{ },
-	_current_camera{ }
+	_current_camera{ TinyRenderDefaultCamera }
 { }
+
+void TinyRenderCameraManager::Initialize( ) {
+	CreateProjection( "Scene2D" );
+	CreateCamera( TinyRenderDefaultCamera, "Scene2D" );
+}
 
 TinyRenderProjection& TinyRenderCameraManager::CreateProjection( 
 	const tiny_string& alias
@@ -53,24 +58,65 @@ TinyRenderCamera& TinyRenderCameraManager::CreateCamera( const tiny_string& enti
 	return _cameras[ entity_name ];
 }
 
-bool TinyRenderCameraManager::RemoveCamera( const tiny_string& entity_name ) {
+TinyRenderCamera& TinyRenderCameraManager::CreateCamera(
+	const tiny_string& entity_name,
+	const tiny_string& projection
+) {
+	auto projection_hash = tiny_hash{ projection };
+	auto& camera		 = CreateCamera( entity_name );
+
+	return camera.SetProjection( projection_hash );
+}
+
+void TinyRenderCameraManager::RemoveCamera( const tiny_string& entity_name ) {
 	auto entity_hash = tiny_hash{ entity_name };
 
-	return RemoveCamera( entity_hash );
+	RemoveCamera( entity_hash );
 }
 
-bool TinyRenderCameraManager::RemoveCamera( const tiny_hash entity_hash ) {
-	auto state = entity_hash != _current_camera;
+void TinyRenderCameraManager::RemoveCamera( const tiny_hash entity_hash ) {
+	if ( entity_hash == _current_camera ) {
+		auto default_camera = tiny_hash{ TinyRenderDefaultCamera };
 
-	if ( state )
-		_cameras.erase( entity_hash );
+		_cameras[ default_camera ].Set( _cameras[ entity_hash ] );
 
-	return state;
+		_current_camera = default_camera;
+	}
+
+	_cameras.erase( entity_hash );
 }
 
-void TinyRenderCameraManager::Prepare( TinyGraphicBoundaries& boundaries ) {
+void TinyRenderCameraManager::Prepare( 
+	TinyGraphicManager& graphics,
+	TinyGraphicBufferStaging& staging,
+	TinyRenderUniformManager& uniforms
+) {
+	auto& boundaries = graphics.GetBoundaries( );
+
 	for ( auto& projection : _projections )
 		projection.Data.ReCalculate( boundaries );
+
+	ReCalculate( _current_camera );
+
+	{
+		auto uniform = uniforms.GetUniform( "ubo_context" );
+		auto context = graphics.GetContext( );
+		auto burner  = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		auto copie   = VkBufferCopy{ 0, 0,  tiny_sizeof( TinyUBOContext ) };
+
+		staging.Map( context, tiny_cast( copie.size, tiny_uint ) );
+		
+		auto* projection = GetProjectionBuffer( );
+		auto* camera	 = GetCameraBuffer( );
+		auto* map		 = tiny_cast( staging.GetAccess( ), float* );
+
+		Tiny::Memcpy( projection, map,			tiny_sizeof( tiny_mat4 ) );
+		Tiny::Memcpy( camera,	  map + 16, 3 * tiny_sizeof( tiny_mat4 ) );
+
+		staging.UnMap( context );
+
+		burner.Upload( staging, uniform, copie );
+	}
 }
 
 void TinyRenderCameraManager::ReCalculate( ) {
@@ -93,7 +139,31 @@ void TinyRenderCameraManager::ReCalculateCurrent( ) { ReCalculate( _current_came
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyRenderProjection& TinyRenderCameraManager::GetProjection( const tiny_string& alias ) {
+bool TinyRenderCameraManager::FindProjection( const tiny_string& alias ) const {
+	return _projections.find( alias );
+}
+
+bool TinyRenderCameraManager::FindProjection( const tiny_hash hash ) const {
+	return _projections.find( hash );
+}
+
+bool TinyRenderCameraManager::FindCamera( const tiny_string& entity_name ) const {
+	return _cameras.find( entity_name );
+}
+
+bool TinyRenderCameraManager::FindCamera( const tiny_hash entity_hash ) const {
+	return _cameras.find( entity_hash );
+}
+
+TinyRenderProjection& TinyRenderCameraManager::GetProjection( 
+	const tiny_string& alias 
+) {
+	return _projections[ alias ];
+}
+
+const TinyRenderProjection& TinyRenderCameraManager::GetProjection(
+	const tiny_string& alias
+) const {
 	return _projections[ alias ];
 }
 
@@ -101,7 +171,19 @@ TinyRenderProjection& TinyRenderCameraManager::GetProjection( const tiny_hash ha
 	return _projections[ hash ];
 }
 
+const TinyRenderProjection& TinyRenderCameraManager::GetProjection( 
+	const tiny_hash hash 
+) const {
+	return _projections[ hash ];
+}
+
 TinyRenderCamera& TinyRenderCameraManager::GetCamera( const tiny_string& entity_name ) {
+	return _cameras[ entity_name ];
+}
+
+const TinyRenderCamera& TinyRenderCameraManager::GetCamera( 
+	const tiny_string& entity_name 
+) const {
 	return _cameras[ entity_name ];
 }
 
@@ -109,9 +191,49 @@ TinyRenderCamera& TinyRenderCameraManager::GetCamera( const tiny_hash entity_has
 	return _cameras[ entity_hash ];
 }
 
-TinyRenderCamera& TinyRenderCameraManager::GetCurrent( ) { 
+const TinyRenderCamera& TinyRenderCameraManager::GetCamera( 
+	const tiny_hash entity_hash 
+) const {
+	return _cameras[ entity_hash ];
+}
+
+TinyRenderProjection& TinyRenderCameraManager::GetCurrentProjection( ) {
+	auto& camera    = GetCurrentCamera( );
+	auto projection = camera.GetProjection( );
+
+	return _projections[ projection ];
+}
+
+const TinyRenderProjection& TinyRenderCameraManager::GetCurrentProjection( ) const {
+	auto& camera    = GetCurrentCamera( );
+	auto projection = camera.GetProjection( );
+
+	return _projections[ projection ];
+}
+
+TinyRenderCamera& TinyRenderCameraManager::GetCurrentCamera( ) {
 	return _cameras[ _current_camera ]; 
 }
+
+const TinyRenderCamera& TinyRenderCameraManager::GetCurrentCamera( ) const {
+	return _cameras[ _current_camera ];
+}
+
 const tiny_mat4& TinyRenderCameraManager::GetCurrentMatrix( ) const { 
 	return _cameras[ _current_camera ].GetProjView( );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+const float* TinyRenderCameraManager::GetProjectionBuffer( ) const {
+	auto& projection = GetCurrentProjection( );
+	
+	return projection.GetBuffer( );
+}
+
+const float* TinyRenderCameraManager::GetCameraBuffer( ) const {
+	auto& camera = GetCurrentCamera( );
+	
+	return camera.GetBuffer( );
 }
