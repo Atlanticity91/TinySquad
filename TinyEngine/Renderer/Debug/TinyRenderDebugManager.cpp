@@ -26,7 +26,8 @@
 TinyRenderDebugManager::TinyRenderDebugManager( )
 	: _line_width{ 1.f },
 	_pipelines{ },
-	_primitives{ },
+	_lines{ },
+	_circles{ },
 	_shaders{ }
 { }
 
@@ -39,27 +40,42 @@ void TinyRenderDebugManager::SetLineWidth( float width ) {
 		_line_width = width; 
 }
 
-void TinyRenderDebugManager::Draw( 
-	TinyGame* game,
-	const TinyRenderDebugPrimitive& primitive 
-) {
-	_primitives.emplace_back( primitive );
+void TinyRenderDebugManager::Draw( const TinyRenderDebugPrimitive& primitive ) {
+	if ( primitive.Type != TRD_PRIMITIVE_CIRCLE ) {
+		_lines.emplace_back( { { primitive.Src.x, primitive.Src.y, .0f, 1.f }, primitive.Color } );
+		_lines.emplace_back( { { primitive.Dst.x, primitive.Dst.y, .0f, 1.f }, primitive.Color } );
+	} else {
+		_lines.emplace_back( {
+			{
+				primitive.Src.x,
+				primitive.Src.y,
+				primitive.Dst.x,
+				primitive.Dst.y
+			}, 
+			primitive.Color
+		} );
+	}
 }
 
 void TinyRenderDebugManager::Flush( 
-	TinyGame* game, 
+	TinyGame* game,
 	TinyRenderUniformManager& uniforms, 
 	TinyRenderBatchManager& batchs 
 ) {
 	auto& graphics	   = game->GetGraphics( );
 	auto& work_context = graphics.GetWorkdContext( );
 
-	DrawLines( graphics, work_context, uniforms, batchs );
+	if ( _lines.size( ) > 0 ) {
+		DrawLines( graphics, work_context, uniforms, batchs );
 
-	if ( _primitives.size( ) > 0 )
+		_lines.clear( );
+	}
+
+	if ( _circles.size( ) > 0 ) {
 		DrawCircles( graphics, work_context, uniforms, batchs );
 
-	_primitives.clear( );
+		_circles.clear( );
+	}
 }
 
 void TinyRenderDebugManager::Terminate( TinyGraphicManager& graphics ) {
@@ -171,25 +187,30 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 
 void TinyRenderDebugManager::DrawLines(
 	TinyGraphicManager& graphics,
-	TinyRenderCameraManager& cameras,
+	TinyGraphicWorkContext& work_context,
 	TinyRenderUniformManager& uniforms,
 	TinyRenderBatchManager& batchs 
 ) {
-	auto primitive_id = _primitives.size( );
-	auto& pipeline	  = _pipelines[ 0 ];
+	auto& pipeline = _pipelines[ 0 ];
+	auto& uniform  = uniforms.GetUniform( "ubo_transforms" );
 
 	pipeline.Mount( work_context );
 	pipeline.SetLineWidth( work_context, _line_width );
 
-	while ( primitive_id-- > 0 ) {
-		auto& primitive = _primitives[ primitive_id ];
+	/*
+	{
+		auto& stagging = batchs.GetStaging( );
+		auto context = graphics.GetContext( );
+		auto copies = batchs.Flush2D( context, vertex_count );
 
-		if ( primitive.Type != TRD_PRIMITIVE_CIRCLE ) {
-			_primitives.erase( primitive_id );
-		}
+		auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+
+		burner.Upload( stagging, uniform, copies[ 0 ] );
 	}
-
-	pipeline.Draw( work_context, { TGD_MODE_DIRECT, 0 } );
+	*/
+	
+	pipeline.BindVertex( work_context, uniform );
+	pipeline.Draw( work_context, { TGD_MODE_DIRECT, _lines.size( ) } );
 }
 
 void TinyRenderDebugManager::DrawCircles(
@@ -199,13 +220,10 @@ void TinyRenderDebugManager::DrawCircles(
 	TinyRenderBatchManager& batchs 
 ) {
 	auto& pipeline = _pipelines[ 1 ];
+	auto& uniform  = uniforms.GetUniform( "ubo_transforms" );
 
 	pipeline.Mount( work_context );
-
-	for ( auto& primitive : _primitives ) {
-	}
-
-	pipeline.Draw( work_context, { TGD_MODE_DIRECT, 0 } );
+	pipeline.Draw( work_context, { TGD_MODE_DIRECT, 6, _circles.size( ) } );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,4 +234,6 @@ float TinyRenderDebugManager::GetLineWidth( ) const { return _line_width; }
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyRenderDebugManager::operator bool( ) const { return _primitives.size( ) > 0; }
+TinyRenderDebugManager::operator bool( ) const {
+	return _lines.size( ) > 0 || _circles.size( ) > 0;
+}

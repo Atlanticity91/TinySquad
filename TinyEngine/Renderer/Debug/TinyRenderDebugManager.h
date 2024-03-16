@@ -28,10 +28,11 @@ te_class TinyRenderDebugManager final {
 	static const tiny_uint SHADER_COUNT   = 4;
 
 private:
-	float								_line_width;
-	TinyGraphicPipeline					_pipelines[ PIPELINE_COUNT ];
-	tiny_list<TinyRenderDebugPrimitive> _primitives;
-	VkPipelineShaderStageCreateInfo		_shaders[ SHADER_COUNT ];
+	float							 _line_width;
+	TinyGraphicPipeline				 _pipelines[ PIPELINE_COUNT ];
+	tiny_list<TinyRenderDebugVertex> _lines;
+	tiny_list<TinyRenderDebugVertex> _circles;
+	VkPipelineShaderStageCreateInfo	 _shaders[ SHADER_COUNT ];
 
 public:
 	TinyRenderDebugManager( );
@@ -42,10 +43,10 @@ public:
 
 	void SetLineWidth( float width );
 
-	void Draw( TinyGame* game, const TinyRenderDebugPrimitive& primitive );
+	void Draw( const TinyRenderDebugPrimitive& primitive );
 
 	void Flush( 
-		TinyGame* game, 
+		TinyGame* game,
 		TinyRenderUniformManager& uniforms, 
 		TinyRenderBatchManager& batchs 
 	);

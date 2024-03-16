@@ -104,7 +104,7 @@ TinyGraphicPipelineBundle TinyGraphicManager::CreatePipeline(
 
 void TinyGraphicManager::ReCreate( ) { _need_recreation = true; }
 
-TinyGraphicWorkContext& TinyGraphicManager::Acquire( const TinyWindow& window ) {
+void TinyGraphicManager::Acquire( const TinyWindow& window ) {
 	_work_context.Acquire( _logical, _queues, VK_QUEUE_TYPE_GRAPHIC );
 	
 	if ( _need_recreation )
@@ -112,8 +112,6 @@ TinyGraphicWorkContext& TinyGraphicManager::Acquire( const TinyWindow& window ) 
 
 	if ( !_swapchain.Acquire( _logical, _work_context ) )
 		ReCreate( window );
-
-	return _work_context;
 }
 
 bool TinyGraphicManager::BeginPass( const tiny_string& pass_name ) {

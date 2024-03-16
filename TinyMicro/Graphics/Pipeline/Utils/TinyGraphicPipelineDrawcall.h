@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyGraphicPipelineBindpoint.h"
+#include "TinyGraphicPipelineVertex.h"
 
 tiny_enum( TinyGraphicDrawModes ) {
 

@@ -38,19 +38,12 @@ bool TinyGeometry::Create(
 	return state;
 }
 
-void TinyGeometry::Bind( TinyGraphicWorkContext& work_context ) {
-	if ( work_context.Queue ) {
-		auto* vertex = _vertex.Get( );
-		auto offset = VkDeviceSize{ 0 };
-
-		/*
-		if ( _vertex )
-			vkCmdBindVertexBuffers( work_context.Queue->CommandBuffer, 0, 1, &vertex, &offset );
-
-		if ( _index )
-			vkCmdBindIndexBuffer( work_context.Queue->CommandBuffer, _index, offset, VK_INDEX_TYPE_UINT32 );
-		*/
-	}
+void TinyGeometry::Bind( 
+	TinyGraphicWorkContext& work_context,
+	TinyGraphicPipeline& pipeline 
+) {
+	pipeline.BindVertex( work_context, _vertex );
+	pipeline.BindIndex( work_context, _index );
 }
 
 void TinyGeometry::Terminate( TinyGraphicContext& context ) {

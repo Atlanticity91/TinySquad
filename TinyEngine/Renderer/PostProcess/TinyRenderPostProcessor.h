@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Batchs/TinyRenderBatchManager.h>
+#include <TinyEngine/Renderer/Debug/TinyRenderDebugManager.h>
 
 te_class TinyRenderPostProcessor final {
 

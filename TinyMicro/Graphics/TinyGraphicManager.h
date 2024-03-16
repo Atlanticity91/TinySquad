@@ -80,7 +80,7 @@ public:
 
 	void ReCreate( );
 
-	TinyGraphicWorkContext& Acquire( const TinyWindow& window );
+	void Acquire( const TinyWindow& window );
 
 	tiny_inline bool BeginPass( const tiny_string& pass_name );
 

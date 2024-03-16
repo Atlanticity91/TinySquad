@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 28/11/2023
- * @version  : 2024.1
+ * @creation : 15/03/2024
+ * @version  : 2024.2.6
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,6 +20,15 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Materials/TinyMaterialManager.h>
+#include "TinyGraphicPipelineBindpoint.h"
 
-te_struct TinyGeometryBundle { };
+tm_struct TinyGraphicPipelineVertex {
+
+	const TinyGraphicBuffer& Buffer;
+	VkDeviceSize Offset;
+
+	TinyGraphicPipelineVertex( ) = delete;
+
+	TinyGraphicPipelineVertex( const TinyGraphicBuffer& buffer, VkDeviceSize offset );
+
+};

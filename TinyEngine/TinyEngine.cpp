@@ -85,7 +85,8 @@ void TinyEngine::PreTick( TinyGame* game ) {
 
 void TinyEngine::PostTick( TinyGame* game ) {
 	_graphics.Acquire( _window );
-	
+	_renderer.Prepare( _graphics );
+
 	_addons.PostTick( game );
 	_ecs.PostTick( game );
 	//_ux.Tick( game );

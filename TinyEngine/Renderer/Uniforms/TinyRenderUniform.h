@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Animation3D/TinyAnimation3DManager.h>
+#include <TinyEngine/Renderer/Cameras/TinyRenderCameraManager.h>
 
 te_struct TinyRenderUniformBuilder : tiny_inherit( TinyGraphicBufferProperties ) {
 

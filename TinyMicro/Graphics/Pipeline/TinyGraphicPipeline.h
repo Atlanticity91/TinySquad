@@ -187,6 +187,50 @@ public:
 		TinyGraphicPipelineBindpoint* bindpoints
 	);
 
+	tiny_inline void BindVertex(
+		TinyGraphicWorkContext& work_context,
+		const TinyGraphicBuffer& buffer
+	);
+
+	void BindVertex(
+		TinyGraphicWorkContext& work_context,
+		tiny_uint binding,
+		const TinyGraphicBuffer& buffer 
+	);
+
+	tiny_inline void BindVertex(
+		TinyGraphicWorkContext& work_context,
+		const TinyGraphicPipelineVertex& vertex
+	);
+
+	void BindVertex(
+		TinyGraphicWorkContext& work_context,
+		tiny_uint binding,
+		const TinyGraphicPipelineVertex& vertex
+	);
+
+	tiny_inline void BindVertex(
+		TinyGraphicWorkContext& work_context,
+		tiny_init<TinyGraphicPipelineVertex> vertexes
+	);
+
+	void BindVertex(
+		TinyGraphicWorkContext& work_context,
+		tiny_uint binding,
+		tiny_init<TinyGraphicPipelineVertex> vertexes
+	);
+
+	void BindIndex( 
+		TinyGraphicWorkContext& work_context, 
+		const TinyGraphicBuffer& buffer 
+	);
+
+	void BindGeometry( 
+		TinyGraphicWorkContext& work_context,
+		const TinyGraphicBuffer& vertex,
+		const TinyGraphicBuffer& index
+	);
+
 	void Draw(
 		TinyGraphicWorkContext& work_context,
 		const TinyGraphicPipelineDrawcall& draw_call 

@@ -20,11 +20,12 @@
 
 #pragma once
 
-#include "Debug/TinyRenderDebugManager.h"
+#include "PostProcess/TinyRenderPostProcessor.h"
 
 te_class TinyRenderer final {
 
 private:
+	TinyRenderCameraManager  _cameras;
 	TinyRenderUniformManager _uniforms;
 	TinyRenderBatchManager   _batchs;
 	TinyRenderDebugManager	 _debug;
@@ -38,6 +39,8 @@ public:
 	bool Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem );
 
 	tiny_inline void SetDebugLineWidth( float width );
+
+	tiny_inline void Prepare( TinyGraphicManager& graphics );
 
 	void Prepare( 
 		TinyGame* game, 
@@ -57,13 +60,15 @@ public:
 
 	tiny_inline void Flush( TinyGame* game );
 
-	tiny_inline void DrawDebug( TinyGame* game, const TinyRenderDebugPrimitive& primitive );
+	tiny_inline void DrawDebug( const TinyRenderDebugPrimitive& primitive );
 
 	void Compose( TinyGame* game );
 
 	void Terminate( TinyGraphicManager& graphics );
 
 public:
+	TinyRenderCameraManager& GetCameras( );
+	
 	TinyRenderUniformManager& GetUniforms( );
 
 	TinyRenderBatchManager& GetBatchs( );

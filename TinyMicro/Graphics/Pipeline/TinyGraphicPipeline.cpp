@@ -357,6 +357,85 @@ void TinyGraphicPipeline::Bind(
 	);
 }
 
+void TinyGraphicPipeline::BindVertex(
+	TinyGraphicWorkContext& work_context,
+	const TinyGraphicBuffer& buffer
+) {
+	BindVertex( work_context, 0, buffer );
+}
+
+void TinyGraphicPipeline::BindVertex(
+	TinyGraphicWorkContext& work_context,
+	tiny_uint binding,
+	const TinyGraphicBuffer& buffer 
+) {
+	auto vertex = buffer.Get( );
+	auto offset = VkDeviceSize{ 0 };
+
+	vkCmdBindVertexBuffers( work_context.Queue->CommandBuffer, binding, 1, tiny_rvalue( vertex ), tiny_rvalue( offset ) );
+}
+
+void TinyGraphicPipeline::BindVertex(
+	TinyGraphicWorkContext& work_context,
+	const TinyGraphicPipelineVertex& vertex
+) { 
+	BindVertex( work_context, 0, vertex );
+}
+
+void TinyGraphicPipeline::BindVertex(
+	TinyGraphicWorkContext& work_context,
+	tiny_uint binding,
+	const TinyGraphicPipelineVertex& vertex
+) {
+	auto _vertex = vertex.Buffer.Get( );
+	auto offset  = VkDeviceSize{ vertex.Offset };
+
+	vkCmdBindVertexBuffers( work_context.Queue->CommandBuffer, binding, 1, tiny_rvalue( _vertex ), tiny_rvalue( offset ) );
+}
+
+void TinyGraphicPipeline::BindVertex(
+	TinyGraphicWorkContext& work_context,
+	tiny_init<TinyGraphicPipelineVertex> vertexes
+) { 
+	BindVertex( work_context, 0, vertexes );
+}
+
+void TinyGraphicPipeline::BindVertex(
+	TinyGraphicWorkContext& work_context,
+	tiny_uint binding,
+	tiny_init<TinyGraphicPipelineVertex> vertexes
+) {
+	auto vertex_count = tiny_cast( vertexes.size( ), tiny_uint );
+	auto vertex		  = tiny_list<VkBuffer>{ vertex_count };
+	auto offsets	  = tiny_list<VkDeviceSize>{ vertex_count };
+	auto idx		  = vertex_count;
+
+	while ( idx-- > 0 ) {
+		auto& _vertex = tiny_lvalue( vertexes.begin( ) + idx );
+
+		vertex[ idx ]  = _vertex.Buffer;
+		offsets[ idx ] = _vertex.Offset;
+	}
+
+	vkCmdBindVertexBuffers( work_context.Queue->CommandBuffer, binding, vertex_count, vertex.data( ), offsets.data( ) );
+}
+
+void TinyGraphicPipeline::BindIndex(
+	TinyGraphicWorkContext& work_context, 
+	const TinyGraphicBuffer& buffer 
+) {
+	vkCmdBindIndexBuffer( work_context.Queue->CommandBuffer, buffer, 0, VK_INDEX_TYPE_UINT32 );
+}
+
+void TinyGraphicPipeline::BindGeometry(
+	TinyGraphicWorkContext& work_context,
+	const TinyGraphicBuffer& vertex,
+	const TinyGraphicBuffer& index
+) {
+	BindVertex( work_context, vertex );
+	BindIndex( work_context, index );
+}
+
 void TinyGraphicPipeline::Draw(
 	TinyGraphicWorkContext& work_context,
 	const TinyGraphicPipelineDrawcall& draw_call

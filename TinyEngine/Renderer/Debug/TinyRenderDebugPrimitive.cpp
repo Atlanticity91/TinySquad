@@ -25,19 +25,21 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderDebugPrimitive::TinyRenderDebugPrimitive( 
 	const tiny_vec2& position, 
-	float radius
+	float radius,
+	float thickness
 )
-	: TinyRenderDebugPrimitive{ position, radius, TinyPalettes::SUN_FLOWER }
+	: TinyRenderDebugPrimitive{ position, radius, thickness, TinyPalettes::SUN_FLOWER }
 { }
 
 TinyRenderDebugPrimitive::TinyRenderDebugPrimitive(
 	const tiny_vec2& position,
 	float radius,
+	float thickness,
 	const tiny_color& color
 ) 
 	: Type{ TRD_PRIMITIVE_CIRCLE },
 	Src{ position },
-	Dst{ radius, .0f },
+	Dst{ radius, thickness },
 	Color{ color }
 { }
 

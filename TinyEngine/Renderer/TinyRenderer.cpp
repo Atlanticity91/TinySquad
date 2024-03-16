@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderer::TinyRenderer( )
-	: _uniforms{ },
+	: _cameras{ },
+	_uniforms { },
 	_batchs{ },
 	_debug{ },
 	_post_process{ }
@@ -88,6 +89,12 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 
 void TinyRenderer::SetDebugLineWidth( float width ) { _debug.SetLineWidth( width ); }
 
+void TinyRenderer::Prepare( TinyGraphicManager& graphics ) {
+	auto& boundaries = graphics.GetBoundaries( );
+
+	_cameras.Prepare( boundaries );
+}
+
 void TinyRenderer::Prepare(
 	TinyGame* game,
 	const tiny_string& render_pass,
@@ -116,8 +123,8 @@ void TinyRenderer::Draw( TinyGame* game, const TinyRenderDraw3DContext& draw_con
 
 void TinyRenderer::Flush( TinyGame* game ) { _batchs.Flush( game ); }
 
-void TinyRenderer::DrawDebug( TinyGame* game, const TinyRenderDebugPrimitive& primitive ) {
-	_debug.Draw( game, primitive );
+void TinyRenderer::DrawDebug( const TinyRenderDebugPrimitive& primitive ) {
+	_debug.Draw( primitive );
 }
 
 void TinyRenderer::Compose( TinyGame* game ) {
@@ -138,6 +145,8 @@ void TinyRenderer::Terminate( TinyGraphicManager& graphics ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+TinyRenderCameraManager& TinyRenderer::GetCameras( ) { return _cameras; }
+
 TinyRenderUniformManager& TinyRenderer::GetUniforms( ) { return _uniforms; }
 
 TinyRenderBatchManager& TinyRenderer::GetBatchs( ) { return _batchs; }

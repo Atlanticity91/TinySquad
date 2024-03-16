@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/PostProcess/TinyRenderPostProcessor.h>
+#include <TinyEngine/Renderer/Batchs/TinyRenderBatchManager.h>
 
 #define _TinyRenderDebugPrimitiveR2( NAME, SRC, DST, COLOR )\
 	auto NAME = TinyRenderDebugPrimitive( SRC, DST, COLOR );\
@@ -43,11 +43,12 @@ te_struct TinyRenderDebugPrimitive {
 	tiny_vec2 Dst;
 	tiny_color Color;
 
-	TinyRenderDebugPrimitive( const tiny_vec2& position, float radius );
+	TinyRenderDebugPrimitive( const tiny_vec2& position, float radius, float thickness );
 
 	TinyRenderDebugPrimitive( 
 		const tiny_vec2& position, 
 		float radius,
+		float thickness,
 		const tiny_color& color 
 	);
 
