@@ -23,23 +23,38 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+TinyRenderDebugPrimitive::TinyRenderDebugPrimitive(
+	const tiny_vec2& position,
+	float diameter
+)
+	: TinyRenderDebugPrimitive{ position, diameter, TinyPalettes::SUN_FLOWER }
+{ }
+
 TinyRenderDebugPrimitive::TinyRenderDebugPrimitive( 
 	const tiny_vec2& position, 
-	float radius,
+	float diameter,
 	float thickness
 )
-	: TinyRenderDebugPrimitive{ position, radius, thickness, TinyPalettes::SUN_FLOWER }
+	: TinyRenderDebugPrimitive{ position, diameter, ( .5f * diameter ) * thickness, TinyPalettes::SUN_FLOWER }
+{ }
+
+TinyRenderDebugPrimitive::TinyRenderDebugPrimitive( 
+	const tiny_vec2& position, 
+	float diameter,
+	const tiny_color& color
+)
+	: TinyRenderDebugPrimitive{ position, diameter, ( .5f * diameter ) *.0001f, color }
 { }
 
 TinyRenderDebugPrimitive::TinyRenderDebugPrimitive(
 	const tiny_vec2& position,
-	float radius,
+	float diameter,
 	float thickness,
 	const tiny_color& color
 ) 
 	: Type{ TRD_PRIMITIVE_CIRCLE },
 	Src{ position },
-	Dst{ radius, thickness },
+	Dst{ diameter, thickness },
 	Color{ color }
 { }
 

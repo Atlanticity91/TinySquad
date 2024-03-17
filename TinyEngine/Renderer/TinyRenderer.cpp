@@ -39,6 +39,9 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 	if ( state ) {
 		graphics.AddCompilerMacros( 
 			{
+				// === PI ===
+				{ "TinyPI", "3.1415926535897932384626433832795" },
+
 				// === SETS ===
 				{ "TinySetID_Core",	   TINY_STR( TINY_RENDER_SET_CORE )    },
 				{ "TinySetID_Render",  TINY_STR( TINY_RENDER_SET_RENDER )  },

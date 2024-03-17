@@ -43,11 +43,15 @@ te_struct TinyRenderDebugPrimitive {
 	tiny_vec2 Dst;
 	tiny_color Color;
 
-	TinyRenderDebugPrimitive( const tiny_vec2& position, float radius, float thickness );
+	TinyRenderDebugPrimitive( const tiny_vec2& position, float diameter );
+
+	TinyRenderDebugPrimitive( const tiny_vec2& position, float diameter, float thickness );
+
+	TinyRenderDebugPrimitive( const tiny_vec2& position, float diameter, const tiny_color& color );
 
 	TinyRenderDebugPrimitive( 
 		const tiny_vec2& position, 
-		float radius,
+		float diameter,
 		float thickness,
 		const tiny_color& color 
 	);

@@ -425,14 +425,14 @@ void TinyToolbox::CreateDevDir( TinyGame* game ) {
         material.ShaderStages[ 1 ] = "sf_default";
 
         material.Descriptors = 3;
-        material.Descriptors[ 0 ] = 1;
-        material.Descriptors[ 1 ] = 2;
-        material.Descriptors[ 2 ] = 1;
+        material.Descriptors[ TINY_RENDER_SET_CORE    ] = 1;
+        material.Descriptors[ TINY_RENDER_SET_RENDER  ] = 2;
+        material.Descriptors[ TINY_RENDER_SET_TEXTURE ] = 1;
 
-        _pCreateSetBind( material.Descriptors[ 0 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _pCreateSetBind( material.Descriptors[ 1 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _pCreateSetBind( material.Descriptors[ 1 ], 1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _pCreateSetBind( material.Descriptors[ 2 ], 0, TGBP_TYPE_COMBINED, TGS_STAGE_FRAGMENT );
+        _pCreateSetBind( material, TINY_RENDER_SET_CORE,    0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX    );
+        _pCreateSetBind( material, TINY_RENDER_SET_RENDER,  0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX    );
+        _pCreateSetBind( material, TINY_RENDER_SET_RENDER,  1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX    );
+        _pCreateSetBind( material, TINY_RENDER_SET_TEXTURE, 0, TGBP_TYPE_COMBINED, TGS_STAGE_FRAGMENT );
 
         auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
 

@@ -41,18 +41,35 @@ void TinyRenderDebugManager::SetLineWidth( float width ) {
 }
 
 void TinyRenderDebugManager::Draw( const TinyRenderDebugPrimitive& primitive ) {
-	if ( primitive.Type != TRD_PRIMITIVE_CIRCLE ) {
+	if ( primitive.Type == TRD_PRIMITIVE_LINE ) {
 		_lines.emplace_back( { { primitive.Src.x, primitive.Src.y, .0f, 1.f }, primitive.Color } );
 		_lines.emplace_back( { { primitive.Dst.x, primitive.Dst.y, .0f, 1.f }, primitive.Color } );
+	} else if ( primitive.Type == TRD_PRIMITIVE_RECTANGLE ) {
+		auto rect_x = primitive.Src.x;
+		auto rect_y = primitive.Src.y;
+		auto size_x = primitive.Dst.x;
+		auto size_y = primitive.Dst.y;
+
+		_lines.emplace_back( { { rect_x			, rect_y		 , .0f, 1.f }, primitive.Color } );
+		_lines.emplace_back( { { rect_x + size_x, rect_y		 , .0f, 1.f }, primitive.Color } );
+
+		_lines.emplace_back( { { rect_x + size_x, rect_y		 , .0f, 1.f }, primitive.Color } );
+		_lines.emplace_back( { { rect_x + size_x, rect_y + size_y, .0f, 1.f }, primitive.Color } );
+
+		_lines.emplace_back( { { rect_x + size_x, rect_y + size_y, .0f, 1.f }, primitive.Color } );
+		_lines.emplace_back( { { rect_x			, rect_y + size_y, .0f, 1.f }, primitive.Color } );
+
+		_lines.emplace_back( { { rect_x			, rect_y + size_y, .0f, 1.f }, primitive.Color } );
+		_lines.emplace_back( { { rect_x			, rect_y		 , .0f, 1.f }, primitive.Color } );
 	} else {
-		_circles.emplace_back( {
+		_circles.emplace_back( { 
+			primitive.Color,
 			{
 				primitive.Src.x,
 				primitive.Src.y,
 				primitive.Dst.x,
 				primitive.Dst.y
-			}, 
-			primitive.Color
+			}
 		} );
 	}
 }
@@ -149,10 +166,7 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 	auto limits  = graphics.GetPipelineLimits( );
 	auto bundle  = graphics.CreatePipeline( TGP_TYPE_2D, TINY_OUTPASS_NAME, 1 );
 
-	bundle.Subpass		 = 1;
-	bundle.Pass			 = graphics.GetRenderPass( TINY_OUTPASS_NAME );
 	bundle.Topology		 = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-	
 	bundle.Shaders		 = 2;
 	bundle.Shaders[ 0 ]  = _shaders[ 0 ];
 	bundle.Shaders[ 1 ]  = _shaders[ 1 ];
@@ -176,17 +190,30 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 	bundle.StencilEnable = false;
 	bundle.Dynamics.emplace_back( VK_DYNAMIC_STATE_LINE_WIDTH );
 
-	bundle.DescriptorCount  = graphics.GetImageCount( );
-	bundle.Descriptors		= 1;
-	bundle.Descriptors[ 0 ] = 1;
-	_pCreateSetBind( bundle.Descriptors[ 0 ], 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+	bundle.Descriptors = 1;
+	bundle.Descriptors[ TINY_RENDER_SET_CORE ] = 1;
+	
+	_pCreateSetBind( bundle, TINY_RENDER_SET_CORE, 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
 
 	auto state = _pipelines[ 0 ].Create( context, limits, bundle );
 
 	if ( state ) {
-		bundle.Topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+		bundle.Topology		= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 		bundle.Shaders[ 0 ] = _shaders[ 2 ];
 		bundle.Shaders[ 1 ] = _shaders[ 3 ];
+
+		bundle.InputBinding.clear( );
+		bundle.InputAttributes.clear( );
+		bundle.Dynamics.pop_back( );
+
+		bundle.Descriptors.clear( );
+		bundle.Descriptors = 2;
+		bundle.Descriptors[ TINY_RENDER_SET_CORE   ] = 1;
+		bundle.Descriptors[ TINY_RENDER_SET_RENDER ] = 2;
+
+		_pCreateSetBind( bundle, TINY_RENDER_SET_CORE,   0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+		_pCreateSetBind( bundle, TINY_RENDER_SET_RENDER, 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+		_pCreateSetBind( bundle, TINY_RENDER_SET_RENDER, 1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
 
 		state = _pipelines[ 1 ].Create( context, limits, bundle );
 	}
@@ -234,13 +261,12 @@ void TinyRenderDebugManager::DrawCircles(
 	TinyRenderBatchManager& batchs 
 ) {
 	auto& ubo_context = uniforms.GetUniform( "ubo_context" );
-	auto& transforms  = uniforms.GetUniform( "ib_vertex" );
+	auto& transforms  = uniforms.GetUniform( "ubo_sprites" );
 	auto& pipeline	  = _pipelines[ 1 ]; 
 	auto& logical	  = graphics.GetLogical( );
 	auto& staging	  = batchs.GetStaging( );
 
 	pipeline.Mount( work_context );
-	pipeline.SetLineWidth( work_context, _line_width );
 
 	{
 		auto context = graphics.GetContext( );
@@ -255,8 +281,7 @@ void TinyRenderDebugManager::DrawCircles(
 		burner.Upload( staging, transforms, copie );
 	}
 
-	pipeline.BindVertex( work_context, transforms );
-	pipeline.Bind( logical, work_context, ubo_context );
+	pipeline.Bind( logical, work_context, { ubo_context, transforms } );
 	pipeline.Draw( work_context, { TGD_MODE_DIRECT, 6, _circles.size( ) } );
 }
 

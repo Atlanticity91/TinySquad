@@ -22,15 +22,15 @@
 
 #include "Utils/TinyGraphicPipelineDrawcall.h"
 
-#define _pCreateSetBind2( SET, BINDING, TYPE, COUNT, STAGE )\
-	SET[ BINDING ].binding			  = BINDING;\
-	SET[ BINDING ].descriptorType	  = tiny_cast( TYPE, VkDescriptorType );\
-	SET[ BINDING ].descriptorCount	  = COUNT;\
-	SET[ BINDING ].stageFlags		  = tiny_cast( STAGE, VkShaderStageFlagBits );\
-	SET[ BINDING ].pImmutableSamplers = VK_NULL_HANDLE
+#define _pCreateSetBind2( BUNDLE, SET, BINDING, TYPE, COUNT, STAGE )\
+	BUNDLE##.Descriptors[ SET ][ BINDING ].binding			  = BINDING;\
+	BUNDLE##.Descriptors[ SET ][ BINDING ].descriptorType	  = tiny_cast( TYPE, VkDescriptorType );\
+	BUNDLE##.Descriptors[ SET ][ BINDING ].descriptorCount	  = COUNT;\
+	BUNDLE##.Descriptors[ SET ][ BINDING ].stageFlags		  = tiny_cast( STAGE, VkShaderStageFlagBits );\
+	BUNDLE##.Descriptors[ SET ][ BINDING ].pImmutableSamplers = VK_NULL_HANDLE
 
-#define _pCreateSetBind( SET, BINDING, TYPE, STAGE )\
-	_pCreateSetBind2( SET, BINDING, TYPE, 1, STAGE )
+#define _pCreateSetBind( BUNDLE, SET, BINDING, TYPE, STAGE )\
+	_pCreateSetBind2( BUNDLE, SET, BINDING, TYPE, 1, STAGE )
 
 tm_class TinyGraphicPipeline { 
 
