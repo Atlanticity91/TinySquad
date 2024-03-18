@@ -413,3 +413,15 @@ FodyWeavers.xsd
 /bin/TinyProduction.exe
 /bin/TinyThirdparty.idb
 /bin/TinyThirdparty.lib
+/bin/Thirdparty/FreeType.idb
+/bin/Thirdparty/FreeType.lib
+/bin/Thirdparty/ImGui.idb
+/bin/Thirdparty/ImGui.lib
+/bin/Thirdparty/Lua.idb
+/bin/Thirdparty/Lua.lib
+/bin/Thirdparty/MSDF-Atlas.idb
+/bin/Thirdparty/MSDF-Atlas.lib
+/bin/Thirdparty/MSDF.idb
+/bin/Thirdparty/MSDF.lib
+/bin/Thirdparty/Yaml.idb
+/bin/Thirdparty/Yaml.lib
