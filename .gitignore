@@ -397,14 +397,26 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/TinyEngine/TinyEngine.vcxproj
-/TinyEngine/TinyEngine.vcxproj.filters
-/TinyMicro/TinyMicro.vcxproj
-/TinyMicro/TinyMicro.vcxproj.filters
+/TinyEngine/TinyEngine/TinyEngine.vcxproj
+/TinyEngine/TinyEngine/TinyEngine.vcxproj.filters
+/TinyEngine/TinyMicro/TinyMicro.vcxproj
+/TinyEngine/TinyMicro/TinyMicro.vcxproj.filters
+/TinyEngine/TinyThirdparty/TinyThirdparty.vcxproj
+/TinyEngine/TinyThirdparty/TinyThirdparty.vcxproj.filters
+/TinyLibs/FreeType/FreeType.vcxproj
+/TinyLibs/FreeType/FreeType.vcxproj.filters
+/TinyLibs/ImGui/ImGui.vcxproj
+/TinyLibs/ImGui/ImGui.vcxproj.filters
+/TinyLibs/Lua/Lua.vcxproj
+/TinyLibs/Lua/Lua.vcxproj.filters
+/TinyLibs/MSDF/MSDF.vcxproj
+/TinyLibs/MSDF/MSDF.vcxproj.filters
+/TinyLibs/MSDF-Atlas/MSDF-Atlas.vcxproj
+/TinyLibs/MSDF-Atlas/MSDF-Atlas.vcxproj.filters
+/TinyLibs/Yaml/Yaml.vcxproj
+/TinyLibs/Yaml/Yaml.vcxproj.filters
 /TinyProduction/TinyProduction.vcxproj
 /TinySquad.sln
-/TinyThirdparty/TinyThirdparty.vcxproj
-/TinyThirdparty/TinyThirdparty.vcxproj.filters
 /bin/TinyEngine.dll
 /bin/TinyEngine.exp
 /bin/TinyEngine.lib

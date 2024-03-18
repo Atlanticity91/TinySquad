@@ -1,0 +1,7 @@
+include "FreeType/Build-FreeType.lua"
+include "MSDF/Build-MSDF.lua"
+include "MSDF-Atlas/Build-MSDF-Atlas.lua"
+include "Yaml/Build-Yaml.lua"
+include "Lua/Build-Lua.lua"
+include "ImGui/Build-ImGui.lua"
+include "Coral/Build-Coral.lua"

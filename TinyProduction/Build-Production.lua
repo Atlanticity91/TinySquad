@@ -1,50 +1,66 @@
 project "TinyProduction"
-   kind "ConsoleApp"
-   language "C++"
-   cdialect "C17"
-   cppdialect "C++20"
-   staticruntime "off"
+    kind "ConsoleApp"
+    language "C++"
+    cdialect "C17"
+    cppdialect "C++20"
+    staticruntime "off"
 
-   defines { "_CRT_SECURE_NO_WARNINGS" }
+    defines { "_CRT_SECURE_NO_WARNINGS" }
 
-   files { "**.h", "**.cpp", "**.hpp", "**.c" }
+    files { "**.h", "**.cpp", "**.hpp", "**.c" }
 
-   pchheader "TinyProduction/__tiny_production_pch.h"
-   pchsource "%{wks.location}/TinyProduction/__tiny_production_pch.cpp"
+    pchheader "TinyProduction/__tiny_production_pch.h"
+    pchsource "%{wks.location}/TinyProduction/__tiny_production_pch.cpp"
 
-   vulkan = os.getenv( "VULKAN_PATH" )
+    vulkan = os.getenv( "VULKAN_PATH" )
 
-   includedirs { "%{wks.location}/", vulkan.."/Include/" }
-   externalincludedirs { "%{wks.location}/", vulkan.."/Include/" }
+    includedirs { 
+        "%{wks.location}/",
+        "%{wks.location}/TinyLibs/", 
+        "%{wks.location}/TinyEngine/", 
+        vulkan.."/Include/" 
+    }
+    externalincludedirs { 
+        "%{wks.location}/",
+        "%{wks.location}/TinyLibs/", 
+        "%{wks.location}/TinyEngine/", 
+        vulkan.."/Include/" 
+    }
 
-   targetdir "%{wks.location}/bin/"
-   debugdir "%{wks.location}/bin/"
-   objdir "%{wks.location}/bin-int/%{prj.name}"
+    targetdir "%{wks.location}/bin/"
+    debugdir "%{wks.location}/bin/"
+    objdir "%{wks.location}/bin-int/%{prj.name}"
 
-   links { 
+    links { 
+        "FreeType",
+        "MSDF",
+        "MSDF-Atlas",
+        "Lua",
+        "Yaml",
+        "ImGui",
         "TinyThirdparty",
         "TinyMicro",
         "TinyEngine"
-   }
-   
-   filter "system:windows"
-       systemversion "latest"
-       defines { "WINDOWS" }
+    }
 
-   filter "configurations:Debug"
-       defines { "DEBUG" }
-       runtime "Debug"
-       symbols "On"
+    filter "system:windows"
+        systemversion "latest"
+        defines { "WINDOWS" }
 
-   filter "configurations:Release"
-       defines { "RELEASE" }
-       runtime "Release"
-       optimize "On"
-       symbols "On"
+    filter "configurations:Debug"
+        defines { "DEBUG" }
+        runtime "Debug"
+        symbols "On"
 
-   filter "configurations:Dist"
-       kind "WindowedApp"
-       defines { "DIST" }
-       runtime "Release"
-       optimize "On"
-       symbols "Off"
+    filter "configurations:Release"
+        defines { "RELEASE" }
+        runtime "Release"
+        optimize "On"
+        symbols "On"
+
+    filter "configurations:Dist"
+        kind "WindowedApp"
+        defines { "DIST" }
+        runtime "Release"
+        optimize "On"
+        symbols "Off"
