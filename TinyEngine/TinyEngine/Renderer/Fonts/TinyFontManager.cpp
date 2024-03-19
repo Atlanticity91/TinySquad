@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 15/03/2024
- * @version  : 2024.2.6
+ * @creation : 18/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,19 +23,20 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyRenderPostProcessor::TinyRenderPostProcessor( )
+TinyFontManager::TinyFontManager( )
+	: TinyAssetList{ }
 { }
 
-void TinyRenderPostProcessor::Compose( 
-	TinyGame* game,
-	TinyRenderUniformManager& uniforms,
-	TinyRenderBatchManager& batchs 
-) {
-	auto& graphics = game->GetGraphics( );
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyFontManager::OnLoad( TinyGame* game, TinyFile& file, TinyFont& font ) {
+	return false;
+}
 
-	graphics.NextSubpass( ); 
+void TinyFontManager::OnUnLoad( TinyGame* game, TinyFont& font ) {
+}
 
-	auto& renderer = game->GetRenderer( );
-
-	renderer.DrawDebug( { { 0.f, 0.f }, 128.f, 0.001f } );
+bool TinyFontManager::OnCreate( TinyGame* game, c_pointer asset_builder, TinyFont& font ) {
+	return false;
 }

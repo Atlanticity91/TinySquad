@@ -50,9 +50,11 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 
 				// === OUTPUTS ===
 				{ "TinyOutputID_Color",    TINY_STR( TINY_OUTPUT_COLOR )    },
+				{ "TinyOutputID_Albedo",   TINY_STR( TINY_OUTPUT_COLOR )    },
 				{ "TinyOutputID_Position", TINY_STR( TINY_OUTPUT_POSITION ) },
 				{ "TinyOutputID_Normal",   TINY_STR( TINY_OUTPUT_NORMAL )   },
-				{ "TinyOutputID_Light",    TINY_STR( TINY_OUTPUT_LIGHT )    },
+				{ "TinyOutputID_Specular", TINY_STR( TINY_OUTPUT_SPECULAR ) },
+				{ "TinyOutputID_Emissive", TINY_STR( TINY_OUTPUT_EMISSIVE ) },
 				
 				// === TYPES HELPERS ===
 				{ 
@@ -159,11 +161,19 @@ void TinyRenderer::Prepare(
 	_batchs.Prepare( game, render_pass, flush_method );
 }
 
-void TinyRenderer::Draw( TinyGame* game, const TinyRenderDraw2DContext& draw_context ) {
+void TinyRenderer::Draw( TinyGame* game, const TinyRenderSpriteContext& draw_context ) {
 	_batchs.Draw( game, draw_context );
 }
 
-void TinyRenderer::Draw( TinyGame* game, const TinyRenderDraw3DContext& draw_context ) {
+void TinyRenderer::Draw( TinyGame* game, const TinyRenderVertexContext& draw_context ) {
+	_batchs.Draw( game, draw_context );
+}
+
+void TinyRenderer::Draw( TinyGame* game, const TinyRenderLightContext& draw_context ) {
+	_batchs.Draw( game, draw_context );
+}
+
+void TinyRenderer::Draw( TinyGame* game, const TinyRenderTextContext& draw_context ) {
 	_batchs.Draw( game, draw_context );
 }
 

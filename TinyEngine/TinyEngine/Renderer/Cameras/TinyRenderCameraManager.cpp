@@ -99,10 +99,10 @@ void TinyRenderCameraManager::Prepare(
 	ReCalculate( _current_camera );
 
 	{
-		auto uniform = uniforms.GetUniform( "ubo_context" );
+		auto uniform = uniforms.GetUniform( "ubo_core" );
 		auto context = graphics.GetContext( );
 		auto burner  = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
-		auto copie   = VkBufferCopy{ 0, 0,  tiny_sizeof( TinyUBOContext ) };
+		auto copie   = VkBufferCopy{ 0, 0, tiny_sizeof( TinyRenderCore ) };
 
 		staging.Map( context, tiny_cast( copie.size, tiny_uint ) );
 		

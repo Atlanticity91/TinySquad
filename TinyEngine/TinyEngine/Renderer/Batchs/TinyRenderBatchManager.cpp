@@ -29,7 +29,6 @@ TinyRenderBatchManager::TinyRenderBatchManager( )
 	_transforms{ },
 	_indexes{ },
 	_vertices{ },
-	_uvs{ },
 	_sprites{ },
 	_textures{ },
 	_lights{ },
@@ -38,17 +37,17 @@ TinyRenderBatchManager::TinyRenderBatchManager( )
 
 bool TinyRenderBatchManager::Initialize( TinyGraphicManager& graphics ) {
 	constexpr auto size_2d = BatchTransform_t::Size + BatchSprite_t::Size;
-	constexpr auto size_3d = BatchIndex_t::Size + BatchVertex_t::Size + BatchUV_t::Size;
+	constexpr auto size_3d = BatchIndex_t::Size + BatchVertex_t::Size;
 	constexpr auto size	   = size_2d < size_3d ? size_3d : size_2d;
 
 	auto context = graphics.GetContext( );
-	auto state = _staging.Create( context, size ) &&
-				 _transforms.Create( )			  &&
-				 _indexes.Create( )				  &&
-				 _vertices.Create( )			  &&
-				 _uvs.Create()					  &&
-				 _sprites.Create( )				  &&
-				 _textures.Create( );
+	auto state  = _staging.Create( context, size ) &&
+				  _transforms.Create( )			   &&
+				  _indexes.Create( )			   &&
+				  _vertices.Create( )			   &&
+				  _sprites.Create( )			   &&
+				  _textures.Create( )			   &&
+				  _lights.Create( );
 
 	if ( state ) {
 		auto& properties = context.Physical.GetProperties( );
@@ -79,7 +78,7 @@ void TinyRenderBatchManager::Prepare(
 
 void TinyRenderBatchManager::Draw(
 	TinyGame* game,
-	const TinyRenderDraw2DContext& draw_context
+	const TinyRenderSpriteContext& draw_context
 ) {
 	auto texture_count = draw_context.Textures.size( );
 
@@ -92,7 +91,7 @@ void TinyRenderBatchManager::Draw(
 		_sprites.Push( draw_context.Sprite );
 
 		for ( auto& texture : draw_context.Textures )
-			_textures.Push( { TINY_RENDER_SET_TEXTURE, _textures.GetCount( ), tiny_lvalue( texture ) } );
+			_textures.Push( { TRS_ID_TEXTURE, _textures.GetCount( ), tiny_lvalue( texture ) } );
 	} else {
 		Flush( game );
 
@@ -104,7 +103,7 @@ void TinyRenderBatchManager::Draw(
 
 void TinyRenderBatchManager::Draw(
 	TinyGame* game,
-	const TinyRenderDraw3DContext& draw_context
+	const TinyRenderVertexContext& draw_context
 ) {
 	auto texture_count = draw_context.Textures.size( );
 
@@ -113,11 +112,10 @@ void TinyRenderBatchManager::Draw(
 		_textures.GetHasSpace( texture_count )
 	) {
 		_indexes.Push( draw_context.Indexes );
-		_vertices.Push( draw_context.Vertices );
-		_uvs.Push( draw_context.Uvs );
+		_vertices.Push( draw_context.Vertex );
 
 		for ( auto& texture : draw_context.Textures )
-			_textures.Push( { TINY_RENDER_SET_TEXTURE, _textures.GetCount( ), tiny_lvalue( texture ) } );
+			_textures.Push( { TRS_ID_TEXTURE, _textures.GetCount( ), tiny_lvalue( texture ) } );
 	} else {
 		Flush( game );
 
@@ -125,6 +123,17 @@ void TinyRenderBatchManager::Draw(
 
 		Draw( game, draw_context );
 	}
+}
+
+void TinyRenderBatchManager::Draw( 
+	TinyGame* game, 
+	const TinyRenderLightContext& draw_context 
+) {
+	if ( _lights.GetHasSpace( ) )
+		_lights.Push( draw_context.Light );
+}
+
+void TinyRenderBatchManager::Draw( TinyGame* game, const TinyRenderTextContext& draw_context ) {
 }
 
 tiny_array<VkBufferCopy, 2> TinyRenderBatchManager::Flush2D(
@@ -153,15 +162,14 @@ tiny_array<VkBufferCopy, 2> TinyRenderBatchManager::Flush2D(
 	return copy_destination;
 }
 
-tiny_array<VkBufferCopy, 3> TinyRenderBatchManager::Flush3D(
+tiny_array<VkBufferCopy, 2> TinyRenderBatchManager::Flush3D(
 	TinyGraphicContext& context,
 	tiny_uint& index_count, 
 	tiny_uint& vertex_count
 ) {
-	auto copy_destination = tiny_array<VkBufferCopy, 3>{ };
+	auto copy_destination = tiny_array<VkBufferCopy, 2>{ };
 	auto indexes		  = _indexes.Flush( );
 	auto vertices		  = _vertices.Flush( );
-	auto uvs			  = _uvs.Flush( );
 
 	index_count  = indexes.Count;
 	vertex_count = vertices.Count;
@@ -170,12 +178,10 @@ tiny_array<VkBufferCopy, 3> TinyRenderBatchManager::Flush3D(
 		_staging.Map( context, 0 );
 		//Tiny::Memcpy( );
 		//Tiny::Memcpy( );
-		//Tiny::Memcpy( );
 		_staging.UnMap( context );
 
 		copy_destination[ 0 ] = { 0, 0, 0 };
 		copy_destination[ 1 ] = { 0, 0, 0 };
-		copy_destination[ 2 ] = { 0, 0, 0 };
 	}
 
 	return copy_destination;
@@ -215,9 +221,9 @@ void TinyRenderBatchManager::Terminate( TinyGraphicManager& graphics ) {
 	_transforms.Terminate( );
 	_indexes.Terminate( );
 	_vertices.Terminate( );
-	_uvs.Terminate( );
 	_sprites.Terminate( );
 	_textures.Terminate( );
+	_lights.Terminate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,11 +239,9 @@ TinyRenderBatchManager::BatchIndex_t& TinyRenderBatchManager::GetIndexes( ) {
 	return _indexes;
 }
 
-TinyRenderBatchManager::BatchVertex_t& TinyRenderBatchManager::GetVertices( ) {
+TinyRenderBatchManager::BatchVertex_t& TinyRenderBatchManager::GetVertex( ) {
 	return _vertices;
 }
-
-TinyRenderBatchManager::BatchUV_t& TinyRenderBatchManager::GetUVs( ) { return _uvs; }
 
 TinyRenderBatchManager::BatchSprite_t& TinyRenderBatchManager::GetSprites( ) {
 	return _sprites;
@@ -245,6 +249,10 @@ TinyRenderBatchManager::BatchSprite_t& TinyRenderBatchManager::GetSprites( ) {
 
 TinyRenderBatchManager::BatchTexture_t& TinyRenderBatchManager::GetTextures( ) {
 	return _textures;
+}
+
+TinyRenderBatchManager::BatchLight_t& TinyRenderBatchManager::GetLight( ) {
+	return _lights;
 }
 
 TinyMaterial* TinyRenderBatchManager::GetMaterial( TinyAssetManager& assets ) {

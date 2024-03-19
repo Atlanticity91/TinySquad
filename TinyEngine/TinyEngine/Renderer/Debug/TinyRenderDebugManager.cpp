@@ -227,7 +227,7 @@ void TinyRenderDebugManager::DrawLines(
 	TinyRenderUniformManager& uniforms,
 	TinyRenderBatchManager& batchs 
 ) {
-	auto& ubo_context = uniforms.GetUniform( "ubo_context" );
+	auto& ubo_context = uniforms.GetUniform( "ubo_core" );
 	auto& transforms  = uniforms.GetUniform( "ib_vertex" );
 	auto& pipeline	  = _pipelines[ 0 ];
 	auto& logical	  = graphics.GetLogical( );
@@ -260,7 +260,7 @@ void TinyRenderDebugManager::DrawCircles(
 	TinyRenderUniformManager& uniforms,
 	TinyRenderBatchManager& batchs 
 ) {
-	auto& ubo_context = uniforms.GetUniform( "ubo_context" );
+	auto& ubo_context = uniforms.GetUniform( "ubo_core" );
 	auto& transforms  = uniforms.GetUniform( "ubo_sprites" );
 	auto& pipeline	  = _pipelines[ 1 ]; 
 	auto& logical	  = graphics.GetLogical( );

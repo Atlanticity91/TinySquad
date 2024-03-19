@@ -54,7 +54,7 @@ void TinySkin2DSystem::RegisterInterop( TinyGame* game ) {
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinySkin2DSystem::PostTick( TinyGame* game ) {
-	auto draw_context = TinyRenderDraw2DContext{ };
+	auto draw_context = TinyRenderSpriteContext{ };
 	auto& renderer	  = game->GetRenderer( );
 	auto& assets	  = game->GetAssets( );
 	auto& ecs		  = game->GetECS( );
@@ -66,12 +66,14 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 		auto owner = component.GetOwner( );
 
 		if ( ecs.GetHasFlag( owner, TE_FLAG_VISIBLE ) && component.GetIsActive( ) ) {
-			auto* transform = ecs.GetComponentAs<TinyTransform2D>( owner );
+			auto* transform_comp = ecs.GetComponentAs<TinyTransform2D>( owner );
+			auto& transform		 = transform_comp->GetTransform( );
 
-			draw_context.Material	  = component.GetMaterial( );
-			draw_context.Sprite.Color = component.GetColor( );
-			draw_context.Sprite.UV	  = ProcessTexture( assets, draw_context, component );
-			draw_context.Tranform	  = camera * transform->GetTransform( );
+			draw_context.Material		= component.GetMaterial( );
+			draw_context.Sprite.UV		= ProcessTexture( assets, draw_context, component );
+			draw_context.Sprite.Color	= component.GetColor( );
+			draw_context.Tranform.World = camera * transform;
+			//draw_context.Tranform.Local = transform;
 
 			renderer.Draw( game, draw_context );
 		}
@@ -83,7 +85,7 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_vec4 TinySkin2DSystem::ProcessTexture(
 	TinyAssetManager& assets,
-	TinyRenderDraw2DContext& draw_context,
+	TinyRenderSpriteContext& draw_context,
 	TinySkin2D& component
 ) {
 	auto& comp_texture = component.GetTexture( );
@@ -121,7 +123,7 @@ void TinySkin2DSystem::Draw(
 	auto* material	  = batchs.GetMaterial( assets );
 	auto textures	  = batchs.FlushTextures( );
 	auto can_draw	  = false;
-
+	
 	{
 		auto& stagging = batchs.GetStaging( );
 		auto context   = graphics.GetContext( );
@@ -145,7 +147,7 @@ void TinySkin2DSystem::Draw(
 			graphics.GetLogical( ),
 			work_context,
 			{
-				uniforms.GetUniform( "ubo_context" ),
+				uniforms.GetUniform( "ubo_core" ),
 				uniforms.GetUniform( "ubo_transforms" ),
 				uniforms.GetUniform( "ubo_sprites" )
 			}

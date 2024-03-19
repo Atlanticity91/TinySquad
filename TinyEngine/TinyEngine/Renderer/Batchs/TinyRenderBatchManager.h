@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderDrawContext.h"
+#include "TinyRenderBatch.h"
 
 typedef std::function<void(
 	TinyGraphicManager&,
@@ -39,13 +39,12 @@ te_struct TinyRenderFlushContext {
 te_class TinyRenderBatchManager final {
 
 public:
-	using BatchTransform_t = TinyRenderBatch<TinyRenderTransform, TINY_MAX_INSTANCE>;
-	using BatchIndex_t	   = TinyRenderBatch<TinyRenderIndex, TINY_MAX_INDEX>;
-	using BatchVertex_t	   = TinyRenderBatch<TinyRenderVertex, TINY_MAX_VERTICES>;
-	using BatchUV_t		   = TinyRenderBatch<TinyRenderUV, TINY_MAX_VERTICES>;
-	using BatchSprite_t	   = TinyRenderBatch<TinyRenderSprite, TINY_MAX_INSTANCE>;
-	using BatchTexture_t   = TinyRenderBatch<TinyGraphicPipelineBindpoint, TINY_MAX_INSTANCE>;
-	using BatchLight_t	   = TinyRenderBatch<TinyRenderLight, TINY_MAX_LIGHT>;
+	using BatchTransform_t = TinyRenderBatch<TinyRenderTransform, TinyMaxVertices>;
+	using BatchIndex_t	   = TinyRenderBatch<TinyRenderIndex, TinyMaxVertices>;
+	using BatchVertex_t	   = TinyRenderBatch<TinyRenderVertice, TinyMaxVertices>;
+	using BatchSprite_t	   = TinyRenderBatch<TinyRenderSprite, TinyMaxVertices>;
+	using BatchTexture_t   = TinyRenderBatch<TinyGraphicPipelineBindpoint, TinyMaxVertices>;
+	using BatchLight_t	   = TinyRenderBatch<TinyRenderLight, TinyMaxLight>;
 
 private:
 	tiny_hash				 _render_pass;
@@ -53,7 +52,6 @@ private:
 	BatchTransform_t		 _transforms;
 	BatchIndex_t			 _indexes;
 	BatchVertex_t			 _vertices;
-	BatchUV_t				 _uvs;
 	BatchSprite_t			 _sprites;
 	BatchTexture_t			 _textures;
 	BatchLight_t			 _lights;
@@ -68,16 +66,20 @@ public:
 
 	void Prepare( TinyGame* game, const tiny_hash render_pass, FlushMethod_t flush_method );
 
-	void Draw( TinyGame* game, const TinyRenderDraw2DContext& draw_context );
+	void Draw( TinyGame* game, const TinyRenderSpriteContext& draw_context );
 
-	void Draw( TinyGame* game, const TinyRenderDraw3DContext& draw_context );
+	void Draw( TinyGame* game, const TinyRenderVertexContext& draw_context );
+
+	void Draw( TinyGame* game, const TinyRenderLightContext& draw_context );
+
+	void Draw( TinyGame* game, const TinyRenderTextContext& draw_context );
 
 	tiny_array<VkBufferCopy, 2> Flush2D( 
 		TinyGraphicContext& context, 
 		tiny_uint& vertex_count
 	);
 
-	tiny_array<VkBufferCopy, 3> Flush3D(
+	tiny_array<VkBufferCopy, 2> Flush3D(
 		TinyGraphicContext& context,
 		tiny_uint& index_count, 
 		tiny_uint& vertex_count 
@@ -98,13 +100,13 @@ public:
 
 	BatchIndex_t& GetIndexes( );
 
-	BatchVertex_t& GetVertices( );
-
-	BatchUV_t& GetUVs( );
+	BatchVertex_t& GetVertex( );
 
 	BatchSprite_t& GetSprites( );
 
 	BatchTexture_t& GetTextures( );
+
+	BatchLight_t& GetLight( );
 
 	TinyMaterial* GetMaterial( TinyAssetManager& assets );
 

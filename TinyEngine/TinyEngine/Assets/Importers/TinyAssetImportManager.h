@@ -67,6 +67,15 @@ private:
 
 	static bool ExportTexture3D( TinyGame* game, TinyFile& file, c_pointer& asset );
 
+	static bool ImportFont(
+		TinyGame* game,
+		const TinyPathInformation& path,
+		tiny_storage& file,
+		tiny_storage& storage
+	);
+
+	static bool ExportFont( TinyGame* game, TinyFile& file, c_pointer& asset );
+
 	static bool ImportSPV(
 		TinyGame* game,
 		const TinyPathInformation& path,

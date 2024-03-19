@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/03/2024
- * @version  : 2024.2.6
+ * @creation : 19/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,15 +20,11 @@
 
 #pragma once
 
-#include "TinyRenderUniform.h"
+#include <TinyEngine/Renderer/Utils/TinyRenderText.h>
 
-te_struct TinyUBOContext {
+te_struct TinyRenderBatchFlush {
 
-	tiny_mat4 Projection;
-	tiny_mat4 View;
-	tiny_mat4 ProjView;
-	tiny_mat4 Inverse;
-	float Time_f;
-	double Time_d;
+	tiny_uint Count  = 0;
+	c_pointer Values = nullptr;
 
 };

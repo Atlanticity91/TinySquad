@@ -243,6 +243,13 @@ public:
 		tiny_init<TinyGraphicPipelineBindpoint> bindpoints
 	);
 
+	tiny_inline void Draw(
+		TinyGraphicLogical& logical,
+		TinyGraphicWorkContext& work_context,
+		const TinyGraphicPipelineDrawcall& draw_call,
+		tiny_list<TinyGraphicPipelineBindpoint> bindpoints
+	);
+
 	void Terminate( TinyGraphicContext& context );
 
 private:

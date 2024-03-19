@@ -73,15 +73,14 @@ bool TinyMaterial::Create(
 
 void TinyMaterial::Submit(
 	TinyGraphicManager& graphics,
-	const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints,
-	const TinyGraphicPipelineDrawcall& draw_call
+	const TinyGraphicPipelineDrawcall& draw_call,
+	const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints
 ) {
 	auto& work_context = graphics.GetWorkdContext( );
 	auto& logical	   = graphics.GetLogical( );
 
 	Mount( work_context );
-	Bind( logical, work_context, bindpoints );
-	Draw( work_context, draw_call );
+	Draw( logical, work_context, draw_call, bindpoints );
 }
 
 void TinyMaterial::Terminate( 

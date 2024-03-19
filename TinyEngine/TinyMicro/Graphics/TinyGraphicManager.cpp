@@ -147,6 +147,8 @@ void TinyGraphicManager::Draw(
 	TinyGraphicPipeline& pipeline,
 	tiny_init<TinyGraphicPipelineBindpoint> bindpoints
 ) {
+	auto graphics = GetContext( );
+
 	pipeline.Mount( _work_context );
 	pipeline.Bind( _logical, _work_context, bindpoints );
 	pipeline.Draw( _work_context, draw_call );

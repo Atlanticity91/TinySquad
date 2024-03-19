@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderUniformUtils.h"
+#include "TinyRenderUniform.h"
 
 te_class TinyRenderUniformManager final {
 

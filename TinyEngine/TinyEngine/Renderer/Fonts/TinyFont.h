@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/12/2023
+ * @creation : 26/11/2023
  * @version  : 2024.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -20,34 +20,13 @@
 
 #pragma once
 
-#include "TinyMaterialBuilder.h"
+#include <TinyEngine/Renderer/Textures/TinyTextureAtlasManager.h>
 
-te_class TinyMaterial : tiny_inherit( TinyGraphicPipeline ) {
-
-private:
-	tiny_list<TinyAsset> _shaders;
+te_class TinyFont final {
 
 public:
-	TinyMaterial( );
+	TinyFont( );
 
-	~TinyMaterial( ) = default;
-
-	bool Create( 
-		TinyGame* game,
-		TinyGraphicManager& graphic,
-		TinyMaterialBuilder& builder 
-	);
-
-	void Submit( 
-		TinyGraphicManager& graphics, 
-		const TinyGraphicPipelineDrawcall& draw_call,
-		const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints
-	);
-
-	void Terminate(
-		TinyGame* game,
-		TinyAssetManager& assets, 
-		TinyGraphicContext& context 
-	);
+	~TinyFont( ) = default;
 
 };

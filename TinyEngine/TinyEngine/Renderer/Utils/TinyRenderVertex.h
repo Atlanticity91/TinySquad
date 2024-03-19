@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/12/2023
- * @version  : 2024.1
+ * @creation : 19/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,34 +20,22 @@
 
 #pragma once
 
-#include "TinyMaterialBuilder.h"
+#include "TinyRenderSprite.h"
 
-te_class TinyMaterial : tiny_inherit( TinyGraphicPipeline ) {
+typedef tiny_uint TinyRenderIndex;
 
-private:
-	tiny_list<TinyAsset> _shaders;
+te_struct TinyRenderVertice {
 
-public:
-	TinyMaterial( );
+	tiny_vec4 Location{ };
+	tiny_vec2 UV{ };
 
-	~TinyMaterial( ) = default;
+};
 
-	bool Create( 
-		TinyGame* game,
-		TinyGraphicManager& graphic,
-		TinyMaterialBuilder& builder 
-	);
+te_struct TinyRenderVertexContext {
 
-	void Submit( 
-		TinyGraphicManager& graphics, 
-		const TinyGraphicPipelineDrawcall& draw_call,
-		const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints
-	);
-
-	void Terminate(
-		TinyGame* game,
-		TinyAssetManager& assets, 
-		TinyGraphicContext& context 
-	);
+	TinyAsset Material{ };
+	tiny_list<TinyTexture2D*> Textures{ };
+	tiny_list<TinyRenderIndex> Indexes{ };
+	tiny_list<TinyRenderVertice> Vertex{ };
 
 };

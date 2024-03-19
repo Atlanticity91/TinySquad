@@ -20,14 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderBatchUtils.h"
-
-te_struct TinyRenderBatchFlush {
-
-	tiny_uint Count = 0;
-	c_pointer Values	= nullptr;
-
-};
+#include "TinyRenderBatchFlush.h"
 
 template<typename Type, tiny_uint Capacity>
 class TinyRenderBatch {

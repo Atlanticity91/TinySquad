@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 24/11/2023
- * @version  : 2024.1
+ * @creation : 18/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,7 +20,16 @@
 
 #pragma once
 
-#include "TinyFont.h"
+#include "MsdfAtlas.h"
 
-te_class TinyFontManager final {
+struct MsdfBitmap {
+
+	int32_t Width;
+	int32_t Height;
+	int32_t Component;
+	uint32_t Length;
+	uint8_t* Buffer;
+
+	MsdfBitmap( );
+
 };

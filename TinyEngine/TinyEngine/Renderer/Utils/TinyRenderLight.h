@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/12/2023
- * @version  : 2024.1
+ * @creation : 19/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,34 +20,18 @@
 
 #pragma once
 
-#include "TinyMaterialBuilder.h"
+#include "TinyRenderVertex.h"
 
-te_class TinyMaterial : tiny_inherit( TinyGraphicPipeline ) {
+static const tiny_uint TinyMaxLight = 256;
 
-private:
-	tiny_list<TinyAsset> _shaders;
+te_struct TinyRenderLight {
 
-public:
-	TinyMaterial( );
+	tiny_vec4 Color;
 
-	~TinyMaterial( ) = default;
+};
 
-	bool Create( 
-		TinyGame* game,
-		TinyGraphicManager& graphic,
-		TinyMaterialBuilder& builder 
-	);
+te_struct TinyRenderLightContext {
 
-	void Submit( 
-		TinyGraphicManager& graphics, 
-		const TinyGraphicPipelineDrawcall& draw_call,
-		const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints
-	);
-
-	void Terminate(
-		TinyGame* game,
-		TinyAssetManager& assets, 
-		TinyGraphicContext& context 
-	);
+	TinyRenderLight Light{ };
 
 };

@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/12/2023
- * @version  : 2024.1
+ * @creation : 19/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,34 +20,27 @@
 
 #pragma once
 
-#include "TinyMaterialBuilder.h"
+#include "TinyRenderCore.h"
 
-te_class TinyMaterial : tiny_inherit( TinyGraphicPipeline ) {
+te_struct TinyRenderTransform {
 
-private:
-	tiny_list<TinyAsset> _shaders;
+	tiny_mat4 World{ };
+	//tiny_mat4 Local{ };
 
-public:
-	TinyMaterial( );
+};
 
-	~TinyMaterial( ) = default;
+te_struct TinyRenderSprite {
 
-	bool Create( 
-		TinyGame* game,
-		TinyGraphicManager& graphic,
-		TinyMaterialBuilder& builder 
-	);
+	tiny_vec4 UV{ };
+	tiny_vec4 Color{ };
 
-	void Submit( 
-		TinyGraphicManager& graphics, 
-		const TinyGraphicPipelineDrawcall& draw_call,
-		const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints
-	);
+};
 
-	void Terminate(
-		TinyGame* game,
-		TinyAssetManager& assets, 
-		TinyGraphicContext& context 
-	);
+te_struct TinyRenderSpriteContext {
+
+	TinyAsset Material{ };
+	tiny_list<TinyTexture2D*> Textures{ };
+	TinyRenderSprite Sprite{ };
+	TinyRenderTransform Tranform{ };
 
 };

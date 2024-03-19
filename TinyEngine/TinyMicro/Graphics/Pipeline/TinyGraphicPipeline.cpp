@@ -470,6 +470,16 @@ void TinyGraphicPipeline::Draw(
 	Draw( work_context, draw_call );
 }
 
+void TinyGraphicPipeline::Draw(
+	TinyGraphicLogical& logical,
+	TinyGraphicWorkContext& work_context,
+	const TinyGraphicPipelineDrawcall& draw_call,
+	tiny_list<TinyGraphicPipelineBindpoint> bindpoints
+) {
+	Bind( logical, work_context, bindpoints );
+	Draw( work_context, draw_call );
+}
+
 void TinyGraphicPipeline::Terminate( TinyGraphicContext& context ) {
 	_descriptors.Terminate( context.Logical );
 

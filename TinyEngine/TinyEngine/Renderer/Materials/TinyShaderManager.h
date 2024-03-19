@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Textures/TinyFontManager.h>
+#include <TinyEngine/Renderer/Fonts/TinyFontManager.h>
 
 te_class TinyShaderManager final 
 	: tiny_inherit( TinyAssetList<TA_TYPE_SHADER, TinyGraphicShader> )

@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/12/2023
- * @version  : 2024.1
+ * @creation : 18/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,34 +20,13 @@
 
 #pragma once
 
-#include "TinyMaterialBuilder.h"
+#include "MsdfParameters.h"
 
-te_class TinyMaterial : tiny_inherit( TinyGraphicPipeline ) {
+struct MsdfAtlas {
 
-private:
-	tiny_list<TinyAsset> _shaders;
+	std::vector<msdf_atlas::GlyphGeometry> Glyphs;
+	msdf_atlas::FontGeometry Geometry;
 
-public:
-	TinyMaterial( );
-
-	~TinyMaterial( ) = default;
-
-	bool Create( 
-		TinyGame* game,
-		TinyGraphicManager& graphic,
-		TinyMaterialBuilder& builder 
-	);
-
-	void Submit( 
-		TinyGraphicManager& graphics, 
-		const TinyGraphicPipelineDrawcall& draw_call,
-		const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints
-	);
-
-	void Terminate(
-		TinyGame* game,
-		TinyAssetManager& assets, 
-		TinyGraphicContext& context 
-	);
+	MsdfAtlas( );
 
 };

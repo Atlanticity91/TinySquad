@@ -77,9 +77,13 @@ public:
 		FlushMethod_t flush_method 
 	);
 
-	tiny_inline void Draw( TinyGame* game, const TinyRenderDraw2DContext& draw_context );
+	tiny_inline void Draw( TinyGame* game, const TinyRenderSpriteContext& draw_context );
 
-	tiny_inline void Draw( TinyGame* game, const TinyRenderDraw3DContext& draw_context );
+	tiny_inline void Draw( TinyGame* game, const TinyRenderVertexContext& draw_context );
+
+	tiny_inline void Draw( TinyGame* game, const TinyRenderLightContext& draw_context );
+
+	tiny_inline void Draw( TinyGame* game, const TinyRenderTextContext& draw_context );
 
 	tiny_inline void Flush( TinyGame* game );
 

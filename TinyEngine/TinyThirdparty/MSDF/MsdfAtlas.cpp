@@ -10,17 +10,20 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/11/2023
- * @version  : 2024.1
+ * @creation : 18/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
-#pragma once
+#include "MsdfAtlas.h"
 
-#include "TinyTextureAtlasManager.h"
-
-te_class TinyFont final {
-};
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+MsdfAtlas::MsdfAtlas( )
+	: Glyphs{},
+	Geometry{ &Glyphs } 
+{ }

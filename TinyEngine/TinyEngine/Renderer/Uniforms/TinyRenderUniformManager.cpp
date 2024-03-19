@@ -28,28 +28,27 @@ TinyRenderUniformManager::TinyRenderUniformManager( )
 { }
 
 bool TinyRenderUniformManager::Create( TinyGraphicManager& graphics ) {
-	auto context = TinyRenderUniformBuilder{
-		TGB_TYPE_UNIFORM, tiny_sizeof( TinyUBOContext ),
-		"ubo_context", TINY_RENDER_SET_CORE, 0
+	auto core = TinyRenderUniformBuilder{
+		TGB_TYPE_UNIFORM, tiny_sizeof( TinyRenderCore ),
+		"ubo_core", TRS_ID_CORE, 0
 	}; 
 	auto transforms = TinyRenderUniformBuilder{
 		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchTransform_t::Size,
-		"ubo_transforms", TINY_RENDER_SET_RENDER, 0
+		"ubo_transforms", TRS_ID_RENDER, 0
 	};
 	auto sprites = TinyRenderUniformBuilder{
 		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchSprite_t::Size,
-		"ubo_sprites", TINY_RENDER_SET_RENDER, 1
+		"ubo_sprites", TRS_ID_RENDER, 1
 	};
 	auto lights = TinyRenderUniformBuilder{
-		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchSprite_t::Size,
-		"ubo_lights", TINY_RENDER_SET_LIGHT, 0
+		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchLight_t::Size,
+		"ubo_lights", TRS_ID_LIGHT, 0
 	};
 	auto vertex = TinyRenderUniformBuilder{
-		TGB_TYPE_VERTEX, TinyRenderBatchManager::BatchTransform_t::Size,
-		"ib_vertex", 0, 0
+		TGB_TYPE_VERTEX, TinyRenderBatchManager::BatchVertex_t::Size, "ib_vertex"
 	};
 
-	return  Create( graphics, context    ) &&
+	return  Create( graphics, core		 ) &&
 			Create( graphics, transforms ) &&
 			Create( graphics, sprites	 ) &&
 			Create( graphics, lights	 ) &&

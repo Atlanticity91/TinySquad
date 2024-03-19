@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/12/2023
- * @version  : 2024.1
+ * @creation : 19/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -22,10 +22,7 @@
 
 #include <TinyEngine/Renderer/Uniforms/TinyRenderUniformManager.h>
 
-#define TINY_MAX_INSTANCE 1024
-#define TINY_MAX_VERTICES 4 * TINY_MAX_INSTANCE
-#define TINY_MAX_INDEX 6 * TINY_MAX_INSTANCE
-#define TINY_MAX_LIGHT 512
+#define TINY_MAX_VERTEX 1024 //16384
 
 #define TINY_RENDER_SET_CORE 0 
 #define TINY_RENDER_SET_RENDER 1
@@ -35,22 +32,39 @@
 #define TINY_OUTPUT_COLOR 0 
 #define TINY_OUTPUT_POSITION 1
 #define TINY_OUTPUT_NORMAL 2
-#define TINY_OUTPUT_LIGHT 3
+#define TINY_OUTPUT_SPECULAR 3
+#define TINY_OUTPUT_EMISSIVE 4
 
-typedef tiny_mat4 TinyRenderTransform;
-typedef tiny_uint TinyRenderIndex;
-typedef tiny_vec4 TinyRenderVertex;
-typedef tiny_vec2 TinyRenderUV;
+static const tiny_uint TinyMaxVertices = TINY_MAX_VERTEX;
 
-te_struct TinyRenderSprite {
+tiny_enum( TinyRenderSetIDs ) { 
 
-	tiny_vec4 Color;
-	tiny_vec4 UV;
+	TRS_ID_CORE	   = TINY_RENDER_SET_CORE,
+	TRS_ID_RENDER  = TINY_RENDER_SET_RENDER,
+	TRS_ID_TEXTURE = TINY_RENDER_SET_TEXTURE,
+	TRS_ID_LIGHT   = TINY_RENDER_SET_LIGHT
 
 };
 
-te_struct TinyRenderLight {
+tiny_enum( TinyRenderOutputIDs ) { 
 
-	tiny_vec4 Color;
+	TRO_ID_COLOR	= TINY_OUTPUT_COLOR,
+	TRO_ID_POSITION = TINY_OUTPUT_POSITION,
+	TRO_ID_NORMAL	= TINY_OUTPUT_NORMAL,
+	TRO_ID_SPECULAR = TINY_OUTPUT_SPECULAR,
+	TRO_ID_EMISSIVE = TINY_OUTPUT_EMISSIVE,
+
+	TRO_ID_ALBEDO	= TRO_ID_COLOR
+
+};
+
+te_struct TinyRenderCore {
+
+	tiny_mat4 Projection{ 1.f };
+	tiny_mat4 View{ 1.f };
+	tiny_mat4 ProjView{ 1.f };
+	tiny_mat4 Inverse{ 1.f };
+	float Time_f  = 0.f;
+	double Time_d = 0.0;
 
 };

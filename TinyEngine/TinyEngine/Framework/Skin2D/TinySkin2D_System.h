@@ -37,7 +37,7 @@ protected:
 private:
 	tiny_vec4 ProcessTexture( 
 		TinyAssetManager& assets,
-		TinyRenderDraw2DContext& draw_context,
+		TinyRenderSpriteContext& draw_context,
 		TinySkin2D& component
 	);
 

@@ -47,6 +47,9 @@ void TinyAssetImportManager::Initialize( ) {
 	_taim_exp( TA_TYPE_TEXTURE_2D, ExportTexture2D );
 	_taim_exp( TA_TYPE_TEXTURE_3D, ExportTexture3D );
 
+	_taim_imp( ttf, TA_TYPE_FONT, ImportFont );
+	_taim_exp( TA_TYPE_FONT, ExportFont );
+
 	_taim_imp( spv,  TA_TYPE_SHADER, ImportGLSL );
 	_taim_imp( vert, TA_TYPE_SHADER, ImportGLSL );
 	_taim_imp( frag, TA_TYPE_SHADER, ImportGLSL );
@@ -192,6 +195,126 @@ bool TinyAssetImportManager::ExportTexture3D( TinyGame* game, TinyFile& file, c_
 	}
 
 	return state;
+}
+
+bool TinyAssetImportManager::ImportFont(
+	TinyGame* game,
+	const TinyPathInformation& path,
+	tiny_storage& file,
+	tiny_storage& storage
+) {
+	auto parameters = MsdfParameters{ };
+	auto bitmap = MsdfBitmap{ };
+	auto atlas  = MsdfAtlas{ };
+	auto msdf   = MsdfAtlasGenerator{ };
+	auto* ttf   = file.As<const msdfgen::byte>( );
+	auto state  = false;
+
+	if ( msdf.Prepare( ttf, file.Capacity ) ) {
+		msdf.AddCharset( 0x0020, 0x00FF );
+
+		if (
+			msdf.GenerateCharset( atlas, bitmap )
+		) {
+			msdf.Process( parameters, atlas, bitmap );
+		}
+
+		/*
+		auto* font = msdfgen::loadFontData( freetype, ttf, file.Capacity );
+
+		if ( font ) {
+			auto glyphs   = std::vector<msdf_atlas::GlyphGeometry>{ };
+			auto geometry = msdf_atlas::FontGeometry{ tiny_rvalue( glyphs ) };
+			auto charset  = msdf_atlas::Charset( );
+
+			struct TinyFontCharset { 
+
+				tiny_uint Start;
+				tiny_uint Stop;
+
+				TinyFontCharset( tiny_uint start, tiny_uint stop )
+					: Start{ start },
+					Stop{ stop + 1 }
+				{ };
+
+			};
+
+			TinyFontCharset charsets[] = { { 0x0020, 0x00FF } };
+
+			for ( auto& _charset : charsets ) {
+				auto char_id = _charset.Start;
+
+				while ( char_id < _charset.Stop )
+					charset.add( char_id++ );
+			}
+
+			auto loaded = geometry.loadCharset( font, 1.0, charset );
+
+			auto packer = msdf_atlas::TightAtlasPacker{ };
+
+			packer.setPixelRange( 2.0 );
+			packer.setMiterLimit( 1.0 );
+			packer.setPadding( 0 );
+			packer.setScale( 40.0 );
+
+			state = packer.pack( glyphs.data( ), tiny_cast( glyphs.size( ), tiny_int ) ) == 0;
+
+			if ( state ) {
+				auto width  = 0;// tiny_cast( 0, tiny_int );
+				auto height = 0;// tiny_cast( 0, tiny_int );
+				auto scale  = packer.getScale( );
+
+				packer.getDimensions( width, height );
+
+
+				#define DEFAULT_ANGLE_THRESHOLD 3.0
+				#define LCG_MULTIPLIER 6364136223846793005ull
+				#define LCG_INCREMENT 1442695040888963407ull
+				#define THREAD_COUNT 8
+
+				uint64_t coloringSeed = 0;
+				bool expensiveColoring = false;
+				if ( expensiveColoring ) {
+					msdf_atlas::Workload( [ &glyphs = glyphs, &coloringSeed ]( int i, int threadNo ) -> bool {
+						unsigned long long glyphSeed = ( LCG_MULTIPLIER * ( coloringSeed ^ i ) + LCG_INCREMENT ) * !!coloringSeed;
+						glyphs[ i ].edgeColoring( msdfgen::edgeColoringInkTrap, DEFAULT_ANGLE_THRESHOLD, glyphSeed );
+						return true;
+					}, glyphs.size( ) ).finish( THREAD_COUNT );
+				} else {
+					unsigned long long glyphSeed = coloringSeed;
+					for ( msdf_atlas::GlyphGeometry& glyph : glyphs ) {
+						glyphSeed *= LCG_MULTIPLIER;
+						glyph.edgeColoring( msdfgen::edgeColoringInkTrap, DEFAULT_ANGLE_THRESHOLD, glyphSeed );
+					}
+				}
+
+				msdf_atlas::ImmediateAtlasGenerator<
+					float, 3, 
+					msdf_atlas::msdfGenerator,
+					msdf_atlas::BitmapAtlasStorage<tiny_ubyte, 3>
+				> generator{ width, height };
+				msdf_atlas::GeneratorAttributes attributes;
+
+				attributes.config.overlapSupport = true;
+				attributes.scanlinePass = true;
+
+				generator.setAttributes( attributes );
+				generator.setThreadCount( 2 );
+				generator.generate( glyphs.data( ), tiny_cast( glyphs.size( ), tiny_int ) );
+
+				auto bitmap = ( msdfgen::BitmapConstRef<tiny_ubyte, 3> )generator.atlasStorage( );
+				
+				msdfgen::savePng( bitmap, "test.png" );
+			}
+		}
+		*/
+	}
+
+	return state;
+}
+
+bool TinyAssetImportManager::ExportFont( TinyGame* game, TinyFile& file, c_pointer& asset ) {
+	return false;
 }
 
 bool TinyAssetImportManager::ImportGLSL(
