@@ -49,7 +49,7 @@ public:
 		const TinyGraphicBufferBind& bind, 
 		Type& data
 	) {
-		auto* data_ptr = (c_pointer*)&data;
+		auto* data_ptr = tiny_cast( tiny_rvalue( data ), c_pointer );
 
 		return Read( context, { bind, data_ptr } );
 	};
@@ -60,7 +60,7 @@ public:
 		const TinyGraphicBufferBind& bind,
 		Type& data
 	) {
-		auto* data_ptr = (c_pointer*)&data;
+		auto* data_ptr = tiny_cast( tiny_rvalue( data ), c_pointer );
 
 		return Write( context, { bind, data_ptr } );
 	};

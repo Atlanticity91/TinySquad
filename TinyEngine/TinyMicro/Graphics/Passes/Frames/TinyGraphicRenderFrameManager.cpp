@@ -51,6 +51,9 @@ void TinyGraphicRenderFrameManager::Terminate( const TinyGraphicLogical& logical
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_uint TinyGraphicRenderFrameManager::GetCount( ) const { return _frames.size( ); }
 
-const VkFramebuffer TinyGraphicRenderFrameManager::GetFramebuffer( tiny_uint frame, TinyGraphicWorkContext& work_context ) const {
+const VkFramebuffer TinyGraphicRenderFrameManager::GetFramebuffer(
+	TinyGraphicWorkContext& work_context,
+	tiny_uint frame 
+) const {
 	return _frames[ frame ].Get( work_context.WorkID );
 }

@@ -41,11 +41,18 @@ public:
 	void Terminate( const TinyGraphicLogical& logical );
 
 private:
-	bool CreateQueuePool( const TinyGraphicLogical& logical, const VkPhysicalDeviceQueue& physical, VkLogicalQueue& queue );
+	bool CreateQueuePool( 
+		const TinyGraphicLogical& logical,
+		const VkPhysicalDeviceQueue& physical,
+		VkLogicalQueue& queue 
+	);
 
 	bool CreateQueueCommands( const TinyGraphicLogical& logical, VkLogicalQueue& queue );
 
-	bool CreateQueues( const TinyGraphicLogical& logical, const VkPhysicalDeviceQueue& physical );
+	bool CreateQueues( 
+		const TinyGraphicLogical& logical, 
+		const VkPhysicalDeviceQueue& physical 
+	);
 
 public:
 	const VkPhysicalDeviceQueue& GetPhysical( ) const;

@@ -43,7 +43,10 @@ public:
 	const TinyGraphicSwapchainProperties& GetProperties( ) const;
 
 private:
-	void GetSwapchainProperties( const TinyGraphicSurface& surface, const VkSurfaceCapabilitiesKHR& capabilities );
+	void GetSwapchainProperties( 
+		const TinyGraphicSurface& surface,
+		const VkSurfaceCapabilitiesKHR& capabilities 
+	);
 
 	tiny_list<tiny_uint> GetSwapchainQueues( const TinyGraphicQueueManager& queues );
 

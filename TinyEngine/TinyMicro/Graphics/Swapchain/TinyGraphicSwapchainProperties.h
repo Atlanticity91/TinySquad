@@ -24,10 +24,10 @@
 
 tm_struct TinyGraphicSwapchainProperties {
 
-	tiny_uint Capacity;
-	VkFormat Format;
-	VkColorSpaceKHR ColorSpace;
-	VkPresentModeKHR PresentMode;
+	tiny_uint Capacity = 0;
+	VkFormat Format{ };
+	VkColorSpaceKHR ColorSpace{ };
+	VkPresentModeKHR PresentMode{ };
 
 	VkSurfaceFormatKHR GetAsSurfaceFormat( ) const;
 

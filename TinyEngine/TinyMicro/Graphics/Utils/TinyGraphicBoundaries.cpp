@@ -53,16 +53,16 @@ void TinyGraphicBoundaries::ReCreate( const TinyWindow& window ) {
 	_scissor = { 
 		{ 0, 0 }, 
 		{ 
-			(tiny_uint)( (tiny_int)_viewport.width  ),
-			(tiny_uint)( (tiny_int)_viewport.height )
+			tiny_cast( tiny_cast( _viewport.width, tiny_int ), tiny_uint ),
+			tiny_cast( tiny_cast( _viewport.height , tiny_int ), tiny_uint )
 		} 
 	};
 	_swap_viewport = { 0.f, 0.f, dimensions.x, dimensions.y, _depth.x, _depth.y };
 	_swap_scissor  = {
 		{ 0, 0 },
 		{
-			(tiny_uint)( (tiny_int)_swap_viewport.width ),
-			(tiny_uint)( (tiny_int)_swap_viewport.height )
+			tiny_cast( tiny_cast( _swap_viewport.width , tiny_int ), tiny_uint ),
+			tiny_cast( tiny_cast( _swap_viewport.height , tiny_int ), tiny_uint )
 		}
 	};
 }

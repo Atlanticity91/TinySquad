@@ -25,7 +25,7 @@
 te_struct TinyRenderTransform {
 
 	tiny_mat4 World{ };
-	//tiny_mat4 Local{ };
+	tiny_mat4 Local{ };
 
 };
 
@@ -33,6 +33,28 @@ te_struct TinyRenderSprite {
 
 	tiny_vec4 UV{ };
 	tiny_vec4 Color{ };
+
+};
+
+te_struct TinyRenderSpriteVertices {
+
+	tiny_vec4 Position{ };
+	tiny_vec2 UV{ };
+
+};
+
+te_struct TinyRenderSpriteVertex {
+
+	TinyRenderSpriteVertices Quad[ 4 ];
+
+};
+
+te_struct TinyRenderSpriteInstance {
+
+	TinyRenderTransform Transform{ };
+	tiny_vec4 Color{ };
+	tiny_uint TextureSlot;
+	tiny_uint TextureCount;
 
 };
 

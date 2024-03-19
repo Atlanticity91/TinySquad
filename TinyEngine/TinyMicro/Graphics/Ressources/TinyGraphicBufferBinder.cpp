@@ -30,7 +30,7 @@ bool TinyGraphicBufferBinder::Read(
 	TinyGraphicContext& context, 
 	const TinyGraphicBufferBind& bind
 ) {
-	auto storage = ( c_pointer )nullptr;
+	auto storage = tiny_cast( nullptr, c_pointer );
 	auto state   = bind.Data && bind.Offset + bind.Size <= bind.Buffer.GetProperties( ).Size;
 
 	if ( state ) {
@@ -52,7 +52,7 @@ bool TinyGraphicBufferBinder::Write(
 	TinyGraphicContext& context,
 	const TinyGraphicBufferBind& bind
 ) {
-	auto storage = ( c_pointer )nullptr;
+	auto storage = tiny_cast( nullptr, c_pointer );
 	auto state   = bind.Data && bind.Offset + bind.Size <= bind.Buffer.GetProperties( ).Size;
 
 	if ( state ) {
@@ -85,7 +85,7 @@ VkDeviceMemory TinyGraphicBufferBinder::Map(
 	if ( bind.Offset + size > properties.Size )
 		size = properties.Size - bind.Offset;
 
-	if ( !vk::Check( vkMapMemory( logical, memory, bind.Offset, size, VK_NULL_FLAGS, &storage ) ) )
+	if ( !vk::Check( vkMapMemory( logical, memory, bind.Offset, size, VK_NULL_FLAGS, tiny_rvalue( storage ) ) ) )
 		memory = VK_NULL_HANDLE;
 	
 	return memory;

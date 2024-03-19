@@ -37,7 +37,10 @@ public:
 
 	~TinyGraphicPhysical( ) = default;
 
-	bool Initialize( const TinyGraphicInstance& instance, const TinyGraphicSurface& surface );
+	bool Initialize( 
+		const TinyGraphicInstance& instance, 
+		const TinyGraphicSurface& surface 
+	);
 
 	void Terminate( );
 

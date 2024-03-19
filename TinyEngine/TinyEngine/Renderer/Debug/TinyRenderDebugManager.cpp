@@ -230,7 +230,6 @@ void TinyRenderDebugManager::DrawLines(
 	auto& ubo_context = uniforms.GetUniform( "ubo_core" );
 	auto& transforms  = uniforms.GetUniform( "ib_vertex" );
 	auto& pipeline	  = _pipelines[ 0 ];
-	auto& logical	  = graphics.GetLogical( );
 	auto& staging	  = batchs.GetStaging( );
 	
 	pipeline.Mount( work_context );
@@ -250,7 +249,7 @@ void TinyRenderDebugManager::DrawLines(
 	}
 
 	pipeline.BindVertex( work_context, transforms );
-	pipeline.Bind( logical, work_context, ubo_context );
+	pipeline.Bind( work_context, ubo_context );
 	pipeline.Draw( work_context, { TGD_MODE_DIRECT, _lines.size( ) } );
 }
 
@@ -262,8 +261,7 @@ void TinyRenderDebugManager::DrawCircles(
 ) {
 	auto& ubo_context = uniforms.GetUniform( "ubo_core" );
 	auto& transforms  = uniforms.GetUniform( "ubo_sprites" );
-	auto& pipeline	  = _pipelines[ 1 ]; 
-	auto& logical	  = graphics.GetLogical( );
+	auto& pipeline	  = _pipelines[ 1 ];
 	auto& staging	  = batchs.GetStaging( );
 
 	pipeline.Mount( work_context );
@@ -281,7 +279,7 @@ void TinyRenderDebugManager::DrawCircles(
 		burner.Upload( staging, transforms, copie );
 	}
 
-	pipeline.Bind( logical, work_context, { ubo_context, transforms } );
+	pipeline.Bind( work_context, { ubo_context, transforms } );
 	pipeline.Draw( work_context, { TGD_MODE_DIRECT, 6, _circles.size( ) } );
 }
 

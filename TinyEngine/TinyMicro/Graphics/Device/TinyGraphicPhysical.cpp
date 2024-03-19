@@ -30,7 +30,10 @@ TinyGraphicPhysical::TinyGraphicPhysical( )
 	_queues{ }
 { }
 
-bool TinyGraphicPhysical::Initialize( const TinyGraphicInstance& instance, const TinyGraphicSurface& surface ) {
+bool TinyGraphicPhysical::Initialize(
+	const TinyGraphicInstance& instance,
+	const TinyGraphicSurface& surface 
+) {
 	auto state = GetPhysicalDevice( instance );
 	
 	if ( state )
@@ -82,7 +85,7 @@ const TinyGraphicPhysical::VkPhysicalDeviceQueues& TinyGraphicPhysical::GetQueue
 }
 
 VkSampleCountFlagBits TinyGraphicPhysical::GetSamplesLimit( ) const {
-	return (VkSampleCountFlagBits)( _properties.limits.framebufferColorSampleCounts & _properties.limits.framebufferDepthSampleCounts );
+	return tiny_cast( _properties.limits.framebufferColorSampleCounts & _properties.limits.framebufferDepthSampleCounts, VkSampleCountFlagBits );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +113,7 @@ bool TinyGraphicPhysical::GetHasDepth( ) const {
 	for ( auto format : vk::DEPTH_FORMATS ) {
 		auto prop_info = VkFormatProperties{ };
 
-		vkGetPhysicalDeviceFormatProperties( _handle, format, &prop_info );
+		vkGetPhysicalDeviceFormatProperties( _handle, format, tiny_rvalue( prop_info ) );
 
 		state =
 			( ( prop_info.linearTilingFeatures  & vk::DEPTH_FLAGS ) == vk::DEPTH_FLAGS ) ||
@@ -131,8 +134,8 @@ bool TinyGraphicPhysical::GetPhysicalDevice( const TinyGraphicInstance& instance
 	for ( auto device : device_list ) {
 		_handle = device;
 
-		vkGetPhysicalDeviceFeatures( _handle, &_features );
-		vkGetPhysicalDeviceProperties( _handle, &_properties );
+		vkGetPhysicalDeviceFeatures( _handle, tiny_rvalue( _features ) );
+		vkGetPhysicalDeviceProperties( _handle, tiny_rvalue( _properties ) );
 
 		state = GetIsValid( );
 
@@ -154,7 +157,7 @@ void TinyGraphicPhysical::GetQueuesFamilies( const TinyGraphicSurface& surface )
 		auto present_support = VK_FALSE;
 		auto properties		 = families[ famility_id ];
 		
-		vk::Check( vkGetPhysicalDeviceSurfaceSupportKHR( _handle, famility_id, surface, &present_support ) );
+		vk::Check( vkGetPhysicalDeviceSurfaceSupportKHR( _handle, famility_id, surface, tiny_rvalue( present_support ) ) );
 
 		auto count = properties.queueCount < max_count ? properties.queueCount : max_count;
 

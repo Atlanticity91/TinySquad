@@ -68,7 +68,7 @@ bool TinyGraphicBuffer::CreateBuffer(
 	buffer_info.queueFamilyIndexCount = buffer_queues.Queues.size( );
 	buffer_info.pQueueFamilyIndices   = buffer_queues.Queues.data( );
 
-	return vk::Check( vkCreateBuffer( logical, &buffer_info, vk::GetAllocator( ), &_descriptor.buffer ) );
+	return vk::Check( vkCreateBuffer( logical, tiny_rvalue( buffer_info ), vk::GetAllocator( ), tiny_rvalue( _descriptor.buffer ) ) );
 }
 
 bool TinyGraphicBuffer::AllocateBuffer( TinyGraphicContext& graphic ) {
@@ -102,7 +102,7 @@ VkDescriptorType TinyGraphicBuffer::GetDescriptorType( ) const {
 }
 
 const VkDescriptorBufferInfo* TinyGraphicBuffer::GetDescriptor( ) const { 
-	return &_descriptor;
+	return tiny_rvalue( _descriptor );
 }
 
 const TinyGraphicBufferProperties& TinyGraphicBuffer::GetProperties( ) const { 

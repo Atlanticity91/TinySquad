@@ -29,7 +29,10 @@ TinyGraphicQueue::TinyGraphicQueue( )
 	_queues{ }
 { }
 
-bool TinyGraphicQueue::Create( const TinyGraphicLogical& logical, const VkPhysicalDeviceQueue& physical ) {
+bool TinyGraphicQueue::Create( 
+	const TinyGraphicLogical& logical, 
+	const VkPhysicalDeviceQueue& physical 
+) {
 	_physical	  = physical;
 	_sharing_mode = physical.Count > 0 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
 	_queues		  = physical.Count;
@@ -51,28 +54,38 @@ void TinyGraphicQueue::Terminate( const TinyGraphicLogical& logical ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyGraphicQueue::CreateQueuePool( const TinyGraphicLogical& logical, const VkPhysicalDeviceQueue& physical, VkLogicalQueue& queue ) {
+bool TinyGraphicQueue::CreateQueuePool(
+	const TinyGraphicLogical& logical,
+	const VkPhysicalDeviceQueue& physical, 
+	VkLogicalQueue& queue
+) {
 	auto pool_info = VkCommandPoolCreateInfo{ VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO };
 
 	pool_info.pNext			   = VK_NULL_HANDLE;
 	pool_info.flags			   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	pool_info.queueFamilyIndex = physical.Family;
 
-	return vk::Check( vkCreateCommandPool( logical, &pool_info, vk::GetAllocator( ), &queue.CommandPool ) );
+	return vk::Check( vkCreateCommandPool( logical, tiny_rvalue( pool_info ), vk::GetAllocator( ), tiny_rvalue( queue.CommandPool ) ) );
 }
 
-bool TinyGraphicQueue::CreateQueueCommands( const TinyGraphicLogical& logical, VkLogicalQueue& queue ) {
+bool TinyGraphicQueue::CreateQueueCommands(
+	const TinyGraphicLogical& logical,
+	VkLogicalQueue& queue 
+) {
 	return vk::CreateCommandBuffer( logical, queue, queue.CommandBuffer );
 }
 
-bool TinyGraphicQueue::CreateQueues( const TinyGraphicLogical& logical, const VkPhysicalDeviceQueue& physical ) {
+bool TinyGraphicQueue::CreateQueues(
+	const TinyGraphicLogical& logical, 
+	const VkPhysicalDeviceQueue& physical 
+) {
 	auto queue_id = tiny_cast( 0, tiny_uint );
 	auto state	  = false;
 
 	for ( auto& queue : _queues ) {
 		queue.InUse		   = VK_FALSE;
 
-		vkGetDeviceQueue( logical, physical.Family, queue_id++, &queue.Queue );
+		vkGetDeviceQueue( logical, physical.Family, queue_id++, tiny_rvalue( queue.Queue ) );
 
 		state = CreateQueuePool( logical, physical, queue ) &&
 				CreateQueueCommands( logical, queue );
@@ -96,7 +109,7 @@ VkLogicalQueue* TinyGraphicQueue::Acquire( ) {
 		} 
 	);
 
-	auto* queue = _queues.exist( queue_id ) ? &_queues[ queue_id ] : nullptr;
+	auto* queue = _queues.exist( queue_id ) ? tiny_rvalue( _queues[ queue_id ] ) : nullptr;
 
 	if ( queue )
 		queue->InUse = VK_TRUE;

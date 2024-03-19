@@ -33,7 +33,11 @@ public:
 
 	~TinyGraphicSwapchainTarget( ) = default;
 
-	bool Create( const TinyGraphicLogical& logical, const TinyGraphicSwapchainProperties& properties, VkImage image );
+	bool Create( 
+		const TinyGraphicLogical& logical, 
+		const TinyGraphicSwapchainProperties& properties, 
+		VkImage image 
+	);
 
 	void Terminate( const TinyGraphicLogical& logical );
 

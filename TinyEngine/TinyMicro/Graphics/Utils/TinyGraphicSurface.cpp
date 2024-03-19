@@ -37,7 +37,7 @@ bool TinyGraphicSurface::Create( TinyWindow& window , TinyGraphicInstance& insta
     surface_info.hwnd      = glfwGetWin32Window( window );
     surface_info.hinstance = GetModuleHandle( nullptr );
 
-    return vk::Check( vkCreateWin32SurfaceKHR( instance, &surface_info, vk::GetAllocator( ), &_handle ) );
+    return vk::Check( vkCreateWin32SurfaceKHR( instance, tiny_rvalue( surface_info ), vk::GetAllocator( ), tiny_rvalue( _handle ) ) );
 #   elif TINY_LINUX
 #   elif TINY_APPLE
 #   endif
@@ -60,7 +60,7 @@ const VkSurfaceCapabilitiesKHR TinyGraphicSurface::GetCapabilities(
 ) const {
     auto capabilities = VkSurfaceCapabilitiesKHR{ };
     
-    vk::Check( vkGetPhysicalDeviceSurfaceCapabilitiesKHR( physical, _handle, &capabilities ) );
+    vk::Check( vkGetPhysicalDeviceSurfaceCapabilitiesKHR( physical, _handle, tiny_rvalue( capabilities ) ) );
     
     return capabilities;
 }

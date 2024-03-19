@@ -43,10 +43,10 @@ private:
 
 public:
 	static void Draw( 
-		TinyGraphicManager& graphics, 
-		TinyAssetManager& assets,
+		TinyMaterial& material,
+		TinyGraphicManager& graphics,
 		TinyRenderUniformManager& uniforms,
-		TinyRenderBatchManager& batchs 
+		tiny_uint instance_count
 	);
 
 };

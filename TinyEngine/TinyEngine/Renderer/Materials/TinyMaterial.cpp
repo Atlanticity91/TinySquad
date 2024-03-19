@@ -77,10 +77,9 @@ void TinyMaterial::Submit(
 	const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints
 ) {
 	auto& work_context = graphics.GetWorkdContext( );
-	auto& logical	   = graphics.GetLogical( );
 
 	Mount( work_context );
-	Draw( logical, work_context, draw_call, bindpoints );
+	Draw( work_context, draw_call, bindpoints );
 }
 
 void TinyMaterial::Terminate( 

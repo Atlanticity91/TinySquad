@@ -22,7 +22,8 @@
 
 #include <TinyEngine/Renderer/Uniforms/TinyRenderUniformManager.h>
 
-#define TINY_MAX_VERTEX 1024 //16384
+#define TINY_MAX_VERTEX 16384
+#define TINY_MAX_UNIFORM 1024
 
 #define TINY_RENDER_SET_CORE 0 
 #define TINY_RENDER_SET_RENDER 1
@@ -36,6 +37,7 @@
 #define TINY_OUTPUT_EMISSIVE 4
 
 static const tiny_uint TinyMaxVertices = TINY_MAX_VERTEX;
+static const tiny_uint TinyMaxUniform  = TINY_MAX_UNIFORM;
 
 tiny_enum( TinyRenderSetIDs ) { 
 

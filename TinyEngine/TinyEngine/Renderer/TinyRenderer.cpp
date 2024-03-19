@@ -145,46 +145,50 @@ void TinyRenderer::Prepare( TinyGraphicManager& graphics ) {
 
 void TinyRenderer::Prepare(
 	TinyGame* game,
+	TinyRenderBatchTypes type,
 	const tiny_string& render_pass,
-	FlushMethod_t flush_method
+	Callback_t callback
 ) {
 	auto render_hash = tiny_hash{ render_pass };
 
-	_batchs.Prepare( game, render_hash, flush_method );
+	_batchs.Prepare( game, type, render_hash, callback, _uniforms );
 }
 
 void TinyRenderer::Prepare(
 	TinyGame* game,
+	TinyRenderBatchTypes type,
 	const tiny_hash render_pass,
-	FlushMethod_t flush_method 
+	Callback_t callback
 ) {
-	_batchs.Prepare( game, render_pass, flush_method );
+	_batchs.Prepare( game, type, render_pass, callback, _uniforms );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderSpriteContext& draw_context ) {
-	_batchs.Draw( game, draw_context );
+	_batchs.Draw( game, _uniforms, draw_context );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderVertexContext& draw_context ) {
-	_batchs.Draw( game, draw_context );
+	_batchs.Draw( game, _uniforms, draw_context );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderLightContext& draw_context ) {
-	_batchs.Draw( game, draw_context );
+	_batchs.Draw( game, _uniforms, draw_context );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderTextContext& draw_context ) {
-	_batchs.Draw( game, draw_context );
+	_batchs.Draw( game, _uniforms, draw_context );
 }
 
-void TinyRenderer::Flush( TinyGame* game ) { _batchs.Flush( game ); }
+void TinyRenderer::Flush( TinyGame* game, TinyRenderBatchTypes type ) {
+	_batchs.Flush( game, type, _uniforms ); 
+}
 
 void TinyRenderer::DrawDebug( const TinyRenderDebugPrimitive& primitive ) {
 	_debug.Draw( primitive );
 }
 
 void TinyRenderer::Compose( TinyGame* game ) {
-	Flush( game );
+	_batchs.Flush( game, _uniforms );
 	
 	_post_process.Compose( game, _uniforms, _batchs );
 

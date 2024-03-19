@@ -269,15 +269,13 @@ void TinyGraphicPipeline::Push(
 }
 
 void TinyGraphicPipeline::Bind(
-	TinyGraphicLogical& logical,
 	TinyGraphicWorkContext& work_context,
 	const TinyGraphicPipelineBindpoint& bindpoint
 ) {
-	Bind( logical, work_context, { bindpoint } );
+	Bind( work_context, { bindpoint } );
 }
 
 void TinyGraphicPipeline::Bind(
-	TinyGraphicLogical& logical,
 	TinyGraphicWorkContext& work_context,
 	tiny_init<TinyGraphicPipelineBindpoint> bindpoints
 ) {
@@ -297,7 +295,7 @@ void TinyGraphicPipeline::Bind(
 		}
 
 		vkUpdateDescriptorSets( 
-			logical, 
+			work_context.Logical,
 			descriptors.size( ), descriptors.data( ), 
 			0, VK_NULL_HANDLE 
 		);
@@ -305,7 +303,6 @@ void TinyGraphicPipeline::Bind(
 }
 
 void TinyGraphicPipeline::Bind(
-	TinyGraphicLogical& logical,
 	TinyGraphicWorkContext& work_context,
 	tiny_list<TinyGraphicPipelineBindpoint> bindpoints
 ) {
@@ -325,7 +322,7 @@ void TinyGraphicPipeline::Bind(
 		}
 
 		vkUpdateDescriptorSets(
-			logical,
+			work_context.Logical,
 			descriptors.size( ), descriptors.data( ),
 			0, VK_NULL_HANDLE
 		);
@@ -333,7 +330,6 @@ void TinyGraphicPipeline::Bind(
 }
 
 void TinyGraphicPipeline::Bind(
-	TinyGraphicLogical& logical,
 	TinyGraphicWorkContext& work_context,
 	tiny_uint count,
 	TinyGraphicPipelineBindpoint* bindpoints
@@ -351,7 +347,7 @@ void TinyGraphicPipeline::Bind(
 	}
 
 	vkUpdateDescriptorSets(
-		logical,
+		work_context.Logical,
 		descriptors.size( ), descriptors.data( ),
 		0, VK_NULL_HANDLE
 	);
@@ -461,22 +457,20 @@ void TinyGraphicPipeline::Draw(
 }
 
 void TinyGraphicPipeline::Draw(
-	TinyGraphicLogical& logical,
 	TinyGraphicWorkContext& work_context,
 	const TinyGraphicPipelineDrawcall& draw_call,
 	tiny_init<TinyGraphicPipelineBindpoint> bindpoints
 ) {
-	Bind( logical, work_context, bindpoints );
+	Bind( work_context, bindpoints );
 	Draw( work_context, draw_call );
 }
 
 void TinyGraphicPipeline::Draw(
-	TinyGraphicLogical& logical,
 	TinyGraphicWorkContext& work_context,
 	const TinyGraphicPipelineDrawcall& draw_call,
 	tiny_list<TinyGraphicPipelineBindpoint> bindpoints
 ) {
-	Bind( logical, work_context, bindpoints );
+	Bind( work_context, bindpoints );
 	Draw( work_context, draw_call );
 }
 
@@ -529,14 +523,7 @@ bool TinyGraphicPipeline::CreateRenderPipeline(
 	pipeline_info.basePipelineHandle  = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex   = 0;
 
-	return vk::Check( vkCreateGraphicsPipelines( 
-		graphic.Logical,
-		pipeline_cache, 
-		1, 
-		tiny_rvalue( pipeline_info ),
-		vk::GetAllocator( ),
-		tiny_rvalue( _pipeline ) 
-	) );
+	return vk::Check( vkCreateGraphicsPipelines( graphic.Logical, pipeline_cache, 1, tiny_rvalue( pipeline_info ), vk::GetAllocator( ), tiny_rvalue( _pipeline ) ) );
 }
 
 bool TinyGraphicPipeline::CreateComputePipeline(
@@ -553,14 +540,7 @@ bool TinyGraphicPipeline::CreateComputePipeline(
 	pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex  = 0;
 
-	return vk::Check( vkCreateComputePipelines( 
-		graphic.Logical,
-		pipeline_cache,
-		1, 
-		tiny_rvalue( pipeline_info ),
-		vk::GetAllocator( ),
-		tiny_rvalue( _pipeline )
-	) );
+	return vk::Check( vkCreateComputePipelines( graphic.Logical, pipeline_cache, 1, tiny_rvalue( pipeline_info ), vk::GetAllocator( ), tiny_rvalue( _pipeline ) ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

@@ -72,7 +72,7 @@ bool TinyGraphicRenderFrame::InternalCreate(
 	frame_info.height		   = properties.Height;
 	frame_info.layers		   = 1;
 
-	return vk::Check( vkCreateFramebuffer( logical, &frame_info, vk::GetAllocator( ), &framebuffer ) );
+	return vk::Check( vkCreateFramebuffer( logical, tiny_rvalue( frame_info ), vk::GetAllocator( ), tiny_rvalue( framebuffer ) ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

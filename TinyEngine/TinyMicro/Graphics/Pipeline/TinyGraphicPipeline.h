@@ -163,25 +163,21 @@ public:
 	);
 
 	tiny_inline void Bind(
-		TinyGraphicLogical& logical,
 		TinyGraphicWorkContext& work_context,
 		const TinyGraphicPipelineBindpoint& bindpoint
 	);
 
 	void Bind( 
-		TinyGraphicLogical& logical,
 		TinyGraphicWorkContext& work_context,
 		tiny_init<TinyGraphicPipelineBindpoint> bindpoints
 	);
 
 	void Bind(
-		TinyGraphicLogical& logical,
 		TinyGraphicWorkContext& work_context,
 		tiny_list<TinyGraphicPipelineBindpoint> bindpoints
 	);
 
 	void Bind(
-		TinyGraphicLogical& logical,
 		TinyGraphicWorkContext& work_context,
 		tiny_uint count,
 		TinyGraphicPipelineBindpoint* bindpoints
@@ -236,15 +232,13 @@ public:
 		const TinyGraphicPipelineDrawcall& draw_call 
 	);
 
-	tiny_inline void Draw( 
-		TinyGraphicLogical& logical,
+	tiny_inline void Draw(
 		TinyGraphicWorkContext& work_context,
 		const TinyGraphicPipelineDrawcall& draw_call,
 		tiny_init<TinyGraphicPipelineBindpoint> bindpoints
 	);
 
 	tiny_inline void Draw(
-		TinyGraphicLogical& logical,
 		TinyGraphicWorkContext& work_context,
 		const TinyGraphicPipelineDrawcall& draw_call,
 		tiny_list<TinyGraphicPipelineBindpoint> bindpoints

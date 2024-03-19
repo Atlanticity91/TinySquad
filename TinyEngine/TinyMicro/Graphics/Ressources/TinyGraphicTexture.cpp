@@ -142,7 +142,7 @@ bool TinyGraphicTexture::CreateImage(
 	image_info.pQueueFamilyIndices   = ressource_queues.Queues.data( );
 	image_info.initialLayout		 = VK_IMAGE_LAYOUT_UNDEFINED;
 
-	return vk::Check( vkCreateImage( logical, &image_info, vk::GetAllocator( ), &_image ) );
+	return vk::Check( vkCreateImage( logical, tiny_rvalue( image_info ), vk::GetAllocator( ), tiny_rvalue( _image ) ) );
 }
 
 bool TinyGraphicTexture::CreateView( const TinyGraphicLogical& logical ) {
@@ -163,7 +163,7 @@ bool TinyGraphicTexture::CreateView( const TinyGraphicLogical& logical ) {
 	view_info.subresourceRange.baseArrayLayer = 0;
 	view_info.subresourceRange.layerCount	  = _properties.Type == TGT_TYPE_TEXTURE_CUBEMAP ? 6 : 1;
 
-	return vk::Check( vkCreateImageView( logical, &view_info, vk::GetAllocator( ), &_descriptor.imageView ) );
+	return vk::Check( vkCreateImageView( logical, tiny_rvalue( view_info ), vk::GetAllocator( ), tiny_rvalue( _descriptor.imageView ) ) );
 }
 
 bool TinyGraphicTexture::CreateImageSampler( const TinyGraphicLogical& logical ) {
@@ -188,7 +188,7 @@ bool TinyGraphicTexture::CreateImageSampler( const TinyGraphicLogical& logical )
 	sampler_info.borderColor			 = properties.BorderColor;
 	sampler_info.unnormalizedCoordinates = properties.Unnormalized ? VK_TRUE : VK_FALSE;
 
-	return vk::Check( vkCreateSampler( logical, &sampler_info, vk::GetAllocator( ), &_descriptor.sampler ) );
+	return vk::Check( vkCreateSampler( logical, tiny_rvalue( sampler_info ), vk::GetAllocator( ), tiny_rvalue( _descriptor.sampler ) ) );
 }
 
 void TinyGraphicTexture::GenerateMipmaps( const TinyGraphicLogical& logical ) {
@@ -219,7 +219,7 @@ VkDescriptorType TinyGraphicTexture::GetDescriptorType( ) const {
 }
 
 const VkDescriptorImageInfo* TinyGraphicTexture::GetDescriptor( ) const {
-	return &_descriptor;
+	return tiny_rvalue( _descriptor );
 }
 
 const TinyGraphicTextureProperties& TinyGraphicTexture::GetProperties( ) const {

@@ -24,206 +24,105 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderBatchManager::TinyRenderBatchManager( ) 
-	: _render_pass{ },
-	_staging{ },
-	_transforms{ },
-	_indexes{ },
-	_vertices{ },
-	_sprites{ },
-	_textures{ },
-	_lights{ },
-	_flush_context{ }
+	: _staging{ },
+	_sprites{ }
 { }
 
 bool TinyRenderBatchManager::Initialize( TinyGraphicManager& graphics ) {
-	constexpr auto size_2d = BatchTransform_t::Size + BatchSprite_t::Size;
-	constexpr auto size_3d = BatchIndex_t::Size + BatchVertex_t::Size;
-	constexpr auto size	   = size_2d < size_3d ? size_3d : size_2d;
+	constexpr auto size_2d = TinyRenderBatchSprite::Size;
+	//constexpr auto size_3d = BatchIndex_t::Size + BatchVertex_t::Size;
+	//constexpr auto size    = size_2d < size_3d ? size_3d : size_2d;
 
 	auto context = graphics.GetContext( );
-	auto state  = _staging.Create( context, size ) &&
-				  _transforms.Create( )			   &&
-				  _indexes.Create( )			   &&
-				  _vertices.Create( )			   &&
-				  _sprites.Create( )			   &&
-				  _textures.Create( )			   &&
-				  _lights.Create( );
-
-	if ( state ) {
-		auto& properties = context.Physical.GetProperties( );
-
-		_textures.SetCapacity( properties.limits.maxDescriptorSetSamplers );
-	}
-
-	return state;
+	
+	return  _staging.Create( context, size_2d ) &&
+			_sprites.Create( graphics );
 }
 
 void TinyRenderBatchManager::Prepare(
 	TinyGame* game, 
+	TinyRenderBatchTypes type,
 	const tiny_hash render_pass, 
-	FlushMethod_t flush_method 
+	Callback_t callback,
+	TinyRenderUniformManager& uniforms
 ) {
-	Flush( game );
+	auto& graphics = game->GetGraphics( );
+	auto& batch	   = _sprites;
 
-	if ( render_pass != _render_pass ) {
-		auto& graphics = game->GetGraphics( );
+	switch ( type ) {
+		case TRB_TYPE_VERTEX : break;
+		case TRB_TYPE_LIGHT	 : break;
+		case TRB_TYPE_TEXT	 : break;
 
-		graphics.BeginPass( render_pass );
-
-		_render_pass = render_pass;
+		default : break;
 	}
 
-	_flush_context.Flush = flush_method;
-}
+	Flush( game, type , uniforms );
 
-void TinyRenderBatchManager::Draw(
-	TinyGame* game,
-	const TinyRenderSpriteContext& draw_context
-) {
-	auto texture_count = draw_context.Textures.size( );
-
-	if ( 
-		draw_context.Material == _flush_context.Material &&
-		_transforms.GetHasSpace( )						 &&
-		_textures.GetHasSpace( texture_count )
-	) {
-		_transforms.Push( draw_context.Tranform );
-		_sprites.Push( draw_context.Sprite );
-
-		for ( auto& texture : draw_context.Textures )
-			_textures.Push( { TRS_ID_TEXTURE, _textures.GetCount( ), tiny_lvalue( texture ) } );
-	} else {
-		Flush( game );
-
-		_flush_context.Material = draw_context.Material;
-
-		Draw( game, draw_context );
-	}
-}
-
-void TinyRenderBatchManager::Draw(
-	TinyGame* game,
-	const TinyRenderVertexContext& draw_context
-) {
-	auto texture_count = draw_context.Textures.size( );
-
-	if (
-		draw_context.Material == _flush_context.Material &&
-		_textures.GetHasSpace( texture_count )
-	) {
-		_indexes.Push( draw_context.Indexes );
-		_vertices.Push( draw_context.Vertex );
-
-		for ( auto& texture : draw_context.Textures )
-			_textures.Push( { TRS_ID_TEXTURE, _textures.GetCount( ), tiny_lvalue( texture ) } );
-	} else {
-		Flush( game );
-
-		_flush_context.Material = draw_context.Material;
-
-		Draw( game, draw_context );
-	}
+	batch.Prepare( graphics, render_pass, callback );
 }
 
 void TinyRenderBatchManager::Draw( 
-	TinyGame* game, 
+	TinyGame* game,
+	TinyRenderUniformManager& uniforms,
+	const TinyRenderSpriteContext& draw_context 
+) {
+	_sprites.Draw( game, _staging, uniforms, draw_context );
+}
+
+void TinyRenderBatchManager::Draw(
+	TinyGame* game,
+	TinyRenderUniformManager& uniforms,
+	const TinyRenderVertexContext& draw_context
+) {
+}
+
+void TinyRenderBatchManager::Draw( 
+	TinyGame* game,
+	TinyRenderUniformManager& uniforms,
 	const TinyRenderLightContext& draw_context 
 ) {
-	if ( _lights.GetHasSpace( ) )
-		_lights.Push( draw_context.Light );
 }
 
-void TinyRenderBatchManager::Draw( TinyGame* game, const TinyRenderTextContext& draw_context ) {
-}
-
-tiny_array<VkBufferCopy, 2> TinyRenderBatchManager::Flush2D(
-	TinyGraphicContext& context,
-	tiny_uint& vertex_count
+void TinyRenderBatchManager::Draw(
+	TinyGame* game,
+	TinyRenderUniformManager& uniforms,
+	const TinyRenderTextContext& draw_context 
 ) {
-	auto copy_destination = tiny_array<VkBufferCopy, 2>{ };
-	auto transform		  = _transforms.Flush( );
-	auto sprites		  = _sprites.Flush( );
-
-	vertex_count = transform.Count;
-
-	if ( vertex_count > 0 ) {
-		auto tr_size = transform.Count * tiny_sizeof( TinyRenderTransform );
-		auto sp_size = sprites.Count * tiny_sizeof( TinyRenderSprite );
-
-		_staging.Map( context, tr_size + sp_size );
-		Tiny::Memcpy( transform.Values, _staging.GetAccess( ), tr_size );
-		Tiny::Memcpy( sprites.Values, tiny_cast( tiny_cast( _staging.GetAccess( ), tiny_pointer ) + tr_size, c_pointer ), sp_size );
-		_staging.UnMap( context );
-
-		copy_destination[ 0 ] = { 0, 0, tr_size };
-		copy_destination[ 1 ] = { tr_size, 0, sp_size };
-	}
-
-	return copy_destination;
 }
 
-tiny_array<VkBufferCopy, 2> TinyRenderBatchManager::Flush3D(
-	TinyGraphicContext& context,
-	tiny_uint& index_count, 
-	tiny_uint& vertex_count
+void TinyRenderBatchManager::Flush( 
+	TinyGame* game, 
+	TinyRenderBatchTypes type,
+	TinyRenderUniformManager& uniforms
 ) {
-	auto copy_destination = tiny_array<VkBufferCopy, 2>{ };
-	auto indexes		  = _indexes.Flush( );
-	auto vertices		  = _vertices.Flush( );
+	auto& graphics = game->GetGraphics( );
+	auto& assets = game->GetAssets( );
+	auto& batch = _sprites;
 
-	index_count  = indexes.Count;
-	vertex_count = vertices.Count;
+	switch ( type ) {
+		case TRB_TYPE_VERTEX : break;
+		case TRB_TYPE_LIGHT  : break;
+		case TRB_TYPE_TEXT	 : break;
 
-	if ( index_count > 0 || vertex_count > 0 ) {
-		_staging.Map( context, 0 );
-		//Tiny::Memcpy( );
-		//Tiny::Memcpy( );
-		_staging.UnMap( context );
-
-		copy_destination[ 0 ] = { 0, 0, 0 };
-		copy_destination[ 1 ] = { 0, 0, 0 };
+		default: break;
 	}
 
-	return copy_destination;
+	batch.Flush( assets, graphics, _staging, uniforms );
 }
 
-TinyRenderBatchFlush TinyRenderBatchManager::FlushTextures( ) {
-	return _textures.Flush( );
-}
+void TinyRenderBatchManager::Flush( TinyGame* game, TinyRenderUniformManager& uniforms ) {
+	auto& graphics = game->GetGraphics( );
+	auto& assets   = game->GetAssets( );
 
-VkBufferCopy TinyRenderBatchManager::FlushLight( TinyGraphicContext& context ) {
-	auto lights		= _lights.Flush( );
-	auto light_size = lights.Count * tiny_sizeof( TinyRenderLight );
-
-	_staging.Map( context, light_size );
-	Tiny::Memcpy( lights.Values, _staging.GetAccess( ), light_size );
-	_staging.UnMap( context );
-
-	return VkBufferCopy{ 0, 0, light_size };
-}
-
-void TinyRenderBatchManager::Flush( TinyGame* game ) {
-	if ( _flush_context.Flush && _flush_context.Material ) {
-		auto& graphics = game->GetGraphics( );
-		auto& assets   = game->GetAssets( );
-		auto& uniforms = game->GetRenderer( ).GetUniforms( );
-	
-		std::invoke( _flush_context.Flush, graphics, assets, uniforms, tiny_self );
-	}
-
-	_render_pass.empty( );
+	_sprites.Flush( assets, graphics, _staging, uniforms );
 }
 
 void TinyRenderBatchManager::Terminate( TinyGraphicManager& graphics ) {
 	auto context = graphics.GetContext( );
 
 	_staging.Terminate( context );
-	_transforms.Terminate( );
-	_indexes.Terminate( );
-	_vertices.Terminate( );
 	_sprites.Terminate( );
-	_textures.Terminate( );
-	_lights.Terminate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,30 +130,4 @@ void TinyRenderBatchManager::Terminate( TinyGraphicManager& graphics ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicBufferStaging& TinyRenderBatchManager::GetStaging( ) { return _staging; }
 
-TinyRenderBatchManager::BatchTransform_t& TinyRenderBatchManager::GetTransforms( ) {
-	return _transforms;
-}
-
-TinyRenderBatchManager::BatchIndex_t& TinyRenderBatchManager::GetIndexes( ) {
-	return _indexes;
-}
-
-TinyRenderBatchManager::BatchVertex_t& TinyRenderBatchManager::GetVertex( ) {
-	return _vertices;
-}
-
-TinyRenderBatchManager::BatchSprite_t& TinyRenderBatchManager::GetSprites( ) {
-	return _sprites;
-}
-
-TinyRenderBatchManager::BatchTexture_t& TinyRenderBatchManager::GetTextures( ) {
-	return _textures;
-}
-
-TinyRenderBatchManager::BatchLight_t& TinyRenderBatchManager::GetLight( ) {
-	return _lights;
-}
-
-TinyMaterial* TinyRenderBatchManager::GetMaterial( TinyAssetManager& assets ) {
-	return assets.GetAssetAs<TinyMaterial>( _flush_context.Material );
-}
+TinyRenderBatchSprite& TinyRenderBatchManager::GetSprites( ) { return _sprites; }

@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 13/10/2023
- * @version  : 2024.1
+ * @creation : 19/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,33 +20,11 @@
 
 #pragma once
 
-#include "TinyGraphicPhysical.h"
+#include "TinyRenderBatch.h"
 
-tm_class TinyGraphicLogical final {
+te_struct TinyRenderBatchTextures {
 
-private:
-	VkDevice _handle;
-
-public:
-	TinyGraphicLogical( );
-
-	~TinyGraphicLogical( ) = default;
-
-	bool Create( const TinyGraphicPhysical& physical );
-
-	bool Wait( );
-
-	void Terminate( );
-
-public:
-	VkDevice Get( ) const;
-
-private:
-	tiny_list<VkDeviceQueueCreateInfo> GetQueuesCreateInfos(
-		const TinyGraphicPhysical& physical 
-	);
-	
-public:
-	operator VkDevice ( ) const;
+	tiny_uint Count						   = 0;
+	TinyGraphicPipelineBindpoint* Textures = nullptr;
 
 };

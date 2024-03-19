@@ -24,6 +24,8 @@
 
 te_class TinyRenderer final {
 
+	using Callback_t = TinyRenderBatchManager::Callback_t;
+
 private:
 	TinyRenderCameraManager  _cameras;
 	TinyRenderUniformManager _uniforms;
@@ -65,16 +67,18 @@ public:
 
 	tiny_inline void Prepare( TinyGraphicManager& graphics );
 
-	void Prepare( 
+	tiny_inline void Prepare(
 		TinyGame* game, 
+		TinyRenderBatchTypes type,
 		const tiny_string& render_pass,
-		FlushMethod_t flush_method 
+		Callback_t callback
 	);
 
 	tiny_inline void Prepare( 
 		TinyGame* game,
+		TinyRenderBatchTypes type,
 		const tiny_hash render_pass,
-		FlushMethod_t flush_method 
+		Callback_t callback
 	);
 
 	tiny_inline void Draw( TinyGame* game, const TinyRenderSpriteContext& draw_context );
@@ -85,11 +89,11 @@ public:
 
 	tiny_inline void Draw( TinyGame* game, const TinyRenderTextContext& draw_context );
 
-	tiny_inline void Flush( TinyGame* game );
+	tiny_inline void Flush( TinyGame* game, TinyRenderBatchTypes type );
 
 	tiny_inline void DrawDebug( const TinyRenderDebugPrimitive& primitive );
 
-	void Compose( TinyGame* game );
+	void Compose( TinyGame* game);
 
 	void Terminate( TinyGraphicManager& graphics );
 

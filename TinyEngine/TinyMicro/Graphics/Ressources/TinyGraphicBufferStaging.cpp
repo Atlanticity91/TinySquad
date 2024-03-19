@@ -58,7 +58,7 @@ bool TinyGraphicBufferStaging::Map(
 		if ( offset + length > properties.Size )
 			length = properties.Size - offset;
 
-		state = vk::Check( vkMapMemory( context.Logical, memory, offset, length, VK_NULL_FLAGS, &_access ) );
+		state = vk::Check( vkMapMemory( context.Logical, memory, offset, length, VK_NULL_FLAGS, tiny_rvalue( _access ) ) );
 	}
 
 	return state;

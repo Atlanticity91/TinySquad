@@ -49,13 +49,16 @@ void TinyGraphicSwapchainSync::Terminate( const TinyGraphicLogical& logical ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyGraphicSwapchainSync::CreateSwapchainSemaphore( const TinyGraphicLogical& logical, VkSemaphore& semaphore ) {
+bool TinyGraphicSwapchainSync::CreateSwapchainSemaphore( 
+	const TinyGraphicLogical& logical, 
+	VkSemaphore& semaphore 
+) {
 	auto semaphore_info = VkSemaphoreCreateInfo{ VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO };
 
 	semaphore_info.pNext = VK_NULL_HANDLE;
 	semaphore_info.flags = VK_NULL_FLAGS;
 
-	return vk::Check( vkCreateSemaphore( logical, &semaphore_info, vk::GetAllocator( ), &semaphore ) );
+	return vk::Check( vkCreateSemaphore( logical, tiny_rvalue( semaphore_info ), vk::GetAllocator( ), tiny_rvalue( semaphore ) ) );
 }
 
 bool TinyGraphicSwapchainSync::CreateSwapchainFence( const TinyGraphicLogical& logical ) {
@@ -64,14 +67,20 @@ bool TinyGraphicSwapchainSync::CreateSwapchainFence( const TinyGraphicLogical& l
 	fence_info.pNext = VK_NULL_HANDLE;
 	fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	return vk::Check( vkCreateFence( logical, &fence_info, vk::GetAllocator( ), &_fence ) );
+	return vk::Check( vkCreateFence( logical, tiny_rvalue( fence_info ), vk::GetAllocator( ), tiny_rvalue( _fence ) ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const VkSemaphore* TinyGraphicSwapchainSync::GetAcquire( ) const { return &_acquire; }
+const VkSemaphore* TinyGraphicSwapchainSync::GetAcquire( ) const { 
+	return tiny_rvalue( _acquire ); 
+}
 
-const VkSemaphore* TinyGraphicSwapchainSync::GetPresent( ) const { return &_present; }
+const VkSemaphore* TinyGraphicSwapchainSync::GetPresent( ) const { 
+	return tiny_rvalue( _present ); 
+}
 
-const VkFence* TinyGraphicSwapchainSync::GetFence( ) const { return &_fence; }
+const VkFence* TinyGraphicSwapchainSync::GetFence( ) const { 
+	return tiny_rvalue( _fence ); 
+}

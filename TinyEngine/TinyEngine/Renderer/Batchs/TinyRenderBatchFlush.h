@@ -24,7 +24,7 @@
 
 te_struct TinyRenderBatchFlush {
 
-	tiny_uint Count  = 0;
-	c_pointer Values = nullptr;
+	tiny_uint Count		= 0;
+	tiny_pointer Values = nullptr;
 
 };

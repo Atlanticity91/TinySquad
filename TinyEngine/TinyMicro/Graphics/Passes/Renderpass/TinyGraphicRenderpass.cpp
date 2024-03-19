@@ -28,7 +28,10 @@ TinyGraphicRenderpass::TinyGraphicRenderpass( )
 	_properties{ }
 { }
 
-bool TinyGraphicRenderpass::Create( const TinyGraphicLogical& logical, const TinyGraphicRenderpassBundle& bundle ) {
+bool TinyGraphicRenderpass::Create( 
+	const TinyGraphicLogical& logical,
+	const TinyGraphicRenderpassBundle& bundle 
+) {
 	GetProperties( bundle );
 
 	auto pass_info = VkRenderPassCreateInfo{ VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO };
@@ -42,7 +45,7 @@ bool TinyGraphicRenderpass::Create( const TinyGraphicLogical& logical, const Tin
 	pass_info.dependencyCount = bundle.Dependencies.size( );
 	pass_info.pDependencies   = bundle.Dependencies.data( );
 
-	return vk::Check( vkCreateRenderPass( logical, &pass_info, vk::GetAllocator( ), &_handle ) );
+	return vk::Check( vkCreateRenderPass( logical, tiny_rvalue( pass_info ), vk::GetAllocator( ), tiny_rvalue( _handle ) ) );
 }
 
 void TinyGraphicRenderpass::SetClearValue( tiny_uint attachement, const tiny_color& color ) {
@@ -53,7 +56,10 @@ void TinyGraphicRenderpass::SetClearValue( tiny_uint attachement, const tiny_col
 	SetClearValue( attachement, clear_value );
 }
 
-void TinyGraphicRenderpass::SetClearValue( tiny_uint attachement, const VkClearColorValue& color ) {
+void TinyGraphicRenderpass::SetClearValue(
+	tiny_uint attachement,
+	const VkClearColorValue& color
+) {
 	auto clear_value = VkClearValue{ };
 
 	clear_value.color = color;
@@ -61,7 +67,10 @@ void TinyGraphicRenderpass::SetClearValue( tiny_uint attachement, const VkClearC
 	SetClearValue( attachement, clear_value );
 }
 
-void TinyGraphicRenderpass::SetClearValue( tiny_uint attachement, const VkClearDepthStencilValue& depth_value ) {
+void TinyGraphicRenderpass::SetClearValue(
+	tiny_uint attachement, 
+	const VkClearDepthStencilValue& depth_value 
+) {
 	auto clear_value = VkClearValue{ };
 
 	clear_value.depthStencil = depth_value;
@@ -69,14 +78,20 @@ void TinyGraphicRenderpass::SetClearValue( tiny_uint attachement, const VkClearD
 	SetClearValue( attachement, clear_value );
 }
 
-void TinyGraphicRenderpass::SetClearValue( tiny_uint attachement, const VkClearValue& clear_value ) {
+void TinyGraphicRenderpass::SetClearValue( 
+	tiny_uint attachement,
+	const VkClearValue& clear_value 
+) {
 	if ( attachement < _properties.ClearValues.size( ) )
 		_properties.ClearValues[ attachement ] = clear_value;
 }
 
-TinyGraphicRenderpass& TinyGraphicRenderpass::Begin( TinyGraphicWorkContext& work_context, const TinyGraphicRenderFrameManager& frames ) {
+TinyGraphicRenderpass& TinyGraphicRenderpass::Begin( 
+	TinyGraphicWorkContext& work_context, 
+	const TinyGraphicRenderFrameManager& frames 
+) {
 	auto begin_info  = VkRenderPassBeginInfo{ VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
-	auto framebuffer = frames.GetFramebuffer( _properties.Frame, work_context );
+	auto framebuffer = frames.GetFramebuffer( work_context, _properties.Frame );
 
 	begin_info.pNext		   = VK_NULL_HANDLE;
 	begin_info.renderPass	   = _handle;
@@ -85,9 +100,9 @@ TinyGraphicRenderpass& TinyGraphicRenderpass::Begin( TinyGraphicWorkContext& wor
 	begin_info.clearValueCount = _properties.ClearValues.size( );
 	begin_info.pClearValues	   = _properties.ClearValues.data( );
 
-	vkCmdBeginRenderPass( work_context.Queue->CommandBuffer, &begin_info, VK_SUBPASS_CONTENTS_INLINE );
-	vkCmdSetViewport( work_context.Queue->CommandBuffer, 0, 1, &_properties.Viewport );
-	vkCmdSetScissor( work_context.Queue->CommandBuffer, 0, 1, &_properties.Scissor );
+	vkCmdBeginRenderPass( work_context.Queue->CommandBuffer, tiny_rvalue( begin_info ), VK_SUBPASS_CONTENTS_INLINE );
+	vkCmdSetViewport( work_context.Queue->CommandBuffer, 0, 1, tiny_rvalue( _properties.Viewport ) );
+	vkCmdSetScissor( work_context.Queue->CommandBuffer, 0, 1, tiny_rvalue( _properties.Scissor ) );
 
 	return tiny_self;
 }

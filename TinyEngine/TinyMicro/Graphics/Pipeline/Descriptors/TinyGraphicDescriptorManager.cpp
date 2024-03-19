@@ -74,7 +74,7 @@ bool TinyGraphicDescriptorManager::CreatePool(
 	pool_info.poolSizeCount = limits.size( );
 	pool_info.pPoolSizes	= limits.data( );
 	
-	return vk::Check( vkCreateDescriptorPool( logical, &pool_info, vk::GetAllocator( ), &_pool ) );
+	return vk::Check( vkCreateDescriptorPool( logical, tiny_rvalue( pool_info ), vk::GetAllocator( ), tiny_rvalue( _pool ) ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

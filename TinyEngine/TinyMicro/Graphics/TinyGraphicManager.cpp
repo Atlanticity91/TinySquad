@@ -36,7 +36,7 @@ TinyGraphicManager::TinyGraphicManager( TinyGameOrientations orientation )
 	_passes{ },
 	_pipelines{ },
 	_compiler{ },
-	_work_context{ }
+	_work_context{ _logical }
 { }
 
 TinyGraphicManager& TinyGraphicManager::AddBundle(
@@ -105,7 +105,7 @@ TinyGraphicPipelineBundle TinyGraphicManager::CreatePipeline(
 void TinyGraphicManager::ReCreate( ) { _need_recreation = true; }
 
 void TinyGraphicManager::Acquire( const TinyWindow& window ) {
-	_work_context.Acquire( _logical, _queues, VK_QUEUE_TYPE_GRAPHIC );
+	_work_context.Acquire( _queues, VK_QUEUE_TYPE_GRAPHIC );
 	
 	if ( _need_recreation )
 		ReCreate( window );
@@ -150,7 +150,7 @@ void TinyGraphicManager::Draw(
 	auto graphics = GetContext( );
 
 	pipeline.Mount( _work_context );
-	pipeline.Bind( _logical, _work_context, bindpoints );
+	pipeline.Bind( _work_context, bindpoints );
 	pipeline.Draw( _work_context, draw_call );
 }
 

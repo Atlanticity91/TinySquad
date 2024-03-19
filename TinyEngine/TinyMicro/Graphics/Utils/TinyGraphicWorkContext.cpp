@@ -23,20 +23,20 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicWorkContext::TinyGraphicWorkContext( )
+TinyGraphicWorkContext::TinyGraphicWorkContext( TinyGraphicLogical& logical )
 	: WorkID{ 0 },
 	WorkImage{ 0 },
 	WorkPass{ 0 },
 	WorkRender{ },
 	Type{ VK_QUEUE_TYPE_UNDEFINED },
 	Queue{ nullptr },
-	Sync{ nullptr }
+	Sync{ nullptr },
+	Logical{ logical }
 { }
 
 void TinyGraphicWorkContext::Acquire( 
-	const TinyGraphicLogical& logical,
 	TinyGraphicQueueManager& queues, 
-	VkQueueTypes type
+	VkQueueTypes type 
 ) {
 	if ( type != VK_QUEUE_TYPE_UNDEFINED && Type != type ) {
 		if ( Queue ) {
@@ -56,7 +56,6 @@ void TinyGraphicWorkContext::Acquire(
 }
 
 void TinyGraphicWorkContext::Submit(
-	const TinyGraphicLogical& logical,
 	TinyGraphicQueueManager& queues, 
 	tiny_init<VkPipelineStageFlags> stages 
 ) {
@@ -75,16 +74,15 @@ void TinyGraphicWorkContext::Submit(
 		submit_info.pSignalSemaphores    = Sync->GetPresent( );
 
 		vk::Check( vkQueueSubmit( Queue->Queue, 1, tiny_rvalue( submit_info ), tiny_lvalue( Sync->GetFence( ) ) ) );
-		vk::Check( vkWaitForFences( logical, 1, Sync->GetFence( ), VK_TRUE, UINT_MAX ) );	
+		vk::Check( vkWaitForFences( Logical, 1, Sync->GetFence( ), VK_TRUE, UINT_MAX ) );	
 	}
 }
 
-void TinyGraphicWorkContext::Flush( 
-	const TinyGraphicLogical& logical,
+void TinyGraphicWorkContext::Flush(
 	TinyGraphicQueueManager& queues, 
 	tiny_init<VkPipelineStageFlags> stages 
 ) {
-	Submit( logical, queues, stages );
+	Submit( queues, stages );
 
 	Release( queues );
 }

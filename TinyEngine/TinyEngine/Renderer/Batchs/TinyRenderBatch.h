@@ -67,7 +67,7 @@ public:
 	};
 
 	TinyRenderBatchFlush Flush( ) { 
-		auto values = GetData( );
+		auto values = tiny_cast( GetData( ), tiny_pointer );
 		auto result = TinyRenderBatchFlush{ _count, values };
 
 		_count = 0; 

@@ -28,7 +28,7 @@ TinyGraphicMemoryManager::TinyGraphicMemoryManager( )
 { }
 
 bool TinyGraphicMemoryManager::Create( const TinyGraphicContext& graphic ) {
-	vkGetPhysicalDeviceMemoryProperties( graphic.Physical, &_properties );
+	vkGetPhysicalDeviceMemoryProperties( graphic.Physical, tiny_rvalue( _properties ) );
 
 	return true;
 }
@@ -40,7 +40,7 @@ bool TinyGraphicMemoryManager::Allocate(
 ) {
 	VkMemoryRequirements requirements;
 
-	vkGetImageMemoryRequirements( graphic.Logical, image, &requirements );
+	vkGetImageMemoryRequirements( graphic.Logical, image, tiny_rvalue( requirements ) );
 
 	memory.Size = tiny_cast( requirements.size, tiny_uint );
 
@@ -55,7 +55,7 @@ bool TinyGraphicMemoryManager::Allocate(
 ) {
 	VkMemoryRequirements requirements;
 
-	vkGetBufferMemoryRequirements( graphic.Logical, buffer, &requirements );
+	vkGetBufferMemoryRequirements( graphic.Logical, buffer, tiny_rvalue( requirements ) );
 
 	memory.Size = tiny_cast( requirements.size, tiny_uint );
 
@@ -91,7 +91,7 @@ bool TinyGraphicMemoryManager::Allocate(
 	alloc_info.allocationSize  = requirements.size;
 	alloc_info.memoryTypeIndex = GetMemoryFamily( graphic, memory.Usage, requirements );
 
-	return vk::Check( vkAllocateMemory( graphic.Logical, &alloc_info, vk::GetAllocator( ), &memory.Memory ) );
+	return vk::Check( vkAllocateMemory( graphic.Logical, tiny_rvalue( alloc_info ), vk::GetAllocator( ), tiny_rvalue( memory.Memory ) ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

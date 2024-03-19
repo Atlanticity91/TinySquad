@@ -581,7 +581,9 @@ TinyGraphicRenderpass& TinyGraphicRenderManager::GetPass( const tiny_string& pas
 	return _passes.GetPass( hash );
 }
 
-TinyGraphicRenderpass& TinyGraphicRenderManager::GetPass( const TinyGraphicWorkContext& work_context ) {
+TinyGraphicRenderpass& TinyGraphicRenderManager::GetPass( 
+	const TinyGraphicWorkContext& work_context 
+) {
 	return _passes.GetPass( work_context.WorkRender );
 }
 

@@ -30,13 +30,19 @@ public:
 
 	~TinyGraphicRenderFrameManager( ) = default;
 
-	bool Create( const TinyGraphicLogical& logical, const TinyGraphicRenderFrameProperties& frame );
+	bool Create(
+		const TinyGraphicLogical& logical,
+		const TinyGraphicRenderFrameProperties& frame 
+	);
 
 	void Terminate( const TinyGraphicLogical& logical );
 
 public:
 	tiny_uint GetCount( ) const;
 
-	const VkFramebuffer GetFramebuffer( tiny_uint frame, TinyGraphicWorkContext& work_context ) const;
+	const VkFramebuffer GetFramebuffer( 
+		TinyGraphicWorkContext& work_context, 
+		tiny_uint frame 
+	) const;
 
 };

@@ -54,7 +54,7 @@ bool TinyGraphicSwapchain::Create( TinyGraphicContext& graphic ) {
 	swapchain_info.clipped				 = VK_TRUE;
 	swapchain_info.oldSwapchain			 = VK_NULL_HANDLE;
 
-	return vk::Check( vkCreateSwapchainKHR( graphic.Logical, &swapchain_info, vk::GetAllocator( ), &_swap_chain ) );
+	return vk::Check( vkCreateSwapchainKHR( graphic.Logical, tiny_rvalue( swapchain_info ), vk::GetAllocator( ), tiny_rvalue( _swap_chain ) ) );
 }
 
 void TinyGraphicSwapchain::Terminate( const TinyGraphicLogical& logical ) {
@@ -74,7 +74,10 @@ const TinyGraphicSwapchainProperties& TinyGraphicSwapchain::GetProperties( ) con
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyGraphicSwapchain::GetSwapchainProperties( const TinyGraphicSurface& surface, const VkSurfaceCapabilitiesKHR& capabilities ) {
+void TinyGraphicSwapchain::GetSwapchainProperties( 
+	const TinyGraphicSurface& surface,
+	const VkSurfaceCapabilitiesKHR& capabilities 
+) {
 	_properties.Capacity    = capabilities.maxImageCount < TINY_DESIRED_BUFFERING ? capabilities.maxImageCount : TINY_DESIRED_BUFFERING;
 	_properties.PresentMode = VK_PRESENT_MODE_FIFO_KHR;
 
@@ -90,7 +93,9 @@ void TinyGraphicSwapchain::GetSwapchainProperties( const TinyGraphicSurface& sur
 	}
 }
 
-tiny_list<tiny_uint> TinyGraphicSwapchain::GetSwapchainQueues( const TinyGraphicQueueManager& queues ) {
+tiny_list<tiny_uint> TinyGraphicSwapchain::GetSwapchainQueues(
+	const TinyGraphicQueueManager& queues 
+) {
 	auto swap_queues   = tiny_list<tiny_uint>{ };
 	auto present_queue = queues.GetPhysicalQueue( VK_QUEUE_TYPE_PRESENT ).Family;
 	auto graphic_queue = queues.GetPhysicalQueue( VK_QUEUE_TYPE_GRAPHIC ).Family;
@@ -103,7 +108,10 @@ tiny_list<tiny_uint> TinyGraphicSwapchain::GetSwapchainQueues( const TinyGraphic
 	return swap_queues;
 }
 
-VkExtent2D TinyGraphicSwapchain::GetSwapchainExtent( const TinyGraphicBoundaries& boundaries, const VkSurfaceCapabilitiesKHR& capabilities ) const {
+VkExtent2D TinyGraphicSwapchain::GetSwapchainExtent(
+	const TinyGraphicBoundaries& boundaries, 
+	const VkSurfaceCapabilitiesKHR& capabilities 
+) const {
 	auto extent = boundaries.GetSwapScissor( ).extent;
 
 	extent.width  = tiny_clamp( extent.width,  capabilities.minImageExtent.width,  capabilities.maxImageExtent.width  );
@@ -118,4 +126,6 @@ VkExtent2D TinyGraphicSwapchain::GetSwapchainExtent( const TinyGraphicBoundaries
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicSwapchain::operator const VkSwapchainKHR ( ) const { return Get( ); }
 
-TinyGraphicSwapchain::operator const VkSwapchainKHR* ( ) const { return &_swap_chain; }
+TinyGraphicSwapchain::operator const VkSwapchainKHR* ( ) const {
+	return tiny_rvalue( _swap_chain );
+}

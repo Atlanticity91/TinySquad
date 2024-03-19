@@ -37,11 +37,11 @@ bool TinyGraphicLogical::Create( const TinyGraphicPhysical& physical ) {
 	device_info.pQueueCreateInfos		= queues.data( );
 	device_info.enabledExtensionCount   = tiny_size_array( vk::EXTENSIONS );
 	device_info.ppEnabledExtensionNames = vk::EXTENSIONS;
-	device_info.pEnabledFeatures		= &physical.GetFeatures( );
+	device_info.pEnabledFeatures		= tiny_rvalue( physical.GetFeatures( ) );
 	device_info.enabledLayerCount		= tiny_size_array( vk::LAYERS );
 	device_info.ppEnabledLayerNames		= vk::LAYERS;
 
-	return vk::Check( vkCreateDevice( physical, &device_info, vk::GetAllocator( ), &_handle ) );
+	return vk::Check( vkCreateDevice( physical, tiny_rvalue( device_info ), vk::GetAllocator( ), tiny_rvalue( _handle ) ) );
 }
 
 bool TinyGraphicLogical::Wait( ) {
@@ -61,7 +61,9 @@ VkDevice TinyGraphicLogical::Get( ) const { return _handle; }
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_list<VkDeviceQueueCreateInfo> TinyGraphicLogical::GetQueuesCreateInfos( const TinyGraphicPhysical& physical ) {
+tiny_list<VkDeviceQueueCreateInfo> TinyGraphicLogical::GetQueuesCreateInfos( 
+	const TinyGraphicPhysical& physical 
+) {
 	auto queues_infos = tiny_list<VkDeviceQueueCreateInfo>{ };
 	auto queue_info   = VkDeviceQueueCreateInfo{ VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO };
 	auto queue_list	  = physical.GetQueues( );

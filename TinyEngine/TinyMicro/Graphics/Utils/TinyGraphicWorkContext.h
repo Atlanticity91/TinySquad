@@ -31,26 +31,15 @@ tm_struct TinyGraphicWorkContext {
 	VkQueueTypes Type;
 	VkLogicalQueue* Queue;
 	TinyGraphicSwapchainSync* Sync;
+	TinyGraphicLogical& Logical;
 
-	TinyGraphicWorkContext( );
+	TinyGraphicWorkContext( TinyGraphicLogical& logical );
 
-	void Acquire( 
-		const TinyGraphicLogical& logical,
-		TinyGraphicQueueManager& queues, 
-		VkQueueTypes type 
-	);
+	void Acquire( TinyGraphicQueueManager& queues, VkQueueTypes type );
 
-	void Submit( 
-		const TinyGraphicLogical& logical, 
-		TinyGraphicQueueManager& queues, 
-		tiny_init<VkPipelineStageFlags> stages 
-	);
+	void Submit( TinyGraphicQueueManager& queues, tiny_init<VkPipelineStageFlags> stages );
 
-	void Flush( 
-		const TinyGraphicLogical& logical, 
-		TinyGraphicQueueManager& queues, 
-		tiny_init<VkPipelineStageFlags> stages 
-	);
+	void Flush( TinyGraphicQueueManager& queues, tiny_init<VkPipelineStageFlags> stages );
 
 	void Release( TinyGraphicQueueManager& queues );
 

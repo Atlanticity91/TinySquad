@@ -44,10 +44,10 @@ bool TinyGraphicSwapchainManager::Acquire(
 	const TinyGraphicLogical& logical, 
 	TinyGraphicWorkContext& work_context 
 ) {
-	work_context.Sync = &_syncs[ work_context.WorkID ];
+	work_context.Sync = tiny_rvalue( _syncs[ work_context.WorkID ] );
 	
 	return  vk::Check( vkResetFences( logical, 1, work_context.Sync->GetFence( ) ) ) &&
-			vk::Check( vkAcquireNextImageKHR( logical, _swapchain, UINT_MAX, *work_context.Sync->GetAcquire( ), VK_NULL_HANDLE, &work_context.WorkImage ) );
+			vk::Check( vkAcquireNextImageKHR( logical, _swapchain, UINT_MAX, tiny_lvalue( work_context.Sync->GetAcquire( ) ), VK_NULL_HANDLE, tiny_rvalue( work_context.WorkImage ) ) );
 }
 
 bool TinyGraphicSwapchainManager::Present(
@@ -55,8 +55,8 @@ bool TinyGraphicSwapchainManager::Present(
 	TinyGraphicQueueManager& queues, 
 	TinyGraphicWorkContext& work_context 
 ) {
-	work_context.Flush( logical, queues, { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT } );
-	work_context.Acquire( logical, queues, VK_QUEUE_TYPE_PRESENT );
+	work_context.Flush( queues, { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT } );
+	work_context.Acquire( queues, VK_QUEUE_TYPE_PRESENT );
 
 	auto present_info = VkPresentInfoKHR{ VK_STRUCTURE_TYPE_PRESENT_INFO_KHR };
 
@@ -65,10 +65,10 @@ bool TinyGraphicSwapchainManager::Present(
 	present_info.pWaitSemaphores	= work_context.Sync->GetPresent( );
 	present_info.swapchainCount		= 1;
 	present_info.pSwapchains		= _swapchain;
-	present_info.pImageIndices		= &work_context.WorkImage;
+	present_info.pImageIndices		= tiny_rvalue( work_context.WorkImage );
 	present_info.pResults			= VK_NULL_HANDLE;
 
-	auto state = vk::Check( vkQueuePresentKHR( work_context.Queue->Queue, &present_info ) ) &&
+	auto state = vk::Check( vkQueuePresentKHR( work_context.Queue->Queue, tiny_rvalue( present_info ) ) ) &&
 				 vk::Check( vkQueueWaitIdle( work_context.Queue->Queue ) );
 
 	work_context.Release( queues );
@@ -98,7 +98,7 @@ bool TinyGraphicSwapchainManager::CreateSwapchainTargets(
 
 	if ( state ) {
 		auto& properties = _swapchain.GetProperties( );
-		auto image_id    = (tiny_uint)0;
+		auto image_id    = tiny_cast( 0, tiny_uint );
 
 		_targets = properties.Capacity;
 

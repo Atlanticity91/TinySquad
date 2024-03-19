@@ -41,7 +41,7 @@ TinyGraphicBurner::TinyGraphicBurner(
         fence_info.pNext = VK_NULL_HANDLE;
         fence_info.flags = VK_NULL_FLAGS;
 
-        if ( !vk::Check( vkCreateFence( graphic.Logical, &fence_info, vk::GetAllocator( ), &_fence ) ) ) {
+        if ( !vk::Check( vkCreateFence( graphic.Logical, tiny_rvalue( fence_info ), vk::GetAllocator( ), tiny_rvalue( _fence ) ) ) ) {
             vk::EndCommandBuffer( _queue->CommandBuffer );
 
             _queue->InUse = VK_FALSE;
@@ -101,7 +101,7 @@ void TinyGraphicBurner::Transit(
             VK_NULL_FLAGS,
             0, VK_NULL_HANDLE,
             0, VK_NULL_HANDLE,
-            1, &barrier
+            1, tiny_rvalue( barrier )
         );
 
         texture.SetLayout( target_layout );
@@ -130,7 +130,7 @@ void TinyGraphicBurner::Upload(
             properties.Depth
         };
 
-        vkCmdCopyBufferToImage( _queue->CommandBuffer, buffer, texture, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region );
+        vkCmdCopyBufferToImage( _queue->CommandBuffer, buffer, texture, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, tiny_rvalue( region ) );
     }
 }
 
@@ -145,7 +145,7 @@ void TinyGraphicBurner::Upload(
         buffer.GetIsValid( )  && 
         region.size > 0 
     )
-        vkCmdCopyBuffer( _queue->CommandBuffer, staging.GetBuffer( ), buffer, 1, &region );
+        vkCmdCopyBuffer( _queue->CommandBuffer, staging.GetBuffer( ), buffer, 1, tiny_rvalue( region ) );
 }
 
 bool TinyGraphicBurner::Execute( ) {
@@ -159,13 +159,13 @@ bool TinyGraphicBurner::Execute( ) {
         submit_info.pWaitSemaphores      = VK_NULL_HANDLE;
         submit_info.pWaitDstStageMask    = VK_NULL_HANDLE;
         submit_info.commandBufferCount   = 1;
-        submit_info.pCommandBuffers      = &_queue->CommandBuffer.Buffer;
+        submit_info.pCommandBuffers      = tiny_rvalue( _queue->CommandBuffer.Buffer );
         submit_info.signalSemaphoreCount = 0;
         submit_info.pSignalSemaphores    = VK_NULL_HANDLE;
 
-        vk::Check( vkQueueSubmit( _queue->Queue, 1, &submit_info, _fence ) );
+        vk::Check( vkQueueSubmit( _queue->Queue, 1, tiny_rvalue( submit_info ), _fence ) );
 
-        state = vk::Check( vkWaitForFences( _logical, 1, &_fence, VK_TRUE, UINT_MAX ) ) && 
+        state = vk::Check( vkWaitForFences( _logical, 1, tiny_rvalue( _fence ), VK_TRUE, UINT_MAX ) ) &&
                 vk::ResetCommandBuffer( _queue->CommandBuffer );
     }
 

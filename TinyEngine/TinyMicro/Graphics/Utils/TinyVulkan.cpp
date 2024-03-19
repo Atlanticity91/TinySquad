@@ -116,7 +116,7 @@ c_pointer vk_ReallocationFunction(
     tiny_ulong alignment,
     VkSystemAllocationScope scope
 ) { 
-    auto* memory = (c_pointer)nullptr;
+    auto* memory = tiny_cast( nullptr, c_pointer );
 
     if ( original ) {
         memory = realloc( original, size );
@@ -282,7 +282,7 @@ bool vk::CreateDebugReport( VkInstance instance ) {
         debug_info.pfnCallback = debug_report;
         debug_info.pUserData   = VK_NULL_HANDLE;
 
-        state = vk::Check( vk_function( instance, &debug_info, vk::GetAllocator( ), &vk_debug ) );
+        state = vk::Check( vk_function( instance, tiny_rvalue( debug_info ), vk::GetAllocator( ), tiny_rvalue( vk_debug ) ) );
     }
 
     return state;
@@ -301,39 +301,39 @@ void vk::DestroyDebugReport( VkInstance instance ) {
 }
 
 bool vk::EnumeratePhysicalDevices( VkInstance instance, tiny_list<VkPhysicalDevice>& storage ) {
-    auto capacity = (tiny_uint)0;
-    auto state    = vk::Check( vkEnumeratePhysicalDevices( instance, &capacity, VK_NULL_HANDLE ) );
+    auto capacity = tiny_cast( 0, tiny_uint );
+    auto state    = vk::Check( vkEnumeratePhysicalDevices( instance, tiny_rvalue( capacity ), VK_NULL_HANDLE ) );
 
     if ( state ) {
         storage.resize( capacity );
 
-        state = vk::Check( vkEnumeratePhysicalDevices( instance, &capacity, storage.data( ) ) );
+        state = vk::Check( vkEnumeratePhysicalDevices( instance, tiny_rvalue( capacity ), storage.data( ) ) );
     }
 
     return state;
 }
 
 bool vk::EnumerateDeviceExtensionProperties( VkPhysicalDevice physical, tiny_list<VkExtensionProperties>& storage ) {
-    auto capacity = (tiny_uint)0;
-    auto state    = vk::Check( vkEnumerateDeviceExtensionProperties( physical, VK_NULL_HANDLE, &capacity, VK_NULL_HANDLE ) );
+    auto capacity = tiny_cast( 0, tiny_uint );
+    auto state    = vk::Check( vkEnumerateDeviceExtensionProperties( physical, VK_NULL_HANDLE, tiny_rvalue( capacity ), VK_NULL_HANDLE ) );
 
     if ( state ) {
         storage.resize( capacity );
 
-        state = vk::Check( vkEnumerateDeviceExtensionProperties( physical, VK_NULL_HANDLE, &capacity, storage.data( ) ) );
+        state = vk::Check( vkEnumerateDeviceExtensionProperties( physical, VK_NULL_HANDLE, tiny_rvalue( capacity ), storage.data( ) ) );
     }
 
     return state;
 }
 
 void vk::GetPhysicalDeviceQueueFamilyProperties( VkPhysicalDevice physical, tiny_list<VkQueueFamilyProperties>& storage ) {
-    auto capacity = (tiny_uint)0;
+    auto capacity = tiny_cast( 0, tiny_uint );
 
-    vkGetPhysicalDeviceQueueFamilyProperties( physical, &capacity, VK_NULL_HANDLE );
+    vkGetPhysicalDeviceQueueFamilyProperties( physical, tiny_rvalue( capacity ), VK_NULL_HANDLE );
 
     storage.resize( capacity );
 
-    vkGetPhysicalDeviceQueueFamilyProperties( physical, &capacity, storage.data( ) );
+    vkGetPhysicalDeviceQueueFamilyProperties( physical, tiny_rvalue( capacity ), storage.data( ) );
 }
 
 bool vk::GetIsQueue( const VkPhysicalDeviceQueue& queue, tiny_init<VkQueueTypes> types ) {
@@ -350,39 +350,39 @@ bool vk::GetIsQueue( const VkPhysicalDeviceQueue& queue, tiny_init<VkQueueTypes>
 }
 
 bool vk::GetPhysicalDeviceSurfaceFormats( VkPhysicalDevice physical, VkSurfaceKHR surface, tiny_list<VkSurfaceFormatKHR>& storage ) {
-    auto capacity = (tiny_uint)0;
-    auto state    = vk::Check( vkGetPhysicalDeviceSurfaceFormatsKHR( physical, surface, &capacity, VK_NULL_HANDLE ) );
+    auto capacity = tiny_cast( 0, tiny_uint );
+    auto state    = vk::Check( vkGetPhysicalDeviceSurfaceFormatsKHR( physical, surface, tiny_rvalue( capacity ), VK_NULL_HANDLE ) );
 
     if ( state ) {
         storage.resize( capacity );
 
-        state = vk::Check( vkGetPhysicalDeviceSurfaceFormatsKHR( physical, surface, &capacity, storage.data( ) ) );
+        state = vk::Check( vkGetPhysicalDeviceSurfaceFormatsKHR( physical, surface, tiny_rvalue( capacity ), storage.data( ) ) );
     }
 
     return state;
 }
 
 bool vk::GetSwapchainImages( VkDevice logical, VkSwapchainKHR swapchain, tiny_list<VkImage>& storage ) {
-    auto capacity = (tiny_uint)0;
-    auto state    = vk::Check( vkGetSwapchainImagesKHR( logical, swapchain, &capacity, VK_NULL_HANDLE ) );
+    auto capacity = tiny_cast( 0, tiny_uint );
+    auto state    = vk::Check( vkGetSwapchainImagesKHR( logical, swapchain, tiny_rvalue( capacity ), VK_NULL_HANDLE ) );
 
     if ( state ) {
         storage.resize( capacity );
 
-        state = vk::Check( vkGetSwapchainImagesKHR( logical, swapchain, &capacity, storage.data( ) ) );
+        state = vk::Check( vkGetSwapchainImagesKHR( logical, swapchain, tiny_rvalue( capacity ), storage.data( ) ) );
     }
 
     return state;
 }
 
 bool vk::GetPipelineCache( VkDevice logical, VkPipelineCache cache, tiny_list<tiny_ubyte>& storage ) {
-    auto capacity = (tiny_ulong)0;
-    auto state = vk::Check( vkGetPipelineCacheData( logical, cache, &capacity, VK_NULL_FLAGS ) );
+    auto capacity = tiny_cast( 0, tiny_ulong );
+    auto state    = vk::Check( vkGetPipelineCacheData( logical, cache, tiny_rvalue( capacity ), VK_NULL_FLAGS ) );
 
     if ( state ) {
-        storage.resize( (tiny_uint)capacity );
+        storage.resize( tiny_cast( capacity, tiny_uint ) );
 
-        state = vk::Check( vkGetPipelineCacheData( logical, cache, &capacity, storage.data( ) ) );
+        state = vk::Check( vkGetPipelineCacheData( logical, cache, tiny_rvalue( capacity ), storage.data( ) ) );
     }
 
     return state;
@@ -396,7 +396,7 @@ bool vk::CreateCommandBuffer( VkDevice logical, VkLogicalQueue& queue, VkLogical
     buffer_info.level              = !vk::GetIsValid( queue.CommandBuffer.Buffer ) ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
     buffer_info.commandBufferCount = 1;
 
-    auto state = vk::Check( vkAllocateCommandBuffers( logical, &buffer_info, &command_buffer.Buffer ) );
+    auto state = vk::Check( vkAllocateCommandBuffers( logical, tiny_rvalue( buffer_info ), tiny_rvalue( command_buffer.Buffer ) ) );
 
     if ( state )
         command_buffer.State = VK_COMMAND_BUFFER_STATE_PENDING;
@@ -427,7 +427,7 @@ bool vk::BeginCommandBuffer( VkLogicalCommandBuffer& command_buffer ) {
         begin_info.flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         begin_info.pInheritanceInfo = VK_NULL_HANDLE;
 
-        state = vk::Check( vkBeginCommandBuffer( command_buffer.Buffer, &begin_info ) );
+        state = vk::Check( vkBeginCommandBuffer( command_buffer.Buffer, tiny_rvalue( begin_info ) ) );
 
         if ( state )
             command_buffer.State = VK_COMMAND_BUFFER_STATE_RECORD;
@@ -459,13 +459,13 @@ bool vk::GetIsBuffer( const VkLogicalCommandBuffer& command_buffer, VkCommandBuf
 }
 
 bool vk::GetPipelineCacheData( VkDevice logical, VkPipelineCache pipeline_cache, tiny_list<tiny_ubyte>& storage ) {
-    auto capacity = (size_t)0;
-    auto state    = vk::Check( vkGetPipelineCacheData( logical, pipeline_cache, &capacity, VK_NULL_HANDLE ) );
+    auto capacity = tiny_cast( 0, tiny_ulong );
+    auto state    = vk::Check( vkGetPipelineCacheData( logical, pipeline_cache, tiny_rvalue( capacity ), VK_NULL_HANDLE ) );
 
     if ( state ) {
-        storage.resize( (tiny_uint)capacity );
+        storage.resize( tiny_cast( capacity, tiny_uint ) );
 
-        state = vk::Check( vkGetPipelineCacheData( logical, pipeline_cache, &capacity, storage.data( ) ) );
+        state = vk::Check( vkGetPipelineCacheData( logical, pipeline_cache, tiny_rvalue( capacity ), storage.data( ) ) );
     }
 
     return state;

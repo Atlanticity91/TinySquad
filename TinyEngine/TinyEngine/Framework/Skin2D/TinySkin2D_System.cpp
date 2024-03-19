@@ -60,7 +60,7 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 	auto& ecs		  = game->GetECS( );
 	auto camera		  = renderer.GetCameraMatrix( );
 
-	renderer.Prepare( game, TINY_OUTPASS_HASH, TinySkin2DSystem::Draw );
+	renderer.Prepare( game, TRB_TYPE_SPRITES, TINY_OUTPASS_HASH, TinySkin2DSystem::Draw );
 
 	for ( auto& component : _components ) {
 		auto owner = component.GetOwner( );
@@ -73,7 +73,7 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 			draw_context.Sprite.UV		= ProcessTexture( assets, draw_context, component );
 			draw_context.Sprite.Color	= component.GetColor( );
 			draw_context.Tranform.World = camera * transform;
-			//draw_context.Tranform.Local = transform;
+			draw_context.Tranform.Local = transform;
 
 			renderer.Draw( game, draw_context );
 		}
@@ -114,50 +114,26 @@ tiny_vec4 TinySkin2DSystem::ProcessTexture(
 //		===	PUBLIC STATIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinySkin2DSystem::Draw(
+	TinyMaterial& material,
 	TinyGraphicManager& graphics,
-	TinyAssetManager& assets,
 	TinyRenderUniformManager& uniforms,
-	TinyRenderBatchManager& batchs
+	tiny_uint instance_count
 ) {
-	auto vertex_count = tiny_cast( 0, tiny_uint );
-	auto* material	  = batchs.GetMaterial( assets );
-	auto textures	  = batchs.FlushTextures( );
-	auto can_draw	  = false;
-	
-	{
-		auto& stagging = batchs.GetStaging( );
-		auto context   = graphics.GetContext( );
-		auto copies	   = batchs.Flush2D( context, vertex_count );
+	auto& work_context = graphics.GetWorkdContext( );
 
-		can_draw = vertex_count > 0;
-
-		if ( can_draw ) {
-			auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
-
-			burner.Upload( stagging, uniforms.GetUniform( "ubo_transforms" ), copies[ 0 ] );
-			burner.Upload( stagging, uniforms.GetUniform( "ubo_sprites" ), copies[ 1 ] );
+	material.Bind(
+		work_context,
+		{
+			uniforms.GetUniform( "ubo_core" )
 		}
-	}
-
-	if ( can_draw ) {
-		auto work_context = graphics.GetWorkdContext( );
-
-		material->Mount( work_context );
-		material->Bind(
-			graphics.GetLogical( ),
-			work_context,
-			{
-				uniforms.GetUniform( "ubo_core" ),
-				uniforms.GetUniform( "ubo_transforms" ),
-				uniforms.GetUniform( "ubo_sprites" )
-			}
-		);
-		material->Bind(
-			graphics.GetLogical( ),
-			work_context,
-			textures.Count,
-			tiny_cast( textures.Values, TinyGraphicPipelineBindpoint* )
-		);
-		material->Draw( work_context, { TGD_MODE_DIRECT, 6, vertex_count } );
-	}
+	);
+	
+	material.BindVertex( 
+		work_context, 
+		{ 
+			uniforms.GetBuffer( "ubo_transforms" ),
+			uniforms.GetBuffer( "ubo_transforms" )
+		}
+	);
+	material.Draw( work_context, { TGD_MODE_DIRECT, 6, instance_count } );
 }

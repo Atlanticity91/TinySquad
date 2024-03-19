@@ -45,4 +45,15 @@ public:
 
 	TinyRenderUniform& GetUniform( const tiny_string& name );
 
+	TinyRenderUniform& GetUniform( const tiny_hash hash );
+
+	TinyGraphicBuffer& GetBuffer( const tiny_string& name );
+
+	TinyGraphicBuffer& GetBuffer( const tiny_hash hash );
+
+public:
+	TinyRenderUniform& operator[]( const tiny_string& name );
+
+	TinyRenderUniform& operator[]( const tiny_hash hash );
+
 };

@@ -28,7 +28,11 @@ TinyGraphicSwapchainTarget::TinyGraphicSwapchainTarget( )
 	_view{ VK_NULL_HANDLE }
 { }
 
-bool TinyGraphicSwapchainTarget::Create( const TinyGraphicLogical& logical, const TinyGraphicSwapchainProperties& properties, VkImage image ) {
+bool TinyGraphicSwapchainTarget::Create( 
+    const TinyGraphicLogical& logical, 
+    const TinyGraphicSwapchainProperties& properties,
+    VkImage image 
+) {
     auto view_info = VkImageViewCreateInfo{ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO };
 
     view_info.pNext    = VK_NULL_HANDLE;
@@ -50,7 +54,7 @@ bool TinyGraphicSwapchainTarget::Create( const TinyGraphicLogical& logical, cons
 
     _image = image;
 
-    return vk::Check( vkCreateImageView( logical, &view_info, vk::GetAllocator( ), &_view ) );
+    return vk::Check( vkCreateImageView( logical, tiny_rvalue( view_info ), vk::GetAllocator( ), tiny_rvalue( _view ) ) );
 }
 
 void TinyGraphicSwapchainTarget::Terminate( const TinyGraphicLogical& logical ) {

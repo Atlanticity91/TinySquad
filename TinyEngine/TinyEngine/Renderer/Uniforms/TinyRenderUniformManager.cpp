@@ -28,24 +28,26 @@ TinyRenderUniformManager::TinyRenderUniformManager( )
 { }
 
 bool TinyRenderUniformManager::Create( TinyGraphicManager& graphics ) {
+	auto size = tiny_cast( 65536, tiny_uint );
+
 	auto core = TinyRenderUniformBuilder{
 		TGB_TYPE_UNIFORM, tiny_sizeof( TinyRenderCore ),
 		"ubo_core", TRS_ID_CORE, 0
-	}; 
+	};
 	auto transforms = TinyRenderUniformBuilder{
-		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchTransform_t::Size,
+		TGB_TYPE_UNIFORM, size,
 		"ubo_transforms", TRS_ID_RENDER, 0
 	};
 	auto sprites = TinyRenderUniformBuilder{
-		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchSprite_t::Size,
+		TGB_TYPE_UNIFORM,size,
 		"ubo_sprites", TRS_ID_RENDER, 1
 	};
 	auto lights = TinyRenderUniformBuilder{
-		TGB_TYPE_UNIFORM, TinyRenderBatchManager::BatchLight_t::Size,
+		TGB_TYPE_UNIFORM, size,
 		"ubo_lights", TRS_ID_LIGHT, 0
 	};
 	auto vertex = TinyRenderUniformBuilder{
-		TGB_TYPE_VERTEX, TinyRenderBatchManager::BatchVertex_t::Size, "ib_vertex"
+		TGB_TYPE_VERTEX, size, "ib_vertex"
 	};
 
 	return  Create( graphics, core		 ) &&
@@ -106,4 +108,31 @@ bool TinyRenderUniformManager::GetExist( const tiny_string& name ) const {
 
 TinyRenderUniform& TinyRenderUniformManager::GetUniform( const tiny_string& name ) {
 	return _uniforms[ name ];
+}
+
+TinyRenderUniform& TinyRenderUniformManager::GetUniform( const tiny_hash hash ) {
+	return _uniforms[ hash ];
+}
+
+TinyGraphicBuffer& TinyRenderUniformManager::GetBuffer( const tiny_string& name ) {
+	auto& uniform = GetUniform( name );
+
+	return uniform.GetBuffer( );
+}
+
+TinyGraphicBuffer& TinyRenderUniformManager::GetBuffer( const tiny_hash hash ) {
+	auto& uniform = GetUniform( hash );
+
+	return uniform.GetBuffer( );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	OPERATOR ===
+////////////////////////////////////////////////////////////////////////////////////////////
+TinyRenderUniform& TinyRenderUniformManager::operator[]( const tiny_string& name ) {
+	return GetUniform( name );
+}
+
+TinyRenderUniform& TinyRenderUniformManager::operator[]( const tiny_hash hash ) {
+	return GetUniform( hash );
 }

@@ -43,13 +43,13 @@ bool TinyGraphicInstance::Create( tiny_string title ) {
     // SETUP VULKAN INSTANCE INFO
     instance_info.pNext                   = VK_NULL_HANDLE;
     instance_info.flags                   = VK_NULL_FLAGS;
-    instance_info.pApplicationInfo        = &app_info;
+    instance_info.pApplicationInfo        = tiny_rvalue( app_info );
     instance_info.enabledExtensionCount   = extensions.size( );
     instance_info.ppEnabledExtensionNames = extensions.data( );
     instance_info.enabledLayerCount       = tiny_size_array( vk::LAYERS );
     instance_info.ppEnabledLayerNames     = vk::LAYERS;
 
-    return  vk::Check( vkCreateInstance( &instance_info, vk::GetAllocator( ), &_instance ) ) && 
+    return  vk::Check( vkCreateInstance( tiny_rvalue( instance_info ), vk::GetAllocator( ), tiny_rvalue( _instance ) ) ) &&
             vk::CreateDebugReport( _instance );
 }
 
@@ -61,8 +61,8 @@ void TinyGraphicInstance::Terminate( ) {
 }
 
 tiny_list<c_string> TinyGraphicInstance::GetExtensions( ) const {
-    auto extension_count = (tiny_uint)0;
-    auto* required       = glfwGetRequiredInstanceExtensions( &extension_count );
+    auto extension_count = tiny_cast( 0, tiny_uint );
+    auto* required       = glfwGetRequiredInstanceExtensions( tiny_rvalue( extension_count ) );
     auto extensions      = tiny_list<c_string>{ };
 
 #   ifdef TINY_DEBUG
