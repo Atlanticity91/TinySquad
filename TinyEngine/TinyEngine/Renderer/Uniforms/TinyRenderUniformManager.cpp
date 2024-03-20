@@ -28,33 +28,12 @@ TinyRenderUniformManager::TinyRenderUniformManager( )
 { }
 
 bool TinyRenderUniformManager::Create( TinyGraphicManager& graphics ) {
-	auto size = tiny_cast( 65536, tiny_uint );
-
 	auto core = TinyRenderUniformBuilder{
 		TGB_TYPE_UNIFORM, tiny_sizeof( TinyRenderCore ),
-		"ubo_core", TRS_ID_CORE, 0
-	};
-	auto transforms = TinyRenderUniformBuilder{
-		TGB_TYPE_UNIFORM, size,
-		"ubo_transforms", TRS_ID_RENDER, 0
-	};
-	auto sprites = TinyRenderUniformBuilder{
-		TGB_TYPE_UNIFORM,size,
-		"ubo_sprites", TRS_ID_RENDER, 1
-	};
-	auto lights = TinyRenderUniformBuilder{
-		TGB_TYPE_UNIFORM, size,
-		"ubo_lights", TRS_ID_LIGHT, 0
-	};
-	auto vertex = TinyRenderUniformBuilder{
-		TGB_TYPE_VERTEX, size, "ib_vertex"
+		TinyCoreUniform, TRS_ID_CORE, 0
 	};
 
-	return  Create( graphics, core		 ) &&
-			Create( graphics, transforms ) &&
-			Create( graphics, sprites	 ) &&
-			Create( graphics, lights	 ) &&
-			Create( graphics, vertex );
+	return Create( graphics, core );
 }
 
 bool TinyRenderUniformManager::Create(

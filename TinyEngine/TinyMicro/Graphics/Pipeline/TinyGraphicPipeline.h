@@ -22,8 +22,19 @@
 
 #include "Utils/TinyGraphicPipelineDrawcall.h"
 
+#define _pCreateBinding( BUNDLE, BINDING, STRIDE, RATE )\
+	BUNDLE##.InputBinding[ BINDING ].binding   = tiny_cast( BINDING, tiny_uint );\
+	BUNDLE##.InputBinding[ BINDING ].stride    = tiny_cast( STRIDE, tiny_uint );\
+	BUNDLE##.InputBinding[ BINDING ].inputRate = RATE
+
+#define _pCreateAttribute( BUNDLE, LOCATION, BINDING, FORMAT, OFFSET )\
+	BUNDLE##.InputAttributes[ LOCATION ].location = tiny_cast( LOCATION, tiny_uint );\
+	BUNDLE##.InputAttributes[ LOCATION ].binding  = bundle.InputBinding[ tiny_cast( BINDING, tiny_uint ) ].binding;\
+	BUNDLE##.InputAttributes[ LOCATION ].format   = tiny_cast( FORMAT, VkFormat );\
+	BUNDLE##.InputAttributes[ LOCATION ].offset   = OFFSET
+
 #define _pCreateSetBind2( BUNDLE, SET, BINDING, TYPE, COUNT, STAGE )\
-	BUNDLE##.Descriptors[ SET ][ BINDING ].binding			  = BINDING;\
+	BUNDLE##.Descriptors[ SET ][ BINDING ].binding			  = tiny_cast( BINDING, tiny_uint );\
 	BUNDLE##.Descriptors[ SET ][ BINDING ].descriptorType	  = tiny_cast( TYPE, VkDescriptorType );\
 	BUNDLE##.Descriptors[ SET ][ BINDING ].descriptorCount	  = COUNT;\
 	BUNDLE##.Descriptors[ SET ][ BINDING ].stageFlags		  = tiny_cast( STAGE, VkShaderStageFlagBits );\
@@ -221,10 +232,10 @@ public:
 		const TinyGraphicBuffer& buffer 
 	);
 
-	void BindGeometry( 
+	tiny_inline void BindGeometry( 
 		TinyGraphicWorkContext& work_context,
-		const TinyGraphicBuffer& vertex,
-		const TinyGraphicBuffer& index
+		const TinyGraphicBuffer& index,
+		const TinyGraphicBuffer& vertex
 	);
 
 	void Draw(
@@ -245,6 +256,71 @@ public:
 	);
 
 	void Terminate( TinyGraphicContext& context );
+
+public:
+	static void CreateBinding( 
+		TinyGraphicPipelineBundle& bundle, 
+		const TinyGraphicPipelineBinding& binding 
+	);
+
+	static void CreateBinding(
+		TinyGraphicPipelineBundle& bundle,
+		tiny_init<TinyGraphicPipelineBinding> bindings
+	);
+
+	static void CreateBinding(
+		TinyGraphicPipelineBundle& bundle,
+		tiny_uint binding,
+		tiny_uint stride,
+		bool is_vertex
+	);
+
+	static void CreateAttribute(
+		TinyGraphicPipelineBundle& bundle,
+		const TinyGraphicPipelineAttribute& attribute
+	);
+
+	static void CreateAttribute(
+		TinyGraphicPipelineBundle& bundle,
+		tiny_init<TinyGraphicPipelineAttribute> attributes
+	);
+
+	static void CreateAttribute( 
+		TinyGraphicPipelineBundle& bundle,
+		tiny_uint location,
+		tiny_uint binding,
+		TinyPipelineAttributeTypes type,
+		tiny_uint offset
+	);
+
+	static void CreateSetBind(
+		TinyGraphicPipelineBundle& bundle,
+		tiny_uint set,
+		const TinyGraphicPipelineSetBind& set_bind
+	);
+
+	static void CreateSetBind(
+		TinyGraphicPipelineBundle& bundle,
+		tiny_uint set,
+		tiny_init<TinyGraphicPipelineSetBind> set_binds
+	);
+
+	static void CreateSetBind(
+		TinyGraphicPipelineBundle& bundle,
+		tiny_uint set,
+		tiny_uint binding,
+		TinyGraphicBindTypes type,
+		TinyGraphicShaderStages stage
+	);
+
+	static void CreateSetBind(
+		TinyGraphicPipelineBundle& bundle,
+		tiny_uint set,
+		tiny_uint binding,
+		TinyGraphicBindTypes type,
+		tiny_uint count,
+		TinyGraphicShaderStages stage
+	);
 
 private:
 	bool CreateRenderPipeline( 

@@ -51,7 +51,7 @@ bool TinyGraphicPipeline::Create(
 }
 
 void TinyGraphicPipeline::Mount( TinyGraphicWorkContext& work_context ) {
-	auto bindpoint = tiny_cast( _properties.Type, VkPipelineBindPoint );
+	auto bindpoint = tiny_cast( _properties.PassType, VkPipelineBindPoint );
 	auto sets	   = _descriptors.GetSets( work_context.WorkID );
 
 	vkCmdBindPipeline( work_context.Queue->CommandBuffer, bindpoint, _pipeline );
@@ -425,11 +425,11 @@ void TinyGraphicPipeline::BindIndex(
 
 void TinyGraphicPipeline::BindGeometry(
 	TinyGraphicWorkContext& work_context,
-	const TinyGraphicBuffer& vertex,
-	const TinyGraphicBuffer& index
+	const TinyGraphicBuffer& index,
+	const TinyGraphicBuffer& vertex
 ) {
-	BindVertex( work_context, vertex );
 	BindIndex( work_context, index );
+	BindVertex( work_context, vertex );
 }
 
 void TinyGraphicPipeline::Draw(
@@ -437,21 +437,21 @@ void TinyGraphicPipeline::Draw(
 	const TinyGraphicPipelineDrawcall& draw_call
 ) {
 	if ( draw_call.Mode == TGD_MODE_INDEXED ) {
-		vkCmdDrawIndexed( 
-			work_context.Queue->CommandBuffer, 
-			draw_call.Indexes,
-			draw_call.Count, 
-			draw_call.StartIndex,
-			draw_call.StartVertex, 
-			draw_call.StartInstance 
-		);
-	} else if ( draw_call.Mode == TGD_MODE_DIRECT ) {
-		vkCmdDraw( 
-			work_context.Queue->CommandBuffer, 
+		vkCmdDrawIndexed(
+			work_context.Queue->CommandBuffer,
 			draw_call.Indexes,
 			draw_call.Count,
-			draw_call.StartVertex, 
-			draw_call.StartInstance 
+			draw_call.StartIndex,
+			draw_call.StartVertex,
+			draw_call.StartInstance
+		);
+	} else if ( draw_call.Mode == TGD_MODE_DIRECT ) {
+		vkCmdDraw(
+			work_context.Queue->CommandBuffer,
+			draw_call.Indexes,
+			draw_call.Count,
+			draw_call.StartVertex,
+			draw_call.StartInstance
 		);
 	}
 }
@@ -482,6 +482,143 @@ void TinyGraphicPipeline::Terminate( TinyGraphicContext& context ) {
 
 	if ( vk::GetIsValid( _pipeline ) )
 		vkDestroyPipeline( context.Logical, _pipeline, vk::GetAllocator( ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC STATIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyGraphicPipeline::CreateBinding(
+	TinyGraphicPipelineBundle& bundle,
+	const TinyGraphicPipelineBinding& binding
+) {
+	CreateBinding( bundle, binding.Binding, binding.Stride, binding.IsVertex );
+}
+
+void TinyGraphicPipeline::CreateBinding(
+	TinyGraphicPipelineBundle& bundle,
+	tiny_init<TinyGraphicPipelineBinding> bindings
+) {
+	auto count = bindings.size( );
+
+	if ( count > 0 ) {
+		bundle.InputBinding = count;
+
+		for ( auto& binding : bindings ) {
+			auto rate = binding.IsVertex ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
+
+			_pCreateBinding( bundle, binding.Binding, binding.Stride, rate );
+		}
+	}
+}
+
+void TinyGraphicPipeline::CreateBinding(
+	TinyGraphicPipelineBundle& bundle,
+	tiny_uint binding,
+	tiny_uint stride,
+	bool is_vertex
+) {
+	auto rate = is_vertex ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
+
+	bundle.InputBinding.emplace_back( { binding, stride, rate } );
+}
+
+void TinyGraphicPipeline::CreateAttribute(
+	TinyGraphicPipelineBundle& bundle,
+	const TinyGraphicPipelineAttribute& attribute
+) {
+	CreateAttribute( bundle, attribute.Location, attribute.Binding, attribute.Type, attribute.Offset );
+}
+
+void TinyGraphicPipeline::CreateAttribute(
+	TinyGraphicPipelineBundle& bundle,
+	tiny_init<TinyGraphicPipelineAttribute> attributes
+) {
+	auto count = attributes.size( );
+
+	if ( count > 0 ) {
+		bundle.InputAttributes = count;
+
+		for ( auto& attribute : attributes ) {
+			_pCreateAttribute( bundle, attribute.Location, attribute.Binding, attribute.Type, attribute.Offset );
+		}
+	}
+}
+
+void TinyGraphicPipeline::CreateAttribute(
+	TinyGraphicPipelineBundle& bundle,
+	tiny_uint location,
+	tiny_uint binding,
+	TinyPipelineAttributeTypes type,
+	tiny_uint offset
+) {
+	bundle.InputAttributes.emplace_back( { 
+		location, 
+		binding, 
+		tiny_cast( type, VkFormat ), 
+		offset 
+	} );
+}
+
+void TinyGraphicPipeline::CreateSetBind(
+	TinyGraphicPipelineBundle& bundle,
+	tiny_uint set,
+	const TinyGraphicPipelineSetBind& set_bind
+) {
+	CreateSetBind( bundle, set, set_bind.Binding, set_bind.Type, set_bind.Type, set_bind.Stage );
+}
+
+void TinyGraphicPipeline::CreateSetBind(
+	TinyGraphicPipelineBundle& bundle,
+	tiny_uint set,
+	tiny_init<TinyGraphicPipelineSetBind> set_binds
+) {
+	auto count = set_binds.size( );
+
+	if ( count > 0 ) {
+		if ( set == count )
+			bundle.Descriptors.emplace_back( { } );
+
+		auto& descriptor_set = bundle.Descriptors[ set ];
+
+		for ( auto& set_bind : set_binds ) {
+			descriptor_set.emplace_back( { 
+				set_bind.Binding,
+				tiny_cast( set_bind.Type, VkDescriptorType ),
+				set_bind.Count,
+				tiny_cast( set_bind.Stage, VkShaderStageFlags ),
+				VK_NULL_HANDLE 
+			} );
+		}
+	}
+}
+
+void TinyGraphicPipeline::CreateSetBind(
+	TinyGraphicPipelineBundle& bundle,
+	tiny_uint set,
+	tiny_uint binding,
+	TinyGraphicBindTypes type,
+	TinyGraphicShaderStages stage
+) {
+	CreateSetBind( bundle, set, binding, type, 1, stage );
+}
+
+void TinyGraphicPipeline::CreateSetBind(
+	TinyGraphicPipelineBundle& bundle,
+	tiny_uint set,
+	tiny_uint binding,
+	TinyGraphicBindTypes type,
+	tiny_uint count,
+	TinyGraphicShaderStages stage
+) {
+	if ( set < bundle.Descriptors.size( ) ) {
+		bundle.Descriptors[ set ].emplace_back( {
+			binding,
+			tiny_cast( type, VkDescriptorType ),
+			count,
+			tiny_cast( stage, VkShaderStageFlags ),
+			VK_NULL_HANDLE
+		} );
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -750,7 +887,6 @@ VkPipelineDynamicStateCreateInfo TinyGraphicPipeline::GetDynamicStates(
 }
 
 void TinyGraphicPipeline::GrabProperties( const TinyGraphicPipelineBundle& bundle ) {
-	_properties.Type	 = bundle.Type;
 	_properties.PassType = bundle.PassType;
 	_properties.Dynamics = bundle.Dynamics;
 }

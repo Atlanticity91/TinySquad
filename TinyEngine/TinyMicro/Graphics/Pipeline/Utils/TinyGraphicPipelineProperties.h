@@ -24,7 +24,6 @@
 
 tm_struct TinyGraphicPipelineProperties {
 
-	TinyGraphicPipelineTypes Type		= TGP_TYPE_2D;
 	TinyGraphicRenderpassTypes PassType = TGR_TYPE_RENDER;
 	tiny_list<VkDynamicState> Dynamics{ };
 

@@ -11,11 +11,13 @@ project "TinyThirdparty"
 
     includedirs { 
         "%{wks.location}/",
+        "%{wks.location}/TinyLibs/",
         "%{wks.location}/TinyEngine/",
         vulkan.."/Include/" 
     }
     externalincludedirs { 
         "%{wks.location}/",
+        "%{wks.location}/TinyLibs/",
         "%{wks.location}/TinyEngine/",
         vulkan.."/Include/" 
     }

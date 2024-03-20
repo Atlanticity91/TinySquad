@@ -29,6 +29,7 @@
 
 tiny_enum( TinyGraphicPipelineTypes ) {
 
+	TGP_TYPE_NONE,
 	TGP_TYPE_2D,
 	TGP_TYPE_3D,
 	TGP_TYPE_COMPUTE
@@ -54,6 +55,44 @@ tiny_enum( TinyGraphicShaderStages ) {
 	TGS_STAGE_COMPUTE	   = VK_SHADER_STAGE_COMPUTE_BIT,
 	TGS_STAGE_TESS_EVAL	   = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
 	TGS_STAGE_TESS_CONTROL = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT
+
+};
+
+tm_struct TinyGraphicPipelineBinding {
+
+	tiny_uint Binding = 0;
+	tiny_uint Stride  = 0;
+	bool IsVertex	  = true;
+
+};
+
+tiny_enum( TinyPipelineAttributeTypes ) { 
+
+	TPA_TYPE_INT   = VK_FORMAT_R32_SINT,
+	TPA_TYPE_UINT  = VK_FORMAT_R32_UINT,
+	TPA_TYPE_FLOAT = VK_FORMAT_R32_SFLOAT,
+
+	TPA_TYPE_VEC2  = VK_FORMAT_R32G32_SFLOAT,
+	TPA_TYPE_VEC3  = VK_FORMAT_R32G32B32_SFLOAT,
+	TPA_TYPE_VEC4  = VK_FORMAT_R32G32B32A32_SFLOAT
+
+};
+
+tm_struct TinyGraphicPipelineAttribute {
+
+	tiny_uint Location				= 0;
+	tiny_uint Binding				= 0;
+	TinyPipelineAttributeTypes Type = TPA_TYPE_VEC4;
+	tiny_uint Offset				= 0;
+
+};
+
+tm_struct TinyGraphicPipelineSetBind {
+
+	tiny_uint Binding			  = 0;
+	TinyGraphicBindTypes Type	  = TGBP_TYPE_UNIFORM;
+	tiny_uint Count				  = 0;
+	TinyGraphicShaderStages Stage = TGS_STAGE_VERTEX;
 
 };
 

@@ -39,22 +39,28 @@ te_struct TinyRenderSprite {
 te_struct TinyRenderSpriteVertices {
 
 	tiny_vec4 Position{ };
-	tiny_vec2 UV{ };
-
-};
-
-te_struct TinyRenderSpriteVertex {
-
-	TinyRenderSpriteVertices Quad[ 4 ];
-
-};
-
-te_struct TinyRenderSpriteInstance {
-
-	TinyRenderTransform Transform{ };
+	tiny_vec4 UV{ };
 	tiny_vec4 Color{ };
-	tiny_uint TextureSlot;
-	tiny_uint TextureCount;
+
+};
+
+te_struct TinyRenderSpriteVertex{
+
+	TinyRenderSpriteVertices Quad[ 4 ]{
+		{ { -.5f, -.5f, .0f, 1.f } },
+		{ {  .5f, -.5f, .0f, 1.f } },
+		{ {  .5f,  .5f, .0f, 1.f } },
+		{ { -.5f,  .5f, .0f, 1.f } }
+	};
+
+};
+
+te_struct TinyRenderSpriteIndex {
+
+	tiny_uint Index[ 6 ]{
+		0, 1, 2,
+		2, 0, 3
+	};
 
 };
 

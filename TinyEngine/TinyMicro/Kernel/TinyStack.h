@@ -25,6 +25,9 @@
 template<typename Type, tiny_uint Length>
 class tiny_stack { 
 
+public:
+	static const tiny_uint Size = Length * tiny_sizeof( Type );
+
 private:
 	tiny_uint				 _cursor;
 	tiny_array<Type, Length> _data;

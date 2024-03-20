@@ -25,14 +25,19 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderBatchSprite::TinyRenderBatchSprite( )
 	: TinyRenderBatchInstance{ },
-	_vertex{ },
-	_instance{ }
+	_indexes{ },
+	_vertex{ }
 { }
 
-bool TinyRenderBatchSprite::Create( TinyGraphicManager& graphics ) {
-	return  TinyRenderBatchInstance::Create( graphics ) &&
-			_vertex.Create( )							&&
-			_instance.Create( );
+bool TinyRenderBatchSprite::Create( 
+	TinyGraphicManager& graphics, 
+	TinyRenderUniformManager& uniforms
+) {
+	return  TinyRenderBatchInstance::Create( graphics, uniforms )									 &&
+			_indexes.Create( )																		 &&
+			_vertex.Create( )																		 &&
+			uniforms.Create( graphics, { TGB_TYPE_INDEX,  Index_t::Size , TinySpriteIndexBuffer  } ) &&
+			uniforms.Create( graphics, { TGB_TYPE_VERTEX, Vertex_t::Size, TinySpriteVertexBuffer } );
 }
 
 void TinyRenderBatchSprite::Draw(
@@ -48,8 +53,8 @@ void TinyRenderBatchSprite::Draw(
 		_vertex.GetHasSpace( ) &&
 		_textures.GetHasSpace( texture_count )
 	) {
-		PushVertex( draw_context );
-		PushInstance( draw_context, texture_count );
+		PushIndex( );
+		PushVertex( draw_context, texture_count );
 		
 		for ( auto& texture : draw_context.Textures )
 			_textures.Push( { TRS_ID_TEXTURE, _textures.GetCount( ), tiny_lvalue( texture ) } );
@@ -68,8 +73,8 @@ void TinyRenderBatchSprite::Draw(
 void TinyRenderBatchSprite::Terminate( ) {
 	TinyRenderBatchInstance::Terminate( );
 
+	_indexes.Terminate( );
 	_vertex.Terminate( );
-	_instance.Terminate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,67 +85,70 @@ tiny_uint TinyRenderBatchSprite::UploadBuffers(
 	TinyGraphicBufferStaging& staging,
 	TinyRenderUniformManager& uniforms
 ) {
-	auto vertex   = _vertex.Flush( );
-	auto instance = _instance.Flush( );
+	auto indexes = _indexes.Flush( );
+	auto vertex  = _vertex.Flush( );
 	
-	if ( vertex.Count > 0 ) {
+	if ( indexes.Count > 0 ) {
 		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
-		auto vert_size	   = vertex.Count   * tiny_sizeof( TinyRenderSpriteVertex );
-		auto inst_size	   = instance.Count * tiny_sizeof( TinyRenderSpriteInstance );
+		auto inst_size	   = indexes.Count * tiny_sizeof( TinyRenderSpriteIndex );
+		auto vert_size	   = vertex.Count  * tiny_sizeof( TinyRenderSpriteVertex );
 		auto context	   = graphics.GetContext( );
 
-		staging.Map( context, vert_size + inst_size );
-		Tiny::Memcpy( vertex.Values  , staging_addr			   , vert_size );
-		Tiny::Memcpy( instance.Values, staging_addr + vert_size, inst_size );
+		staging.Map( context, inst_size + vert_size );
+		Tiny::Memcpy( indexes.Values, staging_addr			  , inst_size );
+		Tiny::Memcpy( vertex.Values , staging_addr + inst_size, vert_size );
 		staging.UnMap( context );
 
 		{
 			auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
 
 			VkBufferCopy copies[ 2 ] = {
-				{ 0		   , 0, vert_size },
-				{ vert_size, 0, inst_size }
+				{ 0		   , 0, inst_size },
+				{ inst_size, 0, vert_size }
 			};
 
-			burner.Upload( staging, uniforms.GetUniform( "ubo_transforms" ), copies[ 0 ] );
-			burner.Upload( staging, uniforms.GetUniform( "ubo_sprites" ), copies[ 1 ] );
+			burner.Upload( staging, uniforms[ TinySpriteIndexBuffer  ], copies[ 0 ] );
+			burner.Upload( staging, uniforms[ TinySpriteVertexBuffer ], copies[ 1 ] );
 		}
 	}
 
-	return vertex.Count;
+	return indexes.Count;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyRenderBatchSprite::PushVertex( const TinyRenderSpriteContext& draw_context ) {
+void TinyRenderBatchSprite::PushIndex( ) {
+	auto indexex = TinyRenderSpriteIndex{ };
+	auto index   = tiny_cast( 6, tiny_uint );
+	auto offset  = 6 * _indexes.GetCount( );
+
+	while ( index-- > 0 )
+		indexex.Index[ index ] += offset;
+
+	_indexes.Push( indexex );
+}
+
+void TinyRenderBatchSprite::PushVertex(
+	const TinyRenderSpriteContext& draw_context, 
+	tiny_uint texture_count
+) {
 	auto vertex = TinyRenderSpriteVertex{ };
+	auto slot   = tiny_cast( _textures.GetCount( ), float );
+	auto count  = tiny_cast( tiny_cast( texture_count, tiny_int ), float );
 	auto& uv	= draw_context.Sprite.UV;
 
-	vertex.Quad[ 0 ] = { { -.5f, -.5f, .0f, 1.f }, { uv.x, uv.y } };
-	vertex.Quad[ 1 ] = { {  .5f, -.5f, .0f, 1.f }, { uv.z, uv.y } };
-	vertex.Quad[ 2 ] = { {  .5f,  .5f, .0f, 1.f }, { uv.z, uv.w } };
-	vertex.Quad[ 3 ] = { { -.5f,  .5f, .0f, 1.f }, { uv.x, uv.w } };
+	vertex.Quad[ 0 ].UV = { uv.x, uv.y, slot, count };
+	vertex.Quad[ 1 ].UV = { uv.z, uv.y, slot, count };
+	vertex.Quad[ 2 ].UV = { uv.z, uv.w, slot, count };
+	vertex.Quad[ 3 ].UV = { uv.x, uv.w, slot, count };
 
 	auto vertice = tiny_cast( 4, tiny_uint );
 
-	while ( vertice-- > 0 )
+	while ( vertice-- > 0 ) {
 		vertex.Quad[ vertice ].Position = draw_context.Tranform.World * vertex.Quad[ vertice ].Position;
+		vertex.Quad[ vertice ].Color	= draw_context.Sprite.Color;
+	}
 
 	_vertex.Push( vertex );
-}
-
-void TinyRenderBatchSprite::PushInstance(
-	const TinyRenderSpriteContext& draw_context,
-	tiny_uint texture_count 
-) {
-	auto instance = TinyRenderSpriteInstance{ };
-
-	Tiny::Memcpy( tiny_rvalue( draw_context.Tranform ), tiny_rvalue( instance.Transform ), 1 );
-
-	instance.Color = draw_context.Sprite.Color;
-	instance.TextureSlot = _textures.GetCount( );
-	instance.TextureCount = texture_count;
-
-	_instance.Push( instance );
 }

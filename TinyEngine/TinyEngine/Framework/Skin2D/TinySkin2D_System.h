@@ -43,8 +43,8 @@ private:
 
 public:
 	static void Draw( 
+		TinyGraphicWorkContext& work_context,
 		TinyMaterial& material,
-		TinyGraphicManager& graphics,
 		TinyRenderUniformManager& uniforms,
 		tiny_uint instance_count
 	);

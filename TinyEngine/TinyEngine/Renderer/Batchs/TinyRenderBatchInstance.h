@@ -28,8 +28,8 @@ class TinyRenderBatchInstance {
 public:
 	using Texture_t  = TinyRenderBatch<TinyGraphicPipelineBindpoint, TextureCount>;
 	using Callback_t = std::function<void(
+		TinyGraphicWorkContext&,
 		TinyMaterial&,
-		TinyGraphicManager&,
 		TinyRenderUniformManager&,
 		tiny_uint instance_count
 	)>;
@@ -52,7 +52,10 @@ public:
 
 	~TinyRenderBatchInstance( ) = default;
 
-	virtual bool Create( TinyGraphicManager& graphics ) {
+	virtual bool Create( 
+		TinyGraphicManager& graphics,
+		TinyRenderUniformManager& uniforms
+	) {
 		auto& physical = graphics.GetPhysical( );
 		auto& limits   = physical.GetProperties( ).limits;
 
@@ -107,7 +110,7 @@ public:
 				material->Mount( work_context );
 				material->Bind( work_context, textures.Count, textures.Textures );
 
-				std::invoke( _callback, tiny_lvalue( material ), graphics, uniforms, instance_count );
+				std::invoke( _callback, work_context, tiny_lvalue( material ), uniforms, instance_count );
 			}
 		}
 

@@ -39,3 +39,15 @@ te_struct TinyRenderVertexContext {
 	tiny_list<TinyRenderVertice> Vertex{ };
 
 };
+
+static const tiny_vec4 TinyQuadVertex[ 4 ] = {
+	{ -.5f, -.5f, .0f, 1.f },
+	{  .5f, -.5f, .0f, 1.f },
+	{  .5f,  .5f, .0f, 1.f },
+	{ -.5f,  .5f, .0f, 1.f }
+};
+
+static const tiny_uint TinyQuadInex[ 6 ] = {
+	0, 1, 2,
+	2, 0, 3
+};

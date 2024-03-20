@@ -45,7 +45,7 @@ public:
 
 	~TinyRenderBatchManager( ) = default;
 
-	bool Initialize( TinyGraphicManager& graphics );
+	bool Initialize( TinyGraphicManager& graphics, TinyRenderUniformManager& uniforms );
 
 	void Prepare(
 		TinyGame* game,

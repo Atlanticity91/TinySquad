@@ -28,15 +28,17 @@ TinyRenderBatchManager::TinyRenderBatchManager( )
 	_sprites{ }
 { }
 
-bool TinyRenderBatchManager::Initialize( TinyGraphicManager& graphics ) {
-	constexpr auto size_2d = TinyRenderBatchSprite::Size;
+bool TinyRenderBatchManager::Initialize( 
+	TinyGraphicManager& graphics,
+	TinyRenderUniformManager& uniforms 
+) {
+	auto context = graphics.GetContext( );
+	auto size_2d = TinyRenderBatchSprite::Size;
 	//constexpr auto size_3d = BatchIndex_t::Size + BatchVertex_t::Size;
 	//constexpr auto size    = size_2d < size_3d ? size_3d : size_2d;
-
-	auto context = graphics.GetContext( );
 	
 	return  _staging.Create( context, size_2d ) &&
-			_sprites.Create( graphics );
+			_sprites.Create( graphics, uniforms );
 }
 
 void TinyRenderBatchManager::Prepare(

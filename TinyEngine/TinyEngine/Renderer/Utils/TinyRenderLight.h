@@ -22,7 +22,9 @@
 
 #include "TinyRenderVertex.h"
 
-static const tiny_uint TinyMaxLight = 256;
+#define TINY_MAX_LIGHT 256
+
+static const tiny_uint TinyMaxLight = TINY_MAX_LIGHT;
 
 te_struct TinyRenderLight {
 

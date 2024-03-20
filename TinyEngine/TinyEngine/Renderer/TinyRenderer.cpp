@@ -34,7 +34,8 @@ TinyRenderer::TinyRenderer( )
 bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem ) {
 	_cameras.Initialize( );
 
-	auto state = _uniforms.Create( graphics ) && _batchs.Initialize( graphics );
+	auto state = _uniforms.Create( graphics ) &&
+				 _batchs.Initialize( graphics, _uniforms );
 
 	if ( state ) {
 		graphics.AddCompilerMacros( 
@@ -82,17 +83,21 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 					"layout( set=TinySetID_Texture, binding=BIND ) uniform sampler2D NAME" 
 				},
 				{
+					"tiny_sampler_list( NAME )",
+					"layout( set=TinySetID_Texture ) uniform sampler2D NAME[ 16384 ]"
+				},
+				{
 					"tiny_compute_in2D( BIND, FORMAT, NAME )",
 					"layout( binding=BIND, FORMAT ) uniform readonly image2D NAME"
 				},
 				{
 					"tiny_compute_out2D( BIND, FORMAT, NAME )",
 					"layout( binding=BIND, FORMAT ) uniform writeonly image2D NAME"
-				}
+				},
 			}
 		);
 
-		state = _debug.Initialize( graphics );
+		state = _debug.Initialize( graphics, _uniforms );
 	}
 
 	return state;
@@ -184,16 +189,15 @@ void TinyRenderer::Flush( TinyGame* game, TinyRenderBatchTypes type ) {
 }
 
 void TinyRenderer::DrawDebug( const TinyRenderDebugPrimitive& primitive ) {
-	_debug.Draw( primitive );
+	auto& camera = _cameras.GetCurrentMatrix( );
+
+	_debug.Draw( camera, primitive );
 }
 
 void TinyRenderer::Compose( TinyGame* game ) {
 	_batchs.Flush( game, _uniforms );
-	
 	_post_process.Compose( game, _uniforms, _batchs );
-
-	if ( _debug )
-		_debug.Flush( game, _uniforms, _batchs );
+	_debug.Flush( game, _uniforms, _batchs );
 }
 
 void TinyRenderer::Terminate( TinyGraphicManager& graphics ) {

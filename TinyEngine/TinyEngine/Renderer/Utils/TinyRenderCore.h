@@ -36,6 +36,8 @@
 #define TINY_OUTPUT_SPECULAR 3
 #define TINY_OUTPUT_EMISSIVE 4
 
+#define TinyCoreUniform "ubo_core"
+
 static const tiny_uint TinyMaxVertices = TINY_MAX_VERTEX;
 static const tiny_uint TinyMaxUniform  = TINY_MAX_UNIFORM;
 

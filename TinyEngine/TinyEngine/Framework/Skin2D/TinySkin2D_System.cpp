@@ -114,26 +114,16 @@ tiny_vec4 TinySkin2DSystem::ProcessTexture(
 //		===	PUBLIC STATIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinySkin2DSystem::Draw(
+	TinyGraphicWorkContext& work_context,
 	TinyMaterial& material,
-	TinyGraphicManager& graphics,
 	TinyRenderUniformManager& uniforms,
 	tiny_uint instance_count
 ) {
-	auto& work_context = graphics.GetWorkdContext( );
-
-	material.Bind(
-		work_context,
-		{
-			uniforms.GetUniform( "ubo_core" )
-		}
-	);
-	
-	material.BindVertex( 
+	material.Bind( work_context, uniforms[ TinyCoreUniform ] );
+	material.BindGeometry( 
 		work_context, 
-		{ 
-			uniforms.GetBuffer( "ubo_transforms" ),
-			uniforms.GetBuffer( "ubo_transforms" )
-		}
+		uniforms[ TinySpriteIndexBuffer ],
+		uniforms[ TinySpriteVertexBuffer ]
 	);
-	material.Draw( work_context, { TGD_MODE_DIRECT, 6, instance_count } );
+	material.Draw( work_context, { TGD_MODE_INDEXED, 6, instance_count } );
 }
