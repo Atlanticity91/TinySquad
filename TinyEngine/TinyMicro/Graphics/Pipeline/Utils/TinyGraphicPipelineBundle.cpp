@@ -24,8 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicPipelineBundle::TinyGraphicPipelineBundle( ) 
-	: Type{ TGP_TYPE_2D },
-	PassType{ TGR_TYPE_RENDER },
+	: PassType{ TGR_TYPE_RENDER },
 	Subpass{ 0 },
 	Pass{ VK_NULL_HANDLE },
 	Shaders{ },

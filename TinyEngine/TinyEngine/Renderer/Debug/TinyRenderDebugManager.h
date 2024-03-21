@@ -50,7 +50,7 @@ public:
 
 	void SetLineWidth( float width );
 
-	void Draw( const tiny_mat4& camera, const TinyRenderDebugPrimitive& primitive );
+	void Draw( const TinyRenderDebugPrimitive& primitive );
 
 	void Flush( 
 		TinyGame* game,
@@ -69,15 +69,11 @@ private:
 
 	bool BuildPipeline( TinyGraphicManager& graphics );
 
-	void PushLine(
-		const tiny_mat4& camera,
-		const tiny_vec2& start,
-		const tiny_vec2& stop, 
-		const tiny_color& color
-	);
+	void PushLine( const tiny_vec2& start, const tiny_vec2& stop, const tiny_color& color );
 
-	void PushCircle(
-		const tiny_mat4& camera,
+	void PushCircleIndex( );
+
+	void PushCircle( 
 		const tiny_vec2& location,
 		const tiny_vec2& circle,
 		const tiny_color& color

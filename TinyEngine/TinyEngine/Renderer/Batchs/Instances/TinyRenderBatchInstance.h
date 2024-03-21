@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderBatchTextures.h"
+#include <TinyEngine/Renderer/Batchs/TinyRenderBatchTextures.h>
 
 template<typename DrawContext_t, tiny_uint TextureCount>
 class TinyRenderBatchInstance {
@@ -31,7 +31,7 @@ public:
 		TinyGraphicWorkContext&,
 		TinyMaterial&,
 		TinyRenderUniformManager&,
-		tiny_uint instance_count
+		tiny_uint 
 	)>;
 
 protected:

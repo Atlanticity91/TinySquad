@@ -331,7 +331,7 @@ bool TinyAssetImportManager::ImportGLSL(
 		auto* source   = file.GetAddress( );
 		auto context   = TinyGraphicShaderCompilationContext{ };
 
-		context.Name   = path.Name;
+		context.Name   = tiny_string{ path.Name };
 		context.Source = tiny_string{ source, tiny_cast( file.Capacity, tiny_uint ) };
 
 		if ( path.Extension == "hlsl" )
@@ -374,7 +374,6 @@ bool TinyAssetImportManager::ExportMaterial( TinyGame* game, TinyFile& file, c_p
 		auto descriptor_count = builder->Descriptors.size( );
 
 		file.Write( TinyAssetHeader{ TA_TYPE_MATERIAL } );
-		file.Write( builder->Type );
 		file.Write( builder->PassType );
 		file.Write( builder->PassName );
 		file.Write( builder->Subpass );

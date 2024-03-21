@@ -42,6 +42,8 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 			{
 				// === PI ===
 				{ "TinyPI", "3.1415926535897932384626433832795" },
+				{ "TinyMaxVertex", TINY_STR( TINY_MAX_VERTEX ) },
+				{ "TinyMaxUniform", TINY_STR( TINY_MAX_UNIFORM ) },
 
 				// === SETS ===
 				{ "TinySetID_Core",	   TINY_STR( TINY_RENDER_SET_CORE )    },
@@ -84,7 +86,7 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 				},
 				{
 					"tiny_sampler_list( NAME )",
-					"layout( set=TinySetID_Texture ) uniform sampler2D NAME[ 16384 ]"
+					"layout( set=TinySetID_Texture ) tiny_sampler2D( 0, NAME )[]"
 				},
 				{
 					"tiny_compute_in2D( BIND, FORMAT, NAME )",
@@ -189,9 +191,7 @@ void TinyRenderer::Flush( TinyGame* game, TinyRenderBatchTypes type ) {
 }
 
 void TinyRenderer::DrawDebug( const TinyRenderDebugPrimitive& primitive ) {
-	auto& camera = _cameras.GetCurrentMatrix( );
-
-	_debug.Draw( camera, primitive );
+	_debug.Draw( primitive );
 }
 
 void TinyRenderer::Compose( TinyGame* game ) {

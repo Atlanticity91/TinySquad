@@ -58,7 +58,6 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 	auto& renderer	  = game->GetRenderer( );
 	auto& assets	  = game->GetAssets( );
 	auto& ecs		  = game->GetECS( );
-	auto camera		  = renderer.GetCameraMatrix( );
 
 	renderer.Prepare( game, TRB_TYPE_SPRITES, TINY_OUTPASS_HASH, TinySkin2DSystem::Draw );
 
@@ -67,13 +66,11 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 
 		if ( ecs.GetHasFlag( owner, TE_FLAG_VISIBLE ) && component.GetIsActive( ) ) {
 			auto* transform_comp = ecs.GetComponentAs<TinyTransform2D>( owner );
-			auto& transform		 = transform_comp->GetTransform( );
 
-			draw_context.Material		= component.GetMaterial( );
-			draw_context.Sprite.UV		= ProcessTexture( assets, draw_context, component );
-			draw_context.Sprite.Color	= component.GetColor( );
-			draw_context.Tranform.World = camera * transform;
-			draw_context.Tranform.Local = transform;
+			draw_context.Material	  = component.GetMaterial( );
+			draw_context.Sprite.UV	  = ProcessTexture( assets, draw_context, component );
+			draw_context.Sprite.Color = component.GetColor( );
+			draw_context.Tranform	  = transform_comp->GetTransform( );
 
 			renderer.Draw( game, draw_context );
 		}
@@ -119,11 +116,7 @@ void TinySkin2DSystem::Draw(
 	TinyRenderUniformManager& uniforms,
 	tiny_uint instance_count
 ) {
+	material.BindGeometry( work_context, uniforms[ TinySpriteIndexBuffer ], uniforms[ TinySpriteVertexBuffer ] );
 	material.Bind( work_context, uniforms[ TinyCoreUniform ] );
-	material.BindGeometry( 
-		work_context, 
-		uniforms[ TinySpriteIndexBuffer ],
-		uniforms[ TinySpriteVertexBuffer ]
-	);
 	material.Draw( work_context, { TGD_MODE_INDEXED, 6, instance_count } );
 }

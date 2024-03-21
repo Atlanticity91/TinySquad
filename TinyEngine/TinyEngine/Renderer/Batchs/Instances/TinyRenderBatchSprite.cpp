@@ -119,12 +119,12 @@ tiny_uint TinyRenderBatchSprite::UploadBuffers(
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyRenderBatchSprite::PushIndex( ) {
-	auto indexex = TinyRenderSpriteIndex{ };
-	auto index   = tiny_cast( 6, tiny_uint );
-	auto offset  = 6 * _indexes.GetCount( );
+	auto indexex  = TinyRenderSpriteIndex{ };
+	auto index_id = TINY_QUAD_INDEX_COUNT;
+	auto offset   = index_id * _indexes.GetCount( );
 
-	while ( index-- > 0 )
-		indexex.Index[ index ] += offset;
+	while ( index_id-- > 0 )
+		indexex.Index[ index_id ] += offset;
 
 	_indexes.Push( indexex );
 }
@@ -143,10 +143,10 @@ void TinyRenderBatchSprite::PushVertex(
 	vertex.Quad[ 2 ].UV = { uv.z, uv.w, slot, count };
 	vertex.Quad[ 3 ].UV = { uv.x, uv.w, slot, count };
 
-	auto vertice = tiny_cast( 4, tiny_uint );
+	auto vertice = TINY_QUAD_VERTICE_COUNT;
 
 	while ( vertice-- > 0 ) {
-		vertex.Quad[ vertice ].Position = draw_context.Tranform.World * vertex.Quad[ vertice ].Position;
+		vertex.Quad[ vertice ].Position = draw_context.Tranform * vertex.Quad[ vertice ].Position;
 		vertex.Quad[ vertice ].Color	= draw_context.Sprite.Color;
 	}
 

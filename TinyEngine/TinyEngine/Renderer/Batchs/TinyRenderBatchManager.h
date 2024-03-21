@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderBatchSprite.h"
+#include "Instances/TinyRenderBatchText.h"
 
 tiny_enum( TinyRenderBatchTypes ) { 
 

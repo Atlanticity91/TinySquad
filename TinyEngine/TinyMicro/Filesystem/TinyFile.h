@@ -38,7 +38,11 @@ public:
 
 	bool Seek( Tiny::FileOrigin origin, tiny_uint offset );
 
+	tiny_uint Read( std::string& text );
+
 	tiny_uint Read( tiny_uint length, c_pointer data );
+
+	tiny_uint Write( const tiny_string& text );
 
 	tiny_uint Write( tiny_uint length, const c_pointer data );
 
@@ -55,17 +59,6 @@ public:
 		auto* _data = tiny_rvalue( data );
 
 		return Read( tiny_sizeof( Type ), tiny_cast( _data, c_pointer ) );
-	};
-
-	template<>
-	tiny_uint Read<std::string>( std::string& text ) {
-		auto text_str = text.c_str( );
-		auto length   = tiny_cast( 0, tiny_uint );
-
-		if ( Read( tiny_sizeof( tiny_uint ), tiny_rvalue( length ) ) > 0 )
-			text.resize( tiny_cast( length + 1, size_t ), '\0' );
-
-		return Read( length, tiny_cast( text_str, c_pointer ) );
 	};
 
 	template<tiny_uint Length>
@@ -126,29 +119,11 @@ public:
 	};
 
 	template<typename Type>
+		requires ( !std::is_same<Type, tiny_string>::value )
 	tiny_uint Write( const Type& data ) {
 		auto* _data = tiny_rvalue( data );
 
 		return Write( tiny_sizeof( Type ), tiny_cast( _data, const c_pointer ) );
-	};
-
-	template<>
-	tiny_uint Write<std::string>( const std::string& text ) { 
-		auto tmp_str = tiny_string{ text };
-
-		return Write( tmp_str );
-	};
-
-	template<>
-	tiny_uint Write<tiny_string>( const tiny_string& text ) {
-		auto length = text.length( );
-
-		length = Write( tiny_sizeof( tiny_uint ), tiny_cast( tiny_rvalue( length ), const c_pointer ) );
-
-		if ( length > 0 )
-			length = Write( text.length( ), tiny_cast( text.get( ), const c_pointer ) );
-
-		return length;
 	};
 
 	template<tiny_uint Length>
@@ -206,6 +181,8 @@ public:
 		auto length = buffer.size( );
 		auto* data  = buffer.get( );
 
+		Write( length );
+
 		return Write( length, data );
 	};
 
@@ -222,5 +199,14 @@ public:
 	operator bool( ) const;
 
 	TinyFile& operator=( Tiny::File& handle );
+
+public:
+	template<typename Type>
+	TinyFile& operator>>( Type& element ) { return tiny_self; };
+
+	template<typename Type>
+	TinyFile& operator<<( const Type& element ) { 
+		return tiny_self; 
+	};
 
 };

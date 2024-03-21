@@ -98,7 +98,6 @@ tm_struct TinyGraphicPipelineSetBind {
 
 tm_struct TinyGraphicPipelineBundle {
 
-	TinyGraphicPipelineTypes Type;
 	TinyGraphicRenderpassTypes PassType;
 	tiny_uint Subpass;
 	VkRenderPass Pass;

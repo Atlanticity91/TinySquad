@@ -103,6 +103,18 @@ private:
 
 	bool CreateImGuiFont( );
 
+	void CreateSpriteShaders( 
+		TinyGame* game, 
+		TinyFilesystem& filesystem, 
+		const std::string& dev_dir 
+	);
+
+	void CreateTextShaders( 
+		TinyGame* game, 
+		TinyFilesystem& filesystem, 
+		const std::string& dev_dir 
+	);
+
 	void CreateDevDir( TinyGame* game );
 
 public:

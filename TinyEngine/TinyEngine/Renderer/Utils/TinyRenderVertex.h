@@ -22,6 +22,9 @@
 
 #include "TinyRenderSprite.h"
 
+#define TINY_QUAD_VERTICE_COUNT tiny_cast( 4, tiny_uint )
+#define TINY_QUAD_INDEX_COUNT tiny_cast( 6, tiny_uint ) 
+
 typedef tiny_uint TinyRenderIndex;
 
 te_struct TinyRenderVertice {
@@ -40,14 +43,17 @@ te_struct TinyRenderVertexContext {
 
 };
 
-static const tiny_vec4 TinyQuadVertex[ 4 ] = {
+static const tiny_uint TinyQuadVerticeCount = TINY_QUAD_VERTICE_COUNT;
+static const tiny_uint TinyQuadIndexCount   = TINY_QUAD_INDEX_COUNT;
+
+static const tiny_vec4 TinyQuadVertex[ TinyQuadVerticeCount ] = {
 	{ -.5f, -.5f, .0f, 1.f },
 	{  .5f, -.5f, .0f, 1.f },
 	{  .5f,  .5f, .0f, 1.f },
 	{ -.5f,  .5f, .0f, 1.f }
 };
 
-static const tiny_uint TinyQuadInex[ 6 ] = {
+static const tiny_uint TinyQuadInex[ TinyQuadIndexCount ] = {
 	0, 1, 2,
 	2, 0, 3
 };

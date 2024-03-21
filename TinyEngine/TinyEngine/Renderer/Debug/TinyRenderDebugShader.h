@@ -75,10 +75,21 @@ static const tiny_string TinyDebugLineVertex = tiny_string{
 		layout( location=0 ) in vec4 v_Position;
 		layout( location=1 ) in vec4 v_Color;
 
+		tiny_ubo( TinySetID_Core, 0, TinyUBOContext ) {
+
+			mat4 Projection;
+			mat4 View;
+			mat4 ProjView;
+			mat4 Inverse;
+			float Time_f;
+			double Time_d;
+
+		} ubo_context;
+
 		layout( location=0 ) out vec4 scv_color;
 
 		void main( ) {
-			gl_Position = v_Position;
+			gl_Position = ubo_context.ProjView * v_Position;
 			
 			scv_color   = v_Color;
 		}
@@ -109,11 +120,22 @@ static const tiny_string TinyDebugCircleVertex = tiny_string{
 		layout( location=1 ) in vec4 v_Circle;
 		layout( location=2 ) in vec4 v_Color;
 
+		tiny_ubo( TinySetID_Core, 0, TinyUBOContext ) {
+
+			mat4 Projection;
+			mat4 View;
+			mat4 ProjView;
+			mat4 Inverse;
+			float Time_f;
+			double Time_d;
+
+		} ubo_context;
+
 		layout( location=0 ) out vec4 scv_circle;
 		layout( location=1 ) out vec4 scv_color;
 		
 		void main( ) {
-			gl_Position = v_Position;
+			gl_Position = ubo_context.ProjView * v_Position;
 
 			scv_circle  = v_Circle;
 			scv_color   = v_Color;

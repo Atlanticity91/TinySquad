@@ -394,6 +394,97 @@ bool TinyToolbox::CreateImGuiFont( ) {
     return state;
 }
 
+void TinyToolbox::CreateSpriteShaders( 
+    TinyGame* game,
+    TinyFilesystem& filesystem,
+    const std::string& dev_dir
+) {
+    auto material_path = dev_dir + "m_sprite_dev.tinyasset";
+    auto fragment_path = dev_dir + "sf_sprite_dev.frag";
+    auto vertex_path   = dev_dir + "sv_sprite_dev.vert";
+
+    if ( !filesystem.GetFileExist( vertex_path ) )
+        filesystem.Dump( vertex_path, TinyDefaultSpriteVertex );
+
+    if ( !filesystem.GetFileExist( fragment_path ) )
+        filesystem.Dump( fragment_path, TinyDefaultSpriteFragment );
+
+    if ( !filesystem.GetFileExist( material_path ) ) {
+        auto& graphics = game->GetGraphics( );
+        auto& assets   = game->GetAssets( );
+        auto material  = tiny_cast( graphics.CreatePipeline( TGP_TYPE_NONE, TINY_OUTPASS_NAME, 0 ), TinyMaterialBuilder );
+
+        material.InputBinding.clear( );
+        material.InputAttributes.clear( );
+
+        material.PassName = TINY_OUTPASS_NAME;
+        material.ShaderStages = 2;
+        material.ShaderStages[ 0 ] = "sv_sprite_dev";
+        material.ShaderStages[ 1 ] = "sf_sprite_dev";
+
+        TinyGraphicPipeline::CreateBinding( material, { 0, tiny_sizeof( TinyRenderSpriteVertices ) } );
+        TinyGraphicPipeline::CreateAttribute(
+            material,
+            {
+                { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Position ) },
+                { 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, UV ) },
+                { 2, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Color ) }
+            }
+        );
+        TinyGraphicPipeline::CreateSetBind( material, TINY_RENDER_SET_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
+
+        auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
+
+        assets.Export( game, TA_TYPE_MATERIAL, material_path, material_addr );
+        assets.Remove( game, "m_sprite_dev" );
+    }
+}
+
+void TinyToolbox::CreateTextShaders(
+    TinyGame* game,
+    TinyFilesystem& filesystem, 
+    const std::string& dev_dir 
+) {
+    auto material_path = dev_dir + "m_text_dev.tinyasset";
+    auto fragment_path = dev_dir + "sf_text_dev.frag";
+    auto vertex_path   = dev_dir + "sv_text_dev.vert";
+
+    if ( !filesystem.GetFileExist( vertex_path ) )
+        filesystem.Dump( vertex_path, TinyDefaultSpriteVertex );
+
+    if ( !filesystem.GetFileExist( fragment_path ) )
+        filesystem.Dump( fragment_path, TinyDefaultSpriteFragment );
+
+    if ( !filesystem.GetFileExist( material_path ) ) {
+        auto& graphics = game->GetGraphics( );
+        auto& assets = game->GetAssets( );
+        auto material = tiny_cast( graphics.CreatePipeline( TGP_TYPE_2D, TINY_OUTPASS_NAME, 0 ), TinyMaterialBuilder );
+
+        material.InputBinding.clear( );
+        material.InputAttributes.clear( );
+
+        material.PassName = TINY_OUTPASS_NAME;
+        material.ShaderStages = 2;
+        material.ShaderStages[ 0 ] = "sv_text_dev";
+        material.ShaderStages[ 1 ] = "sf_text_dev";
+
+        material.Descriptors = 3;
+        material.Descriptors[ TINY_RENDER_SET_CORE ] = 1;
+        material.Descriptors[ TINY_RENDER_SET_RENDER ] = 2;
+        material.Descriptors[ TINY_RENDER_SET_TEXTURE ] = 1;
+
+        _pCreateSetBind( material, TINY_RENDER_SET_CORE, 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _pCreateSetBind( material, TINY_RENDER_SET_RENDER, 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _pCreateSetBind( material, TINY_RENDER_SET_RENDER, 1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
+        _pCreateSetBind( material, TINY_RENDER_SET_TEXTURE, 0, TGBP_TYPE_COMBINED, TGS_STAGE_FRAGMENT );
+
+        auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
+
+        assets.Export( game, TA_TYPE_MATERIAL, material_path, material_addr );
+        assets.Remove( game, "m_text_dev" );
+    }
+}
+
 void TinyToolbox::CreateDevDir( TinyGame* game ) {
     auto& filesystem = game->GetFilesystem( );
     auto dev_dir     = filesystem.GetDevDir( );
@@ -401,45 +492,8 @@ void TinyToolbox::CreateDevDir( TinyGame* game ) {
     if ( !filesystem.GetDirExist( dev_dir ) )
         filesystem.CreateDir( dev_dir );
 
-    auto vert_path = std::string{ dev_dir.as_chars( ) } + "sv_default.vert";
-    auto frag_path = std::string{ dev_dir.as_chars( ) } + "sf_default.frag";
-    auto mat_path  = std::string{ dev_dir.as_chars( ) } + "m_default.tinyasset";
-
-    if ( !filesystem.GetFileExist( vert_path ) )
-        filesystem.Dump( vert_path, TinyDefaultVertex );
-
-    if ( !filesystem.GetFileExist( frag_path ) )
-        filesystem.Dump( frag_path, TinyDefaultFragment );
-
-    if ( !filesystem.GetFileExist( mat_path ) ) {
-        auto material_path = tiny_string{ mat_path.c_str( ) };
-        auto& graphics     = game->GetGraphics( );
-        auto& assets       = game->GetAssets( );
-        auto material      = tiny_cast( graphics.CreatePipeline( TGP_TYPE_2D, TINY_OUTPASS_NAME, 0 ), TinyMaterialBuilder );
-
-        material.InputBinding.clear( );
-        material.InputAttributes.clear( );
-
-        material.PassName = TINY_OUTPASS_NAME;
-        material.ShaderStages = 2;
-        material.ShaderStages[ 0 ] = "sv_default";
-        material.ShaderStages[ 1 ] = "sf_default";
-
-        material.Descriptors = 3;
-        material.Descriptors[ TINY_RENDER_SET_CORE    ] = 1;
-        material.Descriptors[ TINY_RENDER_SET_RENDER  ] = 2;
-        material.Descriptors[ TINY_RENDER_SET_TEXTURE ] = 1;
-
-        _pCreateSetBind( material, TINY_RENDER_SET_CORE,    0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX    );
-        _pCreateSetBind( material, TINY_RENDER_SET_RENDER,  0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX    );
-        _pCreateSetBind( material, TINY_RENDER_SET_RENDER,  1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX    );
-        _pCreateSetBind( material, TINY_RENDER_SET_TEXTURE, 0, TGBP_TYPE_COMBINED, TGS_STAGE_FRAGMENT );
-
-        auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
-
-        assets.Export( game, TA_TYPE_MATERIAL, material_path, material_addr );
-        assets.Remove( game, "m_default" );
-    }
+    CreateSpriteShaders( game, filesystem, dev_dir );
+    CreateTextShaders( game, filesystem, dev_dir );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

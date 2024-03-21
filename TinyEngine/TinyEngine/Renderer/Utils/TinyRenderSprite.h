@@ -24,8 +24,7 @@
 
 te_struct TinyRenderTransform {
 
-	tiny_mat4 World{ };
-	tiny_mat4 Local{ };
+	tiny_mat4 Transform{ };
 
 };
 
@@ -44,7 +43,7 @@ te_struct TinyRenderSpriteVertices {
 
 };
 
-te_struct TinyRenderSpriteVertex{
+te_struct TinyRenderSpriteVertex {
 
 	TinyRenderSpriteVertices Quad[ 4 ]{
 		{ { -.5f, -.5f, .0f, 1.f } },
@@ -69,6 +68,6 @@ te_struct TinyRenderSpriteContext {
 	TinyAsset Material{ };
 	tiny_list<TinyTexture2D*> Textures{ };
 	TinyRenderSprite Sprite{ };
-	TinyRenderTransform Tranform{ };
+	tiny_mat4 Tranform{ };
 
 };

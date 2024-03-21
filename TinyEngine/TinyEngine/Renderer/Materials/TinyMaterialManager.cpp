@@ -45,7 +45,6 @@ bool TinyMaterialManager::OnLoad(
 		auto& graphics		  = game->GetGraphics( );
 		auto builder		  = TinyMaterialBuilder{ };
 
-		file.Read( builder.Type );
 		file.Read( builder.PassType );
 		file.Read( builder.PassName );
 		file.Read( builder.Subpass );

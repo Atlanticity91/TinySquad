@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 19/03/2024
+ * @creation : 21/03/2024
  * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -18,35 +18,16 @@
  *
  ******************************************************************************************/
 
-#pragma once
+#include <TinyEngine/__tiny_engine_pch.h>
 
-#include "TinyRenderLight.h"
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
 
-te_struct TinyRenderText {
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
 
-	tiny_vec4 Placeholder;
-	tiny_vec2 UV;
-
-};
-
-te_struct TinyRenderTextContext {
-
-	TinyAsset Font{ };
-	tiny_vec4 Background{ };
-	tiny_vec4 Foreground{ };
-	float Size	  = .0f;
-	float Spacing = .0f;
-	tiny_string Text{ };
-
-	TinyRenderTextContext( );
-
-	TinyRenderTextContext( const TinyAsset& font, float size, const tiny_string& text );
-
-	TinyRenderTextContext( 
-		const TinyAsset& font,
-		const tiny_color& color,
-		float size, 
-		const tiny_string& text 
-	);
-
-};
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////

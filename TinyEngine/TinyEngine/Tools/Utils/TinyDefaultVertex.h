@@ -22,72 +22,75 @@
 
 #include <TinyEngine/Tools/Fonts/TinyFont.h>
 
-static const c_string TinyDefaultVertex = R"(
+static const c_string TinyDefaultSpriteVertex = R"(
 #version 450 core
 #pragma shader_stage( vertex )
 
-vec4 TinyCoords[6] = {
-	vec4( -0.5, -0.5, 0.0, 1.0 ),
-	vec4(  0.5, -0.5, 0.0, 1.0 ),
-	vec4(  0.5,  0.5, 0.0, 1.0 ),
-
-	vec4(  0.5,  0.5, 0.0, 1.0 ),
-	vec4( -0.5, -0.5, 0.0, 1.0 ),
-	vec4( -0.5,  0.5, 0.0, 1.0 )
-};
-
-vec2 TinyUVs[6] = {	
-	vec2( 0.0, 0.0 ),
-	vec2( 1.0, 0.0 ),
-	vec2( 1.0, 1.0 ),
-
-	vec2( 1.0, 1.0 ),
-	vec2( 0.0, 0.0 ),
-	vec2( 0.0, 1.0 ),
-};
+layout( location=0 ) in vec4 v_Position;
+layout( location=1 ) in vec4 v_Texture;
+layout( location=2 ) in vec4 v_Color;
 
 tiny_ubo( TinySetID_Core, 0, TinyUBOContext ) {
 
 	mat4 Projection;
 	mat4 View;
 	mat4 ProjView;
+	mat4 Inverse;
 	float Time_f;
 	double Time_d;
 
 } ubo_context;
 
-tiny_ubo( TinySetID_Render, 0, TinyUBOTransforms ) {
-	mat4 Transfroms[ 1024 ];	
-} ubo_transforms;
-
-struct TinyRenderSprite {
-	vec4 Color;
-	vec4 UV;
-};
-
-tiny_ubo( TinySetID_Render, 1, TinyUBOSprites ) {
-	TinyRenderSprite Sprites[ 1024 ];
-} ubo_sprites;
-
-struct TinyRenderData {	
-	vec4 Color;
+struct TinyVertexSCV { 
 	vec2 UV;
+	int TextureSlot;
+	int TextureCount;
+	vec4 Color;
 };
 
-layout( location=0 ) out TinyRenderData sd_sprite;
+layout( location=0 ) flat out TinyVertexSCV scv_vertex;
 
 void main( ) {
-	gl_Position = ubo_transforms.Transfroms[ gl_InstanceIndex ] * TinyCoords[ gl_VertexIndex ];
-	sd_sprite.Color = ubo_sprites.Sprites[ gl_InstanceIndex ].Color;
+	gl_Position = ubo_context.ProjView * v_Position;
 
-	if ( TinyUVs[ gl_VertexIndex ].x < 1.0 )
-		sd_sprite.UV.x = ubo_sprites.Sprites[ gl_InstanceIndex ].UV.x;
-	else
-		sd_sprite.UV.x = ubo_sprites.Sprites[ gl_InstanceIndex ].UV.z;
+	scv_vertex.UV 			= vec2( v_Texture.x, v_Texture.y );
+	scv_vertex.TextureSlot  = int( v_Texture.z );
+	scv_vertex.TextureCount = int( v_Texture.w );
+	scv_vertex.Color 		= v_Color;
+}
+)";
 
-	if ( TinyUVs[ gl_VertexIndex ].y < 1.0 )
-		sd_sprite.UV.y = ubo_sprites.Sprites[ gl_InstanceIndex ].UV.y;
-	else
-		sd_sprite.UV.y = ubo_sprites.Sprites[ gl_InstanceIndex ].UV.w;
+static const c_string TinyDefaultTextVertex = R"(
+#version 450 core
+#pragma shader_stage( vertex )
+
+layout( location=0 ) in vec4 v_Position;
+layout( location=1 ) in vec4 v_UV;
+
+tiny_ubo( TinySetID_Core, 0, TinyUBOContext ) {
+
+	mat4 Projection;
+	mat4 View;
+	mat4 ProjView;
+	mat4 Inverse;
+	float Time_f;
+	double Time_d;
+
+} ubo_context;
+
+struct TinyVertexSCV { 
+	vec2 UV;
+	vec4 Background;
+	vec4 Foreground;
+};
+
+layout( location=0 ) flat out TinyVertexSCV scv_vertex;
+
+void main( ) {
+	gl_Position = ubo_context.ProjView * v_Position;
+	
+	scv_vertex.UV		  = v_UV;
+	scv_vertex.Background = vec4( 0.0 );
+	scv_vertex.Foreground = vec4( 1.0 );
 }
 )";
