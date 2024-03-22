@@ -42,22 +42,6 @@ bool TinyFile::Seek( Tiny::FileOrigin origin, tiny_uint offset ) {
 	return Tiny::FileSeek( _file, origin, offset );
 }
 
-tiny_uint TinyFile::Read( std::string& text ) {
-	auto size = tiny_cast( 0, tiny_uint );
-
-	Read( size );
-
-	if ( size > 0 ) {
-		text.resize( size );
-
-		auto* text_addr = tiny_cast( text.c_str( ), c_pointer );
-
-		size = Read( size, text_addr );
-	}
-
-	return size;
-}
-
 tiny_uint TinyFile::Read( tiny_uint length, c_pointer data ) {
 	auto count = tiny_cast( 0, tiny_uint );
 	
@@ -65,20 +49,6 @@ tiny_uint TinyFile::Read( tiny_uint length, c_pointer data ) {
 		count = Tiny::FileRead( _file, length, data );
 
 	return count;
-}
-
-tiny_uint TinyFile::Write( const tiny_string& text ) {
-	auto length = text.length( );
-
-	Write( length );
-
-	if ( length > 0 ) {
-		auto* text_addr = tiny_cast( text.get( ), const c_pointer );
-
-		length = Write( length, text_addr );
-	}
-
-	return length;
 }
 
 tiny_uint TinyFile::Write( tiny_uint length, const c_pointer data ) {

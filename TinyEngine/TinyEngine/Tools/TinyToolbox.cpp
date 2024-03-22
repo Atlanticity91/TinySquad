@@ -427,11 +427,12 @@ void TinyToolbox::CreateSpriteShaders(
             material,
             {
                 { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Position ) },
-                { 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, UV ) },
+                { 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Texture ) },
                 { 2, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Color ) }
             }
         );
-        TinyGraphicPipeline::CreateSetBind( material, TINY_RENDER_SET_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
+        TinyGraphicPipeline::CreateSetBind( material, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
+        TinyGraphicPipeline::CreateSetBind( material, TRS_ID_TEXTURE, { 0, TGBP_TYPE_COMBINED, 1, TGS_STAGE_FRAGMENT } );
 
         auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
 

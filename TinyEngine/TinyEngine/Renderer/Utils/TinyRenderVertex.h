@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderSprite.h"
+#include "TinyRenderCore.h"
 
 #define TINY_QUAD_VERTICE_COUNT tiny_cast( 4, tiny_uint )
 #define TINY_QUAD_INDEX_COUNT tiny_cast( 6, tiny_uint ) 
@@ -53,7 +53,7 @@ static const tiny_vec4 TinyQuadVertex[ TinyQuadVerticeCount ] = {
 	{ -.5f,  .5f, .0f, 1.f }
 };
 
-static const tiny_uint TinyQuadInex[ TinyQuadIndexCount ] = {
+static const tiny_uint TinyQuadIndex[ TinyQuadIndexCount ] = {
 	0, 1, 2,
 	2, 0, 3
 };

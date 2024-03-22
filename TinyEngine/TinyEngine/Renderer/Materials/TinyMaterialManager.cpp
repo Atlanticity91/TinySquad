@@ -41,7 +41,7 @@ bool TinyMaterialManager::OnLoad(
 	file.Read( header );
 
 	if ( header.Type == TA_TYPE_MATERIAL ) {
-		auto descriptor_count = (tiny_uint)0;
+		auto descriptor_count = tiny_cast( 0 , tiny_uint );
 		auto& graphics		  = game->GetGraphics( );
 		auto builder		  = TinyMaterialBuilder{ };
 
@@ -60,15 +60,7 @@ bool TinyMaterialManager::OnLoad(
 		file.Read( builder.DepthStencilBack );
 		file.Read( builder.ColorBlends );
 		file.Read( builder.Dynamics );
-		file.Read( descriptor_count );
-
-		if ( descriptor_count > 0 ) {
-			builder.Descriptors = descriptor_count;
-
-			for ( auto& descriptor : builder.Descriptors )
-				file.Read( descriptor );
-		}
-
+		file.Read( builder.Descriptors );
 		file.Read( builder.Constants );
 
 		state = builder.ShaderStages.size( ) > 1 && material.Create( game, graphics, builder );

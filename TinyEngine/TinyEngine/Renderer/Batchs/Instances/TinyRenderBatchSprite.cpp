@@ -50,7 +50,7 @@ void TinyRenderBatchSprite::Draw(
 
 	if (
 		_material == draw_context.Material &&
-		_vertex.GetHasSpace( ) &&
+		_vertex.GetHasSpace( )			   &&
 		_textures.GetHasSpace( texture_count )
 	) {
 		PushIndex( );
@@ -89,12 +89,14 @@ tiny_uint TinyRenderBatchSprite::UploadBuffers(
 	auto vertex  = _vertex.Flush( );
 	
 	if ( indexes.Count > 0 ) {
-		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
 		auto inst_size	   = indexes.Count * tiny_sizeof( TinyRenderSpriteIndex );
 		auto vert_size	   = vertex.Count  * tiny_sizeof( TinyRenderSpriteVertex );
 		auto context	   = graphics.GetContext( );
 
 		staging.Map( context, inst_size + vert_size );
+
+		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
+
 		Tiny::Memcpy( indexes.Values, staging_addr			  , inst_size );
 		Tiny::Memcpy( vertex.Values , staging_addr + inst_size, vert_size );
 		staging.UnMap( context );
@@ -124,7 +126,7 @@ void TinyRenderBatchSprite::PushIndex( ) {
 	auto offset   = index_id * _indexes.GetCount( );
 
 	while ( index_id-- > 0 )
-		indexex.Index[ index_id ] += offset;
+		indexex.Index[ index_id ] = TinyQuadIndex[ index_id ] + offset;
 
 	_indexes.Push( indexex );
 }
@@ -138,17 +140,21 @@ void TinyRenderBatchSprite::PushVertex(
 	auto count  = tiny_cast( tiny_cast( texture_count, tiny_int ), float );
 	auto& uv	= draw_context.Sprite.UV;
 
-	vertex.Quad[ 0 ].UV = { uv.x, uv.y, slot, count };
-	vertex.Quad[ 1 ].UV = { uv.z, uv.y, slot, count };
-	vertex.Quad[ 2 ].UV = { uv.z, uv.w, slot, count };
-	vertex.Quad[ 3 ].UV = { uv.x, uv.w, slot, count };
+	vertex.Quad[ 0 ].Position = draw_context.Tranform * TinyQuadVertex[ 0 ];
+	vertex.Quad[ 0 ].Texture  = { uv.x, uv.y, slot, count };
+	vertex.Quad[ 0 ].Color	  = draw_context.Sprite.Color;
 
-	auto vertice = TINY_QUAD_VERTICE_COUNT;
+	vertex.Quad[ 1 ].Position = draw_context.Tranform * TinyQuadVertex[ 1 ];
+	vertex.Quad[ 1 ].Texture  = { uv.z, uv.y, slot, count };
+	vertex.Quad[ 1 ].Color	  = draw_context.Sprite.Color;
 
-	while ( vertice-- > 0 ) {
-		vertex.Quad[ vertice ].Position = draw_context.Tranform * vertex.Quad[ vertice ].Position;
-		vertex.Quad[ vertice ].Color	= draw_context.Sprite.Color;
-	}
+	vertex.Quad[ 2 ].Position = draw_context.Tranform * TinyQuadVertex[ 2 ];
+	vertex.Quad[ 2 ].Texture  = { uv.z, uv.w, slot, count };
+	vertex.Quad[ 2 ].Color	  = draw_context.Sprite.Color;
+
+	vertex.Quad[ 3 ].Position = draw_context.Tranform * TinyQuadVertex[ 3 ];
+	vertex.Quad[ 3 ].Texture  = { uv.x, uv.w, slot, count };
+	vertex.Quad[ 3 ].Color	  = draw_context.Sprite.Color;
 
 	_vertex.Push( vertex );
 }

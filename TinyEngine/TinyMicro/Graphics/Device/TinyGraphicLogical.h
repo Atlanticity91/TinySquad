@@ -45,6 +45,8 @@ private:
 	tiny_list<VkDeviceQueueCreateInfo> GetQueuesCreateInfos(
 		const TinyGraphicPhysical& physical 
 	);
+
+	VkPhysicalDeviceVulkan12Features GrabFeatures( );
 	
 public:
 	operator VkDevice ( ) const;

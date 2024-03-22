@@ -85,6 +85,10 @@ bool TinyRenderUniformManager::GetExist( const tiny_string& name ) const {
 	return _uniforms.find( name );
 }
 
+bool TinyRenderUniformManager::GetExist( const tiny_hash hash ) const {
+	return _uniforms.find( hash );
+}
+
 TinyRenderUniform& TinyRenderUniformManager::GetUniform( const tiny_string& name ) {
 	return _uniforms[ name ];
 }

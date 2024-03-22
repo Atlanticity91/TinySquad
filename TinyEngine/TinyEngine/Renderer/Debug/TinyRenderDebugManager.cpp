@@ -173,7 +173,12 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 			{ 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderDebugLineVertice, Color	) }
 		}
 	);
-	TinyGraphicPipeline::CreateSetBind( bundle, 0, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
+	//TinyGraphicPipeline::CreateSetBind( bundle, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
+
+	bundle.Descriptors = 1;
+	bundle.Descriptors[ 0 ] = 1;
+
+	_pCreateSetBind2( bundle, 0, 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX );
 
 	bundle.DepthEnable   = false;
 	bundle.StencilEnable = false;
@@ -230,7 +235,7 @@ void TinyRenderDebugManager::PushCircleIndex( ) {
 	auto offset   = index_id * _circles_indexes.size( );
 
 	while ( index_id-- > 0 )
-		indexes.Index[ index_id ] += offset;
+		indexes.Index[ index_id ] = TinyQuadIndex[ index_id ] +  offset;
 
 	_circles_indexes.push( indexes );
 }
@@ -240,7 +245,7 @@ void TinyRenderDebugManager::PushCircle(
 	const tiny_vec2& circle,
 	const tiny_color& color
 ) {
-	auto _circle = TinyRenderDebugCircle{ };
+	auto _circle   = TinyRenderDebugCircle{ };
 	auto _offset   = circle.x * .5f;
 	auto transform = glm::translate( tiny_vec3{ location.x + _offset, location.y + _offset, 0.f } );
 

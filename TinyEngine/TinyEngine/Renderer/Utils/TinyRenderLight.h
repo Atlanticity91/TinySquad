@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderVertex.h"
+#include "TinyRenderSprite.h"
 
 #define TINY_MAX_LIGHT 256
 

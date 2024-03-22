@@ -37,10 +37,7 @@ te_struct TinyRenderDebugLine {
 
 te_struct TinyRenderDebugIndex {
 
-	tiny_uint Index[ TINY_QUAD_INDEX_COUNT ] = {
-		0, 1, 2,
-		2, 0, 3
-	};
+	tiny_uint Index[ TinyQuadIndexCount ];
 
 };
 
@@ -54,7 +51,7 @@ te_struct TinyRenderDebugCircleVertice {
 
 te_struct TinyRenderDebugCircle {
 
-	TinyRenderDebugCircleVertice Vertice[ TINY_QUAD_VERTICE_COUNT ];
+	TinyRenderDebugCircleVertice Vertice[ TinyQuadVerticeCount ];
 
 };
 

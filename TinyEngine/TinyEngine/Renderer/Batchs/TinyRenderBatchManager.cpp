@@ -59,7 +59,7 @@ void TinyRenderBatchManager::Prepare(
 		default : break;
 	}
 
-	Flush( game, type , uniforms );
+	Flush( game, type, uniforms );
 
 	batch.Prepare( graphics, render_pass, callback );
 }

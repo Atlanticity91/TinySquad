@@ -20,52 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderDebugPrimitive.h"
-
-te_struct TinyRenderDebugLineVertice {
-
-	tiny_vec4 Position{ };
-	tiny_vec4 Color{ };
-
-};
-
-te_struct TinyRenderDebugLine {
-
-	TinyRenderDebugLineVertice Vertice[ 2 ];
-
-};
-
-te_struct TinyRenderDebugIndex {
-
-	tiny_uint Index[ 6 ] = {
-		0, 1, 2,
-		2, 0, 3
-	};
-
-};
-
-te_struct TinyRenderDebugCircleVertice {
-
-	tiny_vec4 Position{ };
-	tiny_vec4 Circle{ };
-	tiny_vec4 Color{ };
-
-};
-
-te_struct TinyRenderDebugCircle {
-
-	TinyRenderDebugCircleVertice Vertice[ 4 ];
-
-};
-
-te_struct TinyRenderDebugShader {
-
-	tiny_uint ShaderID			= 0;
-	VkShaderStageFlagBits Stage = VK_SHADER_STAGE_VERTEX_BIT;
-	tiny_string Name			= "";
-	tiny_string Source			= "";
-
-};
+#include "TinyRenderDebugVertex.h"
 
 static const tiny_string TinyDebugLineVertex = tiny_string{
 	R"(

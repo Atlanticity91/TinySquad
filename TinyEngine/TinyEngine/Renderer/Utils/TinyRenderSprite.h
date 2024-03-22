@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyRenderCore.h"
+#include "TinyRenderVertex.h"
 
 te_struct TinyRenderTransform {
 
@@ -38,28 +38,20 @@ te_struct TinyRenderSprite {
 te_struct TinyRenderSpriteVertices {
 
 	tiny_vec4 Position{ };
-	tiny_vec4 UV{ };
+	tiny_vec4 Texture{ };
 	tiny_vec4 Color{ };
 
 };
 
 te_struct TinyRenderSpriteVertex {
 
-	TinyRenderSpriteVertices Quad[ 4 ]{
-		{ { -.5f, -.5f, .0f, 1.f } },
-		{ {  .5f, -.5f, .0f, 1.f } },
-		{ {  .5f,  .5f, .0f, 1.f } },
-		{ { -.5f,  .5f, .0f, 1.f } }
-	};
+	TinyRenderSpriteVertices Quad[ TinyQuadVerticeCount ];
 
 };
 
 te_struct TinyRenderSpriteIndex {
 
-	tiny_uint Index[ 6 ]{
-		0, 1, 2,
-		2, 0, 3
-	};
+	tiny_uint Index[ TinyQuadIndexCount ];
 
 };
 

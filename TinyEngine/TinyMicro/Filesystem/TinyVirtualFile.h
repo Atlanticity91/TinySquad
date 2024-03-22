@@ -46,39 +46,199 @@ public:
 
 public:
 	template<typename Type>
-	bool Read( Type& element ) { 
-		constexpr auto size = tiny_sizeof( Type );
+		requires ( !std::is_pointer<Type>::value )
+	tiny_uint Read( Type& element ) { 
+		auto* data = tiny_cast( tiny_rvalue( element ), c_pointer );
 
-		auto* _element = tiny_rvalue( element );
+		return Read( tiny_sizeof( Type ), data );
+	};
 
-		return Read( size, tiny_cast( _element, c_pointer ) ) == size;
+	template<>
+	tiny_uint Read<std::string>( std::string& element ) {
+		auto size = tiny_cast( 0, tiny_uint );
+
+		Read( size );
+
+		if ( size > 0 ) {
+			element.resize( size );
+
+			auto* data = tiny_cast( element.c_str( ), c_pointer );
+
+			size = Read( size, data );
+		}
+
+		return size;
 	};
 
 	template<typename Type>
-	bool Read( Type& element, tiny_uint count ) {
-		constexpr auto size = count * tiny_sizeof( Type );
+		requires ( !std::is_pointer<Type>::value )
+	tiny_uint Read( tiny_list<Type>& list ) { 
+		auto size = tiny_cast( 0, tiny_uint );
 
-		auto* _element = tiny_rvalue( element );
+		Read( size );
 
-		return count > 0 && Read( size, tiny_cast( _element, c_pointer ) ) == size;
+		if ( size > 0 ) {
+			list = size;
+
+			size = 0;
+
+			for ( auto& element : list )
+				size += Read( element );
+		} else
+			list.clear( );
+
+		return size;
 	};
 
 	template<typename Type>
-	bool Write( Type& element ) {
-		constexpr auto size = tiny_sizeof( Type );
+		requires ( !std::is_pointer<Type>::value )
+	tiny_uint Read( tiny_map<Type>& map ) {
+		auto count = tiny_cast( 0, tiny_uint );
+		auto size  = tiny_cast( 0, tiny_uint );
 
-		auto* _element = tiny_rvalue( element );
+		Read( count );
 
-		return Write( size, tiny_cast( _element, const c_pointer ) ) == size;
+		if ( count > 0 ) {
+			auto element = Type{ };
+			auto alias   = std::string{ };
+
+			while ( count-- > 0 ) {
+				size += Read( alias );
+				size += Read( element );
+
+				map.emplace( alias, element );
+			}
+		}
+
+		return size;
+	};
+
+	template<typename Type, tiny_uint Length>
+		requires ( !std::is_pointer<Type>::value && Length > 0 )
+	tiny_uint Read( tiny_array<Type, Length>& array_ ) { 
+		auto size = tiny_cast( 0, tiny_uint );
+
+		Read( size );
+
+		if ( size > 0 ) {
+			size = 0;
+
+			for ( auto& element : array_ )
+				size += Read( element );
+		}
+
+		return size;
+	};
+
+	template<tiny_uint Length>
+		requires ( Length > 0 )
+	tiny_uint Read( tiny_buffer<Length>& buffer ) {
+		auto* data = buffer.get( );
+		auto size  = tiny_cast( 0, tiny_uint );
+
+		Read( size );
+
+		if ( size > 0 )
+			size = Read( size, data );
+
+		return size;
 	};
 
 	template<typename Type>
-	bool Write( Type& element, tiny_uint count ) {
-		constexpr auto size = count * tiny_sizeof( Type );
+		requires ( !std::is_pointer<Type>::value )
+	tiny_uint Write( const Type& element ) { 
+		auto* data = tiny_cast( tiny_rvalue( element ), const c_pointer );
 
-		auto* _element = tiny_rvalue( element );
+		return Write( tiny_sizeof( Type ), data );
+	};
 
-		return count > 0 && Write( size, tiny_cast( _element, const c_pointer ) ) == size;
+	template<>
+	tiny_uint Write<std::string>( const std::string& text ) {
+		return Write<tiny_string>( text );
+	};
+
+	template<>
+	tiny_uint Write<tiny_string>( const tiny_string& text ) {
+		auto length = text.length( );
+		auto* data  = tiny_cast( text.as_chars( ), const c_pointer );
+
+		Write( length );
+
+		return Write( length * tiny_sizeof( char ), data );
+	};
+
+	template<typename Type>
+		requires ( !std::is_pointer<Type>::value )
+	tiny_uint Write( const tiny_list<Type>& list ) { 
+		auto size = list.size( );
+
+		Write( size );
+
+		for ( auto& element : list )
+			size += Write( element );
+
+		return size;
+	};
+
+	template<typename Type>
+		requires ( !std::is_pointer<Type>::value )
+	tiny_uint Write( const tiny_map<Type>& map ) {
+		auto size = map.size( );
+
+		Write( size );
+
+		size = 0;
+
+		for ( auto& element : map ) {
+			size += Write( element.String );
+			size += Write( element.Data );
+		}
+
+		return size;
+	};
+
+	template<typename Type, tiny_uint Length>
+		requires ( !std::is_pointer<Type>::value&& Length > 0 )
+	tiny_uint Write( const tiny_array<Type, Length>& array_ ) {
+		auto* data = array_.data( );
+		auto size  = Length;
+
+		Write( size );
+
+		for ( auto& element : array_ )
+			size += Write( element );
+
+		return size;
+	};
+
+	template<tiny_uint Length>
+		requires ( Length > 0 )
+	tiny_uint Write( const tiny_buffer<Length>& buffer ) {
+		auto length = buffer.length( );
+		auto* data  = buffer.get( );
+
+		Write( length );
+
+		return Write( length, data );
+	};
+
+	template<typename... Args>
+	tiny_uint Write( const tiny_string& format, const Args&... args ) {
+		auto length = format.length( );
+		auto* data  = tiny_cast( format.as_chars( ), const c_pointer );
+
+		tiny_compile_if( tiny_countof( Args ) > 0 ) {
+			auto buffer = tiny_buffer<256>{ };
+
+			Tiny::Sprintf( buffer, format, args... );
+
+			length = buffer.size( );
+			data   = buffer.get( );
+		}
+
+		Write( length );
+
+		return Write( length, data );
 	};
 
 public:
@@ -88,5 +248,22 @@ public:
 	operator bool ( ) const;
 
 	TinyVirtualFile& operator=( const tiny_storage& storage );
+
+public:
+	template<typename Type>
+		requires ( !std::is_pointer<Type>::value )
+	TinyVirtualFile& operator>>( Type& element ) {
+		Read( element );
+
+		return tiny_self;
+	};
+
+	template<typename Type>
+		requires ( !std::is_pointer<Type>::value )
+	TinyVirtualFile& operator<<( Type& element ) { 
+		Write( element );
+
+		return tiny_self;
+	};
 
 };

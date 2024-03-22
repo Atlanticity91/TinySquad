@@ -43,6 +43,8 @@ public:
 public:
 	bool GetExist( const tiny_string& name ) const;
 
+	bool GetExist( const tiny_hash hash ) const;
+
 	TinyRenderUniform& GetUniform( const tiny_string& name );
 
 	TinyRenderUniform& GetUniform( const tiny_hash hash );

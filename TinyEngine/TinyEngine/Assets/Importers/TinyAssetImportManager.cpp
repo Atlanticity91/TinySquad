@@ -213,9 +213,7 @@ bool TinyAssetImportManager::ImportFont(
 	if ( msdf.Prepare( ttf, file.Capacity ) ) {
 		msdf.AddCharset( 0x0020, 0x00FF );
 
-		if (
-			msdf.GenerateCharset( atlas, bitmap )
-		) {
+		if ( msdf.GenerateCharset( atlas, bitmap ) ) {
 			msdf.Process( parameters, atlas, bitmap );
 		}
 
@@ -389,13 +387,7 @@ bool TinyAssetImportManager::ExportMaterial( TinyGame* game, TinyFile& file, c_p
 		file.Write( builder->DepthStencilBack );
 		file.Write( builder->ColorBlends );
 		file.Write( builder->Dynamics );
-		file.Write( descriptor_count );
-
-		if ( descriptor_count > 0 ) {
-			for ( auto& descriptor : builder->Descriptors )
-				file.Write( descriptor );
-		}
-
+		file.Write( builder->Descriptors );
 		file.Write( builder->Constants );
 	}
 
@@ -411,12 +403,13 @@ bool TinyAssetImportManager::ImportLua(
 	auto state = tiny_allocate( storage, tiny_sizeof( tiny_uint ) + file.Capacity );
 
 	if ( state ) {
-		auto* address = tiny_cast( storage.GetAddress( ), tiny_pointer );
+		auto* file_addr = tiny_cast( file.GetAddress( ), const c_pointer );
+		auto* address   = tiny_cast( storage.GetAddress( ), tiny_pointer );
 
 		tiny_lvalue( tiny_cast( address, tiny_uint* ) ) = tiny_cast( file.Capacity, tiny_uint );
 
 		Tiny::Memcpy( 
-			tiny_cast( file.GetAddress( ), const c_pointer ), 
+			tiny_cast( file_addr, const c_pointer ),
 			tiny_cast( address + tiny_sizeof( tiny_uint ), c_pointer ),
 			tiny_cast( file.Capacity, tiny_uint ) 
 		);

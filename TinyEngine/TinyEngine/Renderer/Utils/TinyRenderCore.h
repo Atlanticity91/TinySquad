@@ -36,7 +36,7 @@
 #define TINY_OUTPUT_SPECULAR 3
 #define TINY_OUTPUT_EMISSIVE 4
 
-#define TinyCoreUniform "ubo_core"
+#define TinyCoreUniform "ub_core"
 
 static const tiny_uint TinyMaxVertices = TINY_MAX_VERTEX;
 static const tiny_uint TinyMaxUniform  = TINY_MAX_UNIFORM;
@@ -45,7 +45,7 @@ tiny_enum( TinyRenderSetIDs ) {
 
 	TRS_ID_CORE	   = TINY_RENDER_SET_CORE,
 	TRS_ID_RENDER  = TINY_RENDER_SET_RENDER,
-	TRS_ID_TEXTURE = TINY_RENDER_SET_TEXTURE,
+	TRS_ID_TEXTURE = TINY_RENDER_SET_RENDER, //TINY_RENDER_SET_TEXTURE,
 	TRS_ID_LIGHT   = TINY_RENDER_SET_LIGHT
 
 };

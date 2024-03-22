@@ -34,7 +34,6 @@ void TinyCameraSystem::RegisterInterop( TinyGame* game ) {
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyCameraSystem::PostTick( TinyGame* game ) {
-	//_renderer.Prepare( _graphics );
 	auto& graphics = game->GetGraphics( );
 	auto& renderer = game->GetRenderer( );
 

@@ -498,7 +498,7 @@ void TinyGraphicPipeline::CreateBinding(
 	TinyGraphicPipelineBundle& bundle,
 	tiny_init<TinyGraphicPipelineBinding> bindings
 ) {
-	auto count = bindings.size( );
+	auto count = tiny_cast( bindings.size( ), tiny_uint );
 
 	if ( count > 0 ) {
 		bundle.InputBinding = count;
@@ -564,7 +564,7 @@ void TinyGraphicPipeline::CreateSetBind(
 	tiny_uint set,
 	const TinyGraphicPipelineSetBind& set_bind
 ) {
-	CreateSetBind( bundle, set, set_bind.Binding, set_bind.Type, set_bind.Type, set_bind.Stage );
+	CreateSetBind( bundle, set, set_bind.Binding, set_bind.Type, set_bind.Count, set_bind.Stage );
 }
 
 void TinyGraphicPipeline::CreateSetBind(
@@ -610,14 +610,26 @@ void TinyGraphicPipeline::CreateSetBind(
 	tiny_uint count,
 	TinyGraphicShaderStages stage
 ) {
-	if ( set < bundle.Descriptors.size( ) ) {
-		bundle.Descriptors[ set ].emplace_back( {
+	if ( set == bundle.Descriptors.size( ) ) {
+		bundle.Descriptors.create_back( );
+
+		bundle.Descriptors[ set ].create_back(
 			binding,
 			tiny_cast( type, VkDescriptorType ),
 			count,
 			tiny_cast( stage, VkShaderStageFlags ),
 			VK_NULL_HANDLE
-		} );
+		);
+	} else {
+		bundle.Descriptors[ set ].emplace_back(
+			{
+				binding,
+				tiny_cast( type, VkDescriptorType ),
+				count,
+				tiny_cast( stage, VkShaderStageFlags ),
+				VK_NULL_HANDLE
+			}
+		);
 	}
 }
 

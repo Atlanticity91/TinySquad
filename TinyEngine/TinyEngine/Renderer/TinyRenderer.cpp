@@ -82,11 +82,11 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 				},
 				{ 
 					"tiny_sampler2D( BIND, NAME )", 
-					"layout( set=TinySetID_Texture, binding=BIND ) uniform sampler2D NAME" 
+					"layout( set=TinySetID_Render, binding=BIND ) uniform sampler2D NAME" 
 				},
 				{
 					"tiny_sampler_list( NAME )",
-					"layout( set=TinySetID_Texture ) tiny_sampler2D( 0, NAME )[]"
+					"tiny_sampler2D( 0, NAME )[]"
 				},
 				{
 					"tiny_compute_in2D( BIND, FORMAT, NAME )",
@@ -147,7 +147,9 @@ void TinyRenderer::ReCalculateCurrent( ) { _cameras.ReCalculateCurrent( ); }
 void TinyRenderer::SetDebugLineWidth( float width ) { _debug.SetLineWidth( width ); }
 
 void TinyRenderer::Prepare( TinyGraphicManager& graphics ) {
-	_cameras.Prepare( graphics, _batchs.GetStaging( ), _uniforms );
+	auto& staging = _batchs.GetStaging( );
+
+	_cameras.Prepare( graphics, staging, _uniforms );
 }
 
 void TinyRenderer::Prepare(
@@ -195,6 +197,15 @@ void TinyRenderer::DrawDebug( const TinyRenderDebugPrimitive& primitive ) {
 }
 
 void TinyRenderer::Compose( TinyGame* game ) {
+	DrawDebug( { { 10, 10 }, 256, 0.001 } );
+
+	auto r = TinyRenderDebugPrimitive{ { 10, 10 }, { 256, 256 } };
+
+	r.Type = TRD_PRIMITIVE_RECTANGLE;
+
+	DrawDebug( { { 10, 10 }, { 256, 256 } } );
+	DrawDebug( r );
+
 	_batchs.Flush( game, _uniforms );
 	_post_process.Compose( game, _uniforms, _batchs );
 	_debug.Flush( game, _uniforms, _batchs );
