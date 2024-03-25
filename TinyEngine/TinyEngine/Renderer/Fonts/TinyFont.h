@@ -22,11 +22,29 @@
 
 #include <TinyEngine/Renderer/Textures/TinyTextureAtlasManager.h>
 
+te_struct TinyCharVertice {
+
+	tiny_vec4 Location;
+	tiny_vec2 UV;
+
+};
+
+te_struct TinyCharGeometry {
+
+	float Advance = 0.f;
+	TinyCharVertice Vertices[ 4 ];
+
+};
+
 te_class TinyFont final {
 
 public:
 	TinyFont( );
 
 	~TinyFont( ) = default;
+
+	const TinyCharGeometry& GetGeometry( char character ) const;
+
+	const TinyGraphicPipelineBindpoint& GetTexure( ) const;
 
 };

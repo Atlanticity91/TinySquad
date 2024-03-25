@@ -27,13 +27,21 @@ TinyRenderUniformManager::TinyRenderUniformManager( )
 	: _uniforms{ }
 { }
 
-bool TinyRenderUniformManager::Create( TinyGraphicManager& graphics ) {
+bool TinyRenderUniformManager::Create( 
+	TinyGraphicManager& graphics,
+	TinyGraphicBufferStaging& staging
+) {
 	auto core = TinyRenderUniformBuilder{
 		TGB_TYPE_UNIFORM, tiny_sizeof( TinyRenderCore ),
 		TinyCoreUniform, TRS_ID_CORE, 0
 	};
+	auto indexes = TinyRenderUniformBuilder{ TGB_TYPE_INDEX, TINY_QUAD_INDEX_SIZE, TinyQuadIndexBuffer };
+	auto state   = Create( graphics, core ) && Create( graphics, indexes );
 
-	return Create( graphics, core );
+	if ( state )
+		GenerateIndexBuffer( graphics, staging );
+
+	return state;
 }
 
 bool TinyRenderUniformManager::Create(
@@ -76,6 +84,41 @@ void TinyRenderUniformManager::Terminate( TinyGraphicManager& graphics ) {
 
 	for ( auto& uniform : _uniforms )
 		uniform.Data.Terminate( context );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyRenderUniformManager::GenerateIndexBuffer( 
+	TinyGraphicManager& graphics,
+	TinyGraphicBufferStaging& staging
+) {
+	auto indexes = tiny_list<TinyRenderQuadIndex>{ };
+	auto count   = TINY_MAX_VERTEX;
+
+	indexes = count;
+
+	while ( count-- > 0 ) {
+		auto index_id = TINY_QUAD_INDEX_COUNT;
+		auto offset = TINY_QUAD_VERTICE_COUNT * count;
+
+		while ( index_id-- > 0 )
+			indexes[ count ].Index[ index_id ] = TinyQuadIndex[ index_id ] + offset;
+	}
+
+	{
+		auto context = graphics.GetContext( );
+		auto size	 = TINY_QUAD_INDEX_SIZE;
+
+		staging.Map( context, size );
+		Tiny::Memcpy( indexes.data( ), staging.GetAccess( ), size );
+		staging.UnMap( context );
+
+		auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		auto copie  = VkBufferCopy{ 0, 0, size };
+
+		burner.Upload( staging, _uniforms[ TinyQuadIndexBuffer ], copie );
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

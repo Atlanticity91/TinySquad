@@ -46,4 +46,13 @@ public:
 		const TinyGraphicBufferStaging& stagging
 	);
 
+public:
+	bool operator==( const TinyTexture2D* other ) const;
+
+	bool operator==( const TinyTexture2D& other ) const;
+
+	bool operator!=( const TinyTexture2D* other ) const;
+
+	bool operator!=( const TinyTexture2D& other ) const;
+
 };

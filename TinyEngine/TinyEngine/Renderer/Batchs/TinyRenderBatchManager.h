@@ -39,6 +39,7 @@ public:
 private:
 	TinyGraphicBufferStaging _staging;
 	TinyRenderBatchSprite    _sprites;
+	TinyRenderBatchText		 _text;
 
 public:
 	TinyRenderBatchManager( );

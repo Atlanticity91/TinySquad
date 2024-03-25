@@ -22,11 +22,10 @@
 
 #include <TinyEngine/Renderer/Batchs/TinyRenderBatchTextures.h>
 
-template<typename DrawContext_t, tiny_uint TextureCount>
+template<typename DrawContext_t>
 class TinyRenderBatchInstance {
 
 public:
-	using Texture_t  = TinyRenderBatch<TinyGraphicPipelineBindpoint, TextureCount>;
 	using Callback_t = std::function<void(
 		TinyGraphicWorkContext&,
 		TinyMaterial&,
@@ -38,34 +37,20 @@ protected:
 	tiny_hash  _render_pass;
 	TinyAsset  _material;
 	Callback_t _callback;
-	tiny_uint  _max_texture_slots;
-	Texture_t  _textures;
 
 public:
 	TinyRenderBatchInstance( )
 		: _render_pass{ },
 		_material{ },
-		_callback{ },
-		_max_texture_slots{ 0 },
-		_textures{ }
+		_callback{ }
 	{ };
 
 	~TinyRenderBatchInstance( ) = default;
 
-	virtual bool Create( 
+	tiny_abstract( bool Create( 
 		TinyGraphicManager& graphics,
 		TinyRenderUniformManager& uniforms
-	) {
-		auto& physical = graphics.GetPhysical( );
-		auto& limits   = physical.GetProperties( ).limits;
-
-		auto image_count   = limits.maxPerStageDescriptorSampledImages;
-		auto sampler_count = limits.maxPerStageDescriptorSamplers;
-
-		_max_texture_slots = image_count < sampler_count ? image_count : sampler_count;
-		
-		return _textures.Create( );
-	};
+	) );
 
 	virtual bool Prepare(
 		TinyGraphicManager& graphics,
@@ -105,10 +90,10 @@ public:
 
 			if ( instance_count > 0 ) {
 				auto& work_context = graphics.GetWorkdContext( );
-				auto textures	   = UploadTextures( );
 
 				material->Mount( work_context );
-				material->Bind( work_context, textures.Count, textures.Textures );
+
+				OnFlush( work_context, tiny_lvalue( material ) );
 
 				std::invoke( _callback, work_context, tiny_lvalue( material ), uniforms, instance_count );
 			}
@@ -117,7 +102,7 @@ public:
 		_render_pass.empty( );
 	};
 
-	virtual void Terminate( ) { _textures.Terminate( ); };
+	tiny_abstract( void Terminate( ) );
 
 protected:
 	tiny_abstract( tiny_uint UploadBuffers(
@@ -126,11 +111,9 @@ protected:
 		TinyRenderUniformManager& uniforms
 	) );
 
-private:
-	TinyRenderBatchTextures UploadTextures( ) {
-		auto textures = _textures.Flush( );
-
-		return { textures.Count, tiny_cast( textures.Values, TinyGraphicPipelineBindpoint* ) };
-	};
+	tiny_abstract( void OnFlush( 
+		TinyGraphicWorkContext& work_context,
+		TinyMaterial& material
+	) );
 
 };

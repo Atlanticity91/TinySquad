@@ -50,4 +50,10 @@ public:
 		TinyGraphicContext& context 
 	);
 
+public:
+	static void CreateShaders( 
+		TinyMaterialBuilder& builder,
+		tiny_init<tiny_string> shaders 
+	);
+
 };

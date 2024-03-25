@@ -74,13 +74,13 @@ bool MsdfAtlasGenerator::GenerateCharset( MsdfAtlas& atlas, MsdfBitmap& bitmap )
 		_packer.getDimensions( bitmap.Width, bitmap.Height );
 
 		bitmap.Component = 3;
-		bitmap.Length	 = bitmap.Width * bitmap.Height * bitmap.Component;
+		bitmap.Buffer.resize( (size_t)( bitmap.Width * bitmap.Height * bitmap.Component ) );
 	}
 
 	return state;
 }
 
-void MsdfAtlasGenerator::Process( const MsdfParameters& parameters, MsdfAtlas& atlas, MsdfBitmap& bitmap ) {
+bool MsdfAtlasGenerator::Process( const MsdfParameters& parameters, MsdfAtlas& atlas, MsdfBitmap& bitmap ) {
 	PreProcess( parameters, atlas, bitmap );
 
 	auto attributes = msdf_atlas::GeneratorAttributes{ };
@@ -94,16 +94,23 @@ void MsdfAtlasGenerator::Process( const MsdfParameters& parameters, MsdfAtlas& a
 	attributes.scanlinePass			 = true;
 
 	generator.setAttributes( attributes );
-	generator.setThreadCount( 2 );
+	generator.setThreadCount( parameters.Threads );
 	generator.generate( atlas.Glyphs.data( ), (int)( atlas.Glyphs.size( ) ) );
 
 	auto pixels = (Bitmap_t)generator.atlasStorage( );
+	auto length = bitmap.Buffer.size( );
+	auto* data  = bitmap.Buffer.data( );
+	auto state  = (size_t)( pixels.width * pixels.height * bitmap.Component ) == length;
 
-#	ifdef _WIN32
-		memcpy_s( bitmap.Buffer, bitmap.Length, pixels.pixels, bitmap.Length );
-#	else
-		memcpy( bitmap.Buffer, pixels.pixels, bitmap.Length );
-#	endif
+	if ( state ) {
+#		ifdef _WIN32
+			memcpy_s( data, length, pixels.pixels, length );
+#		else
+			memcpy( data, pixels.pixels, length );
+#		endif
+	}
+
+	return state;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

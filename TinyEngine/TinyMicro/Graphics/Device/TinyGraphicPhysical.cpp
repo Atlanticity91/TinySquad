@@ -25,9 +25,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicPhysical::TinyGraphicPhysical( )
 	: _handle{ VK_NULL_HANDLE },
-	_features{ },
+	_features{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2 },
 	_properties{ },
-	_queues{ }
+	_queues{ },
+	_indexing{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT }
 { }
 
 bool TinyGraphicPhysical::Initialize(
@@ -36,8 +37,11 @@ bool TinyGraphicPhysical::Initialize(
 ) {
 	auto state = GetPhysicalDevice( instance );
 	
-	if ( state )
+	if ( state ) {
+		CreateIndexing( );
+
 		GetQueuesFamilies( surface );
+	}
 
 	return state;
 }
@@ -45,11 +49,32 @@ bool TinyGraphicPhysical::Initialize(
 void TinyGraphicPhysical::Terminate( ) { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyGraphicPhysical::CreateIndexing( ) {
+	_indexing.pNext												 = VK_NULL_HANDLE;
+	_indexing.shaderUniformBufferArrayNonUniformIndexing		 = VK_TRUE;
+	_indexing.shaderSampledImageArrayNonUniformIndexing			 = VK_TRUE;
+	_indexing.shaderStorageBufferArrayNonUniformIndexing		 = VK_TRUE;
+	_indexing.shaderStorageImageArrayNonUniformIndexing			 = VK_TRUE;
+	_indexing.descriptorBindingUniformBufferUpdateAfterBind		 = VK_TRUE;
+	_indexing.descriptorBindingSampledImageUpdateAfterBind		 = VK_TRUE;
+	_indexing.descriptorBindingStorageImageUpdateAfterBind		 = VK_TRUE;
+	_indexing.descriptorBindingStorageBufferUpdateAfterBind		 = VK_TRUE;
+	_indexing.descriptorBindingUniformTexelBufferUpdateAfterBind = VK_TRUE;
+	_indexing.descriptorBindingStorageTexelBufferUpdateAfterBind = VK_TRUE;
+	_indexing.descriptorBindingUpdateUnusedWhilePending			 = VK_TRUE;
+	_indexing.descriptorBindingPartiallyBound					 = VK_TRUE;
+	_indexing.descriptorBindingVariableDescriptorCount			 = VK_TRUE;
+	_indexing.runtimeDescriptorArray							 = VK_TRUE;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicPhysical::GetIsValid( ) const {
 	return  _properties.deviceType   == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
-			_features.geometryShader == VK_TRUE								 &&
+			_features.features.geometryShader == VK_TRUE					 &&
 			GetHasExtensions( )												 && 
 			GetHasDepth( );
 }
@@ -74,10 +99,25 @@ tiny_string TinyGraphicPhysical::GetVendor( ) const {
 	return vendor;
 }
 
-const VkPhysicalDeviceFeatures& TinyGraphicPhysical::GetFeatures( ) const { return _features; }
+const VkPhysicalDeviceFeatures2* TinyGraphicPhysical::GetFeatures( ) const { 
+	return tiny_rvalue( _features ); 
+}
+
+const VkPhysicalDeviceFeatures& TinyGraphicPhysical::GetFeatureCore( ) const {
+	return _features.features;
+}
+
+const VkPhysicalDeviceDescriptorIndexingFeatures& TinyGraphicPhysical::GetFeatureIndexing( 
+) const {
+	return _indexing;
+}
 
 const VkPhysicalDeviceProperties& TinyGraphicPhysical::GetProperties( ) const {
 	return _properties; 
+}
+
+const VkPhysicalDeviceLimits& TinyGraphicPhysical::GetLimits( ) const {
+	return _properties.limits;
 }
 
 const TinyGraphicPhysical::VkPhysicalDeviceQueues& TinyGraphicPhysical::GetQueues( ) const {
@@ -134,7 +174,7 @@ bool TinyGraphicPhysical::GetPhysicalDevice( const TinyGraphicInstance& instance
 	for ( auto device : device_list ) {
 		_handle = device;
 
-		vkGetPhysicalDeviceFeatures( _handle, tiny_rvalue( _features ) );
+		vkGetPhysicalDeviceFeatures2( _handle, tiny_rvalue( _features ) );
 		vkGetPhysicalDeviceProperties( _handle, tiny_rvalue( _properties ) );
 
 		state = GetIsValid( );

@@ -66,14 +66,17 @@ tiny_list<c_string> TinyGraphicInstance::GetExtensions( ) const {
     auto extensions      = tiny_list<c_string>{ };
 
 #   ifdef TINY_DEBUG
-    extensions = extension_count + 1;
+    extensions = extension_count + 2;
 
-    extensions[ extension_count ] = VK_EXT_DEBUG_REPORT_EXTENSION_NAME;
+    extensions[ extension_count     ] = VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME;
+    extensions[ extension_count + 1 ] = VK_EXT_DEBUG_REPORT_EXTENSION_NAME;
 
     while ( extension_count-- > 0 )
         extensions[ extension_count ] = required[ extension_count ];
 #   else
-    extensions = extension_count;
+    extensions = extension_count + 1;
+    
+    extensions[ extension_count ] = VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME;
 
     while ( extension_count-- > 0 )
         extensions[ extension_count ] = required[ extension_count ];

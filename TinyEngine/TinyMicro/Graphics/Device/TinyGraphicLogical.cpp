@@ -29,18 +29,17 @@ TinyGraphicLogical::TinyGraphicLogical( )
 
 bool TinyGraphicLogical::Create( const TinyGraphicPhysical& physical ) {
 	auto device_info = VkDeviceCreateInfo{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };
-	auto features	 = GrabFeatures( );
 	auto queues		 = GetQueuesCreateInfos( physical );
 
-	device_info.pNext					= tiny_rvalue( features );
+	device_info.pNext					= physical.GetFeatures( );
 	device_info.flags					= VK_NULL_FLAGS;
 	device_info.queueCreateInfoCount	= queues.size( );
 	device_info.pQueueCreateInfos		= queues.data( );
 	device_info.enabledLayerCount		= tiny_size_array( vk::LAYERS );
-	device_info.ppEnabledExtensionNames = vk::EXTENSIONS;
-	device_info.enabledExtensionCount   = tiny_size_array( vk::EXTENSIONS );
 	device_info.ppEnabledLayerNames		= vk::LAYERS;
-	device_info.pEnabledFeatures		= tiny_rvalue( physical.GetFeatures( ) );
+	device_info.enabledExtensionCount   = tiny_size_array( vk::EXTENSIONS );
+	device_info.ppEnabledExtensionNames = vk::EXTENSIONS;
+	device_info.pEnabledFeatures		= VK_NULL_HANDLE;
 
 	return vk::Check( vkCreateDevice( physical, tiny_rvalue( device_info ), vk::GetAllocator( ), tiny_rvalue( _handle ) ) );
 }
@@ -81,15 +80,6 @@ tiny_list<VkDeviceQueueCreateInfo> TinyGraphicLogical::GetQueuesCreateInfos(
 	}
 
 	return queues_infos;
-}
-
-VkPhysicalDeviceVulkan12Features TinyGraphicLogical::GrabFeatures( ) {
-	auto features = VkPhysicalDeviceVulkan12Features{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES	};
-
-	features.pNext					= VK_NULL_HANDLE;
-	features.runtimeDescriptorArray = VK_TRUE;
-
-	return features;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

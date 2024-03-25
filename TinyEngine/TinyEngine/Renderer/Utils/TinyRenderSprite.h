@@ -49,12 +49,6 @@ te_struct TinyRenderSpriteVertex {
 
 };
 
-te_struct TinyRenderSpriteIndex {
-
-	tiny_uint Index[ TinyQuadIndexCount ];
-
-};
-
 te_struct TinyRenderSpriteContext {
 
 	TinyAsset Material{ };

@@ -25,7 +25,7 @@
 static const c_string TinyDefaultSpriteFragment = R"(
 #version 450 core
 #pragma shader_stage( fragment )
-#extension GL_EXT_nonuniform_qualifier : enable
+#extension GL_EXT_nonuniform_qualifier : require
 
 tiny_sampler_list( s_Textures );
 
@@ -41,7 +41,7 @@ layout( location=0 ) flat in TinyVertexSCV scv_vertex;
 layout( location=TinyOutputID_Color ) out vec4 o_Colors;
 
 void main( ) {
-	o_Colors = texture( s_Textures[ scv_vertex.TextureSlot ], scv_vertex.UV ) * scv_vertex.Color;
+	o_Colors = tiny_texture( s_Textures, scv_vertex.TextureSlot, scv_vertex.UV ) * scv_vertex.Color;
 }
 )";
 

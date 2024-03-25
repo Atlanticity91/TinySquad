@@ -32,13 +32,19 @@ public:
 
 	~TinyRenderUniformManager( ) = default;
 
-	bool Create( TinyGraphicManager& graphics );
+	bool Create( TinyGraphicManager& graphics, TinyGraphicBufferStaging& staging );
 
 	bool Create( TinyGraphicManager& graphics, const TinyRenderUniformBuilder& builder );
 
 	void Destroy( TinyGraphicManager& graphics, const tiny_string& name );
 
 	void Terminate( TinyGraphicManager& graphics );
+
+private:
+	void GenerateIndexBuffer(  
+		TinyGraphicManager& graphics, 
+		TinyGraphicBufferStaging& staging
+	);
 
 public:
 	bool GetExist( const tiny_string& name ) const;

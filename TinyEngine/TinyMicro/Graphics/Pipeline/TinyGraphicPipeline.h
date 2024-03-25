@@ -194,6 +194,36 @@ public:
 		TinyGraphicPipelineBindpoint* bindpoints
 	);
 
+	tiny_inline void Bind(
+		TinyGraphicWorkContext& work_context,
+		tiny_uint set,
+		tiny_uint binding,
+		tiny_init<VkDescriptorBufferInfo> buffers
+	);
+
+	void Bind(
+		TinyGraphicWorkContext& work_context,
+		tiny_uint set,
+		tiny_uint binding,
+		tiny_uint count,
+		const VkDescriptorBufferInfo* buffers
+	);
+
+	tiny_inline void Bind(
+		TinyGraphicWorkContext& work_context,
+		tiny_uint set,
+		tiny_uint binding,
+		tiny_init<VkDescriptorImageInfo> samplers
+	);
+
+	void Bind(
+		TinyGraphicWorkContext& work_context,
+		tiny_uint set,
+		tiny_uint binding,
+		tiny_uint count,
+		const VkDescriptorImageInfo* samplers
+	);
+
 	tiny_inline void BindVertex(
 		TinyGraphicWorkContext& work_context,
 		const TinyGraphicBuffer& buffer

@@ -27,6 +27,12 @@ MsdfBitmap::MsdfBitmap( )
 	: Width{ 0 },
 	Height{ 0 },
 	Component{ 0 },
-	Length{ 0 },
-	Buffer{ nullptr }
+	Buffer{ }
+{ }
+
+MsdfBitmap::MsdfBitmap( const MsdfBitmap& other )
+	: Width{ other.Width },
+	Height{ other.Height },
+	Component{ other.Component },
+	Buffer{ other.Buffer }
 { }

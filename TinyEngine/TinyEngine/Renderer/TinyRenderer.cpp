@@ -32,77 +32,15 @@ TinyRenderer::TinyRenderer( )
 { }
 
 bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem ) {
+	auto& staging = _batchs.GetStaging( );
+
+	PushShaderMacros( graphics );
+
 	_cameras.Initialize( );
 
-	auto state = _uniforms.Create( graphics ) &&
-				 _batchs.Initialize( graphics, _uniforms );
-
-	if ( state ) {
-		graphics.AddCompilerMacros( 
-			{
-				// === PI ===
-				{ "TinyPI", "3.1415926535897932384626433832795" },
-				{ "TinyMaxVertex", TINY_STR( TINY_MAX_VERTEX ) },
-				{ "TinyMaxUniform", TINY_STR( TINY_MAX_UNIFORM ) },
-
-				// === SETS ===
-				{ "TinySetID_Core",	   TINY_STR( TINY_RENDER_SET_CORE )    },
-				{ "TinySetID_Render",  TINY_STR( TINY_RENDER_SET_RENDER )  },
-				{ "TinySetID_Texture", TINY_STR( TINY_RENDER_SET_TEXTURE ) },
-				{ "TinySetID_Light",   TINY_STR( TINY_RENDER_SET_LIGHT )   },
-
-				// === OUTPUTS ===
-				{ "TinyOutputID_Color",    TINY_STR( TINY_OUTPUT_COLOR )    },
-				{ "TinyOutputID_Albedo",   TINY_STR( TINY_OUTPUT_COLOR )    },
-				{ "TinyOutputID_Position", TINY_STR( TINY_OUTPUT_POSITION ) },
-				{ "TinyOutputID_Normal",   TINY_STR( TINY_OUTPUT_NORMAL )   },
-				{ "TinyOutputID_Specular", TINY_STR( TINY_OUTPUT_SPECULAR ) },
-				{ "TinyOutputID_Emissive", TINY_STR( TINY_OUTPUT_EMISSIVE ) },
-				
-				// === TYPES HELPERS ===
-				{ 
-					"tiny_ubo( SET, BIND, NAME )", 
-					"layout( set=SET, binding=BIND ) uniform NAME " 
-				},
-				{
-					"tiny_ssbo_in( SET, BIND, NAME )"
-					"layout( std140, set=SET, binding=BIND ) readonly buffer NAME"
-				},
-				{
-					"tiny_ssbo_out( SET, BIND, NAME )"
-					"layout( std140, set=SET, binding=BIND ) writeonly buffer NAME"
-				},
-				{
-					"tiny_ssbo_io( SET, BIND, NAME )"
-					"layout( std140, set=SET, binding=BIND ) buffer NAME"
-				},
-				{
-					"tiny_constant( NAME )",
-					"layout( push_constant ) uniform NAME"
-				},
-				{ 
-					"tiny_sampler2D( BIND, NAME )", 
-					"layout( set=TinySetID_Render, binding=BIND ) uniform sampler2D NAME" 
-				},
-				{
-					"tiny_sampler_list( NAME )",
-					"tiny_sampler2D( 0, NAME )[]"
-				},
-				{
-					"tiny_compute_in2D( BIND, FORMAT, NAME )",
-					"layout( binding=BIND, FORMAT ) uniform readonly image2D NAME"
-				},
-				{
-					"tiny_compute_out2D( BIND, FORMAT, NAME )",
-					"layout( binding=BIND, FORMAT ) uniform writeonly image2D NAME"
-				},
-			}
-		);
-
-		state = _debug.Initialize( graphics, _uniforms );
-	}
-
-	return state;
+	return  _batchs.Initialize( graphics, _uniforms ) &&
+			_debug.Initialize( graphics, _uniforms )  &&
+			_uniforms.Create( graphics, staging );
 }
 
 TinyRenderProjection& TinyRenderer::CreateProjection( const tiny_string& alias ) {
@@ -198,6 +136,8 @@ void TinyRenderer::DrawDebug( const TinyRenderDebugPrimitive& primitive ) {
 
 void TinyRenderer::Compose( TinyGame* game ) {
 	DrawDebug( { { 10, 10 }, 256, 0.001 } );
+	DrawDebug( { { 10, 266 }, 128, 0.001 } );
+	DrawDebug( { { 266, 10 }, 64, 0.001 } );
 
 	auto r = TinyRenderDebugPrimitive{ { 10, 10 }, { 256, 256 } };
 
@@ -205,7 +145,7 @@ void TinyRenderer::Compose( TinyGame* game ) {
 
 	DrawDebug( { { 10, 10 }, { 256, 256 } } );
 	DrawDebug( r );
-
+	
 	_batchs.Flush( game, _uniforms );
 	_post_process.Compose( game, _uniforms, _batchs );
 	_debug.Flush( game, _uniforms, _batchs );
@@ -215,6 +155,74 @@ void TinyRenderer::Terminate( TinyGraphicManager& graphics ) {
 	_debug.Terminate( graphics );
 	_batchs.Terminate( graphics );
 	_uniforms.Terminate( graphics );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyRenderer::PushShaderMacros( TinyGraphicManager& graphics ) {
+	graphics.AddCompilerMacros( {
+		// === PI ===
+		{ "TinyPI", "3.1415926535897932384626433832795" },
+		{ "TinyMaxVertex", TINY_STR( TINY_MAX_VERTEX ) },
+		{ "TinyMaxUniform", TINY_STR( TINY_MAX_UNIFORM ) },
+
+		// === SETS ===
+		{ "TinySetID_Core",	   TINY_STR( TINY_RENDER_SET_CORE )    },
+		{ "TinySetID_Render",  TINY_STR( TINY_RENDER_SET_RENDER )  },
+		{ "TinySetID_Texture", TINY_STR( TINY_RENDER_SET_TEXTURE ) },
+		{ "TinySetID_Light",   TINY_STR( TINY_RENDER_SET_LIGHT )   },
+
+		// === OUTPUTS ==
+		{ "TinyOutputID_Color",    TINY_STR( TINY_OUTPUT_COLOR )    },
+		{ "TinyOutputID_Albedo",   TINY_STR( TINY_OUTPUT_COLOR )    },
+		{ "TinyOutputID_Position", TINY_STR( TINY_OUTPUT_POSITION ) },
+		{ "TinyOutputID_Normal",   TINY_STR( TINY_OUTPUT_NORMAL )   },
+		{ "TinyOutputID_Specular", TINY_STR( TINY_OUTPUT_SPECULAR ) },
+		{ "TinyOutputID_Emissive", TINY_STR( TINY_OUTPUT_EMISSIVE ) },
+
+		// === TYPES HELPERS ===
+		{
+			"tiny_ubo( SET, BIND, NAME )",
+			"layout( set=SET, binding=BIND ) uniform NAME "
+		},
+		{
+			"tiny_ssbo_in( SET, BIND, NAME )"
+			"layout( std140, set=SET, binding=BIND ) readonly buffer NAME"
+		},
+		{
+			"tiny_ssbo_out( SET, BIND, NAME )"
+			"layout( std140, set=SET, binding=BIND ) writeonly buffer NAME"
+		},
+		{
+			"tiny_ssbo_io( SET, BIND, NAME )"
+			"layout( std140, set=SET, binding=BIND ) buffer NAME"
+		},
+		{
+			"tiny_constant( NAME )",
+			"layout( push_constant ) uniform NAME"
+		},
+		{
+			"tiny_sampler2D( BIND, NAME )",
+			"layout( set=TinySetID_Render, binding=BIND ) uniform sampler2D NAME"
+		},
+		{
+			"tiny_sampler_list( NAME )",
+			"tiny_sampler2D( 0, NAME )[]"
+		},
+		{
+			"tiny_texture( TEXTURES, SLOT, UV )",
+			"texture( TEXTURES[ nonuniformEXT( SLOT ) ], UV )"
+		},
+		{
+			"tiny_compute_in2D( BIND, FORMAT, NAME )",
+			"layout( binding=BIND, FORMAT ) uniform readonly image2D NAME"
+		},
+		{
+			"tiny_compute_out2D( BIND, FORMAT, NAME )",
+			"layout( binding=BIND, FORMAT ) uniform writeonly image2D NAME"
+		},
+	} );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

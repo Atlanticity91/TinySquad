@@ -46,8 +46,6 @@ private:
 		const TinyGraphicPhysical& physical 
 	);
 
-	VkPhysicalDeviceVulkan12Features GrabFeatures( );
-	
 public:
 	operator VkDevice ( ) const;
 

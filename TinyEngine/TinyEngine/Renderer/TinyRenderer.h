@@ -97,6 +97,9 @@ public:
 
 	void Terminate( TinyGraphicManager& graphics );
 
+private:
+	void PushShaderMacros( TinyGraphicManager& graphics );
+
 public:
 	TinyRenderCameraManager& GetCameras( );
 	

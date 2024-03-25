@@ -42,7 +42,7 @@ public:
 
 	bool GenerateCharset( MsdfAtlas& atlas, MsdfBitmap& bitmap );
 
-	void Process( const MsdfParameters& parameters, MsdfAtlas& atlas, MsdfBitmap& bitmap );
+	bool Process( const MsdfParameters& parameters, MsdfAtlas& atlas, MsdfBitmap& bitmap );
 
 private:
 	void PreProcess( const MsdfParameters& parameters, MsdfAtlas& atlas, MsdfBitmap& bitmap );

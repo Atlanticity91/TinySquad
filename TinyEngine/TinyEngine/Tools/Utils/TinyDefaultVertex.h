@@ -65,7 +65,7 @@ static const c_string TinyDefaultTextVertex = R"(
 #pragma shader_stage( vertex )
 
 layout( location=0 ) in vec4 v_Position;
-layout( location=1 ) in vec4 v_UV;
+layout( location=1 ) in vec2 v_UV;
 
 tiny_ubo( TinySetID_Core, 0, TinyUBOContext ) {
 

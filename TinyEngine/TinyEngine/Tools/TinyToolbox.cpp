@@ -418,12 +418,10 @@ void TinyToolbox::CreateSpriteShaders(
         material.InputAttributes.clear( );
 
         material.PassName = TINY_OUTPASS_NAME;
-        material.ShaderStages = 2;
-        material.ShaderStages[ 0 ] = "sv_sprite_dev";
-        material.ShaderStages[ 1 ] = "sf_sprite_dev";
-
-        TinyGraphicPipeline::CreateBinding( material, { 0, tiny_sizeof( TinyRenderSpriteVertices ) } );
-        TinyGraphicPipeline::CreateAttribute(
+        
+        TinyMaterial::CreateShaders( material, { "sv_sprite_dev", "sf_sprite_dev" } );
+        TinyMaterial::CreateBinding( material, { 0, tiny_sizeof( TinyRenderSpriteVertices ) } );
+        TinyMaterial::CreateAttribute(
             material,
             {
                 { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Position ) },
@@ -431,8 +429,8 @@ void TinyToolbox::CreateSpriteShaders(
                 { 2, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Color ) }
             }
         );
-        TinyGraphicPipeline::CreateSetBind( material, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
-        TinyGraphicPipeline::CreateSetBind( material, TRS_ID_TEXTURE, { 0, TGBP_TYPE_COMBINED, 1, TGS_STAGE_FRAGMENT } );
+        TinyMaterial::CreateSetBind( material, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
+        TinyMaterial::CreateSetBind( material, TRS_ID_TEXTURE, { 0, TGBP_TYPE_COMBINED, TINY_MAX_VERTEX, TGS_STAGE_FRAGMENT } );
 
         auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
 

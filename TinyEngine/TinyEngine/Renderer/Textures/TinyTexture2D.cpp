@@ -41,3 +41,22 @@ bool TinyTexture2D::Create(
 
 	return state;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	OPERATOR ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyTexture2D::operator==( const TinyTexture2D* other ) const {
+	return GetImage( ) == other->GetImage( ) && GetSampler( ) != other->GetSampler( );
+}
+
+bool TinyTexture2D::operator==( const TinyTexture2D& other ) const {
+	return tiny_self == tiny_rvalue( other );
+}
+
+bool TinyTexture2D::operator!=( const TinyTexture2D* other ) const {
+	return !( tiny_self == other );
+}
+
+bool TinyTexture2D::operator!=( const TinyTexture2D& other ) const {
+	return tiny_self != tiny_rvalue( other );
+}

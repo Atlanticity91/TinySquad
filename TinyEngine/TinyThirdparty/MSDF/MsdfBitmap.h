@@ -27,9 +27,10 @@ struct MsdfBitmap {
 	int32_t Width;
 	int32_t Height;
 	int32_t Component;
-	uint32_t Length;
-	uint8_t* Buffer;
+	std::vector<uint8_t> Buffer;
 
 	MsdfBitmap( );
+
+	MsdfBitmap( const MsdfBitmap& other );
 
 };

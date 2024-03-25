@@ -116,7 +116,7 @@ void TinySkin2DSystem::Draw(
 	TinyRenderUniformManager& uniforms,
 	tiny_uint instance_count
 ) {
-	material.BindGeometry( work_context, uniforms[ TinySpriteIndexBuffer ], uniforms[ TinySpriteVertexBuffer ] );
+	material.BindGeometry( work_context, uniforms[ TinyQuadIndexBuffer ], uniforms[ TinySpriteVertexBuffer ] );
 	material.Bind( work_context, uniforms[ TinyCoreUniform ] );
-	material.Draw( work_context, { TGD_MODE_INDEXED, 6, instance_count } );
+	material.Draw( work_context, { TGD_MODE_INDEXED, TinyQuadIndexCount * instance_count } );
 }

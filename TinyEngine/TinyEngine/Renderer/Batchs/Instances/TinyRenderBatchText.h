@@ -22,17 +22,49 @@
 
 #include "TinyRenderBatchVertex.h"
 
-/*
 te_class TinyRenderBatchText final
-	: tiny_inherit( TinyRenderBatchInstance<TinyRenderSpriteContext, TINY_MAX_VERTEX> ) {
+	: tiny_inherit( TinyRenderBatchInstance<TinyRenderTextContext> ) {
 
 public:
-	static const tiny_uint Size = 0;
+	using Vertex_t = TinyRenderBatch<TinyRenderTextVertex, TINY_MAX_VERTEX>;
+
+	static const tiny_uint Size = Vertex_t::Size + tiny_sizeof( TinyRenderTextParameters );
+
+private:
+	tiny_uint					 _instance;
+	Vertex_t					 _vertex;
+	TinyRenderTextParameters	 _parameters;
+	TinyGraphicPipelineBindpoint _texture;
 
 public:
 	TinyRenderBatchText( );
 
-	~TinyRenderBatchText( );
+	~TinyRenderBatchText( ) = default;
+	
+	tiny_implement( bool Create(
+		TinyGraphicManager& graphics,
+		TinyRenderUniformManager& uniforms
+	) );
+
+	tiny_implement( void Draw(
+		TinyGame* game,
+		TinyGraphicBufferStaging& staging,
+		TinyRenderUniformManager& uniforms,
+		const TinyRenderTextContext & draw_context
+	) );
+
+	tiny_implement( void Terminate( ) );
+
+protected:
+	tiny_implement( tiny_uint UploadBuffers(
+		TinyGraphicManager& graphics,
+		TinyGraphicBufferStaging& staging,
+		TinyRenderUniformManager& uniforms
+	) );
+
+	tiny_implement( void OnFlush(
+		TinyGraphicWorkContext& work_context,
+		TinyMaterial& material
+	) );
 
 };
-*/

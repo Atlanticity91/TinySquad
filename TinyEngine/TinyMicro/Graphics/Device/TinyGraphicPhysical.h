@@ -27,10 +27,11 @@ tm_class TinyGraphicPhysical final {
 	using VkPhysicalDeviceQueues = tiny_list<VkPhysicalDeviceQueue>;
 
 private:
-	VkPhysicalDevice		   _handle;
-	VkPhysicalDeviceFeatures   _features;
-	VkPhysicalDeviceProperties _properties;
-	VkPhysicalDeviceQueues	   _queues;
+	VkPhysicalDevice						   _handle;
+	VkPhysicalDeviceFeatures2				   _features;
+	VkPhysicalDeviceProperties				   _properties;
+	VkPhysicalDeviceQueues					   _queues;
+	VkPhysicalDeviceDescriptorIndexingFeatures _indexing;
 
 public:
 	TinyGraphicPhysical( );
@@ -44,6 +45,9 @@ public:
 
 	void Terminate( );
 
+private:
+	void CreateIndexing( );
+
 public:
 	bool GetIsValid( ) const;
 
@@ -51,9 +55,15 @@ public:
 
 	tiny_string GetVendor( ) const;
 
-	const VkPhysicalDeviceFeatures& GetFeatures( ) const;
+	const VkPhysicalDeviceFeatures2* GetFeatures( ) const;
+
+	const VkPhysicalDeviceFeatures& GetFeatureCore( ) const;
+
+	const VkPhysicalDeviceDescriptorIndexingFeatures& GetFeatureIndexing( ) const;
 
 	const VkPhysicalDeviceProperties& GetProperties( ) const;
+
+	const VkPhysicalDeviceLimits& GetLimits( ) const;
 
 	const VkPhysicalDeviceQueues& GetQueues( ) const;
 

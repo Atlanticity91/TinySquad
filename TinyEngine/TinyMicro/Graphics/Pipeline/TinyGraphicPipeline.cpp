@@ -78,14 +78,11 @@ void TinyGraphicPipeline::SetViewport(
 	TinyGraphicWorkContext& work_context, 
 	tiny_init<VkViewport> viewports 
 ) {
-	if ( viewports.size( ) > 0 ) {
-		vkCmdSetViewport(
-			work_context.Queue->CommandBuffer,
-			0, 
-			tiny_cast( viewports.size( ), tiny_uint ),
-			viewports.begin( )
-		);
-	}
+	auto* data = viewports.begin( );
+	auto count = tiny_cast( viewports.size( ), tiny_uint );
+
+	if ( count > 0 ) 
+		vkCmdSetViewport( work_context.Queue->CommandBuffer, 0, count, data );
 }
 
 void TinyGraphicPipeline::SetScissor( 
@@ -99,14 +96,11 @@ void TinyGraphicPipeline::SetScissor(
 	TinyGraphicWorkContext& work_context, 
 	tiny_init<VkScissor> scissors 
 ) {
-	if ( scissors.size( ) > 0 ) {
-		vkCmdSetScissor(
-			work_context.Queue->CommandBuffer,
-			0, 
-			tiny_cast( scissors.size( ), tiny_uint ),
-			scissors.begin( )
-		);
-	}
+	auto* data = scissors.begin( );
+	auto count = tiny_cast( scissors.size( ), tiny_uint );
+
+	if ( count > 0 )
+		vkCmdSetScissor( work_context.Queue->CommandBuffer, 0, count, data );
 }
 
 void TinyGraphicPipeline::SetCullMode( 
@@ -286,19 +280,13 @@ void TinyGraphicPipeline::Bind(
 
 		descriptors = descriptor_id;
 
-		while ( descriptor_id-- > 0 ) {
-			GrabBindpoint( 
-				descriptors[ descriptor_id ],
-				tiny_lvalue( bindpoints.begin( ) + descriptor_id ),
-				work_context.WorkID 
-			);
-		}
+		while ( descriptor_id-- > 0 )
+			GrabBindpoint( descriptors[ descriptor_id ], tiny_lvalue( bindpoints.begin( ) + descriptor_id ), work_context.WorkID );
 
-		vkUpdateDescriptorSets( 
-			work_context.Logical,
-			descriptors.size( ), descriptors.data( ), 
-			0, VK_NULL_HANDLE 
-		);
+		auto* data = descriptors.data( );
+		auto size  = descriptors.size( );
+
+		vkUpdateDescriptorSets( work_context.Logical, size, data, 0, VK_NULL_HANDLE );
 	}
 }
 
@@ -313,19 +301,13 @@ void TinyGraphicPipeline::Bind(
 
 		descriptors = descriptor_id;
 
-		while ( descriptor_id-- > 0 ) {
-			GrabBindpoint(
-				descriptors[ descriptor_id ],
-				tiny_lvalue( bindpoints.begin( ) + descriptor_id ),
-				work_context.WorkID
-			);
-		}
+		while ( descriptor_id-- > 0 )
+			GrabBindpoint( descriptors[ descriptor_id ], tiny_lvalue( bindpoints.begin( ) + descriptor_id ), work_context.WorkID );
 
-		vkUpdateDescriptorSets(
-			work_context.Logical,
-			descriptors.size( ), descriptors.data( ),
-			0, VK_NULL_HANDLE
-		);
+		auto* data = descriptors.data( );
+		auto size  = descriptors.size( );
+
+		vkUpdateDescriptorSets( work_context.Logical, size, data, 0, VK_NULL_HANDLE );
 	}
 }
 
@@ -338,19 +320,81 @@ void TinyGraphicPipeline::Bind(
 
 	descriptors = count;
 
-	while ( count-- > 0 ) {
-		GrabBindpoint(
-			descriptors[ count ],
-			tiny_lvalue( bindpoints + count ),
-			work_context.WorkID
-		);
-	}
+	while ( count-- > 0 )
+		GrabBindpoint( descriptors[ count ], tiny_lvalue( bindpoints + count ), work_context.WorkID );
 
-	vkUpdateDescriptorSets(
-		work_context.Logical,
-		descriptors.size( ), descriptors.data( ),
-		0, VK_NULL_HANDLE
-	);
+	auto* data = descriptors.data( );
+	auto size  = descriptors.size( );
+
+	vkUpdateDescriptorSets( work_context.Logical, count, data, 0, VK_NULL_HANDLE );
+}
+
+void TinyGraphicPipeline::Bind(
+	TinyGraphicWorkContext& work_context,
+	tiny_uint set,
+	tiny_uint binding,
+	tiny_init<VkDescriptorBufferInfo> buffers
+) {
+	auto* data = buffers.begin( );
+	auto size  = tiny_cast( buffers.size( ), tiny_uint );
+
+	Bind( work_context, set, binding, size, data );
+}
+
+void TinyGraphicPipeline::Bind(
+	TinyGraphicWorkContext& work_context,
+	tiny_uint set,
+	tiny_uint binding,
+	tiny_uint count,
+	const VkDescriptorBufferInfo* buffers
+) { 
+	auto descriptor = VkWriteDescriptorSet{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+
+	descriptor.pNext			= VK_NULL_HANDLE;
+	descriptor.dstSet			= GetSet( set, work_context.WorkID );
+	descriptor.dstBinding		= binding;
+	descriptor.dstArrayElement  = 0;
+	descriptor.descriptorCount  = count;
+	descriptor.descriptorType   = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptor.pTexelBufferView = VK_NULL_HANDLE;
+	descriptor.pImageInfo		= VK_NULL_HANDLE;
+	descriptor.pBufferInfo		= buffers;
+
+	vkUpdateDescriptorSets( work_context.Logical, 1, tiny_rvalue( descriptor ), 0, VK_NULL_HANDLE );
+}
+
+void TinyGraphicPipeline::Bind(
+	TinyGraphicWorkContext& work_context,
+	tiny_uint set,
+	tiny_uint binding,
+	tiny_init<VkDescriptorImageInfo> samplers
+) {
+	auto* data = samplers.begin( );
+	auto size  = tiny_cast( samplers.size( ), tiny_uint );
+
+	Bind( work_context, set, binding, size, data );
+}
+
+void TinyGraphicPipeline::Bind(
+	TinyGraphicWorkContext& work_context,
+	tiny_uint set,
+	tiny_uint binding,
+	tiny_uint count,
+	const VkDescriptorImageInfo* samplers
+) { 
+	auto descriptor = VkWriteDescriptorSet{ VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET };
+
+	descriptor.pNext			= VK_NULL_HANDLE;
+	descriptor.dstSet			= GetSet( set, work_context.WorkID );
+	descriptor.dstBinding		= binding;
+	descriptor.dstArrayElement  = 0;
+	descriptor.descriptorCount  = count;
+	descriptor.descriptorType   = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	descriptor.pTexelBufferView = VK_NULL_HANDLE;
+	descriptor.pImageInfo		= samplers;
+	descriptor.pBufferInfo		= VK_NULL_HANDLE;
+
+	vkUpdateDescriptorSets( work_context.Logical, 1, tiny_rvalue( descriptor ), 0, VK_NULL_HANDLE );
 }
 
 void TinyGraphicPipeline::BindVertex(
@@ -581,13 +625,10 @@ void TinyGraphicPipeline::CreateSetBind(
 		auto& descriptor_set = bundle.Descriptors[ set ];
 
 		for ( auto& set_bind : set_binds ) {
-			descriptor_set.emplace_back( { 
-				set_bind.Binding,
-				tiny_cast( set_bind.Type, VkDescriptorType ),
-				set_bind.Count,
-				tiny_cast( set_bind.Stage, VkShaderStageFlags ),
-				VK_NULL_HANDLE 
-			} );
+			auto stage = tiny_cast( set_bind.Stage, VkShaderStageFlags );
+			auto type  = tiny_cast( set_bind.Type, VkDescriptorType );
+
+			descriptor_set.emplace_back( { set_bind.Binding, type, set_bind.Count, stage, VK_NULL_HANDLE } );
 		}
 	}
 }
@@ -610,27 +651,13 @@ void TinyGraphicPipeline::CreateSetBind(
 	tiny_uint count,
 	TinyGraphicShaderStages stage
 ) {
-	if ( set == bundle.Descriptors.size( ) ) {
+	auto stage_ = tiny_cast( stage, VkShaderStageFlags );
+	auto type_  = tiny_cast( type, VkDescriptorType );
+
+	if ( set == bundle.Descriptors.size( ) )
 		bundle.Descriptors.create_back( );
 
-		bundle.Descriptors[ set ].create_back(
-			binding,
-			tiny_cast( type, VkDescriptorType ),
-			count,
-			tiny_cast( stage, VkShaderStageFlags ),
-			VK_NULL_HANDLE
-		);
-	} else {
-		bundle.Descriptors[ set ].emplace_back(
-			{
-				binding,
-				tiny_cast( type, VkDescriptorType ),
-				count,
-				tiny_cast( stage, VkShaderStageFlags ),
-				VK_NULL_HANDLE
-			}
-		);
-	}
+	bundle.Descriptors[ set ].create_back( binding, type_, count, stage_, VK_NULL_HANDLE );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

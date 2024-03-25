@@ -22,10 +22,24 @@
 
 #include "TinyRenderLight.h"
 
-te_struct TinyRenderText {
+te_struct TinyRenderTextVertice {
 
-	tiny_vec4 Placeholder;
+	tiny_vec4 Location;
 	tiny_vec2 UV;
+
+};
+
+te_struct TinyRenderTextVertex {
+
+	TinyRenderTextVertice Vertices[ TinyQuadVerticeCount ];
+
+};
+
+te_struct TinyRenderTextParameters {
+
+	tiny_mat4 Transform{ 1.f };
+	tiny_vec4 Background{ };
+	tiny_vec4 Foreground{ };
 
 };
 
@@ -36,6 +50,7 @@ te_struct TinyRenderTextContext {
 	tiny_vec4 Foreground{ };
 	float Size	  = .0f;
 	float Spacing = .0f;
+	tiny_mat4 Transform;
 	tiny_string Text{ };
 
 	TinyRenderTextContext( );

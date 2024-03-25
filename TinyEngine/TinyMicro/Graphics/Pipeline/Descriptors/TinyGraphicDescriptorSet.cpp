@@ -53,14 +53,30 @@ bool TinyGraphicDescriptorSet::CreateLayout(
 	TinyGraphicLogical& logical,
 	const TinyDescriptorSet& layout
 ) {
-	auto layout_info = VkDescriptorSetLayoutCreateInfo{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
+	auto binding_flags = VkDescriptorSetLayoutBindingFlagsCreateInfo{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO };
+	auto layout_info   = VkDescriptorSetLayoutCreateInfo{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
+	auto indexing	   = tiny_list<VkDescriptorBindingFlags>{ };
+	auto count		   = layout.size( );
 
-	layout_info.pNext		 = VK_NULL_HANDLE;
+	indexing = count;
+
+	while ( count-- > 0 ) {
+		if ( layout[ count ].descriptorCount == 1 )
+			indexing[ count ] = VK_NULL_FLAGS;
+		else
+			indexing[ count ] = VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT_EXT;
+	}
+
+	binding_flags.pNext			= VK_NULL_HANDLE;
+	binding_flags.bindingCount  = indexing.size( );
+	binding_flags.pBindingFlags = indexing.data( );
+
+	layout_info.pNext		 = tiny_rvalue( binding_flags );
 	layout_info.flags		 = VK_NULL_FLAGS;
 	layout_info.bindingCount = layout.size( );
 	layout_info.pBindings    = layout.data( );
 
-	return vk::Check( vkCreateDescriptorSetLayout( logical, &layout_info, vk::GetAllocator( ), &_layout ) );
+	return vk::Check( vkCreateDescriptorSetLayout( logical, tiny_rvalue( layout_info ), vk::GetAllocator( ), tiny_rvalue( _layout ) ) );
 }
 
 bool TinyGraphicDescriptorSet::CreateSet( 
@@ -82,7 +98,7 @@ bool TinyGraphicDescriptorSet::CreateSet(
 	set_info.descriptorSetCount = set_count;
 	set_info.pSetLayouts		= layouts.data( );
 
-	return vk::Check( vkAllocateDescriptorSets( logical, &set_info, _sets.data( ) ) );
+	return vk::Check( vkAllocateDescriptorSets( logical, tiny_rvalue( set_info ), _sets.data( ) ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

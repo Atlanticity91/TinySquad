@@ -197,6 +197,18 @@ bool TinyAssetImportManager::ExportTexture3D( TinyGame* game, TinyFile& file, c_
 	return state;
 }
 
+struct TinyFontBuilder { 
+
+	float Scale;
+	MsdfBitmap Bitmap;
+
+	TinyFontBuilder( const MsdfBitmap& bitmap )
+		: Scale{ 1.f },
+		Bitmap{ bitmap }
+	{ };
+
+};
+
 bool TinyAssetImportManager::ImportFont(
 	TinyGame* game,
 	const TinyPathInformation& path,
@@ -214,98 +226,86 @@ bool TinyAssetImportManager::ImportFont(
 		msdf.AddCharset( 0x0020, 0x00FF );
 
 		if ( msdf.GenerateCharset( atlas, bitmap ) ) {
-			msdf.Process( parameters, atlas, bitmap );
-		}
+			if ( tiny_make_storage2( storage, TinyFontBuilder, bitmap ) ) {
+				auto* builder = tiny_get_address_as( storage, TinyFontBuilder );
 
-		/*
-		auto* font = msdfgen::loadFontData( freetype, ttf, file.Capacity );
+				msdf.Process( parameters, atlas, builder->Bitmap );
 
-		if ( font ) {
-			auto glyphs   = std::vector<msdf_atlas::GlyphGeometry>{ };
-			auto geometry = msdf_atlas::FontGeometry{ tiny_rvalue( glyphs ) };
-			auto charset  = msdf_atlas::Charset( );
+				auto& f = game->GetFilesystem( );
+				auto n = path.Name;
+				auto path = f.GetDevDir( ).as_string( ) + "\\f_t_" + n + ".png";
 
-			struct TinyFontCharset { 
+				msdfgen::savePng( msdfgen::BitmapConstRef<uint8_t, 3>{ builder->Bitmap.Buffer.data( ), builder->Bitmap.Width, builder->Bitmap.Height }, path.c_str( ) );
 
-				tiny_uint Start;
-				tiny_uint Stop;
+				auto unicode = 0x0020;
 
-				TinyFontCharset( tiny_uint start, tiny_uint stop )
-					: Start{ start },
-					Stop{ stop + 1 }
-				{ };
+				while ( unicode < ( 0x00FF + 1 ) ) {
+					auto* glyph = atlas.Geometry.getGlyph( unicode );
 
-			};
+					if ( glyph )
+						printf( "%d : %u\n", unicode, glyph->getIndex( ) );
 
-			TinyFontCharset charsets[] = { { 0x0020, 0x00FF } };
-
-			for ( auto& _charset : charsets ) {
-				auto char_id = _charset.Start;
-
-				while ( char_id < _charset.Stop )
-					charset.add( char_id++ );
-			}
-
-			auto loaded = geometry.loadCharset( font, 1.0, charset );
-
-			auto packer = msdf_atlas::TightAtlasPacker{ };
-
-			packer.setPixelRange( 2.0 );
-			packer.setMiterLimit( 1.0 );
-			packer.setPadding( 0 );
-			packer.setScale( 40.0 );
-
-			state = packer.pack( glyphs.data( ), tiny_cast( glyphs.size( ), tiny_int ) ) == 0;
-
-			if ( state ) {
-				auto width  = 0;// tiny_cast( 0, tiny_int );
-				auto height = 0;// tiny_cast( 0, tiny_int );
-				auto scale  = packer.getScale( );
-
-				packer.getDimensions( width, height );
-
-
-				#define DEFAULT_ANGLE_THRESHOLD 3.0
-				#define LCG_MULTIPLIER 6364136223846793005ull
-				#define LCG_INCREMENT 1442695040888963407ull
-				#define THREAD_COUNT 8
-
-				uint64_t coloringSeed = 0;
-				bool expensiveColoring = false;
-				if ( expensiveColoring ) {
-					msdf_atlas::Workload( [ &glyphs = glyphs, &coloringSeed ]( int i, int threadNo ) -> bool {
-						unsigned long long glyphSeed = ( LCG_MULTIPLIER * ( coloringSeed ^ i ) + LCG_INCREMENT ) * !!coloringSeed;
-						glyphs[ i ].edgeColoring( msdfgen::edgeColoringInkTrap, DEFAULT_ANGLE_THRESHOLD, glyphSeed );
-						return true;
-					}, glyphs.size( ) ).finish( THREAD_COUNT );
-				} else {
-					unsigned long long glyphSeed = coloringSeed;
-					for ( msdf_atlas::GlyphGeometry& glyph : glyphs ) {
-						glyphSeed *= LCG_MULTIPLIER;
-						glyph.edgeColoring( msdfgen::edgeColoringInkTrap, DEFAULT_ANGLE_THRESHOLD, glyphSeed );
-					}
+					unicode += 1;
 				}
 
-				msdf_atlas::ImmediateAtlasGenerator<
-					float, 3, 
-					msdf_atlas::msdfGenerator,
-					msdf_atlas::BitmapAtlasStorage<tiny_ubyte, 3>
-				> generator{ width, height };
-				msdf_atlas::GeneratorAttributes attributes;
+				/*
+				const auto& fontGeometry = atlas.Geometry;
+				const auto& metrics = fontGeometry.getMetrics( );
 
-				attributes.config.overlapSupport = true;
-				attributes.scanlinePass = true;
+				float texelWidth  = 1.0f / bitmap.Width;
+				float texelHeight = 1.0f / bitmap.Height;
 
-				generator.setAttributes( attributes );
-				generator.setThreadCount( 2 );
-				generator.generate( glyphs.data( ), tiny_cast( glyphs.size( ), tiny_int ) );
+				builder->Scale = 1.f / ( metrics.ascenderY - metrics.descenderY );
 
-				auto bitmap = ( msdfgen::BitmapConstRef<tiny_ubyte, 3> )generator.atlasStorage( );
-				
-				msdfgen::savePng( bitmap, "test.png" );
+				for ( auto& glyph : atlas.Glyphs ) {
+					double al, ab, ar, at;
+					glyph.getQuadAtlasBounds( al, ab, ar, at );
+					glm::vec2 texCoordMin( (float)al, (float)ab );
+					glm::vec2 texCoordMax( (float)ar, (float)at );
+
+					texCoordMin *= glm::vec2( texelWidth, texelHeight );
+					texCoordMax *= glm::vec2( texelWidth, texelHeight );
+
+					double pl, pb, pr, pt;
+					glyph.getQuadPlaneBounds( pl, pb, pr, pt );
+					glm::vec2 quadMin( (float)pl * builder->Scale, (float)pb * builder->Scale );
+					glm::vec2 quadMax( (float)pr * builder->Scale, (float)pt * builder->Scale );
+
+					struct TinyCharVertice {
+						
+						tiny_vec4 Location;
+						tiny_vec2 UV;
+
+					};
+
+					struct TinyCharGeometry { 
+						
+						tiny_uint Unicode = 0;
+						float Advance	  = 0.f;
+						TinyCharVertice Vertices[ 4 ];
+
+					};
+					fontGeometry.getGlyph( ' ' );
+					TinyCharGeometry geometry{ };
+					
+					geometry.Unicode = glyph.getCodepoint( );
+					geometry.Advance = glyph.getAdvance( );
+
+					geometry.Vertices[ 0 ].Location = tiny_vec4{ quadMin.x, quadMin.y, .0f, 1.f };
+					geometry.Vertices[ 0 ].UV		  = texCoordMin;
+
+					geometry.Vertices[ 1 ].Location = tiny_vec4{ quadMin.x, quadMax.y, .0f, 1.f };
+					geometry.Vertices[ 1 ].UV		  = { texCoordMin.x, texCoordMax.y };
+
+					geometry.Vertices[ 2 ].Location = tiny_vec4{ quadMax, .0f, 1.f };
+					geometry.Vertices[ 2 ].UV		  = texCoordMax;
+
+					geometry.Vertices[ 3 ].Location = tiny_vec4{ quadMax.x, quadMin.y, .0f, 1.f };
+					geometry.Vertices[ 3 ].UV		  = { texCoordMax.x, texCoordMin.y };
+				}
+				*/
 			}
 		}
-		*/
 	}
 
 	return state;

@@ -31,8 +31,7 @@ TinyRenderDebugManager::TinyRenderDebugManager( )
 	: _line_width{ 1.f },
 	_pipelines{ },
 	_lines{ },
-	_circles_indexes{ },
-	_circles_buffer{ },
+	_circles{ },
 	_shaders{ }
 { }
 
@@ -43,8 +42,7 @@ bool TinyRenderDebugManager::Initialize(
 	return  BuildShaders( graphics )  && 
 			BuildPipeline( graphics ) &&
 			uniforms.Create( graphics, { TGB_TYPE_VERTEX, Line_t::Size, TinyRenderLine } ) &&
-			uniforms.Create( graphics, { TGB_TYPE_INDEX, CircleIndex_t::Size,TinyRenderCircleIndex } ) &&
-			uniforms.Create( graphics, { TGB_TYPE_VERTEX, CircleBuffer_t::Size, TinyRenderCircleBuffer } );
+			uniforms.Create( graphics, { TGB_TYPE_VERTEX, Circle_t::Size, TinyRenderCircleBuffer } );
 }
 
 void TinyRenderDebugManager::SetLineWidth( float width ) {
@@ -83,11 +81,10 @@ void TinyRenderDebugManager::Flush(
 		_lines.clear( );
 	}
 
-	if ( _circles_indexes.size( ) > 0 ) {
+	if ( _circles.size( ) > 0 ) {
 		DrawCircles( graphics, work_context, uniforms, batchs );
 
-		_circles_indexes.clear( );
-		_circles_buffer.clear( );
+		_circles.clear( );
 	}
 }
 
@@ -228,18 +225,6 @@ void TinyRenderDebugManager::PushLine(
 	_lines.push( vertex );
 }
 
-void TinyRenderDebugManager::PushCircleIndex( ) {
-	auto indexes = TinyRenderDebugIndex{ };
-
-	auto index_id = TINY_QUAD_INDEX_COUNT;
-	auto offset   = index_id * _circles_indexes.size( );
-
-	while ( index_id-- > 0 )
-		indexes.Index[ index_id ] = TinyQuadIndex[ index_id ] +  offset;
-
-	_circles_indexes.push( indexes );
-}
-
 void TinyRenderDebugManager::PushCircle(
 	const tiny_vec2& location,
 	const tiny_vec2& circle,
@@ -251,7 +236,7 @@ void TinyRenderDebugManager::PushCircle(
 
 	transform	  *= glm::scale( tiny_vec3{ circle.x, circle.x, 1.f } );
 
-	_circle.Vertice[ 0 ].Position = transform * TinyQuadVertex[ 0 ];
+	_circle.Vertice[ 0 ].Position = transform* TinyQuadVertex[ 0 ];
 	_circle.Vertice[ 0 ].Circle	  = tiny_vec4{ -1.f, -1.f, circle.x, circle.y };
 	_circle.Vertice[ 0 ].Color	  = color;
 
@@ -267,9 +252,7 @@ void TinyRenderDebugManager::PushCircle(
 	_circle.Vertice[ 3 ].Circle   = tiny_vec4{ -1.f,  1.f , circle.x, circle.y };
 	_circle.Vertice[ 3 ].Color	  = color;
 
-	_circles_buffer.push( _circle );
-
-	PushCircleIndex( );
+	_circles.push( _circle );
 }
 
 void TinyRenderDebugManager::DrawLines(
@@ -312,41 +295,34 @@ void TinyRenderDebugManager::DrawCircles(
 ) {
 	auto& pipeline = _pipelines[ 1 ];
 	auto& staging  = batchs.GetStaging( );
-	auto& indexes  = uniforms[ TinyRenderCircleIndex ];
+	auto& indexes  = uniforms[ TinyQuadIndexBuffer ];
 	auto& vertex   = uniforms[ TinyRenderCircleBuffer ];
 	auto& core	   = uniforms[ TinyCoreUniform ];
+	auto instance  = _circles.size( );
 
 	{
-		auto inst_size = _circles_indexes.size( ) * tiny_sizeof( TinyRenderDebugIndex );
-		auto vert_size = _circles_buffer.size( )  * tiny_sizeof( TinyRenderDebugCircle );
-		auto context   = graphics.GetContext( );
-
-		auto* inst = tiny_cast( _circles_indexes.data( ), tiny_pointer );
-		auto* vert = tiny_cast( _circles_buffer.data( ) , tiny_pointer );
-
-		staging.Map( context, inst_size + vert_size );
+		auto context = graphics.GetContext( );
+		auto size	 = instance * tiny_sizeof( TinyRenderDebugCircle );
+		
+		staging.Map( context, size );
 
 		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
+		auto* vertex_addr  = tiny_cast( _circles.data( ), tiny_pointer );
 
-		Tiny::Memcpy( inst, staging_addr			, inst_size );
-		Tiny::Memcpy( vert, staging_addr + inst_size, vert_size );
+		Tiny::Memcpy( vertex_addr, staging_addr, size );
+
 		staging.UnMap( context );
 
 		auto burner	= TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		auto copie  = VkBufferCopy{ 0, 0, size };
 
-		VkBufferCopy copies[ 2 ] = {
-			{ 0		   , 0, inst_size },
-			{ inst_size, 0, vert_size }
-		};
-
-		burner.Upload( staging, indexes, copies[ 0 ] );
-		burner.Upload( staging, vertex , copies[ 1 ] );
+		burner.Upload( staging, vertex , copie );
 	}
 
 	pipeline.Mount( work_context );
 	pipeline.BindGeometry( work_context, indexes, vertex );
 	pipeline.Bind( work_context, core );
-	pipeline.Draw( work_context, { TGD_MODE_INDEXED, 6, _circles_indexes.size( ) } );
+	pipeline.Draw( work_context, { TGD_MODE_INDEXED, TinyQuadIndexCount * instance } );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

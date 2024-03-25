@@ -25,7 +25,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderBatchSprite::TinyRenderBatchSprite( )
 	: TinyRenderBatchInstance{ },
-	_indexes{ },
+	_max_texture_slots{ 0 },
+	_textures{ },
 	_vertex{ }
 { }
 
@@ -33,10 +34,16 @@ bool TinyRenderBatchSprite::Create(
 	TinyGraphicManager& graphics, 
 	TinyRenderUniformManager& uniforms
 ) {
-	return  TinyRenderBatchInstance::Create( graphics, uniforms )									 &&
-			_indexes.Create( )																		 &&
-			_vertex.Create( )																		 &&
-			uniforms.Create( graphics, { TGB_TYPE_INDEX,  Index_t::Size , TinySpriteIndexBuffer  } ) &&
+	auto& physical = graphics.GetPhysical( );
+	auto& limits   = physical.GetLimits( );
+
+	auto image_count   = limits.maxPerStageDescriptorSampledImages;
+	auto sampler_count = limits.maxPerStageDescriptorSamplers;
+
+	_max_texture_slots = image_count < sampler_count ? image_count : sampler_count;
+
+	return  _textures.Create( ) &&
+			_vertex.Create( )	&&
 			uniforms.Create( graphics, { TGB_TYPE_VERTEX, Vertex_t::Size, TinySpriteVertexBuffer } );
 }
 
@@ -53,11 +60,9 @@ void TinyRenderBatchSprite::Draw(
 		_vertex.GetHasSpace( )			   &&
 		_textures.GetHasSpace( texture_count )
 	) {
-		PushIndex( );
-		PushVertex( draw_context, texture_count );
-		
-		for ( auto& texture : draw_context.Textures )
-			_textures.Push( { TRS_ID_TEXTURE, _textures.GetCount( ), tiny_lvalue( texture ) } );
+		auto texture_slot = PushTextures( draw_context.Textures );
+
+		PushVertex( draw_context, texture_slot, texture_count );
 	} else {
 		auto& graphics = game->GetGraphics( );
 		auto& assets = game->GetAssets( );
@@ -71,9 +76,7 @@ void TinyRenderBatchSprite::Draw(
 }
 
 void TinyRenderBatchSprite::Terminate( ) {
-	TinyRenderBatchInstance::Terminate( );
-
-	_indexes.Terminate( );
+	_textures.Terminate( );
 	_vertex.Terminate( );
 }
 
@@ -85,75 +88,92 @@ tiny_uint TinyRenderBatchSprite::UploadBuffers(
 	TinyGraphicBufferStaging& staging,
 	TinyRenderUniformManager& uniforms
 ) {
-	auto indexes = _indexes.Flush( );
 	auto vertex  = _vertex.Flush( );
 	
-	if ( indexes.Count > 0 ) {
-		auto inst_size	   = indexes.Count * tiny_sizeof( TinyRenderSpriteIndex );
-		auto vert_size	   = vertex.Count  * tiny_sizeof( TinyRenderSpriteVertex );
-		auto context	   = graphics.GetContext( );
+	if ( vertex.Count > 0 ) {
+		auto context = graphics.GetContext( );
+		auto size	 = vertex.Count  * tiny_sizeof( TinyRenderSpriteVertex );
 
-		staging.Map( context, inst_size + vert_size );
+		staging.Map( context, size );
 
 		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
 
-		Tiny::Memcpy( indexes.Values, staging_addr			  , inst_size );
-		Tiny::Memcpy( vertex.Values , staging_addr + inst_size, vert_size );
+		Tiny::Memcpy( vertex.Values, staging_addr, size );
+
 		staging.UnMap( context );
 
 		{
 			auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+			auto copie  = VkBufferCopy{ 0, 0, size };
 
-			VkBufferCopy copies[ 2 ] = {
-				{ 0		   , 0, inst_size },
-				{ inst_size, 0, vert_size }
-			};
-
-			burner.Upload( staging, uniforms[ TinySpriteIndexBuffer  ], copies[ 0 ] );
-			burner.Upload( staging, uniforms[ TinySpriteVertexBuffer ], copies[ 1 ] );
+			burner.Upload( staging, uniforms[ TinySpriteVertexBuffer ], copie );
 		}
 	}
 
-	return indexes.Count;
+	return vertex.Count;
+}
+
+void TinyRenderBatchSprite::OnFlush(
+	TinyGraphicWorkContext& work_context,
+	TinyMaterial& material
+) {
+	auto textures = _textures.Flush( );
+
+	material.Bind( work_context, TRS_ID_TEXTURE, 0, textures.Count, tiny_cast( textures.Values, VkDescriptorImageInfo* ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyRenderBatchSprite::PushIndex( ) {
-	auto indexex  = TinyRenderSpriteIndex{ };
-	auto index_id = TINY_QUAD_INDEX_COUNT;
-	auto offset   = index_id * _indexes.GetCount( );
+tiny_uint TinyRenderBatchSprite::PushTextures( const tiny_list<TinyTexture2D*>& textures ) {
+	auto& texture = tiny_lvalue( textures[ 0 ] );
+	auto* slots   = tiny_cast( _textures.GetData( ), TinyTexture2D* );
+	auto slot	  = _textures.GetCount( );
 
-	while ( index_id-- > 0 )
-		indexex.Index[ index_id ] = TinyQuadIndex[ index_id ] + offset;
+	while ( slot-- > 0 ) {
+		if ( texture != slots + slot )
+			continue;
 
-	_indexes.Push( indexex );
+		break;
+	}
+
+	if ( slot > _textures.GetCount( ) ) {
+		slot = _textures.GetCount( );
+
+		for ( auto& texture : textures ) {
+			auto descriptor = tiny_lvalue( texture->GetDescriptor( ) );
+
+			_textures.Push( descriptor );
+		}
+	}
+
+	return slot;
 }
 
 void TinyRenderBatchSprite::PushVertex(
 	const TinyRenderSpriteContext& draw_context, 
+	tiny_uint texture_slot,
 	tiny_uint texture_count
 ) {
 	auto vertex = TinyRenderSpriteVertex{ };
-	auto slot   = tiny_cast( _textures.GetCount( ), float );
+	auto slot   = tiny_cast( tiny_cast( texture_slot , tiny_int ), float );
 	auto count  = tiny_cast( tiny_cast( texture_count, tiny_int ), float );
 	auto& uv	= draw_context.Sprite.UV;
 
 	vertex.Quad[ 0 ].Position = draw_context.Tranform * TinyQuadVertex[ 0 ];
-	vertex.Quad[ 0 ].Texture  = { uv.x, uv.y, slot, count };
+	vertex.Quad[ 0 ].Texture  = { uv.z, uv.y, slot, count };
 	vertex.Quad[ 0 ].Color	  = draw_context.Sprite.Color;
 
 	vertex.Quad[ 1 ].Position = draw_context.Tranform * TinyQuadVertex[ 1 ];
-	vertex.Quad[ 1 ].Texture  = { uv.z, uv.y, slot, count };
+	vertex.Quad[ 1 ].Texture  = { uv.x, uv.w, slot, count };
 	vertex.Quad[ 1 ].Color	  = draw_context.Sprite.Color;
 
 	vertex.Quad[ 2 ].Position = draw_context.Tranform * TinyQuadVertex[ 2 ];
-	vertex.Quad[ 2 ].Texture  = { uv.z, uv.w, slot, count };
+	vertex.Quad[ 2 ].Texture  = { uv.x, uv.y, slot, count };
 	vertex.Quad[ 2 ].Color	  = draw_context.Sprite.Color;
 
 	vertex.Quad[ 3 ].Position = draw_context.Tranform * TinyQuadVertex[ 3 ];
-	vertex.Quad[ 3 ].Texture  = { uv.x, uv.w, slot, count };
+	vertex.Quad[ 3 ].Texture  = { uv.z, uv.w, slot, count };
 	vertex.Quad[ 3 ].Color	  = draw_context.Sprite.Color;
 
 	_vertex.Push( vertex );

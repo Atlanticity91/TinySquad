@@ -22,22 +22,22 @@
 
 #include "TinyRenderBatchInstance.h"
 
-#define TinySpriteIndexBuffer "ib_sprite_indexes"
-#define TinySpriteVertexBuffer "ib_sprite_vertex"
+#define TinySpriteVertexBuffer "vb_sprite"
 
 te_class TinyRenderBatchSprite final 
-	: tiny_inherit( TinyRenderBatchInstance<TinyRenderSpriteContext, TINY_MAX_VERTEX> )
+	: tiny_inherit( TinyRenderBatchInstance<TinyRenderSpriteContext> )
 {
 
 public:
-	using Index_t  = TinyRenderBatch<TinyRenderSpriteIndex, TINY_MAX_VERTEX>;
-	using Vertex_t = TinyRenderBatch<TinyRenderSpriteVertex, TINY_MAX_VERTEX>;
+	using Texture_t = TinyRenderBatch<VkDescriptorImageInfo, TINY_MAX_VERTEX>;
+	using Vertex_t  = TinyRenderBatch<TinyRenderSpriteVertex, TINY_MAX_VERTEX>;
 
-	static const tiny_uint Size = Vertex_t::Size + Index_t::Size;
+	static const tiny_uint Size = Vertex_t::Size;
 
 private:
-	Index_t  _indexes;
-	Vertex_t _vertex;
+	tiny_uint _max_texture_slots;
+	Texture_t _textures;
+	Vertex_t  _vertex;
 
 public:
 	TinyRenderBatchSprite( );
@@ -65,9 +65,18 @@ protected:
 		TinyRenderUniformManager& uniforms
 	) );
 
-private:
-	void PushIndex( );
+	tiny_implement( void OnFlush(
+		TinyGraphicWorkContext& work_context,
+		TinyMaterial& material
+	) );
 
-	void PushVertex( const TinyRenderSpriteContext& draw_context, tiny_uint texture_count );
+private:
+	tiny_uint PushTextures( const tiny_list<TinyTexture2D*>&textures );
+
+	void PushVertex(
+		const TinyRenderSpriteContext& draw_context, 
+		tiny_uint texture_slot,
+		tiny_uint texture_count 
+	);
 
 };

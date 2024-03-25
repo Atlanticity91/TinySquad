@@ -92,3 +92,21 @@ void TinyMaterial::Terminate(
 
 	TinyGraphicPipeline::Terminate( context );
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC STATIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyMaterial::CreateShaders(
+	TinyMaterialBuilder& builder,
+	tiny_init<tiny_string> shaders
+) {
+	auto count = shaders.size( );
+
+	if ( count > 0 ) {
+		while ( count-- > 0 ) {
+			auto shader = tiny_lvalue( shaders.begin( ) + count ).as_string( );
+
+			builder.ShaderStages.emplace_back( shader );
+		}
+	}
+}
