@@ -3315,7 +3315,7 @@ unsigned lodepng_get_color_profile(LodePNGColorProfile* profile,
   if(!numcolors_done) {
     for(i = 0; i < profile->numcolors; i++) {
       const unsigned char* color = &profile->palette[i * 4];
-      color_tree_add(&tree, color[0], color[1], color[2], color[3], i);
+      color_tree_add(&tree, color[0], color[1], color[2], color[3], (unsigned int)( i ) );
     }
   }
 

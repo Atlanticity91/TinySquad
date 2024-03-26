@@ -30,7 +30,7 @@ TinyGraphicPipelineBundle::TinyGraphicPipelineBundle( )
 	Shaders{ },
 	InputBinding{ },
 	InputAttributes{ },
-	Topology{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP },
+	Topology{ VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST },
 	Tessellation{ 3 },
 	DepthEnable{ true },
 	StencilEnable{ true },

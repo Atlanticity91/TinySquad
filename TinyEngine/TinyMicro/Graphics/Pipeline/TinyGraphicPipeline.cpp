@@ -453,7 +453,7 @@ void TinyGraphicPipeline::BindVertex(
 	while ( idx-- > 0 ) {
 		auto& _vertex = tiny_lvalue( vertexes.begin( ) + idx );
 
-		vertex[ idx ]  = _vertex.Buffer;
+		vertex[ idx  ] = _vertex.Buffer;
 		offsets[ idx ] = _vertex.Offset;
 	}
 
@@ -577,7 +577,7 @@ void TinyGraphicPipeline::CreateAttribute(
 	TinyGraphicPipelineBundle& bundle,
 	tiny_init<TinyGraphicPipelineAttribute> attributes
 ) {
-	auto count = attributes.size( );
+	auto count = tiny_cast( attributes.size( ), tiny_uint );
 
 	if ( count > 0 ) {
 		bundle.InputAttributes = count;

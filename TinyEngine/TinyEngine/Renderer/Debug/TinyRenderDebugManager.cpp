@@ -170,12 +170,7 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 			{ 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderDebugLineVertice, Color	) }
 		}
 	);
-	//TinyGraphicPipeline::CreateSetBind( bundle, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
-
-	bundle.Descriptors = 1;
-	bundle.Descriptors[ 0 ] = 1;
-
-	_pCreateSetBind2( bundle, 0, 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX );
+	TinyGraphicPipeline::CreateSetBind( bundle, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
 
 	bundle.DepthEnable   = false;
 	bundle.StencilEnable = false;
@@ -184,7 +179,7 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 	auto state = _pipelines[ 0 ].Create( context, limits, bundle );
 
 	if ( state ) {
-		bundle.Topology		= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+		bundle.Topology		= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		bundle.Shaders[ 0 ] = _shaders[ 2 ];
 		bundle.Shaders[ 1 ] = _shaders[ 3 ];
 
@@ -236,7 +231,7 @@ void TinyRenderDebugManager::PushCircle(
 
 	transform	  *= glm::scale( tiny_vec3{ circle.x, circle.x, 1.f } );
 
-	_circle.Vertice[ 0 ].Position = transform* TinyQuadVertex[ 0 ];
+	_circle.Vertice[ 0 ].Position = transform * TinyQuadVertex[ 0 ];
 	_circle.Vertice[ 0 ].Circle	  = tiny_vec4{ -1.f, -1.f, circle.x, circle.y };
 	_circle.Vertice[ 0 ].Color	  = color;
 
@@ -307,7 +302,7 @@ void TinyRenderDebugManager::DrawCircles(
 		staging.Map( context, size );
 
 		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
-		auto* vertex_addr  = tiny_cast( _circles.data( ), tiny_pointer );
+		auto* vertex_addr  = tiny_cast( _circles.data( )	, tiny_pointer );
 
 		Tiny::Memcpy( vertex_addr, staging_addr, size );
 

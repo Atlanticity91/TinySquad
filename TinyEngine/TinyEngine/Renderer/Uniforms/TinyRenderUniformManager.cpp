@@ -100,7 +100,7 @@ void TinyRenderUniformManager::GenerateIndexBuffer(
 
 	while ( count-- > 0 ) {
 		auto index_id = TINY_QUAD_INDEX_COUNT;
-		auto offset = TINY_QUAD_VERTICE_COUNT * count;
+		auto offset   = TINY_QUAD_VERTICE_COUNT * count;
 
 		while ( index_id-- > 0 )
 			indexes[ count ].Index[ index_id ] = TinyQuadIndex[ index_id ] + offset;

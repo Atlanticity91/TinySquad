@@ -53,8 +53,8 @@ int RectanglePacker::pack(Rectangle *rectangles, int count) {
             for (size_t j = 0; j < remainingRects.size(); ++j) {
                 const Rectangle &rect = rectangles[remainingRects[j]];
                 if (rect.w == space.w && rect.h == space.h) {
-                    bestSpace = i;
-                    bestRect = j;
+                    bestSpace = (int)( i );
+                    bestRect = (int )( j );
                     goto BEST_FIT_FOUND;
                 }
                 if (rect.w <= space.w && rect.h <= space.h) {

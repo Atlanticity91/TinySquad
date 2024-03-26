@@ -44,7 +44,7 @@ bool MsdfAtlasGenerator::Prepare( const uint8_t* buffer, size_t length ) {
 	_freetype = msdfgen::initializeFreetype( );
 
 	if ( _freetype )
-		_font = msdfgen::loadFontData( _freetype, buffer, length );
+		_font = msdfgen::loadFontData( _freetype, buffer, (int)length );
 
 	return _freetype && _font;
 }
@@ -140,7 +140,7 @@ void MsdfAtlasGenerator::PreProcess(
 
 				return true;
 			},
-			atlas.Glyphs.size( )
+			(int)atlas.Glyphs.size( )
 		).finish( parameters.Threads );
 	}
 }

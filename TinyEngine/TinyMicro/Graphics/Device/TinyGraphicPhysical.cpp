@@ -67,6 +67,8 @@ void TinyGraphicPhysical::CreateIndexing( ) {
 	_indexing.descriptorBindingPartiallyBound					 = VK_TRUE;
 	_indexing.descriptorBindingVariableDescriptorCount			 = VK_TRUE;
 	_indexing.runtimeDescriptorArray							 = VK_TRUE;
+
+	_features.pNext = tiny_rvalue( _indexing );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

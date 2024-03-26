@@ -115,15 +115,11 @@ static const tiny_string TinyDebugCircleFragment = tiny_string{
 			float distance	  = 1.0 - length( local_pos );
 			float fade_scalar = smoothstep( 0.0, attenuation, distance ) *
 								smoothstep( scv_circle.w + attenuation, scv_circle.w, distance );
-
-			// float angle = (atan(local_pos.x, local_pos.y) + TinyPI) / (TinyPI * 2);
-			// angle < 0.25 || angle > 0.5 -> discard
-			// Draw an arc that cover 1/4 of the circle
-
+	
 			if ( fade_scalar == 0.0 )
 				discard;
-	
-			o_Colors = vec4( scv_color.rgb, scv_color.a * fade_scalar );
+
+			o_Colors = vec4( scv_color.rgb, scv_color.a * fade_scalar ) * scv_color;
 		}
 	)"
 };

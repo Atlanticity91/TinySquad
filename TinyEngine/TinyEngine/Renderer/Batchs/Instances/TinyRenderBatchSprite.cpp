@@ -161,19 +161,19 @@ void TinyRenderBatchSprite::PushVertex(
 	auto& uv	= draw_context.Sprite.UV;
 
 	vertex.Quad[ 0 ].Position = draw_context.Tranform * TinyQuadVertex[ 0 ];
-	vertex.Quad[ 0 ].Texture  = { uv.z, uv.y, slot, count };
+	vertex.Quad[ 0 ].Texture  = { uv.x, uv.y, slot, count };
 	vertex.Quad[ 0 ].Color	  = draw_context.Sprite.Color;
 
 	vertex.Quad[ 1 ].Position = draw_context.Tranform * TinyQuadVertex[ 1 ];
-	vertex.Quad[ 1 ].Texture  = { uv.x, uv.w, slot, count };
+	vertex.Quad[ 1 ].Texture  = { uv.z, uv.y, slot, count };
 	vertex.Quad[ 1 ].Color	  = draw_context.Sprite.Color;
 
 	vertex.Quad[ 2 ].Position = draw_context.Tranform * TinyQuadVertex[ 2 ];
-	vertex.Quad[ 2 ].Texture  = { uv.x, uv.y, slot, count };
+	vertex.Quad[ 2 ].Texture  = { uv.z, uv.w, slot, count };
 	vertex.Quad[ 2 ].Color	  = draw_context.Sprite.Color;
 
 	vertex.Quad[ 3 ].Position = draw_context.Tranform * TinyQuadVertex[ 3 ];
-	vertex.Quad[ 3 ].Texture  = { uv.z, uv.w, slot, count };
+	vertex.Quad[ 3 ].Texture  = { uv.x, uv.w, slot, count };
 	vertex.Quad[ 3 ].Color	  = draw_context.Sprite.Color;
 
 	_vertex.Push( vertex );

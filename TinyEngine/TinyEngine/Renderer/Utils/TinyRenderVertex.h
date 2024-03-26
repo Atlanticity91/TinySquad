@@ -41,15 +41,15 @@ static const tiny_vec4 TinyQuadVertex[ TinyQuadVerticeCount ] = {
 };
 
 static const tiny_vec2 TinyQuadUV[ TinyQuadVerticeCount ] = {
-	{ 1.f, 0.f },
-	{ 0.f, 1.f },
 	{ 0.f, 0.f },
+	{ 1.f, 0.f },
 	{ 1.f, 1.f },
+	{ 0.f, 1.f }
 };
 
 static const TinyRenderIndex TinyQuadIndex[ TinyQuadIndexCount ] = {
 	0, 1, 2,
-	2, 0, 3
+	2, 3, 0
 };
 
 te_struct TinyRenderQuadIndex {

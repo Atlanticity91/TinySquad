@@ -29,14 +29,12 @@ static const c_string TinyDefaultSpriteFragment = R"(
 
 tiny_sampler_list( s_Textures );
 
-struct TinyVertexSCV { 
+layout( location=0 ) in TinyVertexSCV { 
+	vec4 Color;
 	vec2 UV;
 	int TextureSlot;
 	int TextureCount;
-	vec4 Color;
-};
-
-layout( location=0 ) flat in TinyVertexSCV scv_vertex;
+} scv_vertex;
 
 layout( location=TinyOutputID_Color ) out vec4 o_Colors;
 

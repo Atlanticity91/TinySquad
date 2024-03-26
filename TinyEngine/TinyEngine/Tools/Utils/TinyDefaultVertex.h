@@ -41,22 +41,20 @@ tiny_ubo( TinySetID_Core, 0, TinyUBOContext ) {
 
 } ubo_context;
 
-struct TinyVertexSCV { 
+layout( location=0 ) out TinyVertexSCV { 
+	vec4 Color;
 	vec2 UV;
 	int TextureSlot;
 	int TextureCount;
-	vec4 Color;
-};
-
-layout( location=0 ) flat out TinyVertexSCV scv_vertex;
+} scv_vertex;
 
 void main( ) {
 	gl_Position = ubo_context.ProjView * v_Position;
 
+	scv_vertex.Color 		= v_Color;
 	scv_vertex.UV 			= vec2( v_Texture.x, v_Texture.y );
 	scv_vertex.TextureSlot  = int( v_Texture.z );
 	scv_vertex.TextureCount = int( v_Texture.w );
-	scv_vertex.Color 		= v_Color;
 }
 )";
 

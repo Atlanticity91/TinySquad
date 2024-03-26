@@ -49,13 +49,32 @@ public:
 	);
 
 private:
+	void CreateIndexing(
+		VkDescriptorSetLayoutBindingFlagsCreateInfo& binding_flags,
+		tiny_list<VkDescriptorBindingFlags>& indexing,
+		const TinyDescriptorSet& layout
+	);
+
 	bool CreateLayout( 
 		TinyGraphicLogical& logical,
 		const TinyDescriptorSet& layout
 	);
 
+	void CreateVariableSet( 
+		VkDescriptorSetVariableDescriptorCountAllocateInfo& variable_info,
+		tiny_list<tiny_uint>& variable_size,
+		const TinyDescriptorSet& layout,
+		tiny_uint set_count
+	);
+
+	void CreateSetLayout(
+		tiny_list<VkDescriptorSetLayout>& layouts,
+		tiny_uint set_count
+	);
+
 	bool CreateSet( 
 		TinyGraphicLogical& logical,
+		const TinyDescriptorSet& layout,
 		VkDescriptorPool& descriptor_pool,
 		tiny_uint set_count
 	);

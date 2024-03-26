@@ -135,17 +135,6 @@ void TinyRenderer::DrawDebug( const TinyRenderDebugPrimitive& primitive ) {
 }
 
 void TinyRenderer::Compose( TinyGame* game ) {
-	DrawDebug( { { 10, 10 }, 256, 0.001 } );
-	DrawDebug( { { 10, 266 }, 128, 0.001 } );
-	DrawDebug( { { 266, 10 }, 64, 0.001 } );
-
-	auto r = TinyRenderDebugPrimitive{ { 10, 10 }, { 256, 256 } };
-
-	r.Type = TRD_PRIMITIVE_RECTANGLE;
-
-	DrawDebug( { { 10, 10 }, { 256, 256 } } );
-	DrawDebug( r );
-	
 	_batchs.Flush( game, _uniforms );
 	_post_process.Compose( game, _uniforms, _batchs );
 	_debug.Flush( game, _uniforms, _batchs );
