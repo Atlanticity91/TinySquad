@@ -31,16 +31,7 @@ project "TinyEngine"
     targetdir "%{wks.location}/bin/"
     objdir "%{wks.location}/bin-int/%{prj.name}"
 
-    links {
-        "FreeType",
-        "MSDF",
-        "MSDF-Atlas",
-        "Lua",
-        "Yaml",
-        "ImGui",
-        "TinyThirdparty",
-        "TinyMicro"
-    }
+    links { "TinyMicro" }
 
     filter "system:windows"
         systemversion "latest"
@@ -66,6 +57,7 @@ project "TinyEngine"
     filter "configurations:Debug"
         defines { "DEBUG", "TINY_DEBUG" }
         runtime "Debug"
+        optimize "Off"
         symbols "On"
         links {
             vulkan.."/Lib/shadercd.lib",

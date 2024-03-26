@@ -10,7 +10,7 @@ project "TinyBacker"
 	files { "**.h", "**.hpp", "**.cpp" }
 
 	pchheader "TinyBacker/__tiny_backer_pch.h"
-	pchsource "%{wks.location}/TinyBacker/__tiny_backer_pch.cpp"
+	pchsource "%{wks.location}/TinyEditors/TinyBacker/__tiny_backer_pch.cpp"
 
 	vulkan = os.getenv( "VULKAN_PATH" )
 
@@ -35,15 +35,8 @@ project "TinyBacker"
     objdir "%{wks.location}/bin-int/%{prj.name}"
 
     links { 
-        "FreeType",
-        "MSDF",
-        "MSDF-Atlas",
-        "Lua",
-        "Yaml",
-        "ImGui",
-        "TinyThirdparty",
-        "TinyMicro",
-        "TinyEngine"
+        "TinyNut",
+        "%{wks.location}/bin/Thirdparty/TinyNut.lib"
     }
     
     filter "system:windows"

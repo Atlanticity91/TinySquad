@@ -31,17 +31,7 @@ project "TinyProduction"
     debugdir "%{wks.location}/bin/"
     objdir "%{wks.location}/bin-int/%{prj.name}"
 
-    links { 
-        "FreeType",
-        "MSDF",
-        "MSDF-Atlas",
-        "Lua",
-        "Yaml",
-        "ImGui",
-        "TinyThirdparty",
-        "TinyMicro",
-        "TinyEngine"
-    }
+    links { "TinyEngine" }
 
     filter "system:windows"
         systemversion "latest"

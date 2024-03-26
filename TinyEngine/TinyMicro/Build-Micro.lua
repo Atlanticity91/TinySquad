@@ -28,15 +28,7 @@ project "TinyMicro"
     targetdir "%{wks.location}/bin/"
     objdir "%{wks.location}/bin-int/%{prj.name}"
 
-    links { 
-        "FreeType",
-        "MSDF",
-        "MSDF-Atlas",
-        "Lua",
-        "Yaml",
-        "ImGui",
-        "TinyThirdparty"
-    }
+    links { "TinyThirdparty" }
 
     filter "system:windows"
         systemversion "latest"
