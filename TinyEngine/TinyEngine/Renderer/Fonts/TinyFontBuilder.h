@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/11/2023
- * @version  : 2024.1
+ * @creation : 26/03/2023
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,30 +20,35 @@
 
 #pragma once
 
-#include "TinyFontBuilder.h"
+#include <TinyEngine/Renderer/Textures/TinyTextureAtlasManager.h>
 
-te_class TinyFont final {
+te_struct TinyCharVertice {
 
-private:
-	tiny_vec2					_range;
-	tiny_vec2					_miter;
-	TinyGraphicTexture			_texture;
-	tiny_list<TinyCharGeometry> _geometry;
+	tiny_vec4 Location{ };
+	tiny_vec2 UV{ };
 
-public:
-	TinyFont( );
+};
 
-	~TinyFont( ) = default;
+te_struct TinyCharGeometry {
 
-	void Terminate( TinyGame* game );
+	float Advance = 0.f;
+	TinyCharVertice Vertices[ 4 ];
 
-public:
-	const tiny_vec2& GetRange( ) const;
+};
 
-	const tiny_vec2& GetMiter( ) const;
+te_struct TinyFontBuilder {
 
-	const TinyCharGeometry& GetGeometry( char character ) const;
+	float Scale;
+	MsdfBitmap Bitmap;
 
-	const VkDescriptorImageInfo& GetTexure( ) const;
+	TinyFontBuilder( )
+		: Scale{ 1.f },
+		Bitmap{ }
+	{ };
+
+	TinyFontBuilder( const MsdfBitmap& bitmap )
+		: Scale{ 1.f },
+		Bitmap{ bitmap } 
+	{ };
 
 };

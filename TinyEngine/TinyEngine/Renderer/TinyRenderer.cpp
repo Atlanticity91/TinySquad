@@ -43,6 +43,19 @@ bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem file
 			_uniforms.Create( graphics, staging );
 }
 
+TinyMaterialBuilder TinyRenderer::CreateMaterial(
+	TinyGame* game,
+	const tiny_string& pass_name,
+	tiny_uint subpass
+) {
+	auto& graphics = game->GetGraphics( );
+	auto material  = tiny_cast( graphics.CreatePipeline( TGP_TYPE_NONE, pass_name, subpass ), TinyMaterialBuilder );
+
+	material.PassName = pass_name.as_string( );
+
+	return material;
+}
+
 TinyRenderProjection& TinyRenderer::CreateProjection( const tiny_string& alias ) {
 	return _cameras.CreateProjection( alias );
 }
@@ -155,6 +168,7 @@ void TinyRenderer::PushShaderMacros( TinyGraphicManager& graphics ) {
 		{ "TinyPI", "3.1415926535897932384626433832795" },
 		{ "TinyMaxVertex", TINY_STR( TINY_MAX_VERTEX ) },
 		{ "TinyMaxUniform", TINY_STR( TINY_MAX_UNIFORM ) },
+		{ "TinyMaxFonts", TINY_STR( TINY_MAX_FONTS ) },
 
 		// === SETS ===
 		{ "TinySetID_Core",	   TINY_STR( TINY_RENDER_SET_CORE )    },

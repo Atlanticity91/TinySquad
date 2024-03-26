@@ -197,18 +197,6 @@ bool TinyAssetImportManager::ExportTexture3D( TinyGame* game, TinyFile& file, c_
 	return state;
 }
 
-struct TinyFontBuilder { 
-
-	float Scale;
-	MsdfBitmap Bitmap;
-
-	TinyFontBuilder( const MsdfBitmap& bitmap )
-		: Scale{ 1.f },
-		Bitmap{ bitmap }
-	{ };
-
-};
-
 bool TinyAssetImportManager::ImportFont(
 	TinyGame* game,
 	const TinyPathInformation& path,

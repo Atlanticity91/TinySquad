@@ -46,16 +46,18 @@ void main( ) {
 static const c_string TinyDefaultTextFragment = R"(
 #version 450 core
 #pragma shader_stage( fragment )
+#extension GL_EXT_nonuniform_qualifier : require
 
-tiny_sampler2D( 0, s_Font );
+tiny_sampler_list( s_Fonts );
 
-struct TinyVertexSCV { 
-	vec2 UV;
+layout( location=0 ) in TinyVertexSCV { 
 	vec4 Background;
 	vec4 Foreground;
-};
-
-layout( location=0 ) flat in TinyVertexSCV scv_vertex;
+	vec2 UV;
+	vec2 Range;
+	vec2 Miter;
+	uint Font;
+} scv_vertex;
 
 layout( location=TinyOutputID_Color ) out vec4 o_Colors;
 
@@ -67,18 +69,15 @@ float msdf_median( vec3 msdf ) {
     return max( min_rg, min_rgb );
 }
 
-const vec2 msdf_range = vec2( 2.0 );
-const vec2 msdf_miter = vec2( 1.0 );
-
 float msdf_px_range( ) {
-    vec2 range = msdf_range / vec2( textureSize( s_Font, 0 ) );
-    vec2 size  = msdf_miter / fwidth( scv_vertex.UV );
+    vec2 range = scv_vertex.Range / vec2( textureSize( s_Font, 0 ) );
+    vec2 size  = scv_vertex.Miter / fwidth( scv_vertex.UV );
 
     return max( 0.5 * dot( range, size ), 1.0 );
 }
 
 void main( ) {
-    vec3 msdf	   = texture( s_Font, scv_vertex.UV ).rgb;
+    vec3 msdf	   = tiny_texture( s_Fonts, scv_vertex.Font, scv_vertex.UV ).rgb;
     float median   = msdf_median( msdf );
     float distance = msdf_px_range( ) * ( median - 0.5 );
     float opacity  = clamp( distance + 0.5, 0.0, 1.0 );

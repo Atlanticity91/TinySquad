@@ -40,6 +40,12 @@ public:
 
 	bool Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem );
 
+	TinyMaterialBuilder CreateMaterial( 
+		TinyGame* game, 
+		const tiny_string& pass_name, 
+		tiny_uint subpass 
+	);
+
 	tiny_inline TinyRenderProjection& CreateProjection( const tiny_string& alias );
 
 	tiny_inline void RemoveProjection( const tiny_string& alias );

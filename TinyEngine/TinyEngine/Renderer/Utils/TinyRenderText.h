@@ -22,10 +22,15 @@
 
 #include "TinyRenderLight.h"
 
+#define TINY_MAX_FONTS tiny_cast( 8, tiny_uint )
+
+static constexpr tiny_uint TinyMaxFonts = TINY_MAX_FONTS;
+
 te_struct TinyRenderTextVertice {
 
 	tiny_vec4 Location;
 	tiny_vec2 UV;
+	tiny_uint Parameters;
 
 };
 
@@ -37,20 +42,23 @@ te_struct TinyRenderTextVertex {
 
 te_struct TinyRenderTextParameters {
 
-	tiny_mat4 Transform{ 1.f };
 	tiny_vec4 Background{ };
 	tiny_vec4 Foreground{ };
+	tiny_vec2 Range{ 2.f };
+	tiny_vec2 Miter{ 1.f };
+	tiny_uint Font{ 0 };
 
 };
 
-te_struct TinyRenderTextContext {
+te_struct TinyRenderTextContext{
 
+	TinyAsset Material{ };
 	TinyAsset Font{ };
 	tiny_vec4 Background{ };
 	tiny_vec4 Foreground{ };
 	float Size	  = .0f;
 	float Spacing = .0f;
-	tiny_mat4 Transform;
+	tiny_vec2 Location{ };
 	tiny_string Text{ };
 
 	TinyRenderTextContext( );

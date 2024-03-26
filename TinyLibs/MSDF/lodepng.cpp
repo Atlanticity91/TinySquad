@@ -4248,7 +4248,7 @@ static unsigned readChunk_iCCP(LodePNGInfo* info, const LodePNGDecompressSetting
                           (unsigned char*)(&data[string2_begin]),
                           length, zlibsettings);
   if(!error) {
-    info->iccp_profile_size = decoded.size;
+    info->iccp_profile_size = (unsigned int)( decoded.size );
     info->iccp_profile = (unsigned char*)lodepng_malloc(decoded.size);
     if(info->iccp_profile) {
       memcpy(info->iccp_profile, decoded.data, decoded.size);

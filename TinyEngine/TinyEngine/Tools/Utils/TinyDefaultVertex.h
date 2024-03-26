@@ -64,6 +64,7 @@ static const c_string TinyDefaultTextVertex = R"(
 
 layout( location=0 ) in vec4 v_Position;
 layout( location=1 ) in vec2 v_UV;
+layout( location=2 ) in uint v_Parameters;
 
 tiny_ubo( TinySetID_Core, 0, TinyUBOContext ) {
 
@@ -76,19 +77,39 @@ tiny_ubo( TinySetID_Core, 0, TinyUBOContext ) {
 
 } ubo_context;
 
-struct TinyVertexSCV { 
-	vec2 UV;
+struct TinyTextParameters {
+	
 	vec4 Background;
 	vec4 Foreground;
+	vec2 Range;
+	vec2 Miter;
+	uint Font;
+
 };
 
-layout( location=0 ) flat out TinyVertexSCV scv_vertex;
+tiny_ubo( TinySetID_Render, 0, TinyUBOParameters ) {
+
+	TinyTextParameters Parameters[ TinyMaxFonts ];
+
+} ubo_parameters;
+
+layout( location=0 ) out TinyVertexSCV { 
+	vec4 Background;
+	vec4 Foreground;
+	vec2 UV;
+	vec2 Range;
+	vec2 Miter;
+	uint Font;
+} scv_vertex;
 
 void main( ) {
 	gl_Position = ubo_context.ProjView * v_Position;
 	
+	scv_vertex.Background = ubo_parameters.Parameters[ v_Parameters ].Background;
+	scv_vertex.Foreground = ubo_parameters.Parameters[ v_Parameters ].Foreground;
 	scv_vertex.UV		  = v_UV;
-	scv_vertex.Background = vec4( 0.0 );
-	scv_vertex.Foreground = vec4( 1.0 );
+	scv_vertex.Range	  = ubo_parameters.Parameters[ v_Parameters ].Range;
+	scv_vertex.Miter	  = ubo_parameters.Parameters[ v_Parameters ].Miter;
+	scv_vertex.Font		  = ubo_parameters.Parameters[ v_Parameters ].Font;
 }
 )";

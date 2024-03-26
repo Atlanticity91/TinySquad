@@ -24,4 +24,27 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyFont::TinyFont( )
+	: _range{ 2.f },
+	_miter{ 1.f },
+	_texture{ },
+	_geometry{ }
 { }
+
+
+void TinyFont::Terminate( TinyGame* game ) {
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+const tiny_vec2& TinyFont::GetRange( ) const { return _range; }
+
+const tiny_vec2& TinyFont::GetMiter( ) const { return _miter; }
+
+const TinyCharGeometry& TinyFont::GetGeometry( char character ) const {
+	return _geometry[ 0 ]; 
+}
+
+const VkDescriptorImageInfo& TinyFont::GetTexure( ) const { 
+	return tiny_lvalue( _texture.GetDescriptor( ) );
+}

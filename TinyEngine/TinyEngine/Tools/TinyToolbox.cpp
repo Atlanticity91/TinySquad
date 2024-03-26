@@ -410,14 +410,9 @@ void TinyToolbox::CreateSpriteShaders(
         filesystem.Dump( fragment_path, TinyDefaultSpriteFragment );
 
     if ( !filesystem.GetFileExist( material_path ) ) {
-        auto& graphics = game->GetGraphics( );
+        auto& renderer = game->GetRenderer( );
         auto& assets   = game->GetAssets( );
-        auto material  = tiny_cast( graphics.CreatePipeline( TGP_TYPE_NONE, TINY_OUTPASS_NAME, 0 ), TinyMaterialBuilder );
-
-        material.InputBinding.clear( );
-        material.InputAttributes.clear( );
-
-        material.PassName = TINY_OUTPASS_NAME;
+        auto material  = renderer.CreateMaterial( game, TINY_OUTPASS_NAME, 0 );
         
         TinyMaterial::CreateShaders( material, { "sv_sprite_dev", "sf_sprite_dev" } );
         TinyMaterial::CreateBinding( material, { 0, tiny_sizeof( TinyRenderSpriteVertices ) } );
@@ -425,12 +420,12 @@ void TinyToolbox::CreateSpriteShaders(
             material,
             {
                 { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Position ) },
-                { 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Texture ) },
-                { 2, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Color ) }
+                { 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Texture  ) },
+                { 2, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Color    ) }
             }
         );
-        TinyMaterial::CreateSetBind( material, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
-        TinyMaterial::CreateSetBind( material, TRS_ID_TEXTURE, { 0, TGBP_TYPE_COMBINED, TINY_MAX_VERTEX, TGS_STAGE_FRAGMENT } );
+        TinyMaterial::CreateSetBind( material, TRS_ID_CORE   , { 0, TGBP_TYPE_UNIFORM , 1              , TGS_STAGE_VERTEX   } );
+        TinyMaterial::CreateSetBind( material, TRS_ID_TEXTURE - 1, { 0, TGBP_TYPE_COMBINED, TINY_MAX_VERTEX, TGS_STAGE_FRAGMENT } );
 
         auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
 
@@ -455,27 +450,23 @@ void TinyToolbox::CreateTextShaders(
         filesystem.Dump( fragment_path, TinyDefaultSpriteFragment );
 
     if ( !filesystem.GetFileExist( material_path ) ) {
-        auto& graphics = game->GetGraphics( );
-        auto& assets = game->GetAssets( );
-        auto material = tiny_cast( graphics.CreatePipeline( TGP_TYPE_2D, TINY_OUTPASS_NAME, 0 ), TinyMaterialBuilder );
+        auto& renderer = game->GetRenderer( );
+        auto& assets   = game->GetAssets( );
+        auto material  = renderer.CreateMaterial( game, TINY_OUTPASS_NAME, 0 );
 
-        material.InputBinding.clear( );
-        material.InputAttributes.clear( );
-
-        material.PassName = TINY_OUTPASS_NAME;
-        material.ShaderStages = 2;
-        material.ShaderStages[ 0 ] = "sv_text_dev";
-        material.ShaderStages[ 1 ] = "sf_text_dev";
-
-        material.Descriptors = 3;
-        material.Descriptors[ TINY_RENDER_SET_CORE ] = 1;
-        material.Descriptors[ TINY_RENDER_SET_RENDER ] = 2;
-        material.Descriptors[ TINY_RENDER_SET_TEXTURE ] = 1;
-
-        _pCreateSetBind( material, TINY_RENDER_SET_CORE, 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _pCreateSetBind( material, TINY_RENDER_SET_RENDER, 0, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _pCreateSetBind( material, TINY_RENDER_SET_RENDER, 1, TGBP_TYPE_UNIFORM, TGS_STAGE_VERTEX );
-        _pCreateSetBind( material, TINY_RENDER_SET_TEXTURE, 0, TGBP_TYPE_COMBINED, TGS_STAGE_FRAGMENT );
+        TinyMaterial::CreateShaders( material, { "sv_text_dev", "sf_text_dev" } );
+        TinyMaterial::CreateBinding( material, { 0, tiny_sizeof( TinyRenderTextVertice ) } );
+        TinyMaterial::CreateAttribute(
+            material,
+            {
+                { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderTextVertice, Location   ) },
+                { 1, 0, TPA_TYPE_VEC2, tiny_offset_of( TinyRenderTextVertice, UV         ) },
+                { 2, 0, TPA_TYPE_UINT, tiny_offset_of( TinyRenderTextVertice, Parameters ) }
+            }
+        );
+        TinyMaterial::CreateSetBind( material, TRS_ID_CORE   , { 0, TGBP_TYPE_UNIFORM , 1             , TGS_STAGE_VERTEX   } );
+        TinyMaterial::CreateSetBind( material, TRS_ID_RENDER , { 0, TGBP_TYPE_UNIFORM , 1             , TGS_STAGE_VERTEX   } );
+        TinyMaterial::CreateSetBind( material, TRS_ID_TEXTURE, { 0, TGBP_TYPE_COMBINED, TINY_MAX_FONTS, TGS_STAGE_FRAGMENT } );
 
         auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
 

@@ -26,15 +26,16 @@ te_class TinyRenderBatchText final
 	: tiny_inherit( TinyRenderBatchInstance<TinyRenderTextContext> ) {
 
 public:
-	using Vertex_t = TinyRenderBatch<TinyRenderTextVertex, TINY_MAX_VERTEX>;
+	using Parameters_t = TinyRenderBatch<TinyRenderTextParameters, TinyMaxFonts>;
+	using Texture_t	   = TinyRenderBatch<VkDescriptorImageInfo, TinyMaxFonts>;
+	using Vertex_t	   = TinyRenderBatch<TinyRenderTextVertex, TINY_MAX_VERTEX>;
 
-	static const tiny_uint Size = Vertex_t::Size + tiny_sizeof( TinyRenderTextParameters );
+	static const tiny_uint Size = Vertex_t::Size + Parameters_t::Size;
 
 private:
-	tiny_uint					 _instance;
-	Vertex_t					 _vertex;
-	TinyRenderTextParameters	 _parameters;
-	TinyGraphicPipelineBindpoint _texture;
+	Texture_t	 _textures;
+	Vertex_t	 _vertex;
+	Parameters_t _parameters;
 
 public:
 	TinyRenderBatchText( );
@@ -50,7 +51,7 @@ public:
 		TinyGame* game,
 		TinyGraphicBufferStaging& staging,
 		TinyRenderUniformManager& uniforms,
-		const TinyRenderTextContext & draw_context
+		const TinyRenderTextContext& draw_context
 	) );
 
 	tiny_implement( void Terminate( ) );
@@ -66,5 +67,20 @@ protected:
 		TinyGraphicWorkContext& work_context,
 		TinyMaterial& material
 	) );
+
+private:
+	tiny_uint PushTexture( TinyFont* font );
+
+	void PushVertex( 
+		const TinyRenderTextContext & draw_context, 
+		TinyFont* font,
+		tiny_uint font_id 
+	);
+
+	void PushParameters( 
+		const TinyRenderTextContext& draw_context,
+		TinyFont* font,
+		tiny_uint font_id
+	);
 
 };

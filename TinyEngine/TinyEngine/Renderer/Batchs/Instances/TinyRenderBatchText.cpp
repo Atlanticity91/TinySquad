@@ -28,19 +28,20 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderBatchText::TinyRenderBatchText( )
 	: TinyRenderBatchInstance{ },
-	_instance{ 0 },
+	_textures{ },
 	_vertex{ }, 
-	_parameters{ },
-	_texture{ }
+	_parameters{ }
 { }
 
 bool TinyRenderBatchText::Create(
 	TinyGraphicManager& graphics,
 	TinyRenderUniformManager& uniforms
 ) {
-	return  _vertex.Create( )															 &&
-			uniforms.Create( graphics, { TGB_TYPE_VERTEX, Vertex_t::Size, TextVertex } ) &&
-			uniforms.Create( graphics, { TGB_TYPE_UNIFORM, tiny_sizeof( TinyRenderTextParameters ), ParamUniform, TRS_ID_RENDER, 0 } );
+	return  _textures.Create( )																					  &&
+			_vertex.Create( )																					  &&
+			_parameters.Create( )																				  &&
+			uniforms.Create( graphics, { TGB_TYPE_VERTEX , Vertex_t::Size	 , TextVertex					  } ) &&
+			uniforms.Create( graphics, { TGB_TYPE_UNIFORM, Parameters_t::Size, ParamUniform, TRS_ID_RENDER, 0 } );
 }
 
 void TinyRenderBatchText::Draw(
@@ -49,37 +50,34 @@ void TinyRenderBatchText::Draw(
 	TinyRenderUniformManager& uniforms,
 	const TinyRenderTextContext& draw_context
 ) {
-	auto& assets = game->GetAssets( );
-	auto* font	 = assets.GetAssetAs<TinyFont>( draw_context.Font );
-	auto char_id = draw_context.Text.length( );
+	auto char_count = draw_context.Text.length( );
+	auto& assets	= game->GetAssets( );
 
 	if ( 
-		_material == draw_context.Font && 
-		_vertex.GetHasSpace( char_id )
+		_material == draw_context.Material && 
+		_vertex.GetHasSpace( char_count )
 	) {
-		while ( char_id-- > 0 ) {
-			/*
-			auto& geometry = font->GetGeometry( draw_context.Text[ char_id ] );
+		auto* font   = assets.GetAssetAs<TinyFont>( draw_context.Font );
+		auto font_id = PushTexture( font );
 
-			for ( auto& vertice : geometry.Vertices )
-				_vertex.Push( { vertice.Location, vertice.UV, _instance } );
-			*/
-		}
-
-		_instance += 1;
+		PushVertex( draw_context, font, font_id );
+		PushParameters( draw_context, font, font_id );
 	} else {
 		auto& graphics = game->GetGraphics( );
 
 		Flush( assets, graphics, staging, uniforms );
 
-		_material = draw_context.Font;
-		//_texture = font->GetTexure( );
+		_material = draw_context.Material;
 
 		Draw( game, staging, uniforms, draw_context );
 	}
 }
 
-void TinyRenderBatchText::Terminate( ) { _vertex.Terminate( ); }
+void TinyRenderBatchText::Terminate( ) { 
+	_textures.Terminate( );
+	_vertex.Terminate( ); 
+	_parameters.Terminate( );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
@@ -89,19 +87,20 @@ tiny_uint TinyRenderBatchText::UploadBuffers(
 	TinyGraphicBufferStaging& staging,
 	TinyRenderUniformManager& uniforms
 ) {
-	auto vertex = _vertex.Flush( );
+	auto vertex		= _vertex.Flush( );
+	auto parameters = _parameters.Flush( );
 
 	if ( vertex.Count > 0 ) {
 		auto context	= graphics.GetContext( );
-		auto param_size = tiny_sizeof( TinyRenderTextParameters );
-		auto vert_size  = vertex.Count * tiny_sizeof( TinyRenderTextVertex );
+		auto param_size = parameters.Count * tiny_sizeof( TinyRenderTextParameters );
+		auto vert_size  = vertex.Count	   * tiny_sizeof( TinyRenderTextVertex );
 
 		staging.Map( context, vert_size + param_size );
 
 		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
 
-		Tiny::Memcpy( vertex.Values			   , staging_addr			 , vert_size  );
-		Tiny::Memcpy( tiny_rvalue( _parameters), staging_addr + vert_size, param_size );
+		Tiny::Memcpy( vertex.Values	   , staging_addr			 , vert_size  );
+		Tiny::Memcpy( parameters.Values, staging_addr + vert_size, param_size );
 
 		staging.UnMap( context );
 
@@ -125,5 +124,81 @@ void TinyRenderBatchText::OnFlush(
 	TinyGraphicWorkContext& work_context,
 	TinyMaterial& material
 ) {
-	material.Bind( work_context, _texture );
+	auto textures = _textures.Flush( );
+
+	material.Bind( work_context, TRS_ID_TEXTURE, 0, textures.Count, tiny_cast( textures.Values, VkDescriptorImageInfo* ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+tiny_uint TinyRenderBatchText::PushTexture( TinyFont* font ) {
+	auto* textures = tiny_cast( _textures.GetData( ), VkDescriptorImageInfo* );
+	auto font_id   = _textures.GetCount( );
+	auto texture   = font->GetTexure( );
+
+	while ( font_id-- > 0 ) {
+		if (
+			texture.sampler   == textures[ font_id ].sampler && 
+			texture.imageView == textures[ font_id ].imageView 
+		)
+			continue;
+
+		break;
+	}
+
+	if ( font_id > _textures.GetCount( ) )
+		_textures.Push( texture );
+
+	return font_id;
+}
+
+void TinyRenderBatchText::PushVertex(
+	const TinyRenderTextContext& draw_context,
+	TinyFont* font,
+	tiny_uint font_id
+) {
+	auto char_id  = draw_context.Text.length( );
+	auto* text	  = draw_context.Text.as_chars( );
+	auto vertex   = TinyRenderTextVertex{ };
+	auto location = tiny_vec3{ draw_context.Location, 0.f };
+	auto scale	  = tiny_vec3{ draw_context.Size, draw_context.Size, 1.f };
+
+	while ( char_id-- > 0 ) {
+		auto char_ = tiny_lvalue( text + char_id );
+
+		if ( char_ != '\n' && char_ != '\r' ) {
+			auto& geometry = font->GetGeometry( char_ );
+			auto vertex_id = TinyQuadVerticeCount;
+			auto transform = glm::translate( location ) * glm::scale( scale );
+
+			while ( vertex_id-- > 0 ) {
+				vertex.Vertices[ vertex_id ].Location   = transform * geometry.Vertices[ vertex_id ].Location;
+				vertex.Vertices[ vertex_id ].UV			= geometry.Vertices[ vertex_id ].UV;
+				vertex.Vertices[ vertex_id ].Parameters = font_id;
+			}
+
+			_vertex.Push( vertex );
+
+			location.x += geometry.Advance;
+		}
+		
+		location.y += draw_context.Size;
+	}
+}
+
+void TinyRenderBatchText::PushParameters( 
+	const TinyRenderTextContext& draw_context,
+	TinyFont* font,
+	tiny_uint font_id
+) {
+	auto parameters = TinyRenderTextParameters{ };
+
+	Tiny::Memcpy( tiny_rvalue( draw_context.Background ), tiny_rvalue( parameters.Background ), 2 );
+
+	parameters.Range = font->GetRange( ); 
+	parameters.Miter = font->GetMiter( );
+	parameters.Font  = font_id;
+
+	_parameters.Push( parameters );
 }
