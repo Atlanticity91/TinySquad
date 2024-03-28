@@ -25,14 +25,15 @@
 te_class TinyToolbox final {
 
 private:
-	bool			  _is_in_use;
-	bool			  _has_dir;
-	bool			  _show_exemples;
-	ImGuiContext*	  _imgui;
-	VkDescriptorPool  _local_pools;
-	tiny_map<ImFont*> _fonts;
-	TinyToolManager   _tools;
-	TinyToolboxGuizmo _guizmo;
+	bool				  _is_in_use;
+	bool				  _has_dir;
+	bool				  _show_exemples;
+	ImGuiContext*		  _imgui;
+	VkDescriptorPool	  _local_pools;
+	tiny_map<ImFont*>	  _fonts;
+	TinyToolManager		  _tools;
+	TinyToolWindowManager _windows;
+	TinyToolboxGuizmo	  _guizmo;
 
 public:
 	TinyToolbox( );
@@ -40,6 +41,8 @@ public:
 	~TinyToolbox( ) = default;
 
 	bool Initialize( TinyGame* game );
+
+	void Clear( );
 
 	bool LoadFont( 
 		TinyFilesystem& filesystem, 
@@ -80,6 +83,10 @@ public:
 
 	void ShowExemples( );
 
+	tiny_inline void ShowWindow( const tiny_string& name );
+
+	tiny_inline void HideWindow( const tiny_string& name );
+
 	tiny_inline void ShowGuizmo2D( const tiny_hash entity_hash );
 
 	tiny_inline void ShowGuizmo3D( const tiny_hash entity_hash );
@@ -91,6 +98,13 @@ public:
 	void Tick( TinyGame* game );
 
 	void Terminate( TinyGame* game );
+
+public:
+	template<typename Window>
+		requires tiny_is_child_of( Window, TinyToolWindow )
+	void Create( TinyGame* game ) {
+		_windows.Create<Window>( game, tiny_self );
+	};
 
 private:
 	bool CreateImGui( );
@@ -117,9 +131,24 @@ private:
 
 	void CreateDevDir( TinyGame* game );
 
+	void Prepare( );
+
+	void Render( TinyGame* game );
+
 public:
+	TinyToolWindow* GetWindow( const tiny_string& name ) const;
+
 	TinyToolboxGuizmo& GetGuizmo( );
 
 	const tiny_hash GetGuizmoSelection( ) const;
+
+public:
+	template<typename Window>
+		requires tiny_is_child_of( Window, TinyToolWindow )
+	TinyToolWindow* GetWindowAs( const tiny_string& name ) {
+		auto* window = _windows.Get( name );
+
+		return tiny_cast( window, Window );
+	};
 
 };

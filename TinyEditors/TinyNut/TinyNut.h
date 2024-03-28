@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyCore.h"
+#include "TinyNutWindow.h"
 
 class tiny_nut_dll TinyNut : public TinyGame {
 
@@ -30,18 +30,20 @@ public:
 	virtual ~TinyNut( ) = default;
 
 protected:
-	virtual bool Initialize( TinyEngine& engine ) override;
+	tiny_abstract( bool Initialize( TinyEngine& engine, TinyToolbox& toolbox ) );
 
-	virtual void SetupBundles( TinyGraphicManager& graphics ) override;
+	tiny_implement( bool Initialize( TinyEngine& engine ) );
 
-	virtual void LoadInterop( TinyLuaContext& lua_context ) override;
+	tiny_no_implement( void SetupBundles( TinyGraphicManager& graphics ) );
 
-	virtual void LoadContent( TinyAssetManager& assets ) override;
+	tiny_no_implement( void LoadInterop( TinyLuaContext& lua_context ) );
 
-	virtual void LoadECS( TinyECS& ecs ) override;
+	tiny_no_implement( void LoadContent( TinyAssetManager& assets ) );
 
-	virtual void Tick( ) override;
+	tiny_no_implement( void LoadECS( TinyECS& ecs ) );
 
-	virtual void Terminate( ) override;
+	tiny_implement( void Tick( ) );
+
+	tiny_no_implement( void Terminate( ) );
 
 };

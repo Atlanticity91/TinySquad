@@ -47,7 +47,10 @@ public:
 
 	tiny_inline void Register( tiny_string input_alias, tiny_init<TinyInputQuery> querys );
 
-	tiny_inline void Register( tiny_string input_alias, const tiny_list<TinyInputQuery>& querys );
+	tiny_inline void Register( 
+		tiny_string input_alias, 
+		const tiny_list<TinyInputQuery>& querys 
+	);
 
 	tiny_inline void Lock( tiny_string input_alias );
 
@@ -59,9 +62,11 @@ public:
 
 	bool Evaluate( tiny_string input_alias, bool consume );
 
+	void Erase( const tiny_string& input );
+
 	void Tick( );
 
-	tiny_implement( void Terminate( TinyFilesystem& file_system, TinyWindow & window ) );
+	tiny_implement( void Terminate( TinyFilesystem& file_system, TinyWindow& window ) );
 
 public:
 	bool GetIsActive( ) const;

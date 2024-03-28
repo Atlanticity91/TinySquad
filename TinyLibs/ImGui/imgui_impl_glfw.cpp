@@ -85,12 +85,17 @@
 #pragma clang diagnostic ignored "-Wsign-conversion"    // warning: implicit conversion changes signedness
 #endif
 
+// GLFW
+#include <TinyThirdparty/GLFW/glfw3.h>
+
 #ifdef _WIN32
 #undef APIENTRY
-#include <TinyThirdparty/GLFW/Glfw_win32.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <TinyThirdparty/GLFW/glfw3native.h>   // for glfwGetWin32Window()
 #endif
 #ifdef __APPLE__
-#include <TinyThirdparty/GLFW/Glfw_osx.h>
+#define GLFW_EXPOSE_NATIVE_COCOA
+#include <GLFW/glfw3native.h>   // for glfwGetCocoaWindow()
 #endif
 
 #ifdef __EMSCRIPTEN__

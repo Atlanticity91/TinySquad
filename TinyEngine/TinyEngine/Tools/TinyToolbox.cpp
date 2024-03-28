@@ -31,6 +31,7 @@ TinyToolbox::TinyToolbox( )
     _local_pools{ nullptr },
     _fonts{ },
     _tools{ },
+    _windows{ },
     _guizmo{ }
 { }
 
@@ -49,6 +50,8 @@ bool TinyToolbox::Initialize( TinyGame* game ) {
     
     return state;
 }
+
+void TinyToolbox::Clear( ) { _tools.Clear( ); }
 
 bool TinyToolbox::LoadFont(
     TinyFilesystem& filesystem,
@@ -165,6 +168,10 @@ void TinyToolbox::Toggle( ) { _is_in_use = !_is_in_use; }
 
 void TinyToolbox::ShowExemples( ) { _show_exemples = true; }
 
+void TinyToolbox::ShowWindow( const tiny_string& name ) { _windows.Show( name ); }
+
+void TinyToolbox::HideWindow( const tiny_string& name ) { _windows.Hide( name ); }
+
 void TinyToolbox::ShowGuizmo2D( const tiny_hash entity_hash ) {
     _guizmo.Show( entity_hash, true );
 }
@@ -207,23 +214,13 @@ void TinyToolbox::Tick( TinyGame* game ) {
         if ( !_has_dir )
             CreateDevDir( game );
 
-        ImGui_ImplVulkan_NewFrame( );
-        ImGui_ImplGlfw_NewFrame( );
+        Prepare( );
 
-        ImGui::NewFrame( );
+        _windows.Tick( game, tiny_self );
         _guizmo.DrawUI( game );
-
-        ImGui::ShowDemoWindow( tiny_rvalue( _show_exemples ) );
-
         _tools.Tick( game, tiny_self );
 
-        ImGui::Render( );
-
-        auto* draw_data    = ImGui::GetDrawData( );
-        auto& graphics     = game->GetGraphics( );
-        auto& work_context = graphics.GetWorkdContext( );
-
-        ImGui_ImplVulkan_RenderDrawData( draw_data, work_context.Queue->CommandBuffer );
+        Render( game );
     }
 }
 
@@ -317,58 +314,61 @@ void TinyToolbox::CreateImGuiTheme( ) {
 
     auto& style = ImGui::GetStyle( );
 
-    style.FramePadding = ImVec2{ 4.f, 4.f };
+    style.FramePadding    = TinyImGui::Theme::FramePadding;
+    style.FrameRounding   = TinyImGui::Theme::FrameRounding;
+    style.FrameBorderSize = TinyImGui::Theme::FrameRounding;
+    style.IndentSpacing   = TinyImGui::Theme::IndentSpacing;
 
     auto* colors = style.Colors;
 
-    colors[ ImGuiCol_Text                  ] = ImVec4( 1.00f, 1.00f, 1.00f, 1.00f );
-    colors[ ImGuiCol_TextDisabled          ] = ImVec4( 0.50f, 0.50f, 0.50f, 1.00f );
-    colors[ ImGuiCol_WindowBg              ] = ImVec4( 0.06f, 0.06f, 0.06f, 0.94f );
-    colors[ ImGuiCol_ChildBg               ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
-    colors[ ImGuiCol_PopupBg               ] = ImVec4( 0.08f, 0.08f, 0.08f, 0.94f );
-    colors[ ImGuiCol_Border                ] = ImVec4( 0.43f, 0.43f, 0.50f, 0.50f );
-    colors[ ImGuiCol_BorderShadow          ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
-    colors[ ImGuiCol_FrameBg               ] = ImVec4( 0.44f, 0.44f, 0.44f, 0.60f );
-    colors[ ImGuiCol_FrameBgHovered        ] = ImVec4( 0.57f, 0.57f, 0.57f, 0.70f );
-    colors[ ImGuiCol_FrameBgActive         ] = ImVec4( 0.76f, 0.76f, 0.76f, 0.80f );
-    colors[ ImGuiCol_TitleBg               ] = ImVec4( 0.04f, 0.04f, 0.04f, 1.00f );
-    colors[ ImGuiCol_TitleBgActive         ] = ImVec4( 0.16f, 0.16f, 0.16f, 1.00f );
-    colors[ ImGuiCol_TitleBgCollapsed      ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.60f );
-    colors[ ImGuiCol_MenuBarBg             ] = ImVec4( 0.14f, 0.14f, 0.14f, 1.00f );
-    colors[ ImGuiCol_ScrollbarBg           ] = ImVec4( 0.02f, 0.02f, 0.02f, 0.53f );
-    colors[ ImGuiCol_ScrollbarGrab         ] = ImVec4( 0.31f, 0.31f, 0.31f, 1.00f );
-    colors[ ImGuiCol_ScrollbarGrabHovered  ] = ImVec4( 0.41f, 0.41f, 0.41f, 1.00f );
-    colors[ ImGuiCol_ScrollbarGrabActive   ] = ImVec4( 0.51f, 0.51f, 0.51f, 1.00f );
-    colors[ ImGuiCol_CheckMark             ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.80f );
-    colors[ ImGuiCol_SliderGrab            ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.80f );
-    colors[ ImGuiCol_SliderGrabActive      ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
-    colors[ ImGuiCol_Button                ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.40f );
-    colors[ ImGuiCol_ButtonHovered         ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.60f );
-    colors[ ImGuiCol_ButtonActive          ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
-    colors[ ImGuiCol_Header                ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.40f );
-    colors[ ImGuiCol_HeaderHovered         ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.60f );
-    colors[ ImGuiCol_HeaderActive          ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
-    colors[ ImGuiCol_Separator             ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.40f );
-    colors[ ImGuiCol_SeparatorHovered      ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.60f );
-    colors[ ImGuiCol_SeparatorActive       ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
-    colors[ ImGuiCol_ResizeGrip            ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.40f );
-    colors[ ImGuiCol_ResizeGripHovered     ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.60f );
-    colors[ ImGuiCol_ResizeGripActive      ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
-    colors[ ImGuiCol_Tab                   ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.80f );
-    colors[ ImGuiCol_TabHovered            ] = ImVec4( 0.13f, 0.75f, 0.75f, 0.80f );
-    colors[ ImGuiCol_TabActive             ] = ImVec4( 0.13f, 0.75f, 1.00f, 0.80f );
-    colors[ ImGuiCol_TabUnfocused          ] = ImVec4( 0.18f, 0.18f, 0.18f, 1.00f );
-    colors[ ImGuiCol_TabUnfocusedActive    ] = ImVec4( 0.36f, 0.36f, 0.36f, 0.54f );
-    //colors[ ImGuiCol_DockingPreview        ] = ImVec4( 0.13f, 0.75f, 0.55f, 0.80f );
-    //colors[ ImGuiCol_DockingEmptyBg        ] = ImVec4( 0.13f, 0.13f, 0.13f, 0.80f );
-    colors[ ImGuiCol_PlotLines             ] = ImVec4( 0.61f, 0.61f, 0.61f, 1.00f );
-    colors[ ImGuiCol_PlotLinesHovered      ] = ImVec4( 1.00f, 0.43f, 0.35f, 1.00f );
+    colors[ ImGuiCol_Text                  ] = TinyImGui::Theme::Text;
+    colors[ ImGuiCol_TextDisabled          ] = TinyImGui::Theme::TextDarker;
+    colors[ ImGuiCol_WindowBg              ] = TinyImGui::Theme::Titlebar;
+    colors[ ImGuiCol_ChildBg               ] = TinyImGui::Theme::Background;
+    colors[ ImGuiCol_PopupBg               ] = TinyImGui::Theme::BackgroundPopup;
+    colors[ ImGuiCol_Border                ] = TinyImGui::Theme::BackgroundDark;
+    colors[ ImGuiCol_BorderShadow          ] = TinyImGui::Theme::Dark;
+    colors[ ImGuiCol_FrameBg               ] = TinyImGui::Theme::PropertyField;
+    colors[ ImGuiCol_FrameBgHovered        ] = TinyImGui::Theme::PropertyField;
+    colors[ ImGuiCol_FrameBgActive         ] = TinyImGui::Theme::PropertyField;
+    colors[ ImGuiCol_TitleBg               ] = TinyImGui::Theme::Titlebar;
+    colors[ ImGuiCol_TitleBgActive         ] = TinyImGui::Theme::Titlebar;
+    colors[ ImGuiCol_TitleBgCollapsed      ] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ ImGuiCol_MenuBarBg             ] = ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f };
+    colors[ ImGuiCol_ScrollbarBg           ] = ImVec4{ 0.02f, 0.02f, 0.02f, 0.53f };
+    colors[ ImGuiCol_ScrollbarGrab         ] = ImVec4{ 0.31f, 0.31f, 0.31f, 1.0f };
+    colors[ ImGuiCol_ScrollbarGrabHovered  ] = TinyImGui::Theme::HoverPurple;
+    colors[ ImGuiCol_ScrollbarGrabActive   ] = TinyImGui::Theme::ActivePurple;
+    colors[ ImGuiCol_CheckMark             ] = TinyImGui::Theme::ActivePurple;
+    colors[ ImGuiCol_SliderGrab            ] = ImVec4{ 0.51f, 0.51f, 0.51f, 0.7f };
+    colors[ ImGuiCol_SliderGrabActive      ] = TinyImGui::Theme::ActivePurple;
+    colors[ ImGuiCol_Button                ] = ImColor{ 56, 56, 56, 200 };
+    colors[ ImGuiCol_ButtonHovered         ] = TinyImGui::Theme::HoverPurple;
+    colors[ ImGuiCol_ButtonActive          ] = TinyImGui::Theme::ActivePurple;
+    colors[ ImGuiCol_Header                ] = TinyImGui::Theme::GroupHeader;
+    colors[ ImGuiCol_HeaderHovered         ] = TinyImGui::Theme::GroupHeader;
+    colors[ ImGuiCol_HeaderActive          ] = TinyImGui::Theme::GroupHeader;
+    colors[ ImGuiCol_Separator             ] = TinyImGui::Theme::BackgroundDark;
+    colors[ ImGuiCol_SeparatorHovered      ] = TinyImGui::Theme::HoverPurple;
+    colors[ ImGuiCol_SeparatorActive       ] = TinyImGui::Theme::Highlight;
+    colors[ ImGuiCol_ResizeGrip            ] = ImVec4{ 0.91f, 0.91f, 0.91f, 0.25f };
+    colors[ ImGuiCol_ResizeGripHovered     ] = ImVec4{ 0.81f, 0.81f, 0.81f, 0.67f };
+    colors[ ImGuiCol_ResizeGripActive      ] = ImVec4{ 0.46f, 0.46f, 0.46f, 0.95f };
+    colors[ ImGuiCol_Tab                   ] = TinyImGui::Theme::Titlebar;
+    colors[ ImGuiCol_TabHovered            ] = TinyImGui::Theme::HoverPurple;
+    colors[ ImGuiCol_TabActive             ] = TinyImGui::Theme::ActivePurple;
+    colors[ ImGuiCol_TabUnfocused          ] = TinyImGui::Theme::Titlebar;
+    colors[ ImGuiCol_TabUnfocusedActive    ] = TinyImGui::Theme::HoverPurple;
+    //colors[ ImGuiCol_DockingPreview        ] = TinyImGui::Theme::HoverPurple;
+    //colors[ ImGuiCol_DockingEmptyBg        ] = TinyImGui::Theme::GroupHeader;
+    colors[ ImGuiCol_PlotLines             ] = TinyImGui::Theme::ActivePurple;
+    colors[ ImGuiCol_PlotLinesHovered      ] = TinyImGui::Theme::HoverPurple;
     colors[ ImGuiCol_PlotHistogram         ] = ImVec4( 0.90f, 0.70f, 0.00f, 1.00f );
     colors[ ImGuiCol_PlotHistogramHovered  ] = ImVec4( 1.00f, 0.60f, 0.00f, 1.00f );
-    colors[ ImGuiCol_TableHeaderBg         ] = ImVec4( 0.19f, 0.19f, 0.20f, 1.00f );
+    colors[ ImGuiCol_TableHeaderBg         ] = TinyImGui::Theme::GroupHeader;
     colors[ ImGuiCol_TableBorderStrong     ] = ImVec4( 0.31f, 0.31f, 0.35f, 1.00f );
-    colors[ ImGuiCol_TableBorderLight      ] = ImVec4( 0.23f, 0.23f, 0.25f, 1.00f );
-    colors[ ImGuiCol_TableRowBg            ] = ImVec4( 0.00f, 0.00f, 0.00f, 0.00f );
+    colors[ ImGuiCol_TableBorderLight      ] = TinyImGui::Theme::BackgroundDark;
+    colors[ ImGuiCol_TableRowBg            ] = TinyImGui::Theme::Dark;
     colors[ ImGuiCol_TableRowBgAlt         ] = ImVec4( 1.00f, 1.00f, 1.00f, 0.07f );
     colors[ ImGuiCol_TextSelectedBg        ] = ImVec4( 0.26f, 0.59f, 0.98f, 0.35f );
     colors[ ImGuiCol_DragDropTarget        ] = ImVec4( 1.00f, 1.00f, 0.00f, 0.90f );
@@ -484,11 +484,36 @@ void TinyToolbox::CreateDevDir( TinyGame* game ) {
 
     CreateSpriteShaders( game, filesystem, dev_dir );
     CreateTextShaders( game, filesystem, dev_dir );
+
+    _has_dir = true;
+}
+
+void TinyToolbox::Prepare( ) {
+    ImGui_ImplVulkan_NewFrame( );
+    ImGui_ImplGlfw_NewFrame( );
+
+    ImGui::NewFrame( );
+    ImGui::ShowDemoWindow( tiny_rvalue( _show_exemples ) );
+}
+
+void TinyToolbox::Render( TinyGame* game ) {
+    auto& graphics     = game->GetGraphics( );
+    auto& work_context = graphics.GetWorkdContext( );
+
+    ImGui::Render( );
+
+    auto* draw_data = ImGui::GetDrawData( );
+
+    ImGui_ImplVulkan_RenderDrawData( draw_data, work_context.Queue->CommandBuffer );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+TinyToolWindow* TinyToolbox::GetWindow( const tiny_string& name ) const { 
+    return _windows.Get( name ); 
+}
+
 TinyToolboxGuizmo& TinyToolbox::GetGuizmo( ) { return _guizmo; }
 
 const tiny_hash TinyToolbox::GetGuizmoSelection( ) const { return _guizmo.GetSelection( ); }

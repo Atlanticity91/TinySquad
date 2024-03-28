@@ -34,10 +34,7 @@ project "TinyFoundry"
     debugdir "%{wks.location}/bin/"
     objdir "%{wks.location}/bin-int/%{prj.name}"
 
-    links { 
-        "TinyNut",
-        "%{wks.location}/bin/Thirdparty/TinyNut.lib"
-    }
+    links { "TinyNut", "TinyEngine" }
     
     filter "system:windows"
         systemversion "latest"

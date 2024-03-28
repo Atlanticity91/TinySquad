@@ -20,8 +20,5 @@
 
 #pragma once 
 
-#include "ImGuiTTF.h"
-#include "ImGuiknobs.h"
 #include "ImGuizmo.h"
-#include <TinyLibs/ImGui/imgui_impl_vulkan.h>
-#include <TinyLibs/ImGui/imgui_impl_glfw.h>
+

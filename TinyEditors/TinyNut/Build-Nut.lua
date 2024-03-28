@@ -1,5 +1,5 @@
 project "TinyNut"
-	kind "StaticLib"
+	kind "SharedLib"
 	language "C++"
 	cppdialect "C++20"
     staticruntime "off"
@@ -8,7 +8,7 @@ project "TinyNut"
 
 	files { "*.h", "*.hpp", "*.cpp" }
 
-	targetdir "%{wks.location}/bin/Thirdparty/"
+	targetdir "%{wks.location}/bin/"
 	objdir "%{wks.location}/bin-int/%{prj.name}"
 
 	includedirs { 

@@ -1,8 +1,7 @@
 #pragma once
 
 #include <cstdlib>
-#include <TinyLibs/ImGui/imgui.h>
-#include <TinyLibs/ImGui/imgui_internal.h>
+#include "ImGuiTTF.h"
 
 typedef int ImGuiKnobFlags;
 

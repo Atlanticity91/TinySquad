@@ -47,6 +47,8 @@ public:
 
 	bool Initialize( TinyGame* game, TinyToolbox& toolbox );
 
+	void Clear( );
+
 	void Tick( TinyGame* game, TinyToolbox& toolbox );
 
 	void Terminate( TinyGame* game );

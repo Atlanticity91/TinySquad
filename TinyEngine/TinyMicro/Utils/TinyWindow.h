@@ -65,6 +65,8 @@ public:
 
 	tiny_point GetDimensions_p( ) const;
 
+	bool GetIsMaximized( ) const;
+
 public:
 	operator GLFWwindow* ( ) const;
 

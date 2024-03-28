@@ -22,6 +22,8 @@
 
 #include <TinyEngine/Tools/UI/TinyToolboxGuizmo.h>
 
+class TinyToolbox;
+
 te_class TinyToolCategory {
 
 private:

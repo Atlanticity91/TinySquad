@@ -43,6 +43,8 @@ bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
 	return true; 
 }
 
+void TinyToolManager::Clear( ) { _categories.clear( ); }
+
 void TinyToolManager::Tick( TinyGame* game, TinyToolbox& toolbox ) {
 	if ( ImGui::Begin( "Tiny Editor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar ) ) {
 		auto tab_id = tiny_cast( 0, tiny_uint );

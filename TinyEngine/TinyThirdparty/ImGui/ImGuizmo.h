@@ -101,6 +101,8 @@ void EditTransform( const Camera& camera, matrix_t& matrix ) {
 #endif
 #pragma once
 
+#include "ImGuiknobs.h"
+
 #ifdef USE_IMGUI_API
 #include "imconfig.h"
 #endif

@@ -107,6 +107,9 @@ bool TinyInputManager::Evaluate( tiny_string input_alias, bool consume ) {
 	return state;
 }
 
+
+void TinyInputManager::Erase( const tiny_string& input ) { _map.Erase( input ); }
+
 void TinyInputManager::Tick( ) {
 	_timestep.Tick( );
 	_map.Tick( );

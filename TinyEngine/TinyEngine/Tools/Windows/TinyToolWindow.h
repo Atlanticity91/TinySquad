@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/03/2024
+ * @creation : 28/03/2024
  * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -20,16 +20,32 @@
 
 #pragma once
 
-#include <TinyNut/TinyNut.h>
+#include <TinyEngine/Tools/ToolSet/TinyToolTerrain.h>
 
-class TinyBacker final : public TinyNut {
-
-public:
-	TinyBacker( );
-
-	~TinyBacker( ) = default;
+te_class TinyToolWindow {
 
 protected:
-	tiny_implement( bool Initialize( TinyEngine& engine, TinyToolbox& toolbox ) );
+	bool		_is_visible;
+	tiny_string _name;
+
+public:
+	TinyToolWindow( const tiny_string& name );
+
+	virtual ~TinyToolWindow( ) = default;
+
+	tiny_virtual( void Create( TinyGame* game, TinyToolbox& toolbox ) );
+
+	void Show( );
+
+	void Hide( );
+
+	tiny_virtual( void Tick( TinyGame* game, TinyToolbox& toolbox ) );
+
+	tiny_virtual( void Delete( TinyGame* game, TinyToolbox& toolbox ) );
+
+public:
+	bool GetIsVisible( ) const;
+
+	const tiny_string& GetName( ) const;
 
 };

@@ -42,6 +42,8 @@ public:
 
 	void Register( tiny_string input_alias, const tiny_list<TinyInputQuery>& querys );
 
+	void Erase( const tiny_string& input );
+
 	void Tick( );
 
 public:

@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyToolboxImGui.h"
+#include "TinyToolboxImGuiTheme.h"
 
 tiny_enum( TinyGuizmoModes ) { 
 

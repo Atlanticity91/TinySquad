@@ -106,6 +106,12 @@ namespace TinyImGui {
 
 	};
 
+	tiny_dll void ShiftCursorX( float distance );
+	
+	tiny_dll void ShiftCursorY( float distance );
+	
+	tiny_dll void ShiftCursor( float x, float y );
+
 	tiny_dll bool BeginModal( const tiny_string& label );
 
 	tiny_dll void EndModal( );
@@ -240,24 +246,6 @@ namespace TinyImGui {
 		tiny_uint component, 
 		Type* vector, 
 		const DragContext<Type>& context 
-	) { return false; };
-
-	template<>
-	bool InputDrag<float>(
-		const tiny_string& label,
-		tiny_uint component,
-		float* vector,
-		const DragContext<float>& context
-	) {
-		return InputDrag( label, component, vector, context.Speed, context.Max, context.Max );
-	};
-
-	template<>
-	bool InputDrag<tiny_int>(
-		const tiny_string& label,
-		tiny_uint component,
-		tiny_int* vector,
-		const DragContext<tiny_int>& context
 	) {
 		return InputDrag( label, component, vector, context.Speed, context.Max, context.Max );
 	};
@@ -385,5 +373,25 @@ namespace TinyImGui {
 	tiny_dll void Image( ImTextureID& image, const TinyTexture2D* texture, const ImVec2& dimensions );
 	
 	tiny_dll void Grid( ImVec2 cursor, ImVec2 dimensions, const GridContext& context );
+
+	tiny_dll float Convert_sRGB_FromLinear( float theLinearValue );
+	
+	tiny_dll float Convert_sRGB_ToLinear( float thesRGBValue );
+	
+	tiny_dll ImVec4 ConvertFromSRGB( ImVec4 colour );
+
+	tiny_dll ImVec4 ConvertToSRGB( ImVec4 colour );
+	
+	tiny_dll ImU32 ColorWithValue( const ImColor& color, float value );
+	
+	tiny_dll ImU32 ColorWithSaturation( const ImColor& color, float saturation );
+	
+	tiny_dll ImU32 ColorWithHue( const ImColor& color, float hue );
+	
+	tiny_dll ImU32 ColorWithMultipliedValue( const ImColor& color, float multiplier );
+	
+	tiny_dll ImU32 ColorWithMultipliedSaturation( const ImColor& color, float multiplier );
+	
+	tiny_dll ImU32 ColorWithMultipliedHue( const ImColor& color, float multiplier );
 
 };

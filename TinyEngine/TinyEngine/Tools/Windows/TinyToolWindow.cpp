@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/03/2024
+ * @creation : 28/03/2024
  * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -18,29 +18,23 @@
  *
  ******************************************************************************************/
 
-#include <TinyBacker/__tiny_backer_pch.h>
-
-class T : public TinyNutWindow { 
-
-public:
-	T( )
-		: TinyNutWindow{ "TinyBacker" } 
-	{ }
-
-};
+#include <TinyEngine/__tiny_engine_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// === PUBLIC ===
+//		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyBacker::TinyBacker( )
-	: TinyNut{ "Tiny Backer" }
+TinyToolWindow::TinyToolWindow( const tiny_string& name )
+	: _is_visible{ true },
+	_name{ name }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-// === PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyBacker::Initialize( TinyEngine& engine, TinyToolbox& toolbox ) {
-	toolbox.Create<T>( this );
+void TinyToolWindow::Show( ) { _is_visible = true; }
 
-	return true;
-}
+void TinyToolWindow::Hide( ) { _is_visible = false; }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC GET ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyToolWindow::GetIsVisible( ) const { return _is_visible; }
+
+const tiny_string& TinyToolWindow::GetName( ) const { return _name; }

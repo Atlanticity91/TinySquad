@@ -30,15 +30,15 @@ TinyNut::TinyNut( const tiny_string& title )
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyNut::Initialize( TinyEngine& engine ) { return true; }
+bool TinyNut::Initialize( TinyEngine& engine ) {
+	auto& inputs  = engine.GetInputs( );
+	auto& toolbox = engine.GetToolbox( );
 
-void TinyNut::SetupBundles( TinyGraphicManager& graphics ) { }
+	inputs.Erase( "Show Dev" );
+	toolbox.Clear( );
 
-void TinyNut::LoadInterop( TinyLuaContext& lua_context ) { }
-
-void TinyNut::LoadContent( TinyAssetManager& assets ) { }
-
-void TinyNut::LoadECS( TinyECS& ecs ) { }
+	return Initialize( engine, toolbox );
+}
 
 void TinyNut::Tick( ) { 
 	auto& graphics = GetGraphics( );
@@ -46,6 +46,3 @@ void TinyNut::Tick( ) {
 	graphics.BeginPass( TINY_OUTPASS_HASH );
 	graphics.NextSubpass( );
 }
-
-void TinyNut::Terminate( ) { }
-

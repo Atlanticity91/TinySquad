@@ -61,6 +61,10 @@ void TinyInputMap::UnLock( tiny_hash input_hash ) {
 		queries->IsActive = true;
 }
 
+void TinyInputMap::Erase( const tiny_string& input ) {
+	_queries.erase( input );
+}
+
 void TinyInputMap::Tick( ) {
 	for ( auto& query : _queries )
 		query.Data.IsConsumed = false;

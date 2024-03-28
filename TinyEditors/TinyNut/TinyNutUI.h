@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/03/2024
+ * @creation : 28/03/2024
  * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -20,16 +20,28 @@
 
 #pragma once
 
-#include <TinyNut/TinyNut.h>
+#include "TinyNutIcon.h"
 
-class TinyBacker final : public TinyNut {
+struct tiny_nut_dll TinyNutIcon {
 
-public:
-	TinyBacker( );
+	using Callback_t = std::function<void( TinyGame* )>;
 
-	~TinyBacker( ) = default;
+	Callback_t Callback;
 
-protected:
-	tiny_implement( bool Initialize( TinyEngine& engine, TinyToolbox& toolbox ) );
+};
+
+namespace TinyNutUI { 
+
+	tiny_nut_dll ImRect GetItemRect( );
+
+	tiny_nut_dll ImRect RectExpanded( const ImRect& rect, float x, float y );
+	
+	tiny_nut_dll ImRect RectOffset( const ImRect& rect, float x, float y );
+	
+	tiny_nut_dll ImRect RectOffset( const ImRect& rect, ImVec2 xy );
+
+	tiny_nut_dll bool BeginMenubar( const ImRect& barRectangle );
+
+	tiny_nut_dll void EndMenubar( );
 
 };
