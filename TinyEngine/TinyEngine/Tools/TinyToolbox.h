@@ -136,6 +136,8 @@ private:
 	void Render( TinyGame* game );
 
 public:
+	ImGuiContext* GetContext( ) const;
+
 	TinyToolWindow* GetWindow( const tiny_string& name ) const;
 
 	TinyToolboxGuizmo& GetGuizmo( );

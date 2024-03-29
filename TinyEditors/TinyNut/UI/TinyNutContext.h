@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/03/2024
+ * @creation : 29/03/2024
  * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -20,18 +20,35 @@
 
 #pragma once
 
-#include <TinyNut/TinyNut.h>
+#include "TinyNutUI.h"
 
-class TinyBacker final : public TinyNut {
+tiny_nut_class TinyNutContext final {
+
+private:
+	VkDescriptorPool _local_pools;
+	ImGuiContext*	 _imgui;
 
 public:
-	TinyBacker( );
+	TinyNutContext( );
 
-	~TinyBacker( ) = default;
+	~TinyNutContext( ) = default;
 
-protected:
-	tiny_implement( void TickMenubar( ) );
+	bool Create( TinyNut* nut_game );
 
-	tiny_implement( void TickUI( ) );
+	void Prepare( TinyNut* nut_game );
+
+	void Flush( TinyNut* nut_game );
+
+	void Terminate( TinyNut* nut_game );
+
+private:
+	bool CreateImGuiPools( TinyGraphicManager& graphics );
+
+	bool CreateImGuiContext( TinyWindow& window, TinyGraphicManager& graphics );
+
+	void SetTheme( );
+
+public:
+	ImGuiContext* GetContext( );
 
 };

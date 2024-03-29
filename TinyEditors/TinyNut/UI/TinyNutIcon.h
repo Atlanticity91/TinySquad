@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyCore.h"
+#include <TinyNut/TinyCore.h>
 
 /**
  * 

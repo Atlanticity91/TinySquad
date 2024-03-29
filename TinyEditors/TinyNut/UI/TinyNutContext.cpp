@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/03/2024
+ * @creation : 29/03/2024
  * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -18,51 +18,48 @@
  *
  ******************************************************************************************/
 
-#include "TinyNut.h"
+#include <TinyNut/TinyNut.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyNut::TinyNut( const tiny_string& title )
-	: TinyGame{ title, TGO_PAYSAGE_16x9 },
-	_context{ },
-	_window{ title }
+TinyNutContext::TinyNutContext( )
+    : _local_pools{ VK_NULL_HANDLE },
+    _imgui{ nullptr }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-// === PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyNut::Initialize( TinyEngine& engine ) {
-	auto& inputs  = engine.GetInputs( );
-	auto& toolbox = engine.GetToolbox( );
+bool TinyNutContext::Create( TinyNut* nut_game ) { return true; }
 
-	inputs.Erase( "Show Dev" );
+void TinyNutContext::Prepare( TinyNut* nut_game ) {
+	auto& graphics = nut_game->GetGraphics( );
 
-	toolbox.Hide( );
-	toolbox.Clear( );
+	graphics.BeginPass( TINY_OUTPASS_HASH );
+    graphics.NextSubpass( );
 
-	auto state = _context.Create( this );
-	
-	if ( state )
-		_window.Create( this );
+    ImGui::SetCurrentContext( nut_game->GetToolbox().GetContext( ) );
 
-	return state;
+    ImGui_ImplVulkan_NewFrame( );
+    ImGui_ImplGlfw_NewFrame( );
+
+    ImGui::NewFrame( );
 }
 
-void TinyNut::Tick( ) { 
-	_context.Prepare( this );
-	_window.Tick( this );
-	_context.Flush( this );
+void TinyNutContext::Flush( TinyNut* nut_game ) {
+	auto& graphics     = nut_game->GetGraphics( );
+    auto& work_context = graphics.GetWorkdContext( );
+
+    ImGui::Render( );
+
+    auto* draw_data = ImGui::GetDrawData( );
+
+    ImGui_ImplVulkan_RenderDrawData( draw_data, work_context.Queue->CommandBuffer );
 }
 
-void TinyNut::Terminate( ) {
-	_window.Terminate( this );
-	_context.Terminate( this );
+void TinyNutContext::Terminate( TinyNut* nut_game ) {
+    ImGui::SetCurrentContext( nullptr );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyNutContext& TinyNut::GetNutContext( ) { return _context; }
-
-TinyNutWindow& TinyNut::GetNutWindow( ) { return _window; }
+ImGuiContext* TinyNutContext::GetContext( ) { return ImGui::GetCurrentContext( ); }

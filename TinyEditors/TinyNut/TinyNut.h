@@ -20,9 +20,15 @@
 
 #pragma once
 
-#include "TinyNutWindow.h"
+#include "UI/TinyNutWindow.h"
 
 class tiny_nut_dll TinyNut : public TinyGame {
+
+	friend class TinyNutWindow;
+
+private:
+	TinyNutContext _context;
+	TinyNutWindow  _window;
 
 public:
 	TinyNut( const tiny_string& title );
@@ -30,8 +36,6 @@ public:
 	virtual ~TinyNut( ) = default;
 
 protected:
-	tiny_abstract( bool Initialize( TinyEngine& engine, TinyToolbox& toolbox ) );
-
 	tiny_implement( bool Initialize( TinyEngine& engine ) );
 
 	tiny_no_implement( void SetupBundles( TinyGraphicManager& graphics ) );
@@ -42,8 +46,17 @@ protected:
 
 	tiny_no_implement( void LoadECS( TinyECS& ecs ) );
 
+	tiny_abstract( void TickMenubar( ) );
+
+	tiny_abstract( void TickUI( ) );
+
 	tiny_implement( void Tick( ) );
 
-	tiny_no_implement( void Terminate( ) );
+	tiny_implement( void Terminate( ) );
+
+public:
+	TinyNutContext& GetNutContext( );
+
+	TinyNutWindow& GetNutWindow( );
 
 };

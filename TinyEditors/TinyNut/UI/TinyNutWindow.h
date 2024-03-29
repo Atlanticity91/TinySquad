@@ -20,32 +20,32 @@
 
 #pragma once
 
-#include "TinyNutUI.h"
+#include "TinyNutContext.h"
 
-class tiny_nut_dll TinyNutWindow : public TinyToolWindow { 
+tiny_nut_class TinyNutWindow final {
+
+	using Icon_t = TinyNutUI::Icon;
 
 protected:
-	tiny_map<TinyNutIcon> _icons;
+	tiny_string		 _name;
+	tiny_map<Icon_t> _icons;
 
 public:
 	TinyNutWindow( const tiny_string& name );
 
 	virtual ~TinyNutWindow( ) = default;
 
-	tiny_implement( void Create( TinyGame* game, TinyToolbox& toolbox ) );
+	void Create( TinyNut* nut_game );
 
 	void RegisterIcon( 
 		const tiny_string& name, 
 		const tiny_ubyte* icon, 
-		const TinyNutIcon::Callback_t& callback 
+		const Icon_t::Callback_t& callback
 	);
+	
+	void Tick( TinyNut* nut_game );
 
-	tiny_implement( void Tick( TinyGame* game, TinyToolbox& toolbox ) );
-
-	//tiny_implement( void Delete( TinyGame* game, TinyToolbox& toolbox ) );
-
-protected:
-	tiny_virtual( void DrawMenus( TinyGame* game ) );
+	void Terminate( TinyNut* nut_game );
 
 private:
 	void DrawBorder( );
@@ -61,17 +61,17 @@ private:
 	void DrawTitlebarText( const ImVec2& passing );
 
 	void DrawTitlebarIcon( 
-		TinyGame* game,
+		TinyNut* nut_game,
 		const ImVec2& offset, 
 		const ImVec2& padding,
 		const tiny_string& name
 	);
 
-	void DrawTitlebar( TinyGame* game, bool is_maximized );
+	void DrawTitlebar( TinyNut* nut_game, bool is_maximized );
 
-	void DrawMenubar( TinyGame* game, bool is_maximized, bool& is_overed );
+	void DrawMenubar( TinyNut* nut_game, bool is_maximized, bool& is_overed );
 
-	bool Prepare( TinyGame* game, TinyWindow& window );
+	bool Prepare( TinyNut* nut_game, TinyWindow& window );
 
 	void DockSpace( );
 

@@ -22,15 +22,17 @@
 
 #include "TinyNutIcon.h"
 
-struct tiny_nut_dll TinyNutIcon {
-
-	using Callback_t = std::function<void( TinyGame* )>;
-
-	Callback_t Callback;
-
-};
+class TinyNut;
 
 namespace TinyNutUI { 
+
+	tiny_nut_struct Icon {
+
+		using Callback_t = std::function<void( TinyNut* )>;
+
+		Callback_t Callback;
+
+	};
 
 	tiny_nut_dll ImRect GetItemRect( );
 

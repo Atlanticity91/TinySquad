@@ -46,27 +46,29 @@ bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
 void TinyToolManager::Clear( ) { _categories.clear( ); }
 
 void TinyToolManager::Tick( TinyGame* game, TinyToolbox& toolbox ) {
-	if ( ImGui::Begin( "Tiny Editor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar ) ) {
-		auto tab_id = tiny_cast( 0, tiny_uint );
+	if ( _categories.size( ) > 0 ) {
+		if ( ImGui::Begin( "Tiny Editor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar ) ) {
+			auto tab_id = tiny_cast( 0, tiny_uint );
 
-		if ( ImGui::BeginTabBar( "__tiny_editor_tabs__", ImGuiTabBarFlags_None ) ) {
-			for ( auto& category : _categories ) {
-				if ( !category->Tick( game, toolbox ) )
-					tab_id += 1;
-				else
-					_current = tab_id;
+			if ( ImGui::BeginTabBar( "__tiny_editor_tabs__", ImGuiTabBarFlags_None ) ) {
+				for ( auto& category : _categories ) {
+					if ( !category->Tick( game, toolbox ) )
+						tab_id += 1;
+					else
+						_current = tab_id;
+				}
+
+				ImGui::EndTabBar( );
 			}
-
-			ImGui::EndTabBar( );
 		}
+
+		ImGui::End( );
+
+		auto* content = GetCategoryAs<TinyToolContent>( TT_CATEGORY_CONTENT );
+
+		if ( content )
+			content->RenderEditors( game );
 	}
-
-	ImGui::End( );
-
-	auto* content = GetCategoryAs<TinyToolContent>( TT_CATEGORY_CONTENT );
-
-	if ( content )
-		content->RenderEditors( game );
 }
 
 void TinyToolManager::Terminate( TinyGame* game ) {

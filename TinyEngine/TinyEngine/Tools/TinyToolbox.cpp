@@ -230,7 +230,7 @@ void TinyToolbox::Terminate( TinyGame* game ) {
 
         ImGui_ImplVulkan_Shutdown( );
         ImGui_ImplGlfw_Shutdown( );
-        ImGui::DestroyContext( );
+        ImGui::DestroyContext( _imgui );
 
         if ( _local_pools ) {
             auto& graphics = game->GetGraphics( );
@@ -248,6 +248,10 @@ bool TinyToolbox::CreateImGui( ) {
     IMGUI_CHECKVERSION( );
 
     _imgui = ImGui::CreateContext( );
+
+    auto& io = ImGui::GetIO( );
+
+    io.BackendFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
 
     return _imgui != nullptr;
 }
@@ -359,8 +363,6 @@ void TinyToolbox::CreateImGuiTheme( ) {
     colors[ ImGuiCol_TabActive             ] = TinyImGui::Theme::ActivePurple;
     colors[ ImGuiCol_TabUnfocused          ] = TinyImGui::Theme::Titlebar;
     colors[ ImGuiCol_TabUnfocusedActive    ] = TinyImGui::Theme::HoverPurple;
-    //colors[ ImGuiCol_DockingPreview        ] = TinyImGui::Theme::HoverPurple;
-    //colors[ ImGuiCol_DockingEmptyBg        ] = TinyImGui::Theme::GroupHeader;
     colors[ ImGuiCol_PlotLines             ] = TinyImGui::Theme::ActivePurple;
     colors[ ImGuiCol_PlotLinesHovered      ] = TinyImGui::Theme::HoverPurple;
     colors[ ImGuiCol_PlotHistogram         ] = ImVec4( 0.90f, 0.70f, 0.00f, 1.00f );
@@ -489,6 +491,8 @@ void TinyToolbox::CreateDevDir( TinyGame* game ) {
 }
 
 void TinyToolbox::Prepare( ) {
+    ImGui::SetCurrentContext( _imgui );
+
     ImGui_ImplVulkan_NewFrame( );
     ImGui_ImplGlfw_NewFrame( );
 
@@ -510,6 +514,8 @@ void TinyToolbox::Render( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+ImGuiContext* TinyToolbox::GetContext( ) const { return ImGui::GetCurrentContext( ); }
+
 TinyToolWindow* TinyToolbox::GetWindow( const tiny_string& name ) const { 
     return _windows.Get( name ); 
 }

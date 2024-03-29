@@ -36,3 +36,6 @@
 #else
 #	define tiny_nut_dll
 #endif
+
+#define tiny_nut_class class tiny_nut_dll
+#define tiny_nut_struct struct tiny_nut_dll
