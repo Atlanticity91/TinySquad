@@ -22,7 +22,7 @@
 
 #include "TinyTextureSpriteSheet.h"
 
-te_struct TinyTexture2DBuilder : tiny_inherit( TinyGraphicTextureBuilder ) {
+te_struct TinyTexture2DBuilder : tiny_inherit( TinyGraphicTextureSpecification ) {
 
 	tiny_uint Rows     = 0;
 	tiny_uint Columns  = 0;

@@ -96,7 +96,7 @@ tm_struct TinyGraphicPipelineSetBind {
 
 };
 
-tm_struct TinyGraphicPipelineBundle {
+tm_struct TinyGraphicPipelineSpecification {
 
 	TinyGraphicRenderpassTypes PassType;
 	tiny_uint Subpass;
@@ -117,6 +117,6 @@ tm_struct TinyGraphicPipelineBundle {
 	TinyDescriptorLayout Descriptors;
 	tiny_list<VkPushConstantRange> Constants;
 
-	TinyGraphicPipelineBundle( );
+	TinyGraphicPipelineSpecification( );
 
 };

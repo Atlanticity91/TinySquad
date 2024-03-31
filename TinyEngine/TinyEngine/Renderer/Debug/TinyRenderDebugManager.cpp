@@ -110,7 +110,7 @@ bool TinyRenderDebugManager::CompileShader(
 	TinyGraphicManager& graphics, 
 	const TinyRenderDebugShader& shader
 ) {
-	auto shader_properties = TinyGraphicShaderProperties{ };
+	auto shader_properties = TinyGraphicShaderSpecification{ };
 	auto shader_info	   = VkShaderModuleCreateInfo{ VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
 	auto compilation	   = TinyGraphicShaderCompilationContext{ shader.Name, shader.Source };
 	auto& logical		   = graphics.GetLogical( );

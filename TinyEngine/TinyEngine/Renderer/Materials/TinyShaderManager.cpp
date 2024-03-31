@@ -43,7 +43,7 @@ bool TinyShaderManager::OnLoad(
 	if ( header.Type == TA_TYPE_SHADER ) {
 		auto& graphics = game->GetGraphics( );
 		auto context   = graphics.GetContext( );
-		auto builder   = TinyGraphicShaderProperties{ };
+		auto builder   = TinyGraphicShaderSpecification{ };
 
 		file.Read( builder.Type );
 		file.Read( builder.Entry );
@@ -68,7 +68,7 @@ bool TinyShaderManager::OnCreate(
 	TinyGraphicShader& shader
 ) {
 	auto& graphics = game->GetGraphics( );
-	auto* builder  = tiny_cast( asset_builder, TinyGraphicShaderProperties* );
+	auto* builder  = tiny_cast( asset_builder, TinyGraphicShaderSpecification* );
 	auto context   = graphics.GetContext( );
 
 	return builder && shader.Create( context, *builder );

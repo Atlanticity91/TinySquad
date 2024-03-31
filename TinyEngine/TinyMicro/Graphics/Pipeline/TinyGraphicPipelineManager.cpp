@@ -40,10 +40,10 @@ bool TinyGraphicPipelineManager::Initialize(
 	return state;
 }
 
-TinyGraphicPipelineBundle TinyGraphicPipelineManager::Create( 
+TinyGraphicPipelineSpecification TinyGraphicPipelineManager::Create(
 	TinyGraphicPipelineTypes type 
 ) {
-	auto pipeline = TinyGraphicPipelineBundle{ };
+	auto pipeline = TinyGraphicPipelineSpecification{ };
 
 	switch ( type ) {
 		case TGP_TYPE_2D	  : pipeline = CreatePipeline2D( );		 break;
@@ -123,8 +123,8 @@ void TinyGraphicPipelineManager::CreateDescriptorLimits( ) {
 	_limits.create( VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, MAX_DESCRIPTOR );
 }
 
-TinyGraphicPipelineBundle TinyGraphicPipelineManager::CreatePipeline2D( ) {
-	auto pipeline = TinyGraphicPipelineBundle{ };
+TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipeline2D( ) {
+	auto pipeline = TinyGraphicPipelineSpecification{ };
 
 	pipeline.InputBinding = 1;
 	pipeline.InputBinding[ 0 ].binding   = tiny_cast( 0, tiny_uint );
@@ -145,8 +145,8 @@ TinyGraphicPipelineBundle TinyGraphicPipelineManager::CreatePipeline2D( ) {
 	return pipeline;
 }
 
-TinyGraphicPipelineBundle TinyGraphicPipelineManager::CreatePipeline3D( ) {
-	auto pipeline = TinyGraphicPipelineBundle{ };
+TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipeline3D( ) {
+	auto pipeline = TinyGraphicPipelineSpecification{ };
 
 	pipeline.InputBinding = 1;
 	pipeline.InputBinding[ 0 ].binding   = tiny_cast( 0, tiny_uint );
@@ -167,8 +167,8 @@ TinyGraphicPipelineBundle TinyGraphicPipelineManager::CreatePipeline3D( ) {
 	return pipeline;
 }
 
-TinyGraphicPipelineBundle TinyGraphicPipelineManager::CreatePipelineCompute( ) {
-	auto pipeline = TinyGraphicPipelineBundle{ };
+TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipelineCompute( ) {
+	auto pipeline = TinyGraphicPipelineSpecification{ };
 
 	return pipeline;
 }

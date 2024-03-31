@@ -20,14 +20,14 @@
 
 #pragma once
 
-#include "TinyGraphicBufferProperties.h"
+#include "TinyGraphicBufferSpecification.h"
 
 tm_class TinyGraphicBuffer final {
 
 private:
-	VkDescriptorBufferInfo		_descriptor;
-	TinyGraphicBufferProperties _properties;
-	TinyGraphicMemory			_memory;
+	VkDescriptorBufferInfo		   _descriptor;
+	TinyGraphicBufferSpecification _properties;
+	TinyGraphicMemory		 	   _memory;
 
 public:
 	TinyGraphicBuffer( );
@@ -36,7 +36,7 @@ public:
 
 	bool Create( 
 		TinyGraphicContext& context,
-		const TinyGraphicBufferProperties& properties 
+		const TinyGraphicBufferSpecification& properties
 	);
 
 	void Terminate( TinyGraphicContext& context );
@@ -58,7 +58,7 @@ public:
 
 	const VkDescriptorBufferInfo* GetDescriptor( ) const;
 
-	const TinyGraphicBufferProperties& GetProperties( ) const;
+	const TinyGraphicBufferSpecification& GetProperties( ) const;
 
 	const TinyGraphicMemory& GetMemory( ) const;
 

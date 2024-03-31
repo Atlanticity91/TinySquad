@@ -127,13 +127,13 @@ private:
 		const BundleNode& bundle
 	);
 
-	tiny_inline void ClearAttachements(
+	bool InternalCreate( TinyGraphicContext& graphic );
+
+	void ClearAttachements(
 		TinyGraphicWorkContext& work_context,
 		const tiny_list<VkClearAttachment>& images,
 		const tiny_list<VkClearRect>& bounds
 	);
-
-	bool InternalCreate( TinyGraphicContext& graphic );
 
 	void InternalTerminate( TinyGraphicContext& graphic );
 

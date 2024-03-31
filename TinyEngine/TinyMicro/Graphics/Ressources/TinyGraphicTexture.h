@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyGraphicTextureBuilder.h"
+#include "TinyGraphicTextureSpecification.h"
 
 tm_class TinyGraphicTexture {
 
@@ -44,7 +44,7 @@ public:
 
 	bool Create( 
 		TinyGraphicContext& context,
-		const TinyGraphicTextureBuilder& builder,
+		const TinyGraphicTextureSpecification& specification,
 		const TinyGraphicBufferStaging& stagging
 	);
 

@@ -32,7 +32,7 @@ tiny_enum( TinyGraphicBufferTypes ) {
 
 };
 
-tm_struct TinyGraphicBufferProperties {
+tm_struct TinyGraphicBufferSpecification {
 
 	TinyGraphicBufferTypes Type;
 	tiny_uint Size;

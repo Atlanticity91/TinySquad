@@ -260,7 +260,7 @@ void TinyToolCommon::ConvertShader(
     auto& filesystem = game->GetFilesystem( );
     auto& graphic    = game->GetGraphics( );
     auto file_memory = tiny_storage{ };
-    auto shader      = TinyGraphicShaderProperties{ };
+    auto shader      = TinyGraphicShaderSpecification{ };
 
     auto file = filesystem.OpenFile( in_path.Full.as_chars( ), Tiny::TF_ACCESS_READ );
     auto size = file.GetSize( );

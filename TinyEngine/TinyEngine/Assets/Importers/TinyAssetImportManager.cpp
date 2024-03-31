@@ -309,11 +309,11 @@ bool TinyAssetImportManager::ImportGLSL(
 	tiny_storage& file,
 	tiny_storage& storage
 ) {
-	auto state = tiny_make_storage( storage, TinyGraphicShaderProperties );
+	auto state = tiny_make_storage( storage, TinyGraphicShaderSpecification );
 
 	if ( state ) {
 		auto& graphics = game->GetGraphics( );
-		auto* builder  = storage.As<TinyGraphicShaderProperties>( );
+		auto* builder  = storage.As<TinyGraphicShaderSpecification>( );
 		auto* source   = file.GetAddress( );
 		auto context   = TinyGraphicShaderCompilationContext{ };
 
@@ -339,7 +339,7 @@ bool TinyAssetImportManager::ImportHLSL(
 }
 
 bool TinyAssetImportManager::ExportSPV( TinyGame* game, TinyFile& file, c_pointer& asset ) {
-	auto* builder = tiny_cast( asset, TinyGraphicShaderProperties* );
+	auto* builder = tiny_cast( asset, TinyGraphicShaderSpecification* );
 	auto state	  = builder != nullptr;
 
 	if ( state ) {

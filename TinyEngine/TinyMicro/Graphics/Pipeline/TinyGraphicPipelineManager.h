@@ -35,7 +35,7 @@ public:
 
 	bool Initialize( TinyFilesystem& filesystem, TinyGraphicLogical& logical );
 
-	TinyGraphicPipelineBundle Create( TinyGraphicPipelineTypes type );
+	TinyGraphicPipelineSpecification Create( TinyGraphicPipelineTypes type );
 
 	void Terminate( TinyFilesystem& filesystem, TinyGraphicLogical& logical );
 
@@ -48,11 +48,11 @@ private:
 
 	void CreateDescriptorLimits( );
 
-	TinyGraphicPipelineBundle CreatePipeline2D( );
+	TinyGraphicPipelineSpecification CreatePipeline2D( );
 
-	TinyGraphicPipelineBundle CreatePipeline3D( );
+	TinyGraphicPipelineSpecification CreatePipeline3D( );
 
-	TinyGraphicPipelineBundle CreatePipelineCompute( );
+	TinyGraphicPipelineSpecification CreatePipelineCompute( );
 
 public:
 	const VkPipelineCache& GetCache( ) const;

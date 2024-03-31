@@ -69,10 +69,10 @@ public:
 
 	tiny_inline bool CompileShader(
 		const TinyGraphicShaderCompilationContext& context,
-		TinyGraphicShaderProperties& properties
+		TinyGraphicShaderSpecification& specification
 	);
 
-	TinyGraphicPipelineBundle CreatePipeline(
+	TinyGraphicPipelineSpecification CreatePipeline(
 		TinyGraphicPipelineTypes type,
 		const tiny_string& renderpass,
 		tiny_uint subpass

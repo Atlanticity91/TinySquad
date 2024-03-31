@@ -26,25 +26,25 @@
 namespace TinyNutUI {
 
 	Image CreateImage( TinyNut* nut_game, tiny_uint length, const tiny_ubyte* image ) {
-		auto& graphics = nut_game->GetGraphics( );
-		auto& renderer = nut_game->GetRenderer( );
-		auto& staging  = renderer.GetStaging( );
-		auto context   = graphics.GetContext( );
-		auto builder   = TinyGraphicTextureBuilder{ };
-		auto image_	   = Image{ };
-		auto channels  = 0;
-		auto* width    = tiny_cast( tiny_rvalue( builder.Properties.Width  ), tiny_int* );
-		auto* height   = tiny_cast( tiny_rvalue( builder.Properties.Height ), tiny_int* );
+		auto specification = TinyGraphicTextureSpecification{ };
+		auto& graphics	   = nut_game->GetGraphics( );
+		auto& renderer	   = nut_game->GetRenderer( );
+		auto& staging	   = renderer.GetStaging( );
+		auto channels	   = 0;
+		auto context	   = graphics.GetContext( );
+		auto image_		   = Image{ };
+		auto* width		   = tiny_cast( tiny_rvalue( specification.Properties.Width  ), tiny_int* );
+		auto* height	   = tiny_cast( tiny_rvalue( specification.Properties.Height ), tiny_int* );
 
-		builder.Texels = stbi_load_from_memory( image, length, width, height, tiny_rvalue( channels ), 4 );
-		builder.Size   = tiny_lvalue( width ) * tiny_lvalue( height ) * 4;
+		specification.Texels = stbi_load_from_memory( image, length, width, height, tiny_rvalue( channels ), 4 );
+		specification.Size   = tiny_lvalue( width ) * tiny_lvalue( height ) * 4;
 
-		staging.Map( context, builder.Size, builder.Texels );
+		staging.Map( context, specification.Size, specification.Texels );
 
-		if ( image_.Texture.Create( context, builder, staging ) )
+		if ( image_.Texture.Create( context, specification, staging ) )
 			image_.Descriptor = TinyImGui::CreateTextureID( image_.Texture );
 
-		stbi_image_free( builder.Texels );
+		stbi_image_free( specification.Texels );
 
 		return image_;
 	}

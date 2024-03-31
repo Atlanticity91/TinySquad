@@ -83,12 +83,12 @@ void TinyGraphicManager::AddCompilerMacros( tiny_init<TinyGraphicShaderMacro> ma
 
 bool TinyGraphicManager::CompileShader(
 	const TinyGraphicShaderCompilationContext& context,
-	TinyGraphicShaderProperties& properties
+	TinyGraphicShaderSpecification& specification
 ) {
-	return _compiler.Compile( context, properties );
+	return _compiler.Compile( context, specification );
 }
 
-TinyGraphicPipelineBundle TinyGraphicManager::CreatePipeline(
+TinyGraphicPipelineSpecification TinyGraphicManager::CreatePipeline(
 	TinyGraphicPipelineTypes type,
 	const tiny_string& renderpass,
 	tiny_uint subpass

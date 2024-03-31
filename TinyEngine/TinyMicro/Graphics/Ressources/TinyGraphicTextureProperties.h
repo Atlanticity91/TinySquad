@@ -20,13 +20,13 @@
 
 #pragma once
 
-#include "TinyGraphicSamplerProperties.h"
+#include "TinyGraphicSamplerSpecification.h"
 
 tiny_enum( TinyGraphicTextureTypes ) {
 
 	TGT_TYPE_TEXTURE_2D = 0,
 	TGT_TYPE_TEXTURE_3D,
-	TGT_TYPE_TEXTURE_CUBEMAP,
+	TGT_TYPE_TEXTURE_CUBEMAP
 
 };
 
@@ -34,31 +34,31 @@ tiny_enum( TinyGraphicTextureUsages ) {
 
 	TGT_USAGE_TEXTURE = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 	
-	TGT_USAGE_TARGET = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | 
-					   VK_IMAGE_USAGE_SAMPLED_BIT	   | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+	TGT_USAGE_TARGET  = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | 
+					    VK_IMAGE_USAGE_SAMPLED_BIT	    | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 
-	TGT_USAGE_DEPTH = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | 
-					  VK_IMAGE_USAGE_SAMPLED_BIT	  | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
+	TGT_USAGE_DEPTH  = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | 
+					   VK_IMAGE_USAGE_SAMPLED_BIT	   | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
 
 };
 
 tm_struct TinyGraphicTextureProperties {
 
-	VkImage Image    = VK_NULL_HANDLE;
-	VkImageView View = VK_NULL_HANDLE;
+	VkImage Image;
+	VkImageView View;
+	TinyGraphicTextureTypes Type;
+	VkFormat Format;
+	VkImageLayout Layout;
+	tiny_uint Width;
+	tiny_uint Height;
+	tiny_uint Depth;
+	VkImageAspectFlags Aspect;
+	tiny_uint Levels;
+	VkSampleCountFlagBits Samples;
+	VkImageTiling Tiling;
+	TinyGraphicTextureUsages Usage;
+	TinyGraphicSamplerSpecification Sampler;
 
-	TinyGraphicTextureTypes Type   = TGT_TYPE_TEXTURE_2D;
-	VkFormat Format				   = VK_FORMAT_R8G8B8A8_UNORM;
-	VkImageLayout Layout		   = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	tiny_uint Width				   = 0;
-	tiny_uint Height			   = 0;
-	tiny_uint Depth				   = 1;
-	VkImageAspectFlags Aspect	   = VK_IMAGE_ASPECT_COLOR_BIT;
-	tiny_uint Levels			   = 1;
-	VkSampleCountFlagBits Samples  = VK_SAMPLE_COUNT_1_BIT;
-	VkImageTiling Tiling		   = VK_IMAGE_TILING_OPTIMAL;
-	TinyGraphicTextureUsages Usage = TGT_USAGE_TEXTURE;
-
-	TinyGraphicSamplerProperties Sampler{ };
+	TinyGraphicTextureProperties( );
 
 };

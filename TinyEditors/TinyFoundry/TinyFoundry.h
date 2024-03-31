@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include <TinyEngine/TinyGameEntry.h>
+#include <TinyNut/TinyNut.h>
 
-class TinyFoundry final : public TinyGame { 
+class TinyFoundry final : tiny_inherit( TinyNut ) {
 
 public:
 	TinyFoundry( );
@@ -30,18 +30,8 @@ public:
 	~TinyFoundry( ) = default;
 
 protected:
-	virtual bool Initialize( TinyEngine& engine ) override;
+	tiny_implement( void TickMenubar( ) );
 
-	virtual void SetupBundles( TinyGraphicManager& graphics ) override;
-
-	virtual void LoadInterop( TinyLuaContext& lua_context ) override;
-
-	virtual void LoadContent( TinyAssetManager& assets ) override;
-
-	virtual void LoadECS( TinyECS& ecs ) override;
-
-	virtual void Tick( ) override;
-
-	virtual void Terminate( ) override;
+	tiny_implement( void TickUI( ) );
 
 };

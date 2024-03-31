@@ -33,18 +33,18 @@ TinyGraphicPipeline::TinyGraphicPipeline( )
 bool TinyGraphicPipeline::Create( 
 	TinyGraphicContext& graphic, 
 	const TinyLimitsStack& limits,
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) {
-	auto state = GetPipelineLayout( graphic.Logical, limits, bundle );
+	auto state = GetPipelineLayout( graphic.Logical, limits, specification );
 
 	if ( state ) {
-		if ( bundle.PassType == TGR_TYPE_RENDER )
-			state = CreateRenderPipeline( graphic, bundle );
-		else if ( bundle.PassType == TGR_TYPE_COMPUTE )
-			state = CreateComputePipeline( graphic, bundle );
+		if ( specification.PassType == TGR_TYPE_RENDER )
+			state = CreateRenderPipeline( graphic, specification );
+		else if ( specification.PassType == TGR_TYPE_COMPUTE )
+			state = CreateComputePipeline( graphic, specification );
 
 		if ( state ) 
-			GrabProperties( bundle );
+			GrabProperties( specification );
 	}
 
 	return state;
@@ -532,70 +532,79 @@ void TinyGraphicPipeline::Terminate( TinyGraphicContext& context ) {
 //		===	PUBLIC STATIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyGraphicPipeline::CreateBinding(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	const TinyGraphicPipelineBinding& binding
 ) {
-	CreateBinding( bundle, binding.Binding, binding.Stride, binding.IsVertex );
+	CreateBinding( specification, binding.Binding, binding.Stride, binding.IsVertex );
 }
 
 void TinyGraphicPipeline::CreateBinding(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	tiny_init<TinyGraphicPipelineBinding> bindings
 ) {
 	auto count = tiny_cast( bindings.size( ), tiny_uint );
 
 	if ( count > 0 ) {
-		bundle.InputBinding = count;
+		specification.InputBinding = count;
 
 		for ( auto& binding : bindings ) {
 			auto rate = binding.IsVertex ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
 
-			_pCreateBinding( bundle, binding.Binding, binding.Stride, rate );
+			specification.InputBinding[ binding.Binding ] = {
+				binding.Binding,
+				binding.Stride,
+				rate
+			};
 		}
 	}
 }
 
 void TinyGraphicPipeline::CreateBinding(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	tiny_uint binding,
 	tiny_uint stride,
 	bool is_vertex
 ) {
 	auto rate = is_vertex ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
 
-	bundle.InputBinding.emplace_back( { binding, stride, rate } );
+	specification.InputBinding.emplace_back( { binding, stride, rate } );
 }
 
 void TinyGraphicPipeline::CreateAttribute(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	const TinyGraphicPipelineAttribute& attribute
 ) {
-	CreateAttribute( bundle, attribute.Location, attribute.Binding, attribute.Type, attribute.Offset );
+	CreateAttribute( specification, attribute.Location, attribute.Binding, attribute.Type, attribute.Offset );
 }
 
 void TinyGraphicPipeline::CreateAttribute(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	tiny_init<TinyGraphicPipelineAttribute> attributes
 ) {
 	auto count = tiny_cast( attributes.size( ), tiny_uint );
 
 	if ( count > 0 ) {
-		bundle.InputAttributes = count;
+		specification.InputAttributes = count;
 
 		for ( auto& attribute : attributes ) {
-			_pCreateAttribute( bundle, attribute.Location, attribute.Binding, attribute.Type, attribute.Offset );
+			specification.InputAttributes[ attribute.Location ] = {
+				attribute.Location,
+				attribute.Binding,
+				tiny_cast( attribute.Type, VkFormat ),
+				attribute.Offset
+			};
 		}
 	}
 }
 
 void TinyGraphicPipeline::CreateAttribute(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	tiny_uint location,
 	tiny_uint binding,
 	TinyPipelineAttributeTypes type,
 	tiny_uint offset
 ) {
-	bundle.InputAttributes.emplace_back( { 
+	specification.InputAttributes.emplace_back( { 
 		location, 
 		binding, 
 		tiny_cast( type, VkFormat ), 
@@ -604,15 +613,15 @@ void TinyGraphicPipeline::CreateAttribute(
 }
 
 void TinyGraphicPipeline::CreateSetBind(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	tiny_uint set,
 	const TinyGraphicPipelineSetBind& set_bind
 ) {
-	CreateSetBind( bundle, set, set_bind.Binding, set_bind.Type, set_bind.Count, set_bind.Stage );
+	CreateSetBind( specification, set, set_bind.Binding, set_bind.Type, set_bind.Count, set_bind.Stage );
 }
 
 void TinyGraphicPipeline::CreateSetBind(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	tiny_uint set,
 	tiny_init<TinyGraphicPipelineSetBind> set_binds
 ) {
@@ -620,9 +629,9 @@ void TinyGraphicPipeline::CreateSetBind(
 
 	if ( count > 0 ) {
 		if ( set == count )
-			bundle.Descriptors.emplace_back( { } );
+			specification.Descriptors.emplace_back( { } );
 
-		auto& descriptor_set = bundle.Descriptors[ set ];
+		auto& descriptor_set = specification.Descriptors[ set ];
 
 		for ( auto& set_bind : set_binds ) {
 			auto stage = tiny_cast( set_bind.Stage, VkShaderStageFlags );
@@ -634,17 +643,17 @@ void TinyGraphicPipeline::CreateSetBind(
 }
 
 void TinyGraphicPipeline::CreateSetBind(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	tiny_uint set,
 	tiny_uint binding,
 	TinyGraphicBindTypes type,
 	TinyGraphicShaderStages stage
 ) {
-	CreateSetBind( bundle, set, binding, type, 1, stage );
+	CreateSetBind( specification, set, binding, type, 1, stage );
 }
 
 void TinyGraphicPipeline::CreateSetBind(
-	TinyGraphicPipelineBundle& bundle,
+	TinyGraphicPipelineSpecification& specification,
 	tiny_uint set,
 	tiny_uint binding,
 	TinyGraphicBindTypes type,
@@ -654,10 +663,10 @@ void TinyGraphicPipeline::CreateSetBind(
 	auto stage_ = tiny_cast( stage, VkShaderStageFlags );
 	auto type_  = tiny_cast( type, VkDescriptorType );
 
-	if ( set == bundle.Descriptors.size( ) )
-		bundle.Descriptors.create_back( );
+	if ( set == specification.Descriptors.size( ) )
+		specification.Descriptors.create_back( );
 
-	bundle.Descriptors[ set ].create_back( binding, type_, count, stage_, VK_NULL_HANDLE );
+	specification.Descriptors[ set ].create_back( binding, type_, count, stage_, VK_NULL_HANDLE );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -665,25 +674,25 @@ void TinyGraphicPipeline::CreateSetBind(
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicPipeline::CreateRenderPipeline(
 	TinyGraphicContext& graphic,
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) {
 	auto pipeline_info	 = VkGraphicsPipelineCreateInfo{ VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
 	auto& pipeline_cache = graphic.Pipelines.GetCache( );
 	
-	auto vertex_state		 = GetVertexInputState( bundle );
-	auto assembly_state		 = GetInputAssemblyState( bundle );
-	auto tessellation_state  = GetTessellationState( bundle );
+	auto vertex_state		 = GetVertexInputState( specification );
+	auto assembly_state		 = GetInputAssemblyState( specification );
+	auto tessellation_state  = GetTessellationState( specification );
 	auto viewport			 = GetViewport( );
 	auto rasterization_state = GetRasterizationState( );
 	auto multisample_state   = GetMultisampleState( );
-	auto depth_stencil_state = GetDepthStencilState( graphic.Boundaries, bundle );
-	auto color_blend_state   = GetColorBlendState( bundle );
-	auto dynamics			 = GetDynamicStates( bundle );
+	auto depth_stencil_state = GetDepthStencilState( graphic.Boundaries, specification );
+	auto color_blend_state   = GetColorBlendState( specification );
+	auto dynamics			 = GetDynamicStates( specification );
 
 	pipeline_info.pNext				  = VK_NULL_HANDLE;
 	pipeline_info.flags				  = VK_NULL_FLAGS;
-	pipeline_info.stageCount		  = bundle.Shaders.size( );
-	pipeline_info.pStages			  = bundle.Shaders.data( );
+	pipeline_info.stageCount		  = specification.Shaders.size( );
+	pipeline_info.pStages			  = specification.Shaders.data( );
 	pipeline_info.pVertexInputState   = tiny_rvalue( vertex_state );
 	pipeline_info.pInputAssemblyState = tiny_rvalue( assembly_state );
 	pipeline_info.pTessellationState  = tiny_rvalue( tessellation_state );
@@ -694,8 +703,8 @@ bool TinyGraphicPipeline::CreateRenderPipeline(
 	pipeline_info.pColorBlendState    = tiny_rvalue( color_blend_state );
 	pipeline_info.pDynamicState		  = tiny_rvalue( dynamics );
 	pipeline_info.layout			  = _layout;
-	pipeline_info.renderPass		  = bundle.Pass;
-	pipeline_info.subpass			  = bundle.Subpass;
+	pipeline_info.renderPass		  = specification.Pass;
+	pipeline_info.subpass			  = specification.Subpass;
 	pipeline_info.basePipelineHandle  = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex   = 0;
 
@@ -704,14 +713,14 @@ bool TinyGraphicPipeline::CreateRenderPipeline(
 
 bool TinyGraphicPipeline::CreateComputePipeline(
 	TinyGraphicContext& graphic,
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) {
 	auto pipeline_info   = VkComputePipelineCreateInfo{ VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO };
 	auto& pipeline_cache = graphic.Pipelines.GetCache( );
 
 	pipeline_info.pNext				 = VK_NULL_HANDLE;
 	pipeline_info.flags				 = VK_NULL_FLAGS;
-	pipeline_info.stage				 = bundle.Shaders[ 0 ];
+	pipeline_info.stage				 = specification.Shaders[ 0 ];
 	pipeline_info.layout			 = _layout;
 	pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 	pipeline_info.basePipelineIndex  = 0;
@@ -749,12 +758,12 @@ VkDescriptorSet TinyGraphicPipeline::GetSet( tiny_uint set_id, tiny_uint work_id
 bool TinyGraphicPipeline::GetPipelineLayout( 
 	TinyGraphicLogical& logical,
 	const TinyLimitsStack& limits,
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) {
 	auto state = true;
 	
-	if ( bundle.Descriptors.size( ) > 0 )
-		state =_descriptors.Create( logical, limits, bundle.Descriptors, bundle.DescriptorCount );
+	if ( specification.Descriptors.size( ) > 0 )
+		state =_descriptors.Create( logical, limits, specification.Descriptors, specification.DescriptorCount );
 
 	if ( state ) { 
 		auto layout_info = VkPipelineLayoutCreateInfo{ VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
@@ -764,8 +773,8 @@ bool TinyGraphicPipeline::GetPipelineLayout(
 		layout_info.flags				   = VK_NULL_FLAGS;
 		layout_info.setLayoutCount		   = layouts.size( );
 		layout_info.pSetLayouts			   = layouts.data( );
-		layout_info.pushConstantRangeCount = bundle.Constants.size( );
-		layout_info.pPushConstantRanges	   = bundle.Constants.data( );
+		layout_info.pushConstantRangeCount = specification.Constants.size( );
+		layout_info.pPushConstantRanges	   = specification.Constants.data( );
 
 		state = vk::Check( vkCreatePipelineLayout( logical, tiny_rvalue( layout_info ), vk::GetAllocator( ), tiny_rvalue( _layout ) ) );
 	}
@@ -774,35 +783,35 @@ bool TinyGraphicPipeline::GetPipelineLayout(
 }
 
 VkPipelineVertexInputStateCreateInfo TinyGraphicPipeline::GetVertexInputState( 
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) const {
 	auto vertex_inputs = VkPipelineVertexInputStateCreateInfo{ VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO };
 
 	vertex_inputs.pNext							  = VK_NULL_HANDLE;
 	vertex_inputs.flags							  = VK_NULL_FLAGS;
-	vertex_inputs.vertexBindingDescriptionCount   = bundle.InputBinding.size( );
-	vertex_inputs.pVertexBindingDescriptions	  = bundle.InputBinding.data( );
-	vertex_inputs.vertexAttributeDescriptionCount = bundle.InputAttributes.size( );
-	vertex_inputs.pVertexAttributeDescriptions	  = bundle.InputAttributes.data( );
+	vertex_inputs.vertexBindingDescriptionCount   = specification.InputBinding.size( );
+	vertex_inputs.pVertexBindingDescriptions	  = specification.InputBinding.data( );
+	vertex_inputs.vertexAttributeDescriptionCount = specification.InputAttributes.size( );
+	vertex_inputs.pVertexAttributeDescriptions	  = specification.InputAttributes.data( );
 
 	return vertex_inputs;
 }
 
 VkPipelineInputAssemblyStateCreateInfo TinyGraphicPipeline::GetInputAssemblyState(
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) const {
 	auto assembly_state = VkPipelineInputAssemblyStateCreateInfo{ VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO };
 
 	assembly_state.pNext				  = VK_NULL_HANDLE;
 	assembly_state.flags				  = VK_NULL_FLAGS;
-	assembly_state.topology				  = bundle.Topology;
+	assembly_state.topology				  = specification.Topology;
 
 	if (
-		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_LINE_STRIP				   ||
-		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP			   ||
-		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN			   ||
-		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY ||
-		bundle.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY
+		specification.Topology == VK_PRIMITIVE_TOPOLOGY_LINE_STRIP				   ||
+		specification.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP			   ||
+		specification.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN			   ||
+		specification.Topology == VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY ||
+		specification.Topology == VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY
 	)
 		assembly_state.primitiveRestartEnable = VK_TRUE;
 	else 
@@ -812,13 +821,13 @@ VkPipelineInputAssemblyStateCreateInfo TinyGraphicPipeline::GetInputAssemblyStat
 }
 
 VkPipelineTessellationStateCreateInfo TinyGraphicPipeline::GetTessellationState(
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) const {
 	auto tessellation_state = VkPipelineTessellationStateCreateInfo{ VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO };
 
 	tessellation_state.pNext			  = VK_NULL_HANDLE;
 	tessellation_state.flags			  = VK_NULL_FLAGS;
-	tessellation_state.patchControlPoints = bundle.Tessellation;
+	tessellation_state.patchControlPoints = specification.Tessellation;
 
 	return tessellation_state;
 }
@@ -872,21 +881,21 @@ VkPipelineMultisampleStateCreateInfo TinyGraphicPipeline::GetMultisampleState( )
 
 VkPipelineDepthStencilStateCreateInfo TinyGraphicPipeline::GetDepthStencilState( 
 	const TinyGraphicBoundaries& boundaries,
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) const {
 	auto depth_stencil_state = VkPipelineDepthStencilStateCreateInfo{ VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO };
-	auto depth_state		 = bundle.DepthEnable ? VK_TRUE : VK_FALSE;
+	auto depth_state		 = specification.DepthEnable ? VK_TRUE : VK_FALSE;
 	auto& viewport			 = boundaries.GetSwapViewport( );
 
 	depth_stencil_state.pNext				  = VK_NULL_HANDLE;
 	depth_stencil_state.flags				  = VK_NULL_FLAGS;
 	depth_stencil_state.depthTestEnable		  = depth_state;
 	depth_stencil_state.depthWriteEnable	  = depth_state;
-	depth_stencil_state.depthCompareOp		  = bundle.DepthOperation;
+	depth_stencil_state.depthCompareOp		  = specification.DepthOperation;
 	depth_stencil_state.depthBoundsTestEnable = depth_state;
-	depth_stencil_state.stencilTestEnable	  = bundle.StencilEnable ? VK_TRUE : VK_FALSE;
-	depth_stencil_state.front				  = bundle.DepthStencilFront;
-	depth_stencil_state.back				  = bundle.DepthStencilBack;
+	depth_stencil_state.stencilTestEnable	  = specification.StencilEnable ? VK_TRUE : VK_FALSE;
+	depth_stencil_state.front				  = specification.DepthStencilFront;
+	depth_stencil_state.back				  = specification.DepthStencilBack;
 	depth_stencil_state.minDepthBounds		  = viewport.minDepth;
 	depth_stencil_state.maxDepthBounds		  = viewport.maxDepth;
 
@@ -894,7 +903,7 @@ VkPipelineDepthStencilStateCreateInfo TinyGraphicPipeline::GetDepthStencilState(
 }
 
 VkPipelineColorBlendStateCreateInfo TinyGraphicPipeline::GetColorBlendState(
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) const {
 	auto color_blend_state = VkPipelineColorBlendStateCreateInfo{ VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO };
 
@@ -902,8 +911,8 @@ VkPipelineColorBlendStateCreateInfo TinyGraphicPipeline::GetColorBlendState(
 	color_blend_state.flags			  = VK_NULL_FLAGS;
 	color_blend_state.logicOpEnable   = VK_FALSE;
 	color_blend_state.logicOp		  = VK_LOGIC_OP_COPY;
-	color_blend_state.attachmentCount = bundle.ColorBlends.size( );
-	color_blend_state.pAttachments	  = bundle.ColorBlends.data( );
+	color_blend_state.attachmentCount = specification.ColorBlends.size( );
+	color_blend_state.pAttachments	  = specification.ColorBlends.data( );
 	color_blend_state.blendConstants[ 0 ] = 1.f;
 	color_blend_state.blendConstants[ 1 ] = 1.f;
 	color_blend_state.blendConstants[ 2 ] = 1.f;
@@ -913,21 +922,21 @@ VkPipelineColorBlendStateCreateInfo TinyGraphicPipeline::GetColorBlendState(
 }
 
 VkPipelineDynamicStateCreateInfo TinyGraphicPipeline::GetDynamicStates( 
-	const TinyGraphicPipelineBundle& bundle
+	const TinyGraphicPipelineSpecification& specification
 ) {
 	auto states = VkPipelineDynamicStateCreateInfo{ VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO };
 
 	states.pNext			 = VK_NULL_HANDLE;
 	states.flags			 = VK_NULL_FLAGS;
-	states.dynamicStateCount = bundle.Dynamics.size( );
-	states.pDynamicStates    = bundle.Dynamics.data( );
+	states.dynamicStateCount = specification.Dynamics.size( );
+	states.pDynamicStates    = specification.Dynamics.data( );
 
 	return states;
 }
 
-void TinyGraphicPipeline::GrabProperties( const TinyGraphicPipelineBundle& bundle ) {
-	_properties.PassType = bundle.PassType;
-	_properties.Dynamics = bundle.Dynamics;
+void TinyGraphicPipeline::GrabProperties( const TinyGraphicPipelineSpecification& specification ) {
+	_properties.PassType = specification.PassType;
+	_properties.Dynamics = specification.Dynamics;
 }
 
 void TinyGraphicPipeline::GrabBindpoint(

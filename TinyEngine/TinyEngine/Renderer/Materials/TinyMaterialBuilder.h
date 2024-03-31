@@ -22,7 +22,7 @@
 
 #include "TinyShaderManager.h"
 
-te_struct TinyMaterialBuilder : tiny_inherit( TinyGraphicPipelineBundle ) {
+te_struct TinyMaterialBuilder : tiny_inherit( TinyGraphicPipelineSpecification ) {
 
 	std::string PassName = "";
 	tiny_list<std::string> ShaderStages{ };

@@ -22,27 +22,6 @@
 
 #include "Utils/TinyGraphicPipelineDrawcall.h"
 
-#define _pCreateBinding( BUNDLE, BINDING, STRIDE, RATE )\
-	BUNDLE##.InputBinding[ BINDING ].binding   = tiny_cast( BINDING, tiny_uint );\
-	BUNDLE##.InputBinding[ BINDING ].stride    = tiny_cast( STRIDE, tiny_uint );\
-	BUNDLE##.InputBinding[ BINDING ].inputRate = RATE
-
-#define _pCreateAttribute( BUNDLE, LOCATION, BINDING, FORMAT, OFFSET )\
-	BUNDLE##.InputAttributes[ LOCATION ].location = tiny_cast( LOCATION, tiny_uint );\
-	BUNDLE##.InputAttributes[ LOCATION ].binding  = bundle.InputBinding[ tiny_cast( BINDING, tiny_uint ) ].binding;\
-	BUNDLE##.InputAttributes[ LOCATION ].format   = tiny_cast( FORMAT, VkFormat );\
-	BUNDLE##.InputAttributes[ LOCATION ].offset   = OFFSET
-
-#define _pCreateSetBind2( BUNDLE, SET, BINDING, TYPE, COUNT, STAGE )\
-	BUNDLE##.Descriptors[ SET ][ BINDING ].binding			  = tiny_cast( BINDING, tiny_uint );\
-	BUNDLE##.Descriptors[ SET ][ BINDING ].descriptorType	  = tiny_cast( TYPE, VkDescriptorType );\
-	BUNDLE##.Descriptors[ SET ][ BINDING ].descriptorCount	  = COUNT;\
-	BUNDLE##.Descriptors[ SET ][ BINDING ].stageFlags		  = tiny_cast( STAGE, VkShaderStageFlagBits );\
-	BUNDLE##.Descriptors[ SET ][ BINDING ].pImmutableSamplers = VK_NULL_HANDLE
-
-#define _pCreateSetBind( BUNDLE, SET, BINDING, TYPE, STAGE )\
-	_pCreateSetBind2( BUNDLE, SET, BINDING, TYPE, 1, STAGE )
-
 tm_class TinyGraphicPipeline { 
 
 private:
@@ -59,7 +38,7 @@ public:
 	bool Create( 
 		TinyGraphicContext& graphic,
 		const TinyLimitsStack& limits,
-		const TinyGraphicPipelineBundle& bundle
+		const TinyGraphicPipelineSpecification& specification
 	);
 
 	void Mount( TinyGraphicWorkContext& work_context );
@@ -289,34 +268,34 @@ public:
 
 public:
 	static void CreateBinding( 
-		TinyGraphicPipelineBundle& bundle, 
+		TinyGraphicPipelineSpecification& specification, 
 		const TinyGraphicPipelineBinding& binding 
 	);
 
 	static void CreateBinding(
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		tiny_init<TinyGraphicPipelineBinding> bindings
 	);
 
 	static void CreateBinding(
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		tiny_uint binding,
 		tiny_uint stride,
 		bool is_vertex
 	);
 
 	static void CreateAttribute(
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		const TinyGraphicPipelineAttribute& attribute
 	);
 
 	static void CreateAttribute(
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		tiny_init<TinyGraphicPipelineAttribute> attributes
 	);
 
 	static void CreateAttribute( 
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		tiny_uint location,
 		tiny_uint binding,
 		TinyPipelineAttributeTypes type,
@@ -324,19 +303,19 @@ public:
 	);
 
 	static void CreateSetBind(
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		tiny_uint set,
 		const TinyGraphicPipelineSetBind& set_bind
 	);
 
 	static void CreateSetBind(
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		tiny_uint set,
 		tiny_init<TinyGraphicPipelineSetBind> set_binds
 	);
 
 	static void CreateSetBind(
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		tiny_uint set,
 		tiny_uint binding,
 		TinyGraphicBindTypes type,
@@ -344,7 +323,7 @@ public:
 	);
 
 	static void CreateSetBind(
-		TinyGraphicPipelineBundle& bundle,
+		TinyGraphicPipelineSpecification& specification,
 		tiny_uint set,
 		tiny_uint binding,
 		TinyGraphicBindTypes type,
@@ -355,12 +334,12 @@ public:
 private:
 	bool CreateRenderPipeline( 
 		TinyGraphicContext& graphic,
-		const TinyGraphicPipelineBundle& bundle
+		const TinyGraphicPipelineSpecification& specification
 	);
 
 	bool CreateComputePipeline( 
 		TinyGraphicContext& graphic,
-		const TinyGraphicPipelineBundle& bundle
+		const TinyGraphicPipelineSpecification& specification
 	);
 
 public:
@@ -404,19 +383,19 @@ private:
 	bool GetPipelineLayout( 
 		TinyGraphicLogical& logical,
 		const TinyLimitsStack& limits,
-		const TinyGraphicPipelineBundle& bundle 
+		const TinyGraphicPipelineSpecification& specification
 	);
 
 	VkPipelineVertexInputStateCreateInfo GetVertexInputState( 
-		const TinyGraphicPipelineBundle& bundle
+		const TinyGraphicPipelineSpecification& specification
 	) const;
 
 	VkPipelineInputAssemblyStateCreateInfo GetInputAssemblyState ( 
-		const TinyGraphicPipelineBundle& bundle
+		const TinyGraphicPipelineSpecification& specification
 	) const;
 
 	VkPipelineTessellationStateCreateInfo GetTessellationState( 
-		const TinyGraphicPipelineBundle& bundle
+		const TinyGraphicPipelineSpecification& specification
 	) const;
 
 	VkPipelineViewportStateCreateInfo GetViewport( ) const;
@@ -427,16 +406,18 @@ private:
 
 	VkPipelineDepthStencilStateCreateInfo GetDepthStencilState(
 		const TinyGraphicBoundaries& boundaries, 
-		const TinyGraphicPipelineBundle& bundle
+		const TinyGraphicPipelineSpecification& specification
 	) const;
 
 	VkPipelineColorBlendStateCreateInfo GetColorBlendState( 
-		const TinyGraphicPipelineBundle& bundle
+		const TinyGraphicPipelineSpecification& specification
 	) const;
 
-	VkPipelineDynamicStateCreateInfo GetDynamicStates( const TinyGraphicPipelineBundle& bundle );
+	VkPipelineDynamicStateCreateInfo GetDynamicStates( 
+		const TinyGraphicPipelineSpecification& specification
+	);
 
-	void GrabProperties( const TinyGraphicPipelineBundle& bundle );
+	void GrabProperties( const TinyGraphicPipelineSpecification& specification );
 
 	void GrabBindpoint(
 		VkWriteDescriptorSet& descriptor,

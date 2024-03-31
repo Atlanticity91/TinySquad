@@ -49,18 +49,18 @@ public:
 
 	bool Compile(
 		const TinyGraphicShaderCompilationContext& context,
-		TinyGraphicShaderProperties& properties
+		TinyGraphicShaderSpecification& specification
 	);
 
 private:
 	bool CompileGLSL(
 		const TinyGraphicShaderCompilationContext& context,
-		TinyGraphicShaderProperties& properties
+		TinyGraphicShaderSpecification& specification
 	);
 
 	bool CompileHLSL(
 		const TinyGraphicShaderCompilationContext& context,
-		TinyGraphicShaderProperties& properties
+		TinyGraphicShaderSpecification& specification
 	);
 
 public:

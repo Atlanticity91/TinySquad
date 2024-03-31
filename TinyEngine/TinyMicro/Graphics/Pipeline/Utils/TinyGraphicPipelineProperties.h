@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyGraphicPipelineBundle.h"
+#include "TinyGraphicPipelineSpecification.h"
 
 tm_struct TinyGraphicPipelineProperties {
 

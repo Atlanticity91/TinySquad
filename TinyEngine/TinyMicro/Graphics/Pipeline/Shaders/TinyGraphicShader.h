@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyGraphicShaderProperties.h"
+#include "TinyGraphicShaderSpecification.h"
 
 tm_class TinyGraphicShader final { 
 
@@ -37,7 +37,7 @@ public:
 
 	bool Create(
 		const TinyGraphicContext& context,
-		const TinyGraphicShaderProperties& properties 
+		const TinyGraphicShaderSpecification& specification
 	);
 
 	void Terminate( const TinyGraphicContext& context );
@@ -50,10 +50,10 @@ public:
 private:
 	bool GetShaderModule(
 		const TinyGraphicLogical& logical,
-		const TinyGraphicShaderProperties& properties 
+		const TinyGraphicShaderSpecification& specification
 	);
 
-	void GetProperties( const TinyGraphicShaderProperties& properties );
+	void GetProperties( const TinyGraphicShaderSpecification& specification );
 
 public:
 	operator const VkPipelineShaderStageCreateInfo& ( );

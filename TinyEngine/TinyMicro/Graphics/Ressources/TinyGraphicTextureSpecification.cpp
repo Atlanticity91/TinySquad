@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/11/2023
+ * @creation : 01/12/2023
  * @version  : 2024.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -18,28 +18,13 @@
  *
  ******************************************************************************************/
 
-#pragma once
+#include <TinyMicro/__tiny_micro_pch.h>
 
-#include "TinyTexture2DManager.h"
-
-te_struct TinyTexture3DBuilder : tiny_inherit( TinyGraphicTextureSpecification ) {
-
-	tiny_uint Rows	   = 0;
-	tiny_uint Columns  = 0;
-	bool IsUserDefined = false;
-
-};
-
-te_class TinyTexture3D final 
-	: tiny_inherit( TinyGraphicTexture ),
-	tiny_inherit( TinyTextureSpriteSheet )
-{
-
-public:
-	TinyTexture3D( );
-
-	~TinyTexture3D( ) = default;
-
-	bool Create( TinyGraphicManager& graphics, const TinyTexture3DBuilder& builder );
-
-};
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+TinyGraphicTextureSpecification::TinyGraphicTextureSpecification( )
+	: Properties{ },
+	Size{ 0 },
+	Texels{ nullptr }
+{ }

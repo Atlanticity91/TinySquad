@@ -31,20 +31,20 @@ TinyRenderBuffer::TinyRenderBuffer( )
 
 bool TinyRenderBuffer::Create(
 	TinyGraphicManager& graphics,
-	const TinyGraphicBufferProperties& properties
+	const TinyGraphicBufferSpecification& specification
 ) {
 	auto descriptor_count = graphics.GetSwapchainCapacity( );
-	auto _properties	  = properties;
+	auto _specification   = specification;
 	auto context		  = graphics.GetContext( );
 
-	_properties.Size *= descriptor_count;
+	_specification.Size *= descriptor_count;
 
-	auto state = _buffer.Create( context, _properties );
+	auto state = _buffer.Create( context, _specification );
 
 	if ( state ) {
 		auto buffer = _buffer.GetDescriptor( )->buffer;
 
-		_chunk_size = properties.Size;
+		_chunk_size = _specification.Size;
 
 		while ( descriptor_count-- > 0 ) {
 			auto& descriptor = _descriptors[ descriptor_count ];

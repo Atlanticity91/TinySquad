@@ -31,13 +31,13 @@ TinyGraphicBuffer::TinyGraphicBuffer( )
 
 bool TinyGraphicBuffer::Create(
 	TinyGraphicContext& context,
-	const TinyGraphicBufferProperties& properties
+	const TinyGraphicBufferSpecification& specification
 ) {
 	_descriptor.offset = 0;
-	_descriptor.range  = properties.Size;
-	_properties		   = properties;
+	_descriptor.range  = specification.Size;
+	_properties		   = specification;
 
-	return  properties.Size > 0 &&
+	return  specification.Size > 0 &&
 			CreateBuffer( context.Logical, context.Queues ) &&
 			AllocateBuffer( context );
 }
@@ -105,7 +105,7 @@ const VkDescriptorBufferInfo* TinyGraphicBuffer::GetDescriptor( ) const {
 	return tiny_rvalue( _descriptor );
 }
 
-const TinyGraphicBufferProperties& TinyGraphicBuffer::GetProperties( ) const { 
+const TinyGraphicBufferSpecification& TinyGraphicBuffer::GetProperties( ) const {
 	return _properties;
 }
 

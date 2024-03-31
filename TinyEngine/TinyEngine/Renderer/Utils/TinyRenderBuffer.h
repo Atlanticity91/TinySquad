@@ -36,7 +36,7 @@ public:
 	
 	bool Create( 
 		TinyGraphicManager& graphics,
-		const TinyGraphicBufferProperties& properties
+		const TinyGraphicBufferSpecification& specification
 	);
 
 	void Terminate( TinyGraphicManager& graphics );

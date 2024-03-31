@@ -32,7 +32,7 @@ tiny_enum( TinyGraphicWrapModes ) {
 
 };
 
-tm_struct TinyGraphicSamplerProperties {
+tm_struct TinyGraphicSamplerSpecification {
 
 	VkFilter MagFilter			   = VK_FILTER_NEAREST;
 	VkFilter MinFilter			   = VK_FILTER_NEAREST;

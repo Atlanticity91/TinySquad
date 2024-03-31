@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 01/12/2023
+ * @creation : 18/10/2023
  * @version  : 2024.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -23,8 +23,19 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicTextureBuilder::TinyGraphicTextureBuilder( )
-	: Properties{ },
-	Size{ 0 },
-	Texels{ nullptr }
+TinyGraphicTextureProperties::TinyGraphicTextureProperties( )
+	: Image{ VK_NULL_HANDLE },
+	View{ VK_NULL_HANDLE },
+	Type{ TGT_TYPE_TEXTURE_2D },
+	Format{ VK_FORMAT_R8G8B8A8_UNORM },
+	Layout{ VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL },
+	Width{ 0 },
+	Height{ 0 },
+	Depth{ 1 },
+	Aspect{ VK_IMAGE_ASPECT_COLOR_BIT },
+	Levels{ 1 },
+	Samples{ VK_SAMPLE_COUNT_1_BIT },
+	Tiling{ VK_IMAGE_TILING_OPTIMAL },
+	Usage{ TGT_USAGE_TEXTURE },
+	Sampler{ }
 { }

@@ -194,7 +194,7 @@ void TinyGraphicRenderManager::CreateTargetTexture(
 	texture.Levels  = 1;
 	texture.Samples = target.MSAA;
 	texture.Tiling  = VK_IMAGE_TILING_OPTIMAL;
-	texture.Sampler = TinyGraphicSamplerProperties{ };
+	texture.Sampler = TinyGraphicSamplerSpecification{ };
 
 	if ( target.Type == TRT_TYPE_COLOR ) {
 		texture.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -376,7 +376,6 @@ tiny_list<VkAttachmentDescription> TinyGraphicRenderManager::CreatePassAttachmen
 tiny_list<VkSubpassDescription> TinyGraphicRenderManager::CreatePassSubpasses(
 	const TinyGraphicRenderReferences& references
 ) {
-
 	auto subpass = tiny_list<VkSubpassDescription>{ };
 	auto pass_id = tiny_cast( 0, tiny_uint );
 
@@ -529,18 +528,6 @@ bool TinyGraphicRenderManager::CreateFrame(
 	return _frames.Create( graphic.Logical, frame );
 }
 
-void TinyGraphicRenderManager::ClearAttachements(
-	TinyGraphicWorkContext& work_context,
-	const tiny_list<VkClearAttachment>& images,
-	const tiny_list<VkClearRect>& bounds
-) {
-	vkCmdClearAttachments(
-		work_context.Queue->CommandBuffer,
-		images.size( ), images.data( ),
-		bounds.size( ), bounds.data( )
-	);
-}
-
 bool TinyGraphicRenderManager::InternalCreate( TinyGraphicContext& graphic ) {
 	auto state = false;
 
@@ -559,6 +546,23 @@ bool TinyGraphicRenderManager::InternalCreate( TinyGraphicContext& graphic ) {
 	}
 
 	return state;
+}
+
+void TinyGraphicRenderManager::ClearAttachements(
+	TinyGraphicWorkContext& work_context,
+	const tiny_list<VkClearAttachment>& images,
+	const tiny_list<VkClearRect>& bounds
+) {
+	auto* bounds_data = bounds.data( );
+	auto* image_data  = images.data( );
+	auto bounds_size  = bounds.size( );
+	auto image_size   = images.size( );
+
+	vkCmdClearAttachments(
+		work_context.Queue->CommandBuffer,
+		image_size, image_data,
+		bounds_size, bounds_data
+	);
 }
 
 void TinyGraphicRenderManager::InternalTerminate( TinyGraphicContext& graphic ) {

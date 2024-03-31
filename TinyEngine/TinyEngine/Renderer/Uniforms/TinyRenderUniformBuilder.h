@@ -22,7 +22,7 @@
 
 #include <TinyEngine/Renderer/Cameras/TinyRenderCameraManager.h>
 
-te_struct TinyRenderUniformBuilder : tiny_inherit( TinyGraphicBufferProperties ) {
+te_struct TinyRenderUniformBuilder : tiny_inherit( TinyGraphicBufferSpecification ) {
 
 	tiny_string Name  = "";
 	tiny_uint Set	  = 0;

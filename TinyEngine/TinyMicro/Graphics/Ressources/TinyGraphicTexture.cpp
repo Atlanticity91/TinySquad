@@ -55,10 +55,10 @@ bool TinyGraphicTexture::Create(
 
 bool TinyGraphicTexture::Create( 
 	TinyGraphicContext& context,
-	const TinyGraphicTextureBuilder& builder,
+	const TinyGraphicTextureSpecification& specification,
 	const TinyGraphicBufferStaging& stagging
 ) {
-	return  Create( context, builder.Properties ) &&
+	return  Create( context, specification.Properties ) &&
 			Fill( context, stagging );
 }
 

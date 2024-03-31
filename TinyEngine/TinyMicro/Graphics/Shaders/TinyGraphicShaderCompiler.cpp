@@ -58,9 +58,9 @@ void TinyGraphicShaderCompiler::AddMacros( tiny_init<TinyGraphicShaderMacro> mac
 
 bool TinyGraphicShaderCompiler::Compile(
 	const TinyGraphicShaderCompilationContext& context,
-	TinyGraphicShaderProperties& properties
+	TinyGraphicShaderSpecification& specification
 ) {
-	return context.IsHLSL ? CompileHLSL( context, properties ) : CompileGLSL( context, properties );
+	return context.IsHLSL ? CompileHLSL( context, specification ) : CompileGLSL( context, specification );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ bool TinyGraphicShaderCompiler::Compile(
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicShaderCompiler::CompileGLSL(
 	const TinyGraphicShaderCompilationContext& context,
-	TinyGraphicShaderProperties& properties
+	TinyGraphicShaderSpecification& specification
 ) {
 	auto optimization = GrabOptimization( context.Optimization );
 
@@ -89,11 +89,11 @@ bool TinyGraphicShaderCompiler::CompileGLSL(
 		if ( status == shaderc_compilation_status_success ) {
 			auto size = tiny_cast( spirv.end( ) - spirv.begin( ), tiny_uint );
 
-			properties.Type  = PeekType( context.Source );
-			properties.Entry = context.Entry.as_string( );
-			properties.Code  = size * tiny_sizeof( tiny_uint );
+			specification.Type  = PeekType( context.Source );
+			specification.Entry = context.Entry.as_string( );
+			specification.Code  = size * tiny_sizeof( tiny_uint );
 
-			Tiny::Memcpy( spirv.begin( ), properties.Code.data( ), size );
+			Tiny::Memcpy( spirv.begin( ), specification.Code.data( ), size );
 		} else
 			printf( "[ VK ] Shader Compilation Error : %s\n%s\n", name_str, spirv.GetErrorMessage( ).c_str( ) );
 	} else 
@@ -104,7 +104,7 @@ bool TinyGraphicShaderCompiler::CompileGLSL(
 
 bool TinyGraphicShaderCompiler::CompileHLSL(
 	const TinyGraphicShaderCompilationContext& context,
-	TinyGraphicShaderProperties& properties
+	TinyGraphicShaderSpecification& specification
 ) {
 	return false;
 }

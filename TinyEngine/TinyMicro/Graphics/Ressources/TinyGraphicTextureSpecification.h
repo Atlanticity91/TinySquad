@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/10/2023
+ * @creation : 16/11/2023
  * @version  : 2024.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -20,21 +20,14 @@
 
 #pragma once
 
-#include "TinyGraphicShaderAlignement.h"
+#include "TinyGraphicTextureProperties.h"
 
-tiny_enum( TinyGraphicShaderTypes ) {
+tm_struct TinyGraphicTextureSpecification {
 
-	TGS_TYPE_VERTEX = 0,
-	TGS_TYPE_FRAGMENT,
-	TGS_TYPE_GEOMETRY,
-	TGS_TYPE_COMPUTE
+	TinyGraphicTextureProperties Properties;
+	tiny_uint Size;
+	tiny_pointer Texels;
 
-};
-
-tm_struct TinyGraphicShaderProperties {
-
-	TinyGraphicShaderTypes Type = TGS_TYPE_VERTEX;
-	std::string Entry			= "";
-	tiny_list<tiny_uint> Code{ };
+	TinyGraphicTextureSpecification( );
 
 };

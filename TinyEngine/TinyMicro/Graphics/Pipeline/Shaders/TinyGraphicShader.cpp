@@ -37,12 +37,12 @@ TinyGraphicShader::TinyGraphicShader( const TinyGraphicShader& other )
 
 bool TinyGraphicShader::Create(
     const TinyGraphicContext& context, 
-    const TinyGraphicShaderProperties& properties
+    const TinyGraphicShaderSpecification& specification
 ) {
-    auto state = GetShaderModule( context.Logical, properties );
+    auto state = GetShaderModule( context.Logical, specification );
 
     if ( state )
-        GetProperties( properties );
+        GetProperties( specification );
 
     return state;
 }
@@ -64,33 +64,33 @@ tiny_string TinyGraphicShader::GetEntry( ) const { return tiny_string{ _entry.c_
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicShader::GetShaderModule( 
     const TinyGraphicLogical& logical, 
-    const TinyGraphicShaderProperties& properties
+    const TinyGraphicShaderSpecification& specification
 ) {
     auto shader_info = VkShaderModuleCreateInfo{ VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
 
     shader_info.pNext    = VK_NULL_HANDLE;
     shader_info.flags    = VK_NULL_FLAGS;
-    shader_info.codeSize = properties.Code.size( );
-    shader_info.pCode    = tiny_cast( properties.Code.data( ), const tiny_uint* );
+    shader_info.codeSize = specification.Code.size( );
+    shader_info.pCode    = tiny_cast( specification.Code.data( ), const tiny_uint* );
 
     return vk::Check( vkCreateShaderModule( logical, tiny_rvalue( shader_info ), vk::GetAllocator( ), tiny_rvalue( _pipeline_stage.module ) ) );
 }
 
-void TinyGraphicShader::GetProperties( const TinyGraphicShaderProperties& properties ) {
-    _entry                              = std::string{ properties.Entry };
+void TinyGraphicShader::GetProperties( const TinyGraphicShaderSpecification& specification ) {
+    _entry                              = std::string{ specification.Entry };
     _pipeline_stage.pNext               = VK_NULL_HANDLE;
     _pipeline_stage.flags               = VK_NULL_FLAGS;
     _pipeline_stage.pName               = _entry.c_str( );
     _pipeline_stage.pSpecializationInfo = VK_NULL_HANDLE;
 
-    if ( properties.Type == TGS_TYPE_VERTEX )
-        _pipeline_stage.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    else if ( properties.Type == TGS_TYPE_FRAGMENT )
-        _pipeline_stage.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    else if ( properties.Type == TGS_TYPE_GEOMETRY )
-        _pipeline_stage.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
-    else if ( properties.Type == TGS_TYPE_COMPUTE )
-        _pipeline_stage.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+    switch ( specification.Type ) {
+        case TGS_TYPE_VERTEX   : _pipeline_stage.stage = VK_SHADER_STAGE_VERTEX_BIT;   break;
+        case TGS_TYPE_FRAGMENT : _pipeline_stage.stage = VK_SHADER_STAGE_FRAGMENT_BIT; break;
+        case TGS_TYPE_GEOMETRY : _pipeline_stage.stage = VK_SHADER_STAGE_GEOMETRY_BIT; break;
+        case TGS_TYPE_COMPUTE  : _pipeline_stage.stage = VK_SHADER_STAGE_COMPUTE_BIT;  break;
+
+        default : break;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

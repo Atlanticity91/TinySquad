@@ -24,27 +24,12 @@
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyFoundry::TinyFoundry( )
-	: TinyGame{ "Tiny Foundry", TGO_PAYSAGE_16x9 }
+	: TinyNut{ "Tiny Foundry" }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyFoundry::Initialize( TinyEngine& engine ) { return true; }
+void TinyFoundry::TickMenubar( ) { }
 
-void TinyFoundry::SetupBundles( TinyGraphicManager& graphics ) { }
-
-void TinyFoundry::LoadInterop( TinyLuaContext& lua_context ) { }
-
-void TinyFoundry::LoadContent( TinyAssetManager& assets ) { }
-
-void TinyFoundry::LoadECS( TinyECS& ecs ) { }
-
-void TinyFoundry::Tick( ) { 
-	auto& graphics = GetGraphics( );
-
-	graphics.BeginPass( TINY_OUTPASS_HASH );
-	graphics.NextSubpass( );
-}
-
-void TinyFoundry::Terminate( ) { }
+void TinyFoundry::TickUI( ) { }
