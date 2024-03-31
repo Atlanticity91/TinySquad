@@ -24,7 +24,15 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGame::TinyGame( const tiny_string& title, TinyGameOrientations orientation )
-	: _engine{ title, orientation }
+	: TinyGame{ title, orientation, false }
+{ }
+
+TinyGame::TinyGame( 
+	const tiny_string& title,
+	TinyGameOrientations orientation,
+	bool is_headless
+)
+	: _engine{ title, orientation, is_headless }
 { }
 
 bool TinyGame::Start( tiny_int argc, char** argv ) {
@@ -46,13 +54,22 @@ bool TinyGame::Start( tiny_int argc, char** argv ) {
 	return state;
 }
 
+void TinyGame::Minimize( ) { _engine.Minimize( ); }
+
+void TinyGame::Restore( ) { _engine.Restore( ); }
+
+void TinyGame::Maximize( ) { _engine.Maximize( ); }
+
+void TinyGame::Stop( ) { _engine.Stop( ); }
+
 void TinyGame::Run( ) {
 	while ( _engine.GetShouldRun( ) ) {
-		_engine.PreTick( this );
+		if ( _engine.PreTick( this ) ) {
+			Tick( );
 
-		Tick( );
-
-		_engine.PostTick( this );
+			_engine.PostTick( this );
+		} else 
+			tiny_sleep_for( 15 );
 	}
 }
 

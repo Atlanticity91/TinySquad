@@ -23,9 +23,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyWindow::TinyWindow( tiny_string title )
+TinyWindow::TinyWindow( tiny_string title, bool is_headless )
 	: _title{ title },
-	_handle{ nullptr }
+	_handle{ nullptr },
+	_is_minimized{ false },
+	_is_headless{ is_headless }
 { }
 
 bool TinyWindow::Initialize( const TinyAppConfig& config, c_pointer user_data ) {
@@ -40,6 +42,9 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, c_pointer user_data ) 
 		state = _handle != nullptr;
 
 		if ( state ) {
+			if ( _is_headless )
+				SetupHeadless( config );
+
 			glfwSetWindowIcon( _handle, 1, tiny_cast( tiny_rvalue( config.Icon ), GLFWimage* ) );
 			glfwSetInputMode( _handle, GLFW_LOCK_KEY_MODS, GLFW_TRUE );
 			glfwSetWindowUserPointer( _handle, user_data );
@@ -62,7 +67,19 @@ void TinyWindow::SetCallback( TinyWindowCallbacks query, c_pointer callback ) {
 	}
 }
 
-void TinyWindow::Tick( ) { glfwPollEvents( ); }
+void TinyWindow::ToggleMinimized( bool is_minimized ) { _is_minimized = is_minimized; }
+
+void TinyWindow::Minimize( ) { glfwIconifyWindow( _handle ); }
+
+void TinyWindow::Restore( ) { glfwRestoreWindow( _handle ); }
+
+void TinyWindow::Maximize( ) { glfwMaximizeWindow( _handle ); }
+
+bool TinyWindow::Tick( ) { 
+	glfwPollEvents( ); 
+
+	return !_is_minimized;
+}
 
 void TinyWindow::Terminate( ) {
 	if ( _handle )
@@ -72,9 +89,30 @@ void TinyWindow::Terminate( ) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyWindow::SetupHeadless( const TinyAppConfig& config ) {
+	auto* monitor = glfwGetPrimaryMonitor( );
+	auto* mode	  = glfwGetVideoMode( monitor );
+	auto window_x = 0;
+	auto window_y = 0;
+
+	
+	glfwGetMonitorPos( monitor, tiny_rvalue( window_x ), tiny_rvalue( window_y ) );
+
+	window_x += ( mode->width  - config.Width  ) / 2;
+	window_y += ( mode->height - config.Height ) / 2;
+
+	glfwSetWindowAttrib( _handle, GLFW_DECORATED, GLFW_FALSE );
+	glfwSetWindowPos( _handle, window_x, window_y );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_string TinyWindow::GetTitle( ) const { return _title; }
+
+bool TinyWindow::GetIsHeadless( ) const { return _is_headless; }
 
 GLFWwindow* TinyWindow::GetHandle( ) const { return _handle; }
 
@@ -95,6 +133,8 @@ tiny_point TinyWindow::GetDimensions_p( ) const {
 
 	return dimensions;
 }
+
+bool TinyWindow::GetIsMinimized( ) const { return _is_minimized; }
 
 bool TinyWindow::GetIsMaximized( ) const {
 	return tiny_cast( glfwGetWindowAttrib( _handle, GLFW_MAXIMIZED ), bool );

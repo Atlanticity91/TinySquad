@@ -20,4 +20,4 @@
 
 #pragma once
 
-#include "TinyGame.h"
+#include "TinyGameEntry.h"

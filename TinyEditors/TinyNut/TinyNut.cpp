@@ -18,13 +18,13 @@
  *
  ******************************************************************************************/
 
-#include "TinyNut.h"
+#include <TinyNut/__tiny_nut_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyNut::TinyNut( const tiny_string& title )
-	: TinyGame{ title, TGO_PAYSAGE_16x9 },
+	: TinyGame{ title, TGO_PAYSAGE_16x9, true },
 	_context{ },
 	_window{ title }
 { }
@@ -33,14 +33,6 @@ TinyNut::TinyNut( const tiny_string& title )
 // === PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyNut::Initialize( TinyEngine& engine ) {
-	auto& inputs  = engine.GetInputs( );
-	auto& toolbox = engine.GetToolbox( );
-
-	inputs.Erase( "Show Dev" );
-
-	toolbox.Hide( );
-	toolbox.Clear( );
-
 	auto state = _context.Create( this );
 	
 	if ( state )
@@ -49,7 +41,7 @@ bool TinyNut::Initialize( TinyEngine& engine ) {
 	return state;
 }
 
-void TinyNut::Tick( ) { 
+void TinyNut::Tick( ) {
 	_context.Prepare( this );
 	_window.Tick( this );
 	_context.Flush( this );

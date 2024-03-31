@@ -77,8 +77,11 @@ bool TinyGraphicTexture::Fill(
 
 	auto state = burner.Execute( );
 
-	if ( state )
+	if ( state ) {
 		GenerateMipmaps( context.Logical );
+
+		_properties.Layout = final_layout;
+	}
 
 	return state;
 }

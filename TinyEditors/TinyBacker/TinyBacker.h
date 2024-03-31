@@ -22,7 +22,7 @@
 
 #include <TinyNut/TinyNut.h>
 
-class TinyBacker final : public TinyNut {
+class TinyBacker final : tiny_inherit( TinyNut ) {
 
 public:
 	TinyBacker( );

@@ -18,7 +18,7 @@
  *
  ******************************************************************************************/
 
-#include <TinyNut/TinyNut.h>
+#include <TinyNut/__tiny_nut_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC ===
@@ -29,19 +29,24 @@ TinyNutWindow::TinyNutWindow( const tiny_string& name )
 { }
 
 void TinyNutWindow::Create( TinyNut* nut_game ) {
-	RegisterIcon( "Minimize", TinyWinMinimize, []( TinyGame* ) { } );
-	RegisterIcon( "Restore", TinyWinRestore, []( TinyGame* ) { } );
-	RegisterIcon( "Maximize", TinyWinMaximize, []( TinyGame* ) { } );
-	RegisterIcon( "Close", TinyWinClose, []( TinyGame* ) { } );
+	_RegisterIcon( nut_game, "Logo"	   , g_WindowMinimizeIcon, []( auto* ) { }		   );
+	_RegisterIcon( nut_game, "Minimize", g_WindowMinimizeIcon, TinyNutWindow::Minimize );
+	_RegisterIcon( nut_game, "Restore" , g_WindowRestoreIcon , TinyNutWindow::Restore  );
+	_RegisterIcon( nut_game, "Maximize", g_WindowMaximizeIcon, TinyNutWindow::Maximize );
+	_RegisterIcon( nut_game, "Close"   , g_WindowCloseIcon	 , TinyNutWindow::Close    );
 }
 
 void TinyNutWindow::RegisterIcon(
+	TinyNut* nut_game,
 	const tiny_string& name,
-	const tiny_ubyte* icon,
+	tiny_uint length, 
+	const tiny_ubyte* image,
 	const Icon_t::Callback_t& callback
 ) {
-	if ( !name.is_empty( ) && _icons.find( name ) ) {
-		_icons.emplace( name, { callback } );
+	if ( !name.is_empty( ) && !_icons.find( name ) ) {
+		auto icon_ = TinyNutUI::CreateImage( nut_game, length, image );
+
+		_icons.emplace( name, { icon_, callback } );
 	}
 }
 
@@ -53,13 +58,15 @@ void TinyNutWindow::Tick( TinyNut* nut_game ) {
 	if ( Prepare( nut_game, window ) ) {
 		DockSpace( );
 
-		printf( "dd\n" );
+		nut_game->TickUI( );
 	}
 
 	ImGui::End( );
 }
 
-void  TinyNutWindow::Terminate( TinyNut* nut_game ) { 
+void  TinyNutWindow::Terminate( TinyNut* nut_game ) {
+	for ( auto& icon : _icons )
+		TinyNutUI::DeleteImage( nut_game, icon.Data.Icon );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +173,8 @@ void TinyNutWindow::DrawTitlebarLogo( bool is_maximized, const ImVec2& padding )
 	};
 	auto logo_max	= ImVec2{ logo_min.x + logo_size, logo_min.y + logo_size };
 
-	//draw_list->AddImage( _icons[ "Logo" ].Icon, logo_min, logo_max );
+	draw_list->AddRectFilled( logo_min, logo_max, TinyImGui::Theme::ActivePurple );
+	draw_list->AddImage( _icons[ "Logo" ].Icon.Descriptor, logo_min, logo_max );
 }
 
 void TinyNutWindow::DrawTitlebarText( const ImVec2& padding ) {
@@ -189,18 +197,22 @@ void TinyNutWindow::DrawTitlebarIcon(
 	auto col_n	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text,  .9f );
 	auto col_h	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text, 1.2f );
 	auto col_p	   = TinyImGui::Theme::TextDarker;
-	//auto& icon	   = _icons[ name ];
+	auto& icon	   = _icons[ name ];
 	auto size	   = ImVec2{ 14.f, 14.f };
 
-	ImGui::Spring( offset );
+	//ImGui::Spring( offset );
 
-	TinyImGui::ShiftCursorY( 8.f );
+	//TinyImGui::ShiftCursorY( 8.f );
 	
-	if ( ImGui::InvisibleButton( name_str, size ) ) {
-		//std::invoke( icon.Callback, game );
-	}
+	if ( ImGui::InvisibleButton( name_str, size ) ) 
+		std::invoke( icon.Callback, nut_game );
 
-	//UI::DrawButtonImage( icon.Image, col_n, col_h, col_p );
+	auto* draw_list = ImGui::GetCurrentWindow( )->DrawList;
+
+	auto bound_min = ImGui::GetItemRectMin( );
+	auto bound_max = ImGui::GetItemRectMax( );
+
+	TinyNutUI::ButtonImage( icon.Icon, col_n, col_h, col_p );
 }
 
 void TinyNutWindow::DrawTitlebar( TinyNut* nut_game, bool is_maximized ) {
@@ -318,3 +330,14 @@ void TinyNutWindow::DockSpace( ) {
 
 	style.WindowMinSize.x = size_x;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// === PRIVATE STATIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyNutWindow::Minimize( TinyNut* nut_game ) { nut_game->Minimize( ); }
+
+void TinyNutWindow::Restore( TinyNut* nut_game ) { nut_game->Restore( ); }
+
+void TinyNutWindow::Maximize( TinyNut* nut_game ) { nut_game->Maximize( ); }
+
+void TinyNutWindow::Close( TinyNut* nut_game ) { nut_game->Stop( ); }

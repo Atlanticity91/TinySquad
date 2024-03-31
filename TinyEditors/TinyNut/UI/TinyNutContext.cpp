@@ -18,25 +18,25 @@
  *
  ******************************************************************************************/
 
-#include <TinyNut/TinyNut.h>
+#include <TinyNut/__tiny_nut_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyNutContext::TinyNutContext( )
-    : _local_pools{ VK_NULL_HANDLE },
-    _imgui{ nullptr }
 { }
 
 bool TinyNutContext::Create( TinyNut* nut_game ) { return true; }
 
 void TinyNutContext::Prepare( TinyNut* nut_game ) {
 	auto& graphics = nut_game->GetGraphics( );
+    auto& toolbox  = nut_game->GetToolbox( );
+    auto* context  = toolbox.GetContext( );
 
 	graphics.BeginPass( TINY_OUTPASS_HASH );
     graphics.NextSubpass( );
 
-    ImGui::SetCurrentContext( nut_game->GetToolbox().GetContext( ) );
+    ImGui::SetCurrentContext( context );
 
     ImGui_ImplVulkan_NewFrame( );
     ImGui_ImplGlfw_NewFrame( );
@@ -55,11 +55,15 @@ void TinyNutContext::Flush( TinyNut* nut_game ) {
     ImGui_ImplVulkan_RenderDrawData( draw_data, work_context.Queue->CommandBuffer );
 }
 
-void TinyNutContext::Terminate( TinyNut* nut_game ) {
+void TinyNutContext::Terminate( TinyNut* nut_game ) { 
     ImGui::SetCurrentContext( nullptr );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-ImGuiContext* TinyNutContext::GetContext( ) { return ImGui::GetCurrentContext( ); }
+ImGuiContext* TinyNutContext::GetContext( TinyNut* nut_game ) {
+    auto& toolbox = nut_game->GetToolbox( );
+
+    return toolbox.GetContext( );
+}

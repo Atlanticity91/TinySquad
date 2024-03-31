@@ -38,9 +38,11 @@ tm_class TinyWindow final {
 private:
 	tiny_string _title;
 	GLFWwindow* _handle;
+	bool		_is_minimized;
+	bool		_is_headless;
 
 public:
-	TinyWindow( tiny_string title );
+	TinyWindow( tiny_string title, bool is_headless );
 
 	~TinyWindow( ) = default;
 
@@ -48,12 +50,25 @@ public:
 
 	void SetCallback( TinyWindowCallbacks query, c_pointer callback );
 
-	void Tick( );
+	void ToggleMinimized( bool is_minimized );
+
+	void Minimize( );
+
+	void Restore( );
+
+	void Maximize( );
+
+	bool Tick( );
 
 	void Terminate( );
 
+private:
+	void SetupHeadless( const TinyAppConfig& config );
+
 public:
 	tiny_string GetTitle( ) const;
+
+	bool GetIsHeadless( ) const;
 
 	GLFWwindow* GetHandle( ) const;
 
@@ -64,6 +79,8 @@ public:
 	tiny_vec2 GetDimensions_v( ) const;
 
 	tiny_point GetDimensions_p( ) const;
+
+	bool GetIsMinimized( ) const;
 
 	bool GetIsMaximized( ) const;
 

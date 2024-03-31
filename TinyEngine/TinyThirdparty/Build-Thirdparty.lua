@@ -7,6 +7,8 @@ project "TinyThirdparty"
 
     files { "**.h", "**.cpp", "**.hpp", "**.c" }
 
+    defines { "TT_BUILD" }
+
     vulkan = os.getenv( "VULKAN_PATH" )
 
     includedirs { 

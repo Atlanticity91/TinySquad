@@ -1381,6 +1381,24 @@ namespace TinyImGui {
         );
     }
 
+    ImTextureID CreateTextureID( TinyGraphicTexture* texture ) {
+        auto texture_id = tiny_cast( nullptr, VkDescriptorSet );
+
+        if ( texture ) {
+            auto sampler = texture->GetSampler( );
+            auto view    = texture->GetView( );
+
+            texture_id = ImGui_ImplVulkan_AddTexture( sampler, view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL );
+        }
+
+        return tiny_cast( texture_id, ImTextureID );
+    }
+
+    ImTextureID CreateTextureID( TinyGraphicTexture& texture ) {
+        return CreateTextureID( tiny_rvalue( texture ) );
+    }
+
+
     ImTextureID CreateTextureID( TinyTexture2D* texture ) {
         auto texture_id = tiny_cast( nullptr, VkDescriptorSet );
 

@@ -34,22 +34,36 @@ project "TinyFoundry"
     debugdir "%{wks.location}/bin/"
     objdir "%{wks.location}/bin-int/%{prj.name}"
 
-    links { "TinyNut", "TinyEngine" }
+    links { "TinyEngine", "ImGui" }
     
     filter "system:windows"
         systemversion "latest"
         defines { "WINDOWS" }
+        links {
+            vulkan.."/Lib/SPIRV.lib",
+            vulkan.."/Lib/vulkan-1.lib",
+        }
 
     filter "configurations:Debug"
         defines { "DEBUG" }
         runtime "Debug"
         symbols "On"
+        links {
+            vulkan.."/Lib/shadercd.lib",
+            vulkan.."/Lib/shaderc_combinedd.lib",
+            vulkan.."/Lib/shaderc_utild.lib"
+        }
 
     filter "configurations:Release"
         defines { "RELEASE" }
         runtime "Release"
         optimize "On"
         symbols "On"
+        links {
+            vulkan.."/Lib/shaderc.lib",
+            vulkan.."/Lib/shaderc_combined.lib",
+            vulkan.."/Lib/shaderc_util.lib"
+        }
 
     filter "configurations:Dist"
         kind "WindowedApp"
@@ -57,3 +71,8 @@ project "TinyFoundry"
         runtime "Release"
         optimize "On"
         symbols "Off"
+        links {
+            vulkan.."/Lib/shaderc.lib",
+            vulkan.."/Lib/shaderc_combined.lib",
+            vulkan.."/Lib/shaderc_util.lib"
+        }

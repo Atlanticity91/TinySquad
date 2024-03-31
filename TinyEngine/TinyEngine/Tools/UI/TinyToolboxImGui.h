@@ -362,6 +362,10 @@ namespace TinyImGui {
 		const KnobContext& context
 	);
 
+	tiny_dll ImTextureID CreateTextureID( TinyGraphicTexture* texture );
+
+	tiny_dll ImTextureID CreateTextureID( TinyGraphicTexture& texture );
+	
 	tiny_dll ImTextureID CreateTextureID( TinyTexture2D* texture );
 
 	tiny_dll ImTextureID CreateTextureID( TinyTexture2D& texture );

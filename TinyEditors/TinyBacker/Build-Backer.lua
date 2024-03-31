@@ -34,7 +34,7 @@ project "TinyBacker"
     debugdir "%{wks.location}/bin/"
     objdir "%{wks.location}/bin-int/%{prj.name}"
 
-    links { "TinyNut", "TinyEngine", "TinyThirdparty", "ImGui" }
+    links { "TinyEngine", "TinyNut" }
     
     filter "system:windows"
         systemversion "latest"

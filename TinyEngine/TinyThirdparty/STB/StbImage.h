@@ -386,8 +386,9 @@ typedef unsigned short stbi_us;
 
 #ifdef __cplusplus
 extern "C" {
-    #endif
+#endif
 
+    /*
     #ifndef STBIDEF
     #ifdef STB_IMAGE_STATIC
     #define STBIDEF static
@@ -395,6 +396,17 @@ extern "C" {
     #define STBIDEF extern
     #endif
     #endif
+    */
+
+#   ifdef _WIN32
+#       ifdef TT_BUILD
+#           define STBIDEF __declspec( dllexport )
+#       else
+#           define STBIDEF __declspec( dllimport )
+#       endif
+#   else
+#       define STBIDEF
+#   endif
 
     //////////////////////////////////////////////////////////////////////////////
     //
@@ -531,7 +543,7 @@ extern "C" {
     STBIDEF int   stbi_zlib_decode_noheader_buffer( char* obuffer, int olen, const char* ibuffer, int ilen );
 
 
-    #ifdef __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

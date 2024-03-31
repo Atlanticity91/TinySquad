@@ -119,7 +119,7 @@ void TinyRenderBatchSprite::OnFlush(
 ) {
 	auto textures = _textures.Flush( );
 
-	material.Bind( work_context, TRS_ID_TEXTURE, 0, textures.Count, tiny_cast( textures.Values, VkDescriptorImageInfo* ) );
+	material.Bind( work_context, TRS_ID_TEXTURE-1, 0, textures.Count, tiny_cast( textures.Values, VkDescriptorImageInfo* ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

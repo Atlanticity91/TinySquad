@@ -72,6 +72,31 @@ void TinyGraphicBufferStaging::UnMap( TinyGraphicContext& context ) {
 
 		_access = nullptr;
 	}
+} 
+
+bool TinyGraphicBufferStaging::Map(
+	TinyGraphicContext& context,
+	tiny_uint length,
+	const c_pointer data
+) {
+	return Map( context, 0, length, data );
+}
+
+bool TinyGraphicBufferStaging::Map(
+	TinyGraphicContext& context,
+	tiny_uint offset,
+	tiny_uint length,
+	const c_pointer data
+) {
+	auto state = Map( context, offset, length );
+
+	if ( state ) {
+		Tiny::Memcpy( data, _access, length );
+
+		UnMap( context );
+	}
+
+	return state;
 }
 
 void TinyGraphicBufferStaging::Terminate( TinyGraphicContext& context ) {

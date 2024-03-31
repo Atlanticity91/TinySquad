@@ -18,12 +18,45 @@
  *
  ******************************************************************************************/
 
-#include <TinyNut/TinyNut.h>
+#include <TinyNut/__tiny_nut_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 namespace TinyNutUI {
+
+	Image CreateImage( TinyNut* nut_game, tiny_uint length, const tiny_ubyte* image ) {
+		auto& graphics = nut_game->GetGraphics( );
+		auto& renderer = nut_game->GetRenderer( );
+		auto& staging  = renderer.GetStaging( );
+		auto context   = graphics.GetContext( );
+		auto builder   = TinyGraphicTextureBuilder{ };
+		auto image_	   = Image{ };
+		auto channels  = 0;
+		auto* width    = tiny_cast( tiny_rvalue( builder.Properties.Width  ), tiny_int* );
+		auto* height   = tiny_cast( tiny_rvalue( builder.Properties.Height ), tiny_int* );
+
+		builder.Texels = stbi_load_from_memory( image, length, width, height, tiny_rvalue( channels ), 4 );
+		builder.Size   = tiny_lvalue( width ) * tiny_lvalue( height ) * 4;
+
+		staging.Map( context, builder.Size, builder.Texels );
+
+		if ( image_.Texture.Create( context, builder, staging ) )
+			image_.Descriptor = TinyImGui::CreateTextureID( image_.Texture );
+
+		stbi_image_free( builder.Texels );
+
+		return image_;
+	}
+
+	void DeleteImage( TinyNut* nut_game, Image& image ) { 
+		auto& graphics = nut_game->GetGraphics( );
+		auto context   = graphics.GetContext( );
+
+		TinyImGui::DestroyTextureID( image.Descriptor );
+
+		image.Texture.Terminate( context );
+	}
 
 	ImRect GetItemRect( ) { return { ImGui::GetItemRectMin( ), ImGui::GetItemRectMax( ) }; }
 
@@ -131,6 +164,26 @@ namespace TinyNutUI {
 		window->DC.LayoutType		= ImGuiLayoutType_Vertical;
 		window->DC.NavLayerCurrent  = ImGuiNavLayer_Main;
 		window->DC.MenuBarAppending = false;
+	}
+
+	void ButtonImage( 
+		const Image& image,
+		const ImU32& normal, 
+		const ImU32& hovered,
+		const ImU32& pressed
+	) {
+		if ( image.Descriptor ) {
+			auto* draw_list = ImGui::GetForegroundDrawList( );
+			auto bound_min  = ImGui::GetItemRectMin( );
+			auto bound_max  = ImGui::GetItemRectMax( );
+
+			if ( ImGui::IsItemActive( ) )
+				draw_list->AddImage( image.Descriptor, bound_min, bound_max, { 0.f, 0.f }, { 1.f, 1.f }, pressed );
+			else if ( ImGui::IsItemHovered( ) )
+				draw_list->AddImage( image.Descriptor, bound_min, bound_max, { 0.f, 0.f }, { 1.f, 1.f }, hovered );
+			else
+				draw_list->AddImage( image.Descriptor, bound_min, bound_max, { 0.f, 0.f }, { 1.f, 1.f }, normal );
+		}
 	}
 
 };

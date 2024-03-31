@@ -26,7 +26,7 @@ tm_class TinyGraphicBufferStaging final {
 
 private:
 	TinyGraphicBuffer _buffer;
-	c_pointer			  _access;
+	c_pointer		  _access;
 
 public:
 	TinyGraphicBufferStaging( );
@@ -42,6 +42,19 @@ public:
 	bool Map( TinyGraphicContext& context, tiny_uint offset, tiny_uint length );
 
 	void UnMap( TinyGraphicContext& context );
+
+	tiny_inline bool Map(
+		TinyGraphicContext& context,
+		tiny_uint length,
+		const c_pointer data
+	);
+
+	bool Map(
+		TinyGraphicContext& context, 
+		tiny_uint offset, 
+		tiny_uint length,
+		const c_pointer data
+	);
 
 	void Terminate( TinyGraphicContext& context );
 

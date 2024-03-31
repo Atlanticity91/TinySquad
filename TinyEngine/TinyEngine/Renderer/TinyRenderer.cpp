@@ -239,6 +239,8 @@ TinyRenderBatchManager& TinyRenderer::GetBatchs( ) { return _batchs; }
 
 TinyRenderPostProcessor& TinyRenderer::GetPostProcess( ) { return _post_process; }
 
+TinyGraphicBufferStaging& TinyRenderer::GetStaging( ) { return _batchs.GetStaging( ); }
+
 bool TinyRenderer::FindProjection( const tiny_string& alias ) const { 
 	return _cameras.FindProjection( alias );
 }

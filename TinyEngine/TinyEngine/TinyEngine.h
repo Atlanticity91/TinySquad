@@ -55,8 +55,9 @@ public:
 	 * Constructor
 	 * @param title : Game window title.
 	 * @param orientation : Desired game orientation for graphics adaptation.
+	 * @param is_headless : Defined is the game window as OS decoration.
 	 **/
-	TinyEngine( const tiny_string& title, TinyGameOrientations orientation );
+	TinyEngine( const tiny_string& title, TinyGameOrientations orientation, bool is_headless );
 
 	/**
 	 * Destructor
@@ -74,17 +75,36 @@ public:
 	bool Initialize( TinyGame* game, tiny_int argc, char** argv );
 
 	/**
+	 * Minimize method
+	 * @note : Minimize current game window.
+	 **/
+	void Minimize( );
+
+	/**
+	 * Restore method
+	 * @note : Restore current game window to previous un-minimized window state.
+	 **/
+	void Restore( );
+
+	/**
+	 * Maximize method
+	 * @note : Maximize current game window.
+	 **/
+	void Maximize( );
+
+	/**
 	 * Stop method
 	 * @note : Signal the game to shutdown.
 	 **/
 	void Stop( );
 
 	/**
-	 * PreTick method
+	 * PreTick function
 	 * @note : Called once per tick, before game tick. Perform tick pre-action.
 	 * @param game : Pointer to current game class instance.
+	 * @return : bool
 	 **/
-	void PreTick( TinyGame* game );
+	bool PreTick( TinyGame* game );
 
 	/**
 	 * PreTick method

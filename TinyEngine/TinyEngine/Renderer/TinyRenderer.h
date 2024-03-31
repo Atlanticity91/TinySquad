@@ -115,6 +115,8 @@ public:
 
 	TinyRenderPostProcessor& GetPostProcess( );
 
+	tiny_inline TinyGraphicBufferStaging& GetStaging( );
+
 	tiny_inline bool FindProjection( const tiny_string& alias ) const;
 
 	tiny_inline bool FindProjection( const tiny_hash hash ) const;

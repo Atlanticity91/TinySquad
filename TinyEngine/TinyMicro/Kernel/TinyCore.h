@@ -150,6 +150,7 @@ extern "C" {
 #define tiny_rvalue( REF ) ( &( REF ) )
 #define tiny_unused( VAR ) tiny_cast( VAR, void )
 #define tiny_self tiny_lvalue( this )
+#define tiny_sleep_for( TIME ) std::this_thread::sleep_for( std::chrono::milliseconds( TIME ) )
 
 #define TINY_XSTR( VALUE ) #VALUE 
 #define TINY_STR( ... ) TINY_XSTR( __VA_ARGS__ )

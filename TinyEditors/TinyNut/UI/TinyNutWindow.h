@@ -22,7 +22,10 @@
 
 #include "TinyNutContext.h"
 
-tiny_nut_class TinyNutWindow final {
+#define _RegisterIcon( GAME, NAME, EMBEDDED, CALLBACK )\
+	RegisterIcon( GAME, NAME, tiny_sizeof( EMBEDDED ), EMBEDDED, CALLBACK )
+
+tn_class TinyNutWindow final {
 
 	using Icon_t = TinyNutUI::Icon;
 
@@ -37,9 +40,11 @@ public:
 
 	void Create( TinyNut* nut_game );
 
-	void RegisterIcon( 
-		const tiny_string& name, 
-		const tiny_ubyte* icon, 
+	void RegisterIcon(
+		TinyNut* nut_game,
+		const tiny_string& name,
+		tiny_uint length,
+		const tiny_ubyte* image,
 		const Icon_t::Callback_t& callback
 	);
 	
@@ -74,5 +79,14 @@ private:
 	bool Prepare( TinyNut* nut_game, TinyWindow& window );
 
 	void DockSpace( );
+
+private:
+	static void Minimize( TinyNut* nut_game );
+
+	static void Restore( TinyNut* nut_game );
+
+	static void Maximize( TinyNut* nut_game );
+
+	static void Close( TinyNut* nut_game );
 
 };

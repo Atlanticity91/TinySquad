@@ -23,12 +23,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyEngine::TinyEngine( const tiny_string& title, TinyGameOrientations orientation )
+TinyEngine::TinyEngine(
+	const tiny_string& title,
+	TinyGameOrientations orientation, 
+	bool is_headless 
+)
 	: _is_running{ true },
 	_jobs{ },
 	_filesystem{ },
 	_assets{ },
-	_window{ title },
+	_window{ title, is_headless },
 	_inputs{ },
 	_audio{ },
 	_graphics{ orientation },
@@ -60,7 +64,7 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 						  ProcessArgs( game, argc, argv ) && 
 						  _addons.Initialize( game );
 
-			if ( _is_running ) {
+			if ( _is_running && !_window.GetIsHeadless( ) ) {
 				_inputs.Register( 
 					"Show Dev", 
 					{ 
@@ -75,13 +79,24 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 	return _is_running;
 }
 
+void TinyEngine::Minimize( ) { _window.Minimize( ); }
+
+void TinyEngine::Restore( ) { _window.Restore( ); }
+
+void TinyEngine::Maximize( ) { _window.Maximize( ); }
+
 void TinyEngine::Stop( ) { _is_running = false; }
 
-void TinyEngine::PreTick( TinyGame* game ) {
-	_window.Tick( );
-	_addons.PreTick( game );
-	_ecs.PreTick( game );
-	_graphics.Acquire( _window );
+bool TinyEngine::PreTick( TinyGame* game ) {
+	auto state = _window.Tick( );
+
+	if ( state ) {
+		_addons.PreTick( game );
+		_ecs.PreTick( game );
+		_graphics.Acquire( _window );
+	}
+
+	return state;
 }
 
 void TinyEngine::PostTick( TinyGame* game ) {
@@ -164,9 +179,14 @@ void TinyEngine::JobRun( c_pointer game ) {
 
 void TinyEngine::Resize( GLFWwindow* handle, tiny_int width, tiny_int height ) {
 	auto* engine   = tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
+	auto& window   = engine->GetWindow( );
 	auto& graphics = engine->GetGraphics( );
+	auto state	   = width > 0 && height > 0;
 
-	graphics.ReCreate( );
+	if ( state )
+		graphics.ReCreate( );
+
+	window.ToggleMinimized( !state );
 }
 
 void TinyEngine::Close( GLFWwindow* handle ) {

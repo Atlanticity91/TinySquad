@@ -4,6 +4,8 @@ project "ImGui"
 	cppdialect "C++20"
     staticruntime "off"
 
+    defines { "IM_BUILD" }
+
     vulkan = os.getenv( "VULKAN_PATH" )
 
 	files { "*.h", "*.cpp" }

@@ -45,7 +45,12 @@ bool TinyToolbox::Initialize( TinyGame* game ) {
     if ( state ) {
         CreateImGuiTheme( );
 
-        state = CreateImGuiFont( ) && _tools.Initialize( game, tiny_self );
+        state = CreateImGuiFont( );
+        
+        if ( state && !window.GetIsHeadless( ) )
+            state = _tools.Initialize( game, tiny_self );
+        else
+            _is_in_use = false;
     }
     
     return state;
@@ -228,9 +233,11 @@ void TinyToolbox::Terminate( TinyGame* game ) {
     if ( _imgui ) {
         _tools.Terminate( game );
 
+        ImGui::SetCurrentContext( _imgui );
+
         ImGui_ImplVulkan_Shutdown( );
         ImGui_ImplGlfw_Shutdown( );
-        ImGui::DestroyContext( _imgui );
+        ImGui::DestroyContext( );
 
         if ( _local_pools ) {
             auto& graphics = game->GetGraphics( );

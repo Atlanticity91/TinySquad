@@ -36,6 +36,18 @@ public:
 	TinyGame( const tiny_string& title, TinyGameOrientations orientation );
 
 	/**
+	 * Constructor
+	 * @param title : Game window title.
+	 * @param orientation : Desired game orientation for graphics adaptation.
+	 * @param is_headless : Defined is the game window as OS decoration.
+	 **/
+	TinyGame( 
+		const tiny_string& title, 
+		TinyGameOrientations orientation,
+		bool is_headless
+	);
+
+	/**
 	 * Destructor
 	 **/
 	virtual ~TinyGame( ) = default;
@@ -48,6 +60,30 @@ public:
 	 * @return : bool
 	 **/
 	bool Start( tiny_int argc, char** argv );
+
+	/**
+	 * Minimize method
+	 * @note : Minimize current game window.
+	 **/
+	tiny_inline void Minimize( );
+
+	/**
+	 * Restore method
+	 * @note : Restore current game window to previous un-minimized window state.
+	 **/
+	tiny_inline void Restore( );
+
+	/**
+	 * Maximize method
+	 * @note : Maximize current game window.
+	 **/
+	tiny_inline void Maximize( );
+
+	/**
+	 * Stop method
+	 * @note : Signal the game to shutdown.
+	 **/
+	tiny_inline void Stop( );
 
 	/**
 	 * Run method

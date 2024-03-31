@@ -26,13 +26,29 @@ class TinyNut;
 
 namespace TinyNutUI { 
 
-	tiny_nut_struct Icon {
+	tn_struct Image {
+
+		TinyGraphicTexture Texture{ };
+		ImTextureID Descriptor = nullptr;
+
+	};
+
+	tn_struct Icon {
 
 		using Callback_t = std::function<void( TinyNut* )>;
-
+		
+		Image Icon;
 		Callback_t Callback;
 
 	};
+
+	tiny_nut_dll Image CreateImage(
+		TinyNut* nut_game,
+		tiny_uint length, 
+		const tiny_ubyte* image 
+	);
+
+	tiny_nut_dll void DeleteImage( TinyNut* nut_game, Image& image );
 
 	tiny_nut_dll ImRect GetItemRect( );
 
@@ -45,5 +61,12 @@ namespace TinyNutUI {
 	tiny_nut_dll bool BeginMenubar( const ImRect& barRectangle );
 
 	tiny_nut_dll void EndMenubar( );
+
+	tiny_nut_dll void ButtonImage(
+		const Image& image,
+		const ImU32& normal,
+		const ImU32& hovered,
+		const ImU32& pressed
+	);
 
 };

@@ -22,7 +22,7 @@
 
 #include "UI/TinyNutWindow.h"
 
-class tiny_nut_dll TinyNut : public TinyGame {
+tn_class TinyNut : tiny_inherit( TinyGame ) {
 
 	friend class TinyNutWindow;
 
