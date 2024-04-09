@@ -146,6 +146,15 @@ tiny_string tiny_string::sub_string( const tiny_string& sequence, bool cut_after
 	return sub;
 }
 
+tiny_string tiny_string::sub_string( const tiny_uint offset ) const {
+	auto sub = tiny_string{ };
+
+	if ( offset < _length )
+		sub.asign( _handle + offset );
+
+	return sub;
+}
+
 bool tiny_string::equal( under_layer string ) const {
 	auto state = is_valid( string ) && length( ) > 0;
 

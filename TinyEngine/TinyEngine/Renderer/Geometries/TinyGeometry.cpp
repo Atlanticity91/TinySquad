@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGeometry::TinyGeometry( )
-	: _index{ },
+	: TinyAsset{ TA_TYPE_GEOMETRY },
+	_index{ },
 	_vertex{ }
 { }
 

@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyScriptManager::TinyScriptManager( ) 
-	: _context{ }
+	: TinyAssetContainer{ },
+	_context{ }
 { }
 
 bool TinyScriptManager::Initialize( ) {

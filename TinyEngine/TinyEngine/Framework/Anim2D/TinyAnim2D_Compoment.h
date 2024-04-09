@@ -33,13 +33,13 @@ tiny_enum( TinyAnimationFlags ) {
 TINY_FRAMEWORK_COMP( TinyAnim2D ) {
 
 private:
-	TinyAsset	_collection;
-	tiny_string _animation;
-	tiny_hash	_animation_hash;
-	tiny_uint	_flags;
-	tiny_uint	_frame_id;
-	float		_frame_time;
-	float		_frame_duration;
+	TinyAssetHandle	_collection;
+	tiny_string		_animation;
+	tiny_hash		_animation_hash;
+	tiny_uint		_flags;
+	tiny_uint		_frame_id;
+	float			_frame_time;
+	float			_frame_duration;
 
 public:
 	TinyAnim2D( );
@@ -70,7 +70,7 @@ private:
 	void SetFrame( 
 		TinyGame*game, 
 		tiny_uint frame_id, 
-		TinyAnimation2D::FrameCollection* frames 
+		const TinyAnimation2D::FrameCollection* frames 
 	);
 
 public:
@@ -78,7 +78,7 @@ public:
 
 	tiny_implement( bool GetIsActive( ) const );
 
-	TinyAsset& GetCollection( );
+	TinyAssetHandle& GetCollection( );
 	
 	const tiny_string& GetAnimation( ) const;
 

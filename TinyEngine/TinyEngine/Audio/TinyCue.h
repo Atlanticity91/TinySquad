@@ -22,7 +22,7 @@
 
 #include "TinyCueBuilder.h"
 
-te_class TinyCue final {
+te_class TinyCue final : tiny_inherit( TinyAsset ) {
 
 private:
 	TinyCueFormat  _format;
@@ -35,12 +35,12 @@ public:
 	~TinyCue( ) = default;
 
 public:
-	TinyCueFormat& GetFormat( );
+	const TinyCueFormat& GetFormat( ) const;
 
-	TinyCueContext& GetContext( );
+	const TinyCueContext& GetContext( ) const;
 
-	tiny_storage& GetStorage( );
+	const tiny_storage& GetStorage( ) const;
 
-	TinyCueBuffer GetBuffer( );
+	TinyCueBuffer GetBuffer( ) const;
 
 };

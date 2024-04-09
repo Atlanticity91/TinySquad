@@ -20,11 +20,9 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Fonts/TinyFontManager.h>
+#include "TinyShader.h"
 
-te_class TinyShaderManager final 
-	: tiny_inherit( TinyAssetList<TA_TYPE_SHADER, TinyGraphicShader> )
-{
+te_class TinyShaderManager final : tiny_inherit( TinyAssetContainer<TinyShader> ) {
 
 public:
 	TinyShaderManager( );

@@ -22,5 +22,13 @@
 
 #include "TinyTextureAtlas.h"
 
-te_class TinyTextureAtlasManager final {
+te_class TinyTextureAtlasManager final 
+	: tiny_inherit( TinyAssetContainer<TinyTextureAtlas> ) 
+{
+
+public:
+	TinyTextureAtlasManager( ) = default;
+
+	~TinyTextureAtlasManager( ) = default;
+
 };

@@ -49,8 +49,15 @@ bool TinyAnim2D::Create( TinyGame* game ) {
 
 TinyAnim2D& TinyAnim2D::SetCollection( TinyGame* game, const tiny_string& collection ) {
 	auto& assets = game->GetAssets( );
+	auto hash	 = tiny_hash{ collection };
 
-	assets.Acquire( game, _collection, collection );
+	if ( assets.GetExist( TA_TYPE_ANIMATION_2D, hash ) ) {
+		assets.Release( game, _collection );
+
+		_collection.Hash = hash;
+
+		assets.Acquire( game, _collection );
+	}
 
 	return tiny_self;
 }
@@ -98,7 +105,7 @@ void TinyAnim2D::Tick(
 	if ( _frame_duration - _frame_time > 0.f )
 		return;
 
-	auto* animation = tiny_cast( animations->GetAsset( _collection ), TinyAnimation2D* );
+	auto* animation = tiny_cast( animations->GetAsset( _collection.Hash ), TinyAnimation2D* );
 	auto* frame		= animation->Next( _animation_hash, _frame_id, _flags & TA_FLAG_REVERSE, _flags & TA_FLAG_LOOPING );
 
 	if ( frame ) {
@@ -162,7 +169,7 @@ void TinyAnim2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 void TinyAnim2D::SetFrame(
 	TinyGame* game,
 	tiny_uint frame_id,
-	TinyAnimation2D::FrameCollection* frames
+	const TinyAnimation2D::FrameCollection* frames
 ) {
 	auto& ecs   = game->GetECS( );
 	auto& frame = frames->at( frame_id );
@@ -183,7 +190,7 @@ bool TinyAnim2D::GetIsActive( ) const {
 	return TinyComponent::GetIsActive( ) && GetIsPlaying( ); 
 }
 
-TinyAsset& TinyAnim2D::GetCollection( ) { return _collection; }
+TinyAssetHandle& TinyAnim2D::GetCollection( ) { return _collection; }
 
 const tiny_string& TinyAnim2D::GetAnimation( ) const { return _animation; }
 

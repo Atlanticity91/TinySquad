@@ -22,9 +22,7 @@
 
 #include "TinyFont.h"
 
-te_class TinyFontManager final 
-	: tiny_inherit( TinyAssetList<TA_TYPE_FONT, TinyFont> )
-{
+te_class TinyFontManager final : tiny_inherit( TinyAssetContainer<TinyFont> ) {
 
 public:
 	TinyFontManager( );

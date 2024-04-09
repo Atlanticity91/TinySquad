@@ -22,7 +22,5 @@
 
 #include "TinyTexture3DManager.h"
 
-typedef TinyGraphicTextureBuilder TinyTextureCubemapBuilder;
-
-te_class TinyTextureCubemap {
+te_class TinyTextureCubemap : tiny_inherit( TinyAsset ) {
 };

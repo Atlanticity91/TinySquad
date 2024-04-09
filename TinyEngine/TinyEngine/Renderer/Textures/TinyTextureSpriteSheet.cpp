@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTextureSpriteSheet::TinyTextureSpriteSheet( ) 
-	: _columns{ 0 }, 
+	: TinyAsset{ TA_TYPE_TEXTURE_2D },
+	_columns{ 0 }, 
 	_rows{ 0 },
 	_uv{ .0f, .0f }
 { }

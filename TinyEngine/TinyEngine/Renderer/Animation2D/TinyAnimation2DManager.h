@@ -22,8 +22,9 @@
 
 #include "TinyAnimation2D.h"
 
-te_class TinyAnimation2DManager final
-	: tiny_inherit( TinyAssetList<TA_TYPE_ADDON, TinyAnimation2D> ) {
+te_class TinyAnimation2DManager final 
+	: tiny_inherit( TinyAssetContainer<TinyAnimation2D> ) 
+{
 
 public:
 	TinyAnimation2DManager( );

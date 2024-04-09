@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyMaterial::TinyMaterial( )
-	: TinyGraphicPipeline{ },
+	: TinyAsset{ TA_TYPE_MATERIAL }, 
+	TinyGraphicPipeline{ },
 	_shaders{ }
 { }
 

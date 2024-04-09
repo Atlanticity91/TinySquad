@@ -24,13 +24,13 @@
 
 te_struct TinyScriptExecution {
 
-	TinyAsset Script{ };
+	TinyAssetHandle Script{ TA_TYPE_SCRIPT };
 	tiny_string Function = "";
 	c_pointer Component  = nullptr;
 
 };
 
-te_class TinyScriptLua final { 
+te_class TinyScriptLua final : tiny_inherit( TinyAsset ) { 
 
 private:
 	tiny_storage		   _source;

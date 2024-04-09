@@ -47,11 +47,12 @@ void TinySound2D::Delete( TinyGame* game ) {
 bool TinySound2D::SetCue( TinyGame* game, const tiny_string& cue_name ) {
 	auto& assets = game->GetAssets( );
 	auto state   = false;
+	auto hash    = tiny_hash{ cue_name };
 
-	if ( assets.GetExist( cue_name ) ) {
+	if ( assets.GetExist( TA_TYPE_CUE, hash ) ) {
 		assets.Release( game, _cue );
 
-		_cue.Hash = tiny_hash{ cue_name };
+		_cue.Hash = hash;
 
 		state = assets.Acquire( game, _cue );
 
@@ -113,6 +114,6 @@ void TinySound2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAsset& TinySound2D::GetCue( ) { return _cue; }
+TinyAssetHandle& TinySound2D::GetCue( ) { return _cue; }
 
 float TinySound2D::GetVolume( ) const { return _volume; }

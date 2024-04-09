@@ -93,7 +93,7 @@ public:
 
 	tiny_inline void HideGuizmo( );
 
-	void DisplayAsset( TinyGame* game, const tiny_string& label, TinyAsset& asset );
+	void DisplayAsset( TinyGame* game, const tiny_string& label, TinyAssetHandle& asset );
 
 	void Tick( TinyGame* game );
 

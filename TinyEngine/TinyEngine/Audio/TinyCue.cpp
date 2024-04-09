@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyCue::TinyCue( )
-	: _format{ },
+	: TinyAsset{ TA_TYPE_CUE },
+    _format{ },
     _context{ },
 	_storage{ } 
 { }
@@ -32,13 +33,13 @@ TinyCue::TinyCue( )
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyCueFormat& TinyCue::GetFormat( ) { return _format; }
+const TinyCueFormat& TinyCue::GetFormat( ) const { return _format; }
 
-TinyCueContext& TinyCue::GetContext( ) { return _context; }
+const TinyCueContext& TinyCue::GetContext( ) const { return _context; }
 
-tiny_storage& TinyCue::GetStorage( ) { return _storage; }
+const tiny_storage& TinyCue::GetStorage( ) const { return _storage; }
 
-TinyCueBuffer TinyCue::GetBuffer( ) {
+TinyCueBuffer TinyCue::GetBuffer( ) const {
     auto* address = _storage.GetAddress( );
 
     return { 

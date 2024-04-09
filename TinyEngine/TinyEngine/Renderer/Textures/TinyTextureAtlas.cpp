@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTextureAtlas::TinyTextureAtlas( ) 
-	: _albedo{ TA_TYPE_TEXTURE_2D },
+	: TinyAsset{ TA_TYPE_TEXTURE_ATLAS },
+	_albedo{ TA_TYPE_TEXTURE_2D },
 	_normal{ TA_TYPE_TEXTURE_2D },
 	_specular{ TA_TYPE_TEXTURE_2D }
 { }
@@ -38,7 +39,7 @@ TinyTextureAtlas& TinyTextureAtlas::SetAlbedo( TinyGame* game, const tiny_string
 TinyTextureAtlas& TinyTextureAtlas::SetAlbedo( TinyGame* game, const tiny_hash hash ) {
 	auto& assets = game->GetAssets( );
 
-	if ( assets.GetExist( hash ) ) {
+	if ( assets.GetExist( TA_TYPE_TEXTURE_2D, hash ) ) {
 		assets.Release( game, _albedo );
 
 		_albedo.Hash = hash;
@@ -58,7 +59,7 @@ TinyTextureAtlas& TinyTextureAtlas::SetNormal( TinyGame* game, const tiny_string
 TinyTextureAtlas& TinyTextureAtlas::SetNormal( TinyGame* game, const tiny_hash hash ) {
 	auto& assets = game->GetAssets( );
 
-	if ( assets.GetExist( hash ) ) {
+	if ( assets.GetExist( TA_TYPE_TEXTURE_2D, hash ) ) {
 		assets.Release( game, _normal );
 
 		_normal.Hash = hash;
@@ -78,7 +79,7 @@ TinyTextureAtlas& TinyTextureAtlas::SetSpecular( TinyGame* game, const tiny_stri
 TinyTextureAtlas& TinyTextureAtlas::SetSpecular( TinyGame* game, const tiny_hash hash ) {
 	auto& assets = game->GetAssets( );
 
-	if ( assets.GetExist( hash ) ) {
+	if ( assets.GetExist( TA_TYPE_TEXTURE_2D, hash ) ) {
 		assets.Release( game, _specular );
 
 		_specular.Hash = hash;
@@ -120,12 +121,12 @@ TinyTextureAtlas& TinyTextureAtlas::Set(
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_uint TinyTextureAtlas::GetComponents( ) const { return 3; }
 
-const TinyAsset& TinyTextureAtlas::GetAlbedo( ) const { return _albedo; }
+const TinyAssetHandle& TinyTextureAtlas::GetAlbedo( ) const { return _albedo; }
 
-const TinyAsset& TinyTextureAtlas::GetNormal( ) const { return _normal; }
+const TinyAssetHandle& TinyTextureAtlas::GetNormal( ) const { return _normal; }
 
-const TinyAsset& TinyTextureAtlas::GetSpecular( ) const { return _specular; }
+const TinyAssetHandle& TinyTextureAtlas::GetSpecular( ) const { return _specular; }
 
-const TinyAsset* TinyTextureAtlas::begin( ) const { return tiny_rvalue( _albedo ); }
+const TinyAssetHandle* TinyTextureAtlas::begin( ) const { return tiny_rvalue( _albedo ); }
 
-const TinyAsset* TinyTextureAtlas::end( ) const { return tiny_rvalue( _specular ) + 1; }
+const TinyAssetHandle* TinyTextureAtlas::end( ) const { return tiny_rvalue( _specular ) + 1; }

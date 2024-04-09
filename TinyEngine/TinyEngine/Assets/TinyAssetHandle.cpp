@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 10/11/2023
- * @version  : 2024.1
+ * @creation : 03/04/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,40 +23,57 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAsset::TinyAsset( )
-	: TinyAsset{ TA_TYPE_UNDEFINED }
+TinyAssetHandle::TinyAssetHandle( )
+	: TinyAssetHandle{ TA_TYPE_UNDEFINED }
 { }
 
-TinyAsset::TinyAsset( tiny_uint type )
-	: Hash{ },
-	Type{ type },
-	Handle{ TINY_UINT_MAX } 
+TinyAssetHandle::TinyAssetHandle( TinyAssetTypes type )
+	: TinyAssetHandle{ tiny_cast( type, tiny_uint ) }
 { }
 
-TinyAsset::TinyAsset( tiny_uint type, const tiny_string& name )
-	: Hash{ name },
-	Type{ type },
-	Handle{ TINY_UINT_MAX }
+TinyAssetHandle::TinyAssetHandle( tiny_uint type )
+	: Type{ type },
+	Hash{ }
+{ }
+
+TinyAssetHandle::TinyAssetHandle( tiny_uint type, const tiny_string& asset )
+	: Type{ type },
+	Hash{ asset }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyAsset::GetIsValid( ) const {
-	return Type != TA_TYPE_UNDEFINED && Handle < TINY_UINT_MAX;
+bool TinyAssetHandle::GetIsValid( ) const { 
+	return Type < TA_TYPE_UNDEFINED && Hash.is_valid( ); 
 }
 
-bool TinyAsset::GetEqual( const TinyAsset& other ) const {
-	return Hash == other.Hash && Type == other.Type;
+bool TinyAssetHandle::GetEqual( const TinyAssetHandle& other ) const {
+	return Type == other.Type && Hash == other.Hash;
 }
 
-bool TinyAsset::GetNotEqual( const TinyAsset& asset ) const { return !GetEqual( asset ); }
+bool TinyAssetHandle::GetNotEqual( const TinyAssetHandle& other ) const {
+	return !GetEqual( other );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAsset::operator bool const ( ) { return GetIsValid( ); }
+TinyAssetHandle::operator bool( ) const { return GetIsValid( ); }
 
-bool TinyAsset::operator==( const TinyAsset& other ) const { return GetEqual( other ); }
+TinyAssetHandle& TinyAssetHandle::operator=( const TinyAssetHandle& other ) {
+	if ( !GetIsValid( ) && other.GetIsValid( ) ) {
+		Type = other.Type;
+		Hash = other.Hash;
+	}
 
-bool TinyAsset::operator!=( const TinyAsset& other ) const { return GetNotEqual( other ); }
+	return tiny_self;
+}
+
+bool TinyAssetHandle::operator==( const TinyAssetHandle& other ) const {
+	return GetEqual( other ); 
+}
+
+bool TinyAssetHandle::operator!=( const TinyAssetHandle& other ) const {
+	return GetNotEqual( other );
+}

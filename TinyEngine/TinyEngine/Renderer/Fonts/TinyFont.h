@@ -22,7 +22,7 @@
 
 #include "TinyFontBuilder.h"
 
-te_class TinyFont final {
+te_class TinyFont final : tiny_inherit( TinyAsset ) {
 
 private:
 	tiny_vec2					_range;

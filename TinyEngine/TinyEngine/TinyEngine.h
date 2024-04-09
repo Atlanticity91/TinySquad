@@ -47,7 +47,6 @@ private:
 	//TinyUXManager		_ux;
 	//TinySceneManager  _scenes; // load/unload ecs scene + renderer composer
 	TinyProviderManager	_provider;
-	TinyAddonManager	_addons;
 	TinyToolbox			_toolbox;
 
 public:
@@ -121,7 +120,7 @@ public:
 	void Terminate( TinyGame* game );
 
 private:
-	bool PreInit( TinyGame* game, TinyGameConfig& game_config );
+	bool PreInit( TinyGame* game, TinyConfig*& game_config );
 
 	bool PostInit( TinyGame* game );
 

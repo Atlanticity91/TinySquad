@@ -35,4 +35,5 @@ void TinyBacker::TickMenubar( ) {
 
 void TinyBacker::TickUI( ) {
 	ImGui::Text( "TickUI" );
+	TinyImGui::SeparatorText( "Content" );
 }

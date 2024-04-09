@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyScriptLua::TinyScriptLua( )
-	: _source{ },
+	: TinyAsset{ TA_TYPE_SCRIPT },
+	_source{ },
 	_table{ },
 	_functions{ }
 { 
@@ -45,7 +46,7 @@ bool TinyScriptLua::Create( TinyLuaContext& context, TinyFile& file ) {
 
 			source[ length ] = '\0';
 
-			state = true;// context.Compile( source );
+			state = context.Compile( _table, source );
 		}
 	}
 

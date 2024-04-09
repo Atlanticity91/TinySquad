@@ -52,6 +52,13 @@ bool TinyFilesystem::Initialize( const TinyWindow& window ) {
 	return state;
 }
 
+std::string TinyFilesystem::CreatePath(
+	const tiny_string& name,
+	const tiny_string& extension
+) {
+	return _dev_dir + "\\" + name.as_string( ) + "." + extension.as_string( );
+}
+
 bool TinyFilesystem::CreateDir( const tiny_string& path ) {
 	return path.is_valid( ) && Tiny::CreateDir( path.get( ) );
 }

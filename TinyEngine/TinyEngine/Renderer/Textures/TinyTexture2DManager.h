@@ -22,15 +22,14 @@
 
 #include "TinyTexture2D.h"
 
-te_class TinyTexture2DManager final 
-	: tiny_inherit( TinyAssetList<TA_TYPE_TEXTURE_2D, TinyTexture2D> ) 
-{
+te_class TinyTexture2DManager final : tiny_inherit( TinyAssetContainer<TinyTexture2D> ) {
 
 public:
 	TinyTexture2DManager( );
 
 	~TinyTexture2DManager( ) = default;
 
+	/*
 protected:
 	tiny_implement( bool OnLoad( 
 		TinyGame* game,
@@ -45,5 +44,6 @@ protected:
 		c_pointer asset_builder, 
 		TinyTexture2D& element
 	) );
+	*/
 
 };

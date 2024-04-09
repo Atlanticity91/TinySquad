@@ -22,12 +22,12 @@
 
 #include "TinyTexture3DManager.h"
 
-te_class TinyTextureAtlas final {
+te_class TinyTextureAtlas final : tiny_inherit( TinyAsset) {
 
 private:
-	TinyAsset _albedo;
-	TinyAsset _normal;
-	TinyAsset _specular;
+	TinyAssetHandle _albedo;
+	TinyAssetHandle _normal;
+	TinyAssetHandle _specular;
 
 public:
 	TinyTextureAtlas( );
@@ -63,14 +63,14 @@ public:
 public:
 	tiny_uint GetComponents( ) const;
 
-	const TinyAsset& GetAlbedo( ) const;
+	const TinyAssetHandle& GetAlbedo( ) const;
 
-	const TinyAsset& GetNormal( ) const;
+	const TinyAssetHandle& GetNormal( ) const;
 	
-	const TinyAsset& GetSpecular( ) const;
+	const TinyAssetHandle& GetSpecular( ) const;
 
-	const TinyAsset* begin( ) const;
+	const TinyAssetHandle* begin( ) const;
 
-	const TinyAsset* end( ) const;
+	const TinyAssetHandle* end( ) const;
 
 };

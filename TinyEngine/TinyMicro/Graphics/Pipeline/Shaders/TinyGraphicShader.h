@@ -22,7 +22,7 @@
 
 #include "TinyGraphicShaderSpecification.h"
 
-tm_class TinyGraphicShader final { 
+tm_class TinyGraphicShader { 
 
 private:
 	std::string						_entry;

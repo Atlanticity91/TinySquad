@@ -22,9 +22,7 @@
 
 #include "TinyMaterial.h"
 
-te_class TinyMaterialManager final 
-	: tiny_inherit( TinyAssetList<TA_TYPE_MATERIAL, TinyMaterial> )
-{ 
+te_class TinyMaterialManager final : tiny_inherit( TinyAssetContainer<TinyMaterial> ) { 
 
 public:
 	TinyMaterialManager( );

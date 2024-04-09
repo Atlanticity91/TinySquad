@@ -44,25 +44,23 @@ TinyEngine::TinyEngine(
 	//_ux{ },
 	//_scenes{ },
 	_provider{ },
-	_addons{ },
 	_toolbox{ } 
 { }
 
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
-	auto game_config = TinyGameConfig{ };
+	auto* game_config = tiny_cast( nullptr, TinyConfig* );
 	
 	_is_running = PreInit( game, game_config );
 
 	if ( _is_running ) {
-		_is_running = _window.Initialize( game_config, tiny_cast( this, c_pointer ) ) &&
-					  _inputs.Initialize( _filesystem, _window )				  &&
-					  _audio.Initialize( _filesystem, _window )					  &&
+		_is_running = _window.Initialize( tiny_lvalue( game_config ), tiny_cast( this, c_pointer ) ) &&
+					  _inputs.Initialize( _filesystem, _window )									 &&
+					  _audio.Initialize( _filesystem, _window )										 &&
 					  _graphics.Initialize( _filesystem, _window );
 
 		if ( _is_running ) {
 			_is_running = PostInit( game )				  && 
-						  ProcessArgs( game, argc, argv ) && 
-						  _addons.Initialize( game );
+						  ProcessArgs( game, argc, argv );
 
 			if ( _is_running && !_window.GetIsHeadless( ) ) {
 				_inputs.Register( 
@@ -91,7 +89,9 @@ bool TinyEngine::PreTick( TinyGame* game ) {
 	auto state = _window.Tick( );
 
 	if ( state ) {
-		_addons.PreTick( game );
+		auto& addons = GetAddons( );
+
+		addons.PreTick( game );
 		_ecs.PreTick( game );
 		_graphics.Acquire( _window );
 	}
@@ -100,7 +100,9 @@ bool TinyEngine::PreTick( TinyGame* game ) {
 }
 
 void TinyEngine::PostTick( TinyGame* game ) {
-	_addons.PostTick( game );
+	auto& addons = GetAddons( );
+
+	addons.PostTick( game );
 	_ecs.PostTick( game );
 	//_ux.Tick( game );
 	_audio.Tick( _inputs );
@@ -111,9 +113,11 @@ void TinyEngine::PostTick( TinyGame* game ) {
 }
 
 void TinyEngine::Terminate( TinyGame* game ) {
+	auto& addons = GetAddons( );
+
 	_toolbox.Terminate( game );
 	_provider.Terminate( _filesystem );
-	_addons.Terminate( game );
+	addons.Terminate( game );
 	_scripts.Terminate( );
 	_renderer.Terminate( _graphics );
 	_assets.Terminate( game );
@@ -128,19 +132,27 @@ void TinyEngine::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyEngine::PreInit( TinyGame* game, TinyGameConfig& game_config ) {
-	return  _jobs.Initialize( TinyEngine::JobRun, game ) &&
-			_filesystem.Initialize( _window )			 &&
-			_assets.Initialize( _filesystem, game_config );
+bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
+	auto state = _jobs.Initialize( TinyEngine::JobRun, game ) &&
+				 _filesystem.Initialize( _window )			 &&
+				 _assets.Initialize( _filesystem, game_config );
+
+	if ( state ) {
+		auto& addons = GetAddons( );
+
+		state = addons.Initialize( game );
+	}
+
+	return state;
 }
 
 bool TinyEngine::PostInit( TinyGame* game ) {
-	_window.SetCallback( TWC_WINDOW_SIZE, TinyEngine::Resize );
-	_window.SetCallback( TWC_WINDOW_CLOSE, TinyEngine::Close );
-	_window.SetCallback( TWC_KEY, TinyEngine::ProcessKey );
-	_window.SetCallback( TWC_CURSOR, TinyEngine::ProcessCursor );
-	_window.SetCallback( TWC_MOUSE, TinyEngine::ProcessMouse );
-	_window.SetCallback( TWC_SCROLL, TinyEngine::ProcessScroll );
+	_window.SetCallback( TWC_WINDOW_SIZE , TinyEngine::Resize		 );
+	_window.SetCallback( TWC_WINDOW_CLOSE, TinyEngine::Close		 );
+	_window.SetCallback( TWC_KEY		 , TinyEngine::ProcessKey	 );
+	_window.SetCallback( TWC_CURSOR		 , TinyEngine::ProcessCursor );
+	_window.SetCallback( TWC_MOUSE		 , TinyEngine::ProcessMouse  );
+	_window.SetCallback( TWC_SCROLL		 , TinyEngine::ProcessScroll );
 
 	return  _scripts.Initialize( )						   &&
 			_renderer.Initialize( _graphics, _filesystem ) &&
@@ -148,12 +160,7 @@ bool TinyEngine::PostInit( TinyGame* game ) {
 			_toolbox.Initialize( game );
 }
 
-bool TinyEngine::ProcessArgs( TinyGame* game, tiny_int argc, char** argv ) {
-	if ( argc > 1 )
-		_assets.LoadRegistry( game, argv[ 1 ] );
-
-	return true;
-}
+bool TinyEngine::ProcessArgs( TinyGame* game, tiny_int argc, char** argv ) { return true; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE STATIC ===
@@ -172,8 +179,8 @@ void TinyEngine::JobRun( c_pointer game ) {
 				std::invoke( job.Success, job.Data, game );
 			else if ( !result && job.Failure )
 				std::invoke( job.Failure, job.Data, game );
-		} else 
-			std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+		} else
+			tiny_sleep_for( 100 );
 	}
 }
 
@@ -295,6 +302,8 @@ TinyRenderer& TinyEngine::GetRenderer( ) { return _renderer; }
 
 TinyECS& TinyEngine::GetECS( ) { return _ecs; }
 
-TinyAddonManager& TinyEngine::GetAddons( ) { return _addons; }
+TinyAddonManager& TinyEngine::GetAddons( ) { 
+	return tiny_lvalue( tiny_cast( _assets.GetContainer( TA_TYPE_ADDON ), TinyAddonManager* ) );
+}
 
 TinyToolbox& TinyEngine::GetToolbox( ) { return _toolbox; }

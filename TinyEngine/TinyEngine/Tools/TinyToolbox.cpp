@@ -190,10 +190,10 @@ void TinyToolbox::HideGuizmo( ) { _guizmo.Hide( ); }
 void TinyToolbox::DisplayAsset(
     TinyGame* game,
     const tiny_string& label,
-    TinyAsset& asset 
+    TinyAssetHandle& asset 
 ) {
     auto& assets    = game->GetAssets( );
-    auto asset_list = assets.GetAssets( asset.Type );
+    auto asset_list = assets.GetAssetList( asset.Type );
     auto context    = TinyImGui::DropdownContext{ asset_list, asset.Hash };
 
     if ( TinyImGui::Dropdown( label, context ) ) {
@@ -438,8 +438,7 @@ void TinyToolbox::CreateSpriteShaders(
 
         auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
 
-        assets.Export( game, TA_TYPE_MATERIAL, material_path, material_addr );
-        assets.Remove( game, "m_sprite_dev" );
+        assets.Export( game, TA_TYPE_MATERIAL, "m_sprite_dev", material_addr );
     }
 }
 
@@ -479,8 +478,7 @@ void TinyToolbox::CreateTextShaders(
 
         auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
 
-        assets.Export( game, TA_TYPE_MATERIAL, material_path, material_addr );
-        assets.Remove( game, "m_text_dev" );
+        assets.Export( game, TA_TYPE_MATERIAL, "m_text_dev", material_addr );
     }
 }
 

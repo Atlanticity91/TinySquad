@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 27/11/2023
- * @version  : 2024.1
+ * @creation : 09/04/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,22 +23,30 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAssetMetadata::TinyAssetMetadata( )
-	: TinyAssetMetadata{ TA_TYPE_UNDEFINED, "", "" }
-{ }
+namespace TinyImport {
 
-TinyAssetMetadata::TinyAssetMetadata( tiny_uint type )
-	: TinyAssetMetadata{ type, "", "" }
-{ }
+	bool ImportAudioWav(
+		TinyGame* game,
+		TinyFile& file,
+		const TinyPathInformation& path_info
+	) {
+		return false;
+	}
+	
+	bool ImportAudioMp3(
+		TinyGame* game,
+		TinyFile& file,
+		const TinyPathInformation& path_info
+	) {
+		return false;
+	}
+	
+	bool ExportAudio(
+		TinyGame* game,
+		TinyFile& file,
+		const c_pointer builder
+	) {
+		return false;
+	}
 
-TinyAssetMetadata::TinyAssetMetadata( 
-	tiny_uint type,
-	const tiny_string& source,
-	const tiny_string& target 
-)
-	: Type{ type },
-	Reference{ 0 },
-	Handle{ TINY_UINT_MAX },
-	Source{ source.get( ) },
-	Target{ target.get( ) }
-{ }
+};

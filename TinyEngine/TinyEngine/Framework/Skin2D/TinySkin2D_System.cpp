@@ -91,7 +91,7 @@ tiny_vec4 TinySkin2DSystem::ProcessTexture(
 
 	if ( comp_texture.Type == TA_TYPE_TEXTURE_2D ) {
 		draw_context.Textures = 1;
-		draw_context.Textures[ 0 ] = assets.GetAssetAs<TinyTexture2D>( comp_texture );
+		draw_context.Textures[ 0 ] = tiny_cast( assets.GetAssetAs<TinyTexture2D>( comp_texture ), TinyTexture2D* );
 	} else {
 		auto texture_id = tiny_cast( 0, tiny_uint );
 		auto* atlas		= assets.GetAssetAs<TinyTextureAtlas>( comp_texture );
@@ -99,7 +99,7 @@ tiny_vec4 TinySkin2DSystem::ProcessTexture(
 		draw_context.Textures = atlas->GetComponents( );
 
 		for ( auto* texture = atlas->begin( ); texture < atlas->end( ); texture++ )
-			draw_context.Textures[ texture_id++ ] = assets.GetAssetAs<TinyTexture2D>( tiny_lvalue( texture ) );
+			draw_context.Textures[ texture_id++ ] = tiny_cast( assets.GetAssetAs<TinyTexture2D>( tiny_lvalue( texture ) ), TinyTexture2D* );
 	}
 
 	texture = draw_context.Textures[ 0 ];

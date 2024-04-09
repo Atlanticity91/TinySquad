@@ -33,7 +33,7 @@ struct TinyScriptMetadata {
 
 	TinyScriptTypes Type = TS_TYPE_NATIVE;
 	tiny_string Function = "";
-	TinyAsset Asset{ TA_TYPE_SCRIPT };
+	TinyAssetHandle Asset{ TA_TYPE_SCRIPT };
 
 };
 

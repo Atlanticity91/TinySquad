@@ -22,9 +22,7 @@
 
 #include "TinyTexture3D.h"
 
-te_class TinyTexture3DManager final 
-	: tiny_inherit( TinyAssetList<TA_TYPE_TEXTURE_3D, TinyTexture3D> ) 
-{
+te_class TinyTexture3DManager final : tiny_inherit( TinyAssetContainer<TinyTexture3D> ) {
 
 public:
 	TinyTexture3DManager( );

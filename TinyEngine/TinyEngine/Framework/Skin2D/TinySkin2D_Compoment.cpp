@@ -112,9 +112,9 @@ bool TinySkin2D::GetIsActive( ) const {
 			_texture.GetIsValid( );
 }
 
-TinyAsset& TinySkin2D::GetMaterial( ) { return _material; }
+TinyAssetHandle& TinySkin2D::GetMaterial( ) { return _material; }
 
-TinyAsset& TinySkin2D::GetTexture( ) { return _texture; }
+TinyAssetHandle& TinySkin2D::GetTexture( ) { return _texture; }
 
 tiny_color& TinySkin2D::GetColor( ) { return _color; }
 

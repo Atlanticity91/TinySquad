@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 26/11/2023
- * @version  : 2024.1
+ * @creation : 09/04/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,16 +20,20 @@
 
 #pragma once
 
-#include <TinyEngine/__tiny_engine_pch.h>
+#include "TinyAssetImportMaterial.h"
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-ITinyAssetList::ITinyAssetList( TinyAssetTypes type )
-	: _type{ type }
-{ }
+namespace TinyImport {
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC GET ===
-////////////////////////////////////////////////////////////////////////////////////////////
-TinyAssetTypes ITinyAssetList::GetType( ) const { return _type; }
+	tiny_dll bool ImportScript(
+		TinyGame* game,
+		TinyFile& file,
+		const TinyPathInformation& path_info
+	);
+
+	tiny_dll bool ExportScript(
+		TinyGame* game,
+		TinyFile& file,
+		const c_pointer builder
+	);
+
+};

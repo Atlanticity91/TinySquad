@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 10/11/2023
- * @version  : 2024.1
+ * @creation : 07/04/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,30 +20,19 @@
 
 #pragma once
 
-#include <TinyEngine/Assets/Importers/TinyAssetImportManager.h>
+#include "TinyConfigContainer.h"
 
-te_struct TinyAsset {
+te_class TinyArchive final : tiny_inherit( TinyAsset ) {
 
-	tiny_hash Hash;
-	tiny_uint Type;
-	tiny_uint Handle;
-	
-	TinyAsset( );
+private:
+	tiny_ulong  _begin;
+	std::string _path;
 
-	TinyAsset( tiny_uint type );
+public:
+	TinyArchive( );
 
-	TinyAsset( tiny_uint type, const tiny_string& name );
+	~TinyArchive( ) = default;
 
-	bool GetIsValid( ) const;
-
-	bool GetEqual( const TinyAsset& other ) const;
-
-	bool GetNotEqual( const TinyAsset& asset ) const;
-
-	operator bool const ( );
-
-	bool operator==( const TinyAsset& other ) const;
-
-	bool operator!=( const TinyAsset& other ) const;
+	TinyFile Access( TinyGame* game, tiny_ulong offset );
 
 };

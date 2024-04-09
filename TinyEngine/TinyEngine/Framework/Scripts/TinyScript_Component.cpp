@@ -135,7 +135,7 @@ void TinyScript::DisplayMeta(
 
 			ImGui::BeginDisabled( !asset_state );
 
-			auto* lua_module = tiny_cast( lua.GetAsset( metadata.Asset ), TinyScriptLua* );
+			auto* lua_module = tiny_cast( lua.GetAsset( metadata.Asset.Hash ), TinyScriptLua* );
 
 			if ( lua_module ) {
 				auto functions = TinyImGui::DropdownContext{ lua_module->GetFunctions( ), metadata.Function };

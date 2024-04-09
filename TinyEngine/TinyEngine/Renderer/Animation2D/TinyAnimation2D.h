@@ -30,7 +30,7 @@ te_struct TinyAnimation2DFrame {
 
 };
 
-te_class TinyAnimation2D {
+te_class TinyAnimation2D final : tiny_inherit( TinyAsset ) {
 
 public:
 	using FrameCollection = tiny_list<TinyAnimation2DFrame>;

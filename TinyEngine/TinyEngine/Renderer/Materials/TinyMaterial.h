@@ -22,7 +22,7 @@
 
 #include "TinyMaterialBuilder.h"
 
-te_class TinyMaterial : tiny_inherit( TinyGraphicPipeline ) {
+te_class TinyMaterial : tiny_inherit( TinyAsset ), tiny_inherit( TinyGraphicPipeline ) {
 
 private:
 	tiny_list<TinyAsset> _shaders;

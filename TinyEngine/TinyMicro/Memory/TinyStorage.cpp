@@ -22,18 +22,27 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-tiny_storage::tiny_storage( ) 
-	: Block{ TINY_UINT_MAX },
+///////////////////////////////////////////////////////////////////////////////////////////
+tiny_storage::tiny_storage( )
+	: tiny_storage{ TS_TYPE_UNDEFINED }
+{ }
+
+tiny_storage::tiny_storage( TinyStorageTypes type )
+	: Type{ type },
+	Block{ TINY_UINT_MAX },
 	Capacity{ 0 } 
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool tiny_storage::GetIsValid( ) const { return Block < TINY_UINT_MAX && Capacity > 0; }
+bool tiny_storage::GetIsValid( ) const { 
+	return Type < TS_TYPE_UNDEFINED && Block < TINY_UINT_MAX && Capacity > 0;
+}
 
-c_pointer tiny_storage::GetAddress( ) const { return tiny_get_address( tiny_self ); }
+c_pointer tiny_storage::GetAddress( ) { return tiny_get_address( tiny_self ); }
+
+const c_pointer tiny_storage::GetAddress( ) const { return tiny_get_address( tiny_self ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
@@ -41,3 +50,16 @@ c_pointer tiny_storage::GetAddress( ) const { return tiny_get_address( tiny_self
 tiny_storage::operator bool( ) const { return GetIsValid( ); }
 
 tiny_storage::operator c_pointer( ) const { return GetAddress( ); }
+
+tiny_storage::operator const c_pointer( ) const { return GetAddress( ); }
+
+tiny_storage& tiny_storage::operator=( const tiny_storage& other ) {
+	if ( other.GetIsValid( ) ) {
+		if ( GetIsValid( ) )
+			tiny_deallocate( tiny_self );
+
+		Tiny::Memcpy( tiny_rvalue( other ), this );
+	}
+
+	return tiny_self;
+}

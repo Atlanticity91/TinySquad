@@ -20,137 +20,112 @@
 
 #pragma once
 
-#include "Utils/TinyConfigManager.h"
+#include "Utils/TinyArchiveContainer.h"
 
 te_class TinyAssetManager final {
 
 private:
-	TinyAssetImportManager _importers;
-	TinyAssetRegistry	   _registry;
-	TinyAssetListManager   _managers;
+	TinyAssetImporter		_importer;
+	tiny_list<tiny_storage> _containers;
 
 public:
 	TinyAssetManager( );
 
 	~TinyAssetManager( ) = default;
 
-	bool Initialize( TinyFilesystem& filesystem, TinyGameConfig& game_config );
+	bool Initialize( TinyFilesystem& filesystem, TinyConfig*& game_config );
 
 	bool Import( TinyGame* game, const tiny_string& path );
 
-	bool Export( TinyGame* game, const tiny_string& name, c_pointer& asset_builder );
-
-	bool Export( 
-		TinyGame* game, 
-		TinyAssetTypes type, 
-		const tiny_string& path,
-		c_pointer& asset_builder 
-	);
-
-	tiny_inline bool ReImport( TinyGame* game, const tiny_string& asset_name );
-
-	bool ReImport( TinyGame* game, const tiny_hash asset_hash );
-
-	bool LoadRegistry( TinyGame* game, const tiny_string& path );
-
-	bool Load( TinyGame* game, const tiny_string& asset_name );
-
-	bool Load( TinyGame* game, const tiny_hash asset_hash );
-
-	bool ReLoad( TinyGame* game, const tiny_string& asset_name );
-
-	bool ReLoad( TinyGame* game, const tiny_hash asset_hash );
-
-	void Unload( TinyGame* game, const tiny_hash asset_hash );
-
-	bool Create(
+	tiny_inline bool Export(
 		TinyGame* game,
-		const tiny_string& name,
-		TinyAssetTypes type,
-		c_pointer asset_builder
+		const tiny_uint type,
+		const tiny_string& alias,
+		const c_pointer builder
 	);
 
-	bool ReCreate(
-		TinyGame* game,
-		const tiny_string& name,
-		TinyAssetTypes type,
-		c_pointer asset_builder
-	);
+	tiny_inline bool Load( TinyGame* game, const tiny_string& path );
 
-	bool Acquire( TinyGame* game, TinyAsset& asset );
+	bool Load( TinyGame* game, const tiny_string& alias, const tiny_string& path );
 
-	bool Acquire( TinyGame* game, TinyAsset& asset, const tiny_string& new_asset );
+	tiny_inline void UnLoad( TinyGame* game, const TinyAssetHandle& handle );
 
-	void Release( TinyGame* game, TinyAsset& asset );
+	void UnLoad( TinyGame* game, const tiny_uint asset_type, const tiny_hash& asset_hash );
 
-	tiny_inline void Remove( TinyGame* game, const tiny_string& asset_name );
+	bool Acquire( TinyGame* game, TinyAssetHandle& handle );
 
-	void Remove( TinyGame* game, const tiny_hash asset_hash );
-
-	void Clear( TinyGame* game );
+	void Release( TinyGame* game, TinyAssetHandle& handle );
 
 	void Terminate( TinyGame* game );
 
+public:
+	template<typename Container>
+		requires tiny_is_child_of( Container, ITinyAssetContainer )
+	void Register( const tiny_uint asset_type ) {
+		auto container = tiny_storage{ };
+
+		if ( tiny_make_storage( container, Container ) ) {
+			if ( asset_type < _containers.size( ) ) {
+				if ( !_containers[ asset_type ].GetIsValid( ) )
+					_containers[ asset_type ] = container;
+				else
+					tiny_deallocate( container );
+			} else {
+				if ( asset_type < _containers.size( ) + 1 )
+					_containers.emplace_back( container );
+				else
+					tiny_deallocate( container );
+			}
+		}
+	};
+
 private:
-	bool Import(
-		TinyGame* game,
-		TinyPathInformation& path_info,
-		tiny_storage& file_memory 
-	);
+	void RegisterTypes( );
 
-	bool ImportAsset( 
-		TinyGame* game,
-		TinyPathInformation& path_info,
-		tiny_storage& file_memory
-	);
+	bool LoadConfig( TinyFilesystem& filesystem, TinyConfig*& game_config );
 
-	bool ImportYaml( 
-		TinyGame* game,
-		TinyPathInformation& path_info,
-		tiny_storage& file_memory
-	);
+	bool LoadArchiveFile( TinyGame* game, const tiny_string& path );
 
-	bool LoadConfig( TinyFilesystem& filesystem, TinyGameConfig& game_config );
+	bool LoadAssetFile( TinyGame* game, const tiny_string& alias, const tiny_string& path );
 
 public:
-	TinyAssetImportManager& GetImporter( );
+	TinyAssetImporter& GetImporter( );
 
-	TinyAssetRegistry& GetRegistry( );
+	ITinyAssetContainer* GetContainer( const tiny_uint asset_type );
 
-	tiny_hash GenerateMetadata( TinyFilesystem& filesystem, TinyPathInformation& path );
+	const ITinyAssetContainer* GetContainer( const tiny_uint asset_type ) const;
 
-	TinyGameConfig& GetGameConfig( );
+	bool GetExist( const TinyAssetHandle& handle ) const;
 
-	tiny_inline bool GetExist( const tiny_string& asset ) const;
+	bool GetExist( const tiny_uint type, const tiny_hash asset_hash ) const;
 
-	bool GetExist( const tiny_hash& asset_hash ) const;
+	const TinyAsset* GetAsset( const TinyAssetHandle& handle ) const;
 
-	bool GetExist( const tiny_string& asset, tiny_hash& asset_hash ) const;
-
-	bool GetMetadata( const tiny_string& asset_name, TinyAssetMetadata& metadata );
-
-	c_pointer GetAsset( const TinyAsset& asset );
-
-	const c_pointer GetAsset( const TinyAsset& asset ) const;
-
-	tiny_inline tiny_list<tiny_string> GetAssets( tiny_uint type );
+	const tiny_list<tiny_string> GetAssetList( const tiny_uint type ) const;
 
 public:
-	template<typename Type>
-	Type* GetAssetList( ) { 
-		auto asset_type = Type::GetType( );
+	template<typename Asset>
+		requires tiny_is_child_of( Asset, TinyAsset )
+	const Asset* GetAssetAs( const TinyAssetHandle& handle ) const {
+		auto* asset = GetAsset( handle );
 
-		return tiny_cast( _managers.GetManager( asset_type ), Type* );
+		return tiny_cast( asset, const Asset* );
 	};
 
-	template<typename Type>
-	Type* GetAssetAs( const TinyAsset& asset ) {
-		return tiny_cast( GetAsset( asset ), Type* );
+	template<typename Container>
+		requires tiny_is_child_of( Container, ITinyAssetContainer )
+	Container* GetContainerAs( const tiny_uint type ) {
+		auto* container = GetContainer( type );
+
+		return tiny_cast( container, const Container* );
 	};
 
-	template<typename Type>
-	const Type* GetAssetAs( const TinyAsset& asset ) const {
-		return tiny_cast( GetAsset( asset ), const Type* );
+	template<typename Container>
+		requires tiny_is_child_of( Container, ITinyAssetContainer )
+	const Container* GetContainerAs( const tiny_uint type ) const {
+		auto* container = GetContainer( type );
+		
+		return tiny_cast( container, const Container* );
 	};
 
 };

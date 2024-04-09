@@ -56,7 +56,7 @@ void TinyAnim2DSystem::RegisterInterop( TinyGame* game ) {
 void TinyAnim2DSystem::PostTick( TinyGame* game ) {
 	auto& inputs	 = game->GetInputs( );
 	auto& assets	 = game->GetAssets( );
-	auto* animations = assets.GetAssetList<TinyAnimation2DManager>( );
+	auto* animations = assets.GetContainerAs<TinyAnimation2DManager>( TA_TYPE_ANIMATION_2D );
 	auto& ecs		 = game->GetECS( );
 
 	for ( auto& comp : _components ) {

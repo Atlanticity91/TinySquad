@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAnimation2D::TinyAnimation2D( )
-	: _collection{ }
+	: TinyAsset{ TA_TYPE_ANIMATION_2D },
+	_collection{ }
 { }
 
 TinyAnimation2D& TinyAnimation2D::Create(

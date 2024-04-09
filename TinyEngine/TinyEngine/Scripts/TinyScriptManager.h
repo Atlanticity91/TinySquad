@@ -24,9 +24,7 @@
 
 #define TinyLuaGameVar "TinyGame"
 
-te_class TinyScriptManager final 
-	: tiny_inherit( TinyAssetList<TA_TYPE_SCRIPT, TinyScriptLua> )
-{
+te_class TinyScriptManager final : tiny_inherit( TinyAssetContainer<TinyScriptLua> ) {
 
 private:
 	TinyLuaContext _context;

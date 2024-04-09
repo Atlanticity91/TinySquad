@@ -25,7 +25,7 @@
 TINY_FRAMEWORK_COMP( TinySound2D ) {
 
 private:
-	TinyAsset _cue;
+	TinyAssetHandle _cue;
 	tiny_uint _handle;
 	float	  _volume;
 
@@ -53,7 +53,7 @@ public:
 public:
 	TINY_COMP_NAME( TinySound2D );
 
-	TinyAsset& GetCue( );
+	TinyAssetHandle& GetCue( );
 
 	float GetVolume( ) const;
 

@@ -24,12 +24,12 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyFont::TinyFont( )
-	: _range{ 2.f },
+	: TinyAsset{ TA_TYPE_FONT },
+	_range{ 2.f },
 	_miter{ 1.f },
 	_texture{ },
 	_geometry{ }
 { }
-
 
 void TinyFont::Terminate( TinyGame* game ) {
 }

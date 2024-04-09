@@ -24,27 +24,15 @@
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyEditor::TinyEditor( )
-	: TinyGame{ "Tiny Editor", TGO_PAYSAGE_16x9 }
+	: TinyNut{ "Tiny Editor" },
+	_project{ }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyEditor::Initialize( TinyEngine& engine ) { return true; }
-
-void TinyEditor::SetupBundles( TinyGraphicManager& graphics ) { }
-
-void TinyEditor::LoadInterop( TinyLuaContext& lua_context ) { }
-
-void TinyEditor::LoadContent( TinyAssetManager& assets ) { }
-
-void TinyEditor::LoadECS( TinyECS& ecs ) { }
-
-void TinyEditor::Tick( ) { 
-	auto& graphics = GetGraphics( );
-
-	graphics.BeginPass( TINY_OUTPASS_HASH );
-	graphics.NextSubpass( );
+void TinyEditor::TickMenubar( ) {
 }
 
-void TinyEditor::Terminate( ) { }
+void TinyEditor::TickUI( ) {
+}

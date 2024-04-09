@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 28/11/2023
- * @version  : 2024.1
+ * @creation : 31/03/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,6 +20,13 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Materials/TinyMaterialManager.h>
+#include <TinyNut/TinyNut.h>
 
-te_struct TinyGeometryBundle { };
+class TinyProject final { 
+
+public:
+	TinyProject( );
+
+	~TinyProject( ) = default;
+
+};

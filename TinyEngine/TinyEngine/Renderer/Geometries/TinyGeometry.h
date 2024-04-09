@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include "TinyGeometryBundle.h"
+#include "TinyGeometryBuilder.h"
 
-te_class TinyGeometry {
+te_class TinyGeometry final : tiny_inherit( TinyAsset ) {
 
 private:
 	TinyGraphicBuffer _index;

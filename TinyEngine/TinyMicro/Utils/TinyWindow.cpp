@@ -45,7 +45,16 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, c_pointer user_data ) 
 			if ( _is_headless )
 				SetupHeadless( config );
 
-			glfwSetWindowIcon( _handle, 1, tiny_cast( tiny_rvalue( config.Icon ), GLFWimage* ) );
+			if ( config.Icon.Pixels ) {
+				auto icon = GLFWimage{ };
+
+				icon.width  = tiny_cast( config.Icon.Width , tiny_int );
+				icon.height = tiny_cast( config.Icon.Height, tiny_int );
+				icon.pixels = tiny_cast( config.Icon.Pixels.GetAddress( ), tiny_ubyte* );
+
+				glfwSetWindowIcon( _handle, 1, tiny_rvalue( icon ) );
+			}
+
 			glfwSetInputMode( _handle, GLFW_LOCK_KEY_MODS, GLFW_TRUE );
 			glfwSetWindowUserPointer( _handle, user_data );
 		}

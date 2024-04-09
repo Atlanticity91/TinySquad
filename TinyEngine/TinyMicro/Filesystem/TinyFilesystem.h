@@ -55,6 +55,8 @@ public:
 
 	bool Initialize( const TinyWindow& window );
 	
+	std::string CreatePath( const tiny_string& name, const tiny_string& extension );
+
 	bool CreateDir( const tiny_string& path );
 
 	bool RemoveDir( const tiny_string& path );

@@ -27,40 +27,46 @@ tiny_enum( TinyStorageTypes ) {
 	TS_TYPE_STATIC = 0,
 	TS_TYPE_GRAPHICS,
 	TS_TYPE_RESSOURCES,
-	TS_TYPE_DYNAMIC
+	TS_TYPE_DYNAMIC,
+		
+	TS_TYPE_UNDEFINED
 
 };
 
 tm_struct tiny_storage {
 
-	//TinyStorageTypes Type;
+	TinyStorageTypes Type;
 	tiny_uint Block;
 	tiny_ulong Capacity;
 
 	tiny_storage( );
 
-	//tiny_storage( TinyStorageTypes type );
+	tiny_storage( TinyStorageTypes type );
 	
 	bool GetIsValid( ) const;
 
-	//TinyStorageTypes GetType( ) const;
+	c_pointer GetAddress( );
 
-	c_pointer GetAddress( ) const;
+	const c_pointer GetAddress( ) const;
 
 	operator bool( ) const;
 
 	operator c_pointer ( ) const;
 
-	template<typename Type>
-	Type* As( ) { return (Type*)GetAddress( ); };
+	operator const c_pointer( ) const;
+
+	tiny_storage& operator=( const tiny_storage& other );
 
 	template<typename Type>
-	const Type* As( ) const { return (const Type*)GetAddress( ); };
+	Type* As( ) { return tiny_cast( GetAddress( ), Type* ); };
 
 	template<typename Type>
-	operator Type* ( ) { return As<Type>( ); };
+	const Type* As( ) const { return tiny_cast( GetAddress( ), const Type* ); };
 
 	template<typename Type>
-	operator const Type* ( ) const { return As<Type>( ); };
+	operator Type*( ) { return As<Type>( ); };
+
+	template<typename Type>
+	operator const Type*( ) const { return As<Type>( ); };
 
 };

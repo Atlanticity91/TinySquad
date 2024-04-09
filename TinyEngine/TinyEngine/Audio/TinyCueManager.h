@@ -22,9 +22,7 @@
 
 #include "TinyCue.h"
 
-te_class TinyCueManager final 
-	: tiny_inherit( TinyAssetList<TA_TYPE_CUE, TinyCue> )
-{
+te_class TinyCueManager final : tiny_inherit( TinyAssetContainer<TinyCue> ) {
 
 public:
 	TinyCueManager( );

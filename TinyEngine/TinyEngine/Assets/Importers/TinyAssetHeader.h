@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 23/11/2023
- * @version  : 2024.1
+ * @creation : 06/04/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,7 +20,9 @@
 
 #pragma once
 
-#include <TinyEngine/Assets/Register/TinyAssetRegistry.h>
+#include <TinyEngine/Utils/TinyNativeRegister.h>
+
+static const char TinyAssetMagic[ 4 ] = "TMA";
 
 te_struct TinyAssetHeader {
 
@@ -32,6 +34,12 @@ te_struct TinyAssetHeader {
 
 	TinyAssetHeader( );
 
-	TinyAssetHeader( TinyAssetTypes type );
+	TinyAssetHeader( tiny_uint type );
+
+	bool GetIsAsset( ) const;
+
+	tiny_inline bool GetIsAsset( const TinyAssetTypes type ) const;
+
+	bool GetIsAsset( const tiny_uint type ) const;
 
 };

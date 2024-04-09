@@ -22,5 +22,13 @@
 
 #include "TinyTextureCubemap.h"
 
-te_class TinyTextureCubemapManager {
+te_class TinyTextureCubemapManager final 
+	: tiny_inherit( TinyAssetContainer<TinyTextureCubemap> ) 
+{
+
+public:
+	TinyTextureCubemapManager( ) = default;
+
+	~TinyTextureCubemapManager( ) = default;
+
 };
