@@ -158,7 +158,7 @@ namespace Tiny {
 
 	tm_dll bool FileSeek( File& file, FileOrigin origin );
 
-	tm_dll bool FileSeek( File& file, FileOrigin origin, tiny_uint offset );
+	tm_dll bool FileSeek( File& file, FileOrigin origin, tiny_ulong offset );
 
 	tm_dll tiny_uint FileRead( File& file, tiny_uint length, c_pointer data );
 

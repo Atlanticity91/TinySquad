@@ -224,7 +224,7 @@ bool Tiny::FileSeek( File& file, FileOrigin origin ) {
 	return Tiny::FileSeek( file, origin, 0 );
 }
 
-bool Tiny::FileSeek( File& file, FileOrigin origin, tiny_uint offset ) {
+bool Tiny::FileSeek( File& file, FileOrigin origin, tiny_ulong offset ) {
 	auto state = false;
 
 #	ifdef TINY_WIN

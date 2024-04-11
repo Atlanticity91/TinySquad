@@ -34,7 +34,11 @@ public:
 
 	bool Load( TinyFilesystem& filesystem, TinyConfig*& config );
 
-	tiny_no_implementv( false, bool Create( TinyGame * game, const c_pointer builder ) );
+	tiny_no_implementv( false, bool Create( 
+		TinyGame* game, 
+		const tiny_string& alias, 
+		const c_pointer builder 
+	) );
 
 	tiny_no_implementv( false, bool Load(
 		TinyGame* game,
@@ -55,7 +59,7 @@ public:
 
 	tiny_no_implementv( false, bool Find( const tiny_hash asset_hash ) const );
 
-	tiny_implement( TinyAsset * GetAsset( const tiny_hash asset_hash ) );
+	tiny_implement( TinyAsset* GetAsset( const tiny_hash asset_hash ) );
 
 	tiny_implement( const TinyAsset* GetAsset( const tiny_hash asset_hash ) const );
 

@@ -27,3 +27,10 @@ TinyShader::TinyShader( )
 	: TinyAsset{ TA_TYPE_SHADER },
 	TinyGraphicShader{ }
 { }
+
+void TinyShader::Terminate( TinyGame* game ) {
+	auto& graphics = game->GetGraphics( );
+	auto context   = graphics.GetContext( );
+
+	TinyGraphicShader::Terminate( context );
+}

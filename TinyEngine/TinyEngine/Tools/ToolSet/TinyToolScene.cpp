@@ -37,13 +37,11 @@ void TinyToolScene::MarkUnSaved( ) { _has_changed = true; }
 void TinyToolScene::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     auto& filesystem = game->GetFilesystem( );
     auto& assets     = game->GetAssets( );
-    auto& registry   = assets.GetRegistry( );
     auto& ecs        = game->GetECS( );
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
         if ( OpenDialog( filesystem ) ) {
-            registry.Load( filesystem, _dialog_path );
 
             _has_changed = false;
         }
@@ -53,8 +51,9 @@ void TinyToolScene::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
 
     ImGui::BeginDisabled( !_has_changed );
     if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-        if ( SaveDialog( filesystem ) )
-            registry.Save( filesystem, _dialog_path );
+		if ( SaveDialog( filesystem ) ) {
+
+		}
     }
     ImGui::EndDisabled( );
 

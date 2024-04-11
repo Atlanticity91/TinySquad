@@ -40,7 +40,7 @@ void TinyToolTexture2D::Save( TinyGame* game ) {
 	builder.Columns = _texture->GetColumns( );
 	builder.Rows	= _texture->GetRows( );
 
-	assets.Export( game, _asset_name, address );
+	assets.Export( game, TA_TYPE_TEXTURE_2D, _asset_name, address );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

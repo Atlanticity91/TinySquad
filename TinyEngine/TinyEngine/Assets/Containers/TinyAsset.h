@@ -42,9 +42,9 @@ public:
 	tiny_virtual( void Terminate( TinyGame* game ) );
 
 protected:
-	tiny_virtual( bool OnAcquire( TinyGame* game ) );
+	tiny_virtualv( true, bool OnAcquire( TinyGame* game ) );
 
-	tiny_virtual( bool OnRelease( TinyGame* game ) );
+	tiny_virtualv( true, bool OnRelease( TinyGame* game ) );
 
 public:
 	tiny_uint GetType( ) const;

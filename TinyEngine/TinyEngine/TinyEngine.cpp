@@ -115,7 +115,10 @@ void TinyEngine::Terminate( TinyGame* game ) {
 	_toolbox.Terminate( game );
 	_provider.Terminate( _filesystem );
 	_addons.Terminate( game );
-	_scripts->Terminate( );
+	
+	if ( _scripts )
+		_scripts->Terminate( );
+	
 	_renderer.Terminate( _graphics );
 	_assets.Terminate( game );
 	_graphics.Terminate( _filesystem, _window );
@@ -131,13 +134,14 @@ void TinyEngine::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
 	auto state = _jobs.Initialize( TinyEngine::JobRun, game ) &&
-				 _filesystem.Initialize( _window )			 &&
+				 _filesystem.Initialize( _window )			  &&
 				 _assets.Initialize( _filesystem, game_config );
 
 	if ( state ) {
-		auto& addons = GetAddons( );
+		_scripts = _assets.GetContainerAs<TinyScriptManager>( TA_TYPE_SCRIPT );
 
-		state = addons.Initialize( game );
+		state = _scripts->Initialize( ) &&
+				_addons.Initialize( game );
 	}
 
 	return state;

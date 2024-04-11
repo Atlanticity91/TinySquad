@@ -48,7 +48,7 @@ public:
 
 	void Execute( TinyLuaContext& context, const TinyScriptExecution& execution );
 
-	void Terminate( TinyLuaContext& context );
+	tiny_implement( void Terminate( TinyGame* game ) );
 
 public:
 	const tiny_string& GetTable( ) const;

@@ -28,6 +28,22 @@ TinyArchiveContainer::TinyArchiveContainer( )
 	_entries{ }
 { }
 
+bool TinyArchiveContainer::Create(
+	TinyGame* game,
+	const tiny_string& alias,
+	const c_pointer builder
+) {
+	return false;
+}
+
+bool TinyArchiveContainer::Load(
+	TinyGame* game,
+	const tiny_string& alias,
+	TinyFile& file
+) {
+	return false;
+}
+
 bool TinyArchiveContainer::Load( TinyGame* game, const tiny_string& asset_name ) {
 	auto entry_id = tiny_cast( 0, tiny_uint );
 	auto state    = false;

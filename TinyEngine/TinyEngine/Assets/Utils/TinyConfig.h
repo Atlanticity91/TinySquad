@@ -47,7 +47,7 @@ public:
 
 	const tiny_list<std::string>& GetArchives( ) const;
 
-	const tiny_string& GetStartScene( ) const;
+	const tiny_string GetStartScene( ) const;
 
 public:
 	operator const TinyAppConfig& ( ) const;

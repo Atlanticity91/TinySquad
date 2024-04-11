@@ -60,7 +60,7 @@ bool TinyMaterial::Create(
 
 		while ( shader_id-- > 0 ) {
 			auto& shader = _shaders[ shader_id ];
-			auto* asset = assets.GetAssetAs<TinyGraphicShader>( shader );
+			auto* asset  = assets.GetAssetAs<TinyShader>( shader );
 
 			builder.Shaders[ shader_id ] = asset->Get( );
 		}

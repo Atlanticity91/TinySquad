@@ -35,7 +35,7 @@ TinyToolAssetEditor::TinyToolAssetEditor( const tiny_string& name, const ImVec2&
 	_asset_name{ "" }
 { }
 
-bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, TinyAsset& asset ) {
+bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, TinyAssetHandle& asset ) {
 	auto& assets = game->GetAssets( );
 
 	if ( _in_use ) {

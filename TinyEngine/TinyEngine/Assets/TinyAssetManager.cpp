@@ -231,15 +231,24 @@ ITinyAssetContainer* TinyAssetManager::GetContainer( const tiny_uint asset_type 
 const ITinyAssetContainer* TinyAssetManager::GetContainer( 
 	const tiny_uint asset_type 
 ) const {
-	return nullptr;
+	auto container = tiny_cast( nullptr, const ITinyAssetContainer* );
+
+	if ( asset_type < _containers.size( ) )
+		container = _containers[ asset_type ].As<ITinyAssetContainer>( );
+
+	return container;
 }
 
 bool TinyAssetManager::GetExist( const TinyAssetHandle& handle ) const {
-	auto* container = GetContainer( handle.Type );
+	return GetExist( handle.Type, handle.Hash );
+}
+
+bool TinyAssetManager::GetExist( const tiny_uint type, const tiny_hash asset_hash ) const {
+	auto* container = GetContainer( type );
 	auto state		= false;
 
 	if ( container )
-		state = container->Find( handle );
+		state = container->Find( asset_hash );
 
 	return state;
 }

@@ -40,6 +40,18 @@ public:
 
 	~TinyArchiveContainer( ) = default;
 
+	tiny_implement( bool Create(
+		TinyGame* game,
+		const tiny_string& alias,
+		const c_pointer builder
+	) );
+
+	tiny_implement( bool Load(
+		TinyGame* game,
+		const tiny_string& alias,
+		TinyFile& file
+	) );
+
 	bool Load( TinyGame* game, const tiny_string& asset_name );
 
 	bool Load( TinyGame* game, const TinyAssetHandle& asset_handle );

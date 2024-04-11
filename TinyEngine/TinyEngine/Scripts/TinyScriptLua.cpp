@@ -81,8 +81,10 @@ void TinyScriptLua::Execute( TinyLuaContext& context, const TinyScriptExecution&
 	lua_pcall( context, 1, 0, 0 );
 }
 
-void TinyScriptLua::Terminate( TinyLuaContext& context ) {
+void TinyScriptLua::Terminate( TinyGame* game ) {
 	auto* table_str = _table.as_chars( );
+	auto& scripts   = game->GetScripts( );
+	auto& context   = scripts.GetContext( );
 
 	lua_pushnil( context );
 	lua_setglobal( context, table_str );

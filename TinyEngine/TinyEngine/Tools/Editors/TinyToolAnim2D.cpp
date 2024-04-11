@@ -79,7 +79,7 @@ void TinyToolAnim2D::SetTexture( TinyAssetManager& assets ) {
 	if ( _image )
 		TinyImGui::DestroyTextureID( _image );
 
-	auto asset = TinyAsset{ TA_TYPE_TEXTURE_2D, "" };
+	auto asset = TinyAssetHandle{ TA_TYPE_TEXTURE_2D };
 
 	_texture = assets.GetAssetAs<TinyTexture2D>( asset );
 	_image   = TinyImGui::CreateTextureID( _texture );

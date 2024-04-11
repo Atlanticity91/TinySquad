@@ -34,9 +34,9 @@ public:
 
 	~TinyFile( );
 
-	tiny_inline bool Seek( tiny_uint offset );
+	tiny_inline bool Seek( tiny_ulong offset );
 
-	bool Seek( Tiny::FileOrigin origin, tiny_uint offset );
+	bool Seek( Tiny::FileOrigin origin, tiny_ulong offset );
 
 	tiny_uint Read( tiny_uint length, c_pointer data );
 

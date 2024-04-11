@@ -29,4 +29,6 @@ public:
 
 	~TinyShader( ) = default;
 
+	tiny_implement( void Terminate( TinyGame* game ) );
+
 };

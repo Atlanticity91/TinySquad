@@ -37,7 +37,7 @@ tiny_storage::tiny_storage( TinyStorageTypes type )
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool tiny_storage::GetIsValid( ) const { 
-	return Type < TS_TYPE_UNDEFINED && Block < TINY_UINT_MAX && Capacity > 0;
+	return /*Type < TS_TYPE_UNDEFINED &&*/ Block < TINY_UINT_MAX && Capacity > 0;
 }
 
 c_pointer tiny_storage::GetAddress( ) { return tiny_get_address( tiny_self ); }

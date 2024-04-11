@@ -36,9 +36,9 @@ TinyFile::~TinyFile( ) {
 		Tiny::FileClose( _file );
 }
 
-bool TinyFile::Seek( tiny_uint offset ) { return Seek( Tiny::TF_ORIGIN_CURSOR, offset ); }
+bool TinyFile::Seek( tiny_ulong offset ) { return Seek( Tiny::TF_ORIGIN_CURSOR, offset ); }
 
-bool TinyFile::Seek( Tiny::FileOrigin origin, tiny_uint offset ) {
+bool TinyFile::Seek( Tiny::FileOrigin origin, tiny_ulong offset ) {
 	return Tiny::FileSeek( _file, origin, offset );
 }
 
