@@ -67,7 +67,7 @@ te_struct TinyRenderVertice {
 
 te_struct TinyRenderVertexContext {
 
-	TinyAsset Material{ };
+	TinyAssetHandle Material{ };
 	tiny_list<TinyTexture2D*> Textures{ };
 	tiny_list<TinyRenderIndex> Indexes{ };
 	tiny_list<TinyRenderVertice> Vertex{ };

@@ -39,6 +39,8 @@ public:
 
 	bool Release( TinyGame* game );
 
+	tiny_virtual( void Terminate( TinyGame* game ) );
+
 protected:
 	tiny_virtual( bool OnAcquire( TinyGame* game ) );
 

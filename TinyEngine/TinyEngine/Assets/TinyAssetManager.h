@@ -99,11 +99,21 @@ public:
 
 	bool GetExist( const tiny_uint type, const tiny_hash asset_hash ) const;
 
+	TinyAsset* GetAsset( const TinyAssetHandle& handle );
+
 	const TinyAsset* GetAsset( const TinyAssetHandle& handle ) const;
 
 	const tiny_list<tiny_string> GetAssetList( const tiny_uint type ) const;
 
 public:
+	template<typename Asset>
+		requires tiny_is_child_of( Asset, TinyAsset )
+	Asset* GetAssetAs( const TinyAssetHandle& handle ) {
+		auto* asset = GetAsset( handle );
+
+		return tiny_cast( asset, Asset* );
+	};
+	
 	template<typename Asset>
 		requires tiny_is_child_of( Asset, TinyAsset )
 	const Asset* GetAssetAs( const TinyAssetHandle& handle ) const {
@@ -117,7 +127,7 @@ public:
 	Container* GetContainerAs( const tiny_uint type ) {
 		auto* container = GetContainer( type );
 
-		return tiny_cast( container, const Container* );
+		return tiny_cast( container, Container* );
 	};
 
 	template<typename Container>

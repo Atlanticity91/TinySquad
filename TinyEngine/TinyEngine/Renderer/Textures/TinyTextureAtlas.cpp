@@ -116,6 +116,14 @@ TinyTextureAtlas& TinyTextureAtlas::Set(
 	return tiny_self;
 }
 
+void TinyTextureAtlas::Terminate( TinyGame* game ) {
+	auto& assets = game->GetAssets( );
+
+	assets.Release( game, _albedo );
+	assets.Release( game, _normal );
+	assets.Release( game, _specular );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////

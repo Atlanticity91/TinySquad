@@ -29,11 +29,16 @@ public:
 
 	~TinyFontManager( ) = default;
 
-protected:
-	tiny_implement( bool OnLoad( TinyGame* game, TinyFile& file, TinyFont& font ) );
+	tiny_implement( bool Create(
+		TinyGame* game,
+		const tiny_string& alias,
+		const c_pointer builder
+	) );
 
-	tiny_implement( void OnUnLoad( TinyGame* game, TinyFont& font ) );
-
-	tiny_implement( bool OnCreate( TinyGame* game, c_pointer asset_builder, TinyFont& font ) );
+	tiny_implement( bool Load(
+		TinyGame* game,
+		const tiny_string& alias,
+		TinyFile& file
+	) );
 
 };

@@ -24,19 +24,21 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyFontManager::TinyFontManager( )
-	: TinyAssetList{ }
+	: TinyAssetContainer{ }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyFontManager::OnLoad( TinyGame* game, TinyFile& file, TinyFont& font ) {
+bool TinyFontManager::Create(
+	TinyGame* game,
+	const tiny_string& alias,
+	const c_pointer builder
+) {
 	return false;
 }
 
-void TinyFontManager::OnUnLoad( TinyGame* game, TinyFont& font ) {
-}
-
-bool TinyFontManager::OnCreate( TinyGame* game, c_pointer asset_builder, TinyFont& font ) {
+bool TinyFontManager::Load(
+	TinyGame* game,
+	const tiny_string& alias,
+	TinyFile& file
+) {
 	return false;
 }

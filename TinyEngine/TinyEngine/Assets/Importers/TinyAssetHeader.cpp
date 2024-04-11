@@ -47,10 +47,6 @@ bool TinyAssetHeader::GetIsAsset( ) const {
 	return tiny_magic == file_magic && Type < TA_TYPE_COUNT;
 }
 
-bool TinyAssetHeader::GetIsAsset( const TinyAssetTypes type ) const {
-	return GetIsAsset( tiny_cast( type, tiny_uint ) );
-}
-
 bool TinyAssetHeader::GetIsAsset( const tiny_uint type ) const {
 	auto tiny_magic = tiny_lvalue( tiny_cast( TinyAssetMagic, tiny_uint* ) );
 	auto file_magic = tiny_lvalue( tiny_cast( Magic, tiny_uint* ) );

@@ -49,7 +49,7 @@ te_struct TinyCueBuilder {
 
 	TinyCueFormat Format{ };
 	TinyCueContext Context{ };
-	tiny_uint Size = 0;
+	tiny_uint Size	   = 0;
 	tiny_pointer Data  = nullptr;
 
 };

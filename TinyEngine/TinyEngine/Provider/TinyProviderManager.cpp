@@ -39,6 +39,16 @@ bool TinyProviderManager::Initialize( TinyFilesystem& filesystem ) {
 	return state;
 }
 
+bool TinyProviderManager::UnLock( const tiny_string& trophy_name ) {
+	auto hash = tiny_hash{ trophy_name };
+
+	return UnLock( hash );
+}
+
+bool TinyProviderManager::UnLock( const tiny_hash trophy_hash ) {
+	return false;
+}
+
 void TinyProviderManager::Terminate( TinyFilesystem& filesystem ) {
 #	if TE_PROVIDER_IMP
 	_provider.Terminate( filesystem );

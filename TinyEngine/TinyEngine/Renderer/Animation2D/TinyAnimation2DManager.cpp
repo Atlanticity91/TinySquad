@@ -24,28 +24,27 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAnimation2DManager::TinyAnimation2DManager( ) 
-	: TinyAssetList{ }
+	: TinyAssetContainer{ }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyAnimation2DManager::OnLoad(
+bool TinyAnimation2DManager::Create(
 	TinyGame* game,
-	TinyFile& file,
-	TinyAnimation2D& animation
+	const tiny_string& alias,
+	const c_pointer builder
 ) {
+	return false;
+}
+
+bool TinyAnimation2DManager::Load(
+	TinyGame* game,
+	const tiny_string& alias,
+	TinyFile& file
+) {
+	/*
 	auto& collection = animation.GetCollection( );
 
 	return file.Read( collection );
-}
+	*/
 
-void TinyAnimation2DManager::OnUnLoad( TinyGame* game, TinyAnimation2D& animation ) { }
-
-bool TinyAnimation2DManager::OnCreate(
-	TinyGame* game,
-	c_pointer asset_builder,
-	TinyAnimation2D& animation
-) {
 	return false;
 }

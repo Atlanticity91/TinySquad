@@ -20,7 +20,13 @@
 
 #pragma once
 
-#include "TinyTexture3DManager.h"
+#include "TinyTextureAtlasManager.h"
 
 te_class TinyTextureCubemap : tiny_inherit( TinyAsset ) {
+
+public:
+	TinyTextureCubemap( );
+
+	~TinyTextureCubemap( ) = default;
+
 };

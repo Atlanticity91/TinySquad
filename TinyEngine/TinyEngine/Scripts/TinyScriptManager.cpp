@@ -37,6 +37,28 @@ bool TinyScriptManager::Initialize( ) {
 	return state;
 }
 
+bool TinyScriptManager::Create(
+	TinyGame* game,
+	const tiny_string& alias,
+	const c_pointer builder
+) {
+
+	auto* builder_ = tiny_cast( builder, tiny_pointer );
+	auto& script   = Emplace( alias );
+
+	return script.Create( _context, builder_ );
+}
+
+bool TinyScriptManager::Load(
+	TinyGame* game,
+	const tiny_string& alias,
+	TinyFile& file
+) {
+	auto& script = Emplace( alias );
+
+	return script.Create( _context, file );
+}
+
 void TinyScriptManager::Register( const tiny_string& name, TinyLuaPrototype prototype ) {
 	_context.Register( name, prototype );
 }
@@ -123,39 +145,6 @@ void TinyScriptManager::Execute( TinyGame* game, const TinyScriptExecution& exec
 }
 
 void TinyScriptManager::Terminate( ) { _context.Terminate( ); }
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyScriptManager::OnLoad(
-	TinyGame* game,
-	TinyFile& file,
-	TinyScriptLua& script
-) {
-	auto header = TinyAssetHeader{ };
-	auto state  = false;
-
-	file.Read( header );
-
-	if ( header.Type == TA_TYPE_SCRIPT )
-		state = script.Create( _context, file );
-
-	return state;
-}
-
-bool TinyScriptManager::OnCreate(
-	TinyGame* game,
-	c_pointer asset_builder,
-	TinyScriptLua& script
-) {
-	auto* address = tiny_cast( asset_builder, tiny_pointer );
-
-	return script.Create( _context, address );
-}
-
-void TinyScriptManager::OnUnLoad( TinyGame* game, TinyScriptLua& script ) {
-	script.Terminate( _context );
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===

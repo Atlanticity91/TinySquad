@@ -24,52 +24,32 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyShaderManager::TinyShaderManager( ) 
-	: TinyAssetList{ }
+	: TinyAssetContainer{ }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyShaderManager::OnLoad(
+bool TinyShaderManager::Create(
 	TinyGame* game,
-	TinyFile& file,
-	TinyGraphicShader& shader
-) { 
-	auto header = TinyAssetHeader{ };
-	auto state  = false;
-
-	file.Read( header );
-
-	if ( header.Type == TA_TYPE_SHADER ) {
-		auto& graphics = game->GetGraphics( );
-		auto context   = graphics.GetContext( );
-		auto builder   = TinyGraphicShaderSpecification{ };
-
-		file.Read( builder.Type );
-		file.Read( builder.Entry );
-		file.Read( builder.Code );
-
-		state = shader.Create( context, builder );
-	}
-
-	return state;
-}
-
-void TinyShaderManager::OnUnLoad( TinyGame* game, TinyGraphicShader& shader ) {
-	auto& graphics = game->GetGraphics( );
-	auto context   = graphics.GetContext( );
-
-	shader.Terminate( context );
-}
-
-bool TinyShaderManager::OnCreate(
-	TinyGame* game,
-	c_pointer asset_builder,
-	TinyGraphicShader& shader
+	const tiny_string& alias,
+	const c_pointer builder
 ) {
+	auto* builder_ = tiny_cast( builder, TinyGraphicShaderSpecification* );
 	auto& graphics = game->GetGraphics( );
-	auto* builder  = tiny_cast( asset_builder, TinyGraphicShaderSpecification* );
 	auto context   = graphics.GetContext( );
+	auto& shader   = Emplace( alias );
 
-	return builder && shader.Create( context, *builder );
+	return shader.Create( context, tiny_lvalue( builder_ ) );
+}
+
+bool TinyShaderManager::Load(
+	TinyGame* game,
+	const tiny_string& alias,
+	TinyFile& file
+) {
+	auto builder = TinyGraphicShaderSpecification{ };
+
+	file.Read( builder.Type );
+	file.Read( builder.Entry );
+	file.Read( builder.Code );
+
+	return Create( game, alias, tiny_rvalue( builder ) );
 }

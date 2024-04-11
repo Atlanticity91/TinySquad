@@ -29,19 +29,16 @@ public:
 
 	~TinyCueManager( ) = default;
 
-protected:
-	tiny_implement( bool OnLoad(
+	tiny_implement( bool Create(
 		TinyGame* game,
-		TinyFile& file,
-		TinyCue& sound_cue
+		const tiny_string& alias,
+		const c_pointer builder
 	) );
 
-	tiny_implement( void OnUnLoad( TinyGame* game, TinyCue& sound_cue ) );
-
-	tiny_implement( bool OnCreate(
+	tiny_implement( bool Load(
 		TinyGame* game,
-		c_pointer asset_builder,
-		TinyCue& element
+		const tiny_string& alias,
+		TinyFile& file
 	) );
 
 };

@@ -50,23 +50,29 @@ te_struct TinyRenderTextParameters {
 
 };
 
-te_struct TinyRenderTextContext{
+te_struct TinyRenderTextContext {
 
-	TinyAsset Material{ };
-	TinyAsset Font{ };
-	tiny_vec4 Background{ };
-	tiny_vec4 Foreground{ };
-	float Size	  = .0f;
-	float Spacing = .0f;
-	tiny_vec2 Location{ };
-	tiny_string Text{ };
+	TinyAssetHandle Material;
+	TinyAssetHandle Font;
+	tiny_vec4 Background;
+	tiny_vec4 Foreground;
+	float Size;
+	float Spacing;
+	tiny_vec2 Location;
+	tiny_string Text;
 
 	TinyRenderTextContext( );
 
-	TinyRenderTextContext( const TinyAsset& font, float size, const tiny_string& text );
+	TinyRenderTextContext( 
+		const TinyAssetHandle& material,
+		const TinyAssetHandle& font, 
+		float size, 
+		const tiny_string& text 
+	);
 
 	TinyRenderTextContext( 
-		const TinyAsset& font,
+		const TinyAssetHandle& material,
+		const TinyAssetHandle& font,
 		const tiny_color& color,
 		float size, 
 		const tiny_string& text 

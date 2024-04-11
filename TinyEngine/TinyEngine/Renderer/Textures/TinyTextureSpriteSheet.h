@@ -22,7 +22,7 @@
 
 #include <TinyEngine/Renderer/Utils/TinyRenderBuffer.h>
 
-te_class TinyTextureSpriteSheet : tiny_inherit( TinyAsset ) {
+te_class TinyTextureSpriteSheet {
 
 protected:
 	tiny_uint _columns;

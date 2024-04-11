@@ -42,4 +42,6 @@ public:
 
 	bool Load( TinyGame* game, const tiny_string& asset_name );
 
+	bool Load( TinyGame* game, const TinyAssetHandle& asset_handle );
+
 };

@@ -20,7 +20,27 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Animation2D/TinyAnimation2DManager.h>
+#include "TinyAnimation3D.h"
 
-te_class TinyAnimation3DManager final {
+te_class TinyAnimation3DManager final 
+	: tiny_inherit( TinyAssetContainer<TinyAnimation3D> ) 
+{
+
+public:
+	TinyAnimation3DManager( );
+
+	~TinyAnimation3DManager( ) = default;
+
+	tiny_implement( bool Create(
+		TinyGame* game,
+		const tiny_string& alias,
+		const c_pointer builder
+	) );
+
+	tiny_implement( bool Load(
+		TinyGame* game,
+		const tiny_string& alias,
+		TinyFile& file
+	) );
+
 };

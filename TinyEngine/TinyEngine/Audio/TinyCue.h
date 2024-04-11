@@ -34,6 +34,10 @@ public:
 
 	~TinyCue( ) = default;
 
+	bool Create( const TinyCueBuilder& builder );
+
+	tiny_implement( void Terminate( TinyGame* game ) );
+
 public:
 	const TinyCueFormat& GetFormat( ) const;
 

@@ -32,7 +32,8 @@ te_struct TinyTexture3DBuilder : tiny_inherit( TinyGraphicTextureSpecification )
 
 te_class TinyTexture3D final 
 	: tiny_inherit( TinyGraphicTexture ),
-	tiny_inherit( TinyTextureSpriteSheet )
+	tiny_inherit( TinyTextureSpriteSheet ),
+	tiny_inherit( TinyAsset )
 {
 
 public:
@@ -41,5 +42,7 @@ public:
 	~TinyTexture3D( ) = default;
 
 	bool Create( TinyGraphicManager& graphics, const TinyTexture3DBuilder& builder );
+
+	tiny_implement( void Terminate( TinyGame* game ) );
 
 };

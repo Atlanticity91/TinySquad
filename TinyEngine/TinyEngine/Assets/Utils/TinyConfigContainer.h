@@ -55,6 +55,8 @@ public:
 
 	tiny_no_implementv( false, bool Find( const tiny_hash asset_hash ) const );
 
+	tiny_implement( TinyAsset * GetAsset( const tiny_hash asset_hash ) );
+
 	tiny_implement( const TinyAsset* GetAsset( const tiny_hash asset_hash ) const );
 
 };

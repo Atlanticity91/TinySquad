@@ -27,19 +27,18 @@ te_class TinyTexture3DManager final : tiny_inherit( TinyAssetContainer<TinyTextu
 public:
 	TinyTexture3DManager( );
 
-protected:
-	tiny_implement( bool OnLoad(
+	~TinyTexture3DManager( ) = default;
+
+	tiny_implement( bool Create(
 		TinyGame* game,
-		TinyFile& file,
-		TinyTexture3D& texture
+		const tiny_string& alias,
+		const c_pointer builder
 	) );
 
-	tiny_implement( void OnUnLoad( TinyGame* game, TinyTexture3D& texture ) );
-
-	tiny_implement( bool OnCreate(
+	tiny_implement( bool Load(
 		TinyGame* game,
-		c_pointer asset_builder,
-		TinyTexture3D& element
+		const tiny_string& alias,
+		TinyFile& file
 	) );
 
 };

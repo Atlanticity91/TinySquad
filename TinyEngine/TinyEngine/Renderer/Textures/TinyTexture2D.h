@@ -32,7 +32,8 @@ te_struct TinyTexture2DBuilder : tiny_inherit( TinyGraphicTextureSpecification )
 
 te_class TinyTexture2D final 
 	: tiny_inherit( TinyGraphicTexture ), 
-	tiny_inherit( TinyTextureSpriteSheet ) 
+	tiny_inherit( TinyTextureSpriteSheet ),
+	tiny_inherit( TinyAsset )
 {
 
 public:
@@ -45,6 +46,8 @@ public:
 		const TinyTexture2DBuilder& builder,
 		const TinyGraphicBufferStaging& stagging
 	);
+
+	tiny_implement( void Terminate( TinyGame* game ) );
 
 public:
 	bool operator==( const TinyTexture2D* other ) const;

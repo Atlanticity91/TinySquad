@@ -32,8 +32,21 @@ bool TinyGraphicBufferStaging::Create( TinyGraphicContext& context, tiny_uint le
 	return _buffer.Create( context, { TGB_TYPE_STAGING, length } );
 }
 
-bool TinyGraphicBufferStaging::Create2( TinyGraphicContext& context, tiny_uint length ) {
+bool TinyGraphicBufferStaging::CreateMap( TinyGraphicContext& context, tiny_uint length ) {
 	return Create( context, length ) && Map( context, 0, length );
+}
+
+bool TinyGraphicBufferStaging::CreateMap(
+	TinyGraphicContext& context, 
+	tiny_uint length, 
+	const c_pointer data 
+) {
+	auto state = Create( context, length ) && Map( context, 0, length, data );
+	
+	if ( state )
+		UnMap( context );
+
+	return state;
 }
 
 bool TinyGraphicBufferStaging::Map( TinyGraphicContext& context, tiny_uint length ) {

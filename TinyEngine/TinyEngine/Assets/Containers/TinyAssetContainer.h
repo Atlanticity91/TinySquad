@@ -26,7 +26,7 @@ template<typename Asset>
 	requires tiny_is_child_of( Asset, TinyAsset )
 class TinyAssetContainer : tiny_inherit( ITinyAssetContainer ) {
 
-private:
+protected:
 	tiny_map<Asset> _assets;
 
 public:
@@ -36,40 +36,72 @@ public:
 
 	virtual ~TinyAssetContainer( ) = default;
 
-	tiny_implement( bool Create( TinyGame* game, const c_pointer builder ) ) { 
-		return false;
-	};
-
-	tiny_implement( bool Load(
-		TinyGame* game,
-		const tiny_string& alias,
-		TinyFile& file
-	) ) { 
-		return false;
-	};
-
 	tiny_implement( void UnLoad( TinyGame* game, const tiny_hash asset_hash ) ) { 
+		auto asset_id = tiny_cast( 0, tiny_uint );
+		
+		if ( _assets.find( asset_hash, asset_id ) ) {
+			auto& asset = _assets.at( asset_id );
+
+			asset.Terminate( game );
+
+			_assets.erase( asset_id );
+		}
 	};
 
 	tiny_implement( void Acquire( TinyGame* game, const tiny_hash asset_hash ) ) { 
+		auto* asset = tiny_cast( GetAsset( asset_hash ), TinyAsset* );
+
+		if ( asset )
+			asset->Acquire( game );
 	};
 
 	tiny_implement( void Release( TinyGame* game, const tiny_hash asset_hash ) ) { 
+		auto* asset = tiny_cast( GetAsset( asset_hash ), TinyAsset* );
+
+		if ( asset )
+			asset->Release( game );
 	};
 
 	tiny_implement( void Terminate( TinyGame* game ) ) { 
+		for ( auto& asset : _assets )
+			asset.Data.Terminate( game );
+	};
+
+protected:
+	Asset& Emplace( const tiny_string& alias ) { 
+		_assets.emplace( alias, { } );
+
+		return _assets[ alias ];
 	};
 
 public:
 	tiny_implement( void GetAssetList( tiny_list<tiny_string>& list ) const ) { 
+		for ( auto& asset : _assets )
+			list.emplace_back( { asset.String } );
 	};
 
 	tiny_implement( bool Find( const tiny_hash asset_hash ) const ) { 
-		return false;
+		return _assets.find( asset_hash );
+	};
+
+	tiny_implement( TinyAsset* GetAsset( const tiny_hash asset_hash ) ) {
+		auto asset_id = tiny_cast( 0, tiny_uint );
+		auto* asset   = tiny_cast( nullptr, TinyAsset* );
+
+		if ( _assets.find( asset_hash, asset_id ) )
+			asset = tiny_rvalue( _assets.at( asset_id ) );
+
+		return asset;
 	};
 
 	tiny_implement( const TinyAsset* GetAsset( const tiny_hash asset_hash ) const ) {
-		return nullptr;
+		auto asset_id = tiny_cast( 0, tiny_uint );
+		auto* asset   = tiny_cast( nullptr, const TinyAsset* );
+		
+		if ( _assets.find( asset_hash, asset_id ) )
+			asset = tiny_rvalue( _assets.at( asset_id ) );
+
+		return asset;
 	};
 
 };

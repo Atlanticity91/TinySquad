@@ -105,7 +105,7 @@ void TinyAnim2D::Tick(
 	if ( _frame_duration - _frame_time > 0.f )
 		return;
 
-	auto* animation = tiny_cast( animations->GetAsset( _collection.Hash ), TinyAnimation2D* );
+	auto* animation = tiny_cast( animations->GetAsset( _collection ), TinyAnimation2D* );
 	auto* frame		= animation->Next( _animation_hash, _frame_id, _flags & TA_FLAG_REVERSE, _flags & TA_FLAG_LOOPING );
 
 	if ( frame ) {

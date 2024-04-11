@@ -36,6 +36,18 @@ public:
 
 	bool Initialize( );
 
+	tiny_implement( bool Create(
+		TinyGame* game,
+		const tiny_string& alias,
+		const c_pointer builder
+	) );
+
+	tiny_implement( bool Load(
+		TinyGame* game,
+		const tiny_string& alias,
+		TinyFile& file
+	) );
+
 	tiny_inline void Register( const tiny_string& name, TinyLuaPrototype prototype );
 
 	tiny_inline void UnRegister( const tiny_string& name );
@@ -79,21 +91,6 @@ public:
 	void Execute( TinyGame* game, const TinyScriptExecution& execution );
 
 	void Terminate( );
-
-protected:
-	tiny_implement( bool OnLoad(
-		TinyGame* game,
-		TinyFile& file,
-		TinyScriptLua& script
-	) );
-
-	tiny_implement( bool OnCreate(
-		TinyGame* game,
-		c_pointer asset_builder,
-		TinyScriptLua& script
-	) );
-
-	tiny_implement( void OnUnLoad( TinyGame* game, TinyScriptLua& script ) );
 
 private:
 	void GenerateInterop( );

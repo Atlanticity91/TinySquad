@@ -24,27 +24,21 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTexture3DManager::TinyTexture3DManager( ) 
-	: TinyAssetList{ }
+	: TinyAssetContainer{ }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyTexture3DManager::OnLoad(
+bool TinyTexture3DManager::Create(
 	TinyGame* game,
-	TinyFile& file,
-	TinyTexture3D& texture
+	const tiny_string& alias,
+	const c_pointer builder
 ) {
 	return false;
 }
 
-void TinyTexture3DManager::OnUnLoad( TinyGame* game, TinyTexture3D& texture ) {
-}
-
-bool TinyTexture3DManager::OnCreate(
+bool TinyTexture3DManager::Load(
 	TinyGame* game,
-	c_pointer asset_builder,
-	TinyTexture3D& element
+	const tiny_string& alias,
+	TinyFile& file
 ) {
-	return false;
+	return Create( game, alias, nullptr );
 }

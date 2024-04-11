@@ -25,7 +25,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTexture3D::TinyTexture3D( ) 
 	: TinyGraphicTexture{ },
-	TinyTextureSpriteSheet{ }
+	TinyTextureSpriteSheet{ },
+	TinyAsset{ TA_TYPE_TEXTURE_3D }
 { }
 
 bool TinyTexture3D::Create( 
@@ -33,4 +34,11 @@ bool TinyTexture3D::Create(
 	const TinyTexture3DBuilder& builder
 ) {
 	return false;
+}
+
+void TinyTexture3D::Terminate( TinyGame* game ) {
+	auto& graphics = game->GetGraphics( );
+	auto context   = graphics.GetContext( );
+
+	TinyGraphicTexture::Terminate( context );
 }

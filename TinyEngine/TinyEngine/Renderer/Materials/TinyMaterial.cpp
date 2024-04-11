@@ -49,9 +49,8 @@ bool TinyMaterial::Create(
 	while ( state && shader_id-- > 0 ) {
 		auto& asset = _shaders[ shader_id ];
 
-		asset.Hash   = tiny_hash{ builder.ShaderStages[ shader_id ] };
-		asset.Type   = TA_TYPE_SHADER;
-		asset.Handle = TINY_UINT_MAX;
+		asset.Type = TA_TYPE_SHADER;
+		asset.Hash = tiny_hash{ builder.ShaderStages[ shader_id ] };
 
 		state = assets.Acquire( game, asset );
 	}
@@ -61,7 +60,7 @@ bool TinyMaterial::Create(
 
 		while ( shader_id-- > 0 ) {
 			auto& shader = _shaders[ shader_id ];
-			auto* asset  = assets.GetAssetAs<TinyGraphicShader>( shader );
+			auto* asset = assets.GetAssetAs<TinyGraphicShader>( shader );
 
 			builder.Shaders[ shader_id ] = asset->Get( );
 		}
@@ -83,11 +82,11 @@ void TinyMaterial::Submit(
 	Draw( work_context, draw_call, bindpoints );
 }
 
-void TinyMaterial::Terminate( 
-	TinyGame* game,
-	TinyAssetManager& assets, 
-	TinyGraphicContext& context 
-) {
+void TinyMaterial::Terminate( TinyGame* game ) {
+	auto& graphics = game->GetGraphics( );
+	auto& assets   = game->GetAssets( );
+	auto context   = graphics.GetContext( );
+
 	for ( auto& shader : _shaders )
 		assets.Release( game, shader );
 

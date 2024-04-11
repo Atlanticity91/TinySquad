@@ -33,6 +33,8 @@ public:
 
 	tiny_implement( bool Initialize( TinyFilesystem& filesystem ) );
 
+	tiny_implement( bool UnLock( const tiny_hash trophy_hash ) );
+
 	tiny_implement( void Terminate( TinyFilesystem& filesystem ) );
 
 };

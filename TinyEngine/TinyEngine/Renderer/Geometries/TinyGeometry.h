@@ -35,7 +35,7 @@ public:
 
 	bool Create( 
 		TinyGraphicContext& context, 
-		const TinyGeometryBundle& bundle 
+		const TinyGeometryBuilder& bundle
 	);
 
 	tiny_inline void Bind(
@@ -43,7 +43,7 @@ public:
 		TinyGraphicPipeline& pipeline 
 	);
 
-	void Terminate( TinyGraphicContext& context );
+	tiny_implement( void Terminate( TinyGame* game ) );
 
 public:
 	TinyGraphicBuffer& GetIndex( );

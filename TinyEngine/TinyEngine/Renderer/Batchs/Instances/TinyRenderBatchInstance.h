@@ -34,14 +34,14 @@ public:
 	)>;
 
 protected:
-	tiny_hash  _render_pass;
-	TinyAsset  _material;
-	Callback_t _callback;
+	tiny_hash		_render_pass;
+	TinyAssetHandle _material;
+	Callback_t		_callback;
 
 public:
 	TinyRenderBatchInstance( )
 		: _render_pass{ },
-		_material{ },
+		_material{ TA_TYPE_MATERIAL },
 		_callback{ }
 	{ };
 

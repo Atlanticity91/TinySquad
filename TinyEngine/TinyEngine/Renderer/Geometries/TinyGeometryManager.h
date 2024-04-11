@@ -22,5 +22,23 @@
 
 #include "TinyGeometry.h"
 
-te_class TinyGeometryManager final {
+te_class TinyGeometryManager final : tiny_inherit( TinyAssetContainer<TinyGeometry> ) {
+
+public:
+	TinyGeometryManager( );
+
+	~TinyGeometryManager( ) = default;
+
+	tiny_implement( bool Create(
+		TinyGame* game,
+		const tiny_string& alias,
+		const c_pointer builder
+	) );
+
+	tiny_implement( bool Load(
+		TinyGame* game,
+		const tiny_string& alias,
+		TinyFile& file
+	) );
+
 };

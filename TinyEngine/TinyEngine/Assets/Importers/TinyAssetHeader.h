@@ -38,8 +38,6 @@ te_struct TinyAssetHeader {
 
 	bool GetIsAsset( ) const;
 
-	tiny_inline bool GetIsAsset( const TinyAssetTypes type ) const;
-
 	bool GetIsAsset( const tiny_uint type ) const;
 
 };

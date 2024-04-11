@@ -29,6 +29,14 @@ struct tiny_map_node {
 	tiny_hash Hash;
 	Type Data;
 
+	operator Type& ( ) { return Data; };
+
+	operator const Type& ( ) const { return Data; };
+
+	Type* operator->( ) { return tiny_rvalue( Data ); };
+
+	const Type* operator->( ) const { return tiny_rvalue( Data ); };
+
 };
 
 template<typename Type>

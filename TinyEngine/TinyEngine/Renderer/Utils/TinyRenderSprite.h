@@ -51,7 +51,7 @@ te_struct TinyRenderSpriteVertex {
 
 te_struct TinyRenderSpriteContext {
 
-	TinyAsset Material{ };
+	TinyAssetHandle Material{ };
 	tiny_list<TinyTexture2D*> Textures{ };
 	TinyRenderSprite Sprite{ };
 	tiny_mat4 Tranform{ };

@@ -29,21 +29,47 @@ TinyArchiveContainer::TinyArchiveContainer( )
 { }
 
 bool TinyArchiveContainer::Load( TinyGame* game, const tiny_string& asset_name ) {
-	auto asset_hash = tiny_hash{ asset_name };
-	auto entry_id   = tiny_cast( 0, tiny_uint );
-	auto state		= false;
+	auto entry_id = tiny_cast( 0, tiny_uint );
+	auto state    = false;
+	auto hash	  = tiny_hash{ asset_name };
 
-	if ( _entries.find( asset_hash, entry_id ) ) {
-		auto& entry     = _entries.at( entry_id );
-		auto* archive   = tiny_cast( GetAsset( entry.Archive ), TinyArchive* );
-		auto& assets    = game->GetAssets( );
-		auto* container = assets.GetContainer( entry.Type );
+	if ( _entries.find( hash, entry_id ) ) {
+		auto& entry_node = _entries.node( entry_id );
+		auto& entry		 = entry_node.Data;
+		auto* archive	 = tiny_cast( GetAsset( entry.Archive ), TinyArchive* );
+		auto& assets	 = game->GetAssets( );
+		auto* container  = assets.GetContainer( entry.Type );
 
 		if ( container ) {
 			auto file = archive->Access( game, entry.Offset );
 
 			if ( file )
-				state = container->Load( game, asset_name, file );
+				state = container->Load( game, { entry_node.String }, file );
+		}
+	}
+
+	return state;
+}
+
+bool TinyArchiveContainer::Load( TinyGame* game, const TinyAssetHandle& asset_handle ) {
+	auto entry_id = tiny_cast( 0, tiny_uint );
+	auto state	  = false;
+
+	if ( _entries.find( asset_handle, entry_id ) ) {
+		auto& entry_node = _entries.node( entry_id );
+		auto& entry		 = entry_node.Data;
+
+		if ( entry.Type == asset_handle.Type ) {
+			auto* archive   = tiny_cast( GetAsset( entry.Archive ), TinyArchive* );
+			auto& assets	= game->GetAssets( );
+			auto* container = assets.GetContainer( entry.Type );
+
+			if ( container ) {
+				auto file = archive->Access( game, entry.Offset );
+
+				if ( file )
+					state = container->Load( game, { entry_node.String }, file );
+			}
 		}
 	}
 

@@ -20,16 +20,9 @@
 
 #pragma once
 
-#include <TinyEngine/Tools/TinyToolbox.h>
+#include "TinyAddon.h"
 
-te_class TinyAddon final : tiny_inherit( TinyAsset ) { 
-
-public:
-	TinyAddon( ) : TinyAsset{ TA_TYPE_ADDON } { };
-
-};
-
-te_class TinyAddonManager final : tiny_inherit( TinyAssetContainer<TinyAddon> ) {
+te_class TinyAddonManager final {
 
 public:
 	TinyAddonManager( );

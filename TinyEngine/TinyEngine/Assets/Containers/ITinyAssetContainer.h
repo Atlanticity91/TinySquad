@@ -24,7 +24,11 @@
 
 te_interface ITinyAssetContainer {
 
-	tiny_abstract( bool Create( TinyGame* game, const c_pointer builder ) );
+	tiny_abstract( bool Create( 
+		TinyGame* game,
+		const tiny_string& alias, 
+		const c_pointer builder 
+	) );
 
 	tiny_abstract( bool Load(
 		TinyGame* game,
@@ -43,6 +47,8 @@ te_interface ITinyAssetContainer {
 	tiny_abstract( void GetAssetList( tiny_list<tiny_string>& list ) const );
 
 	tiny_abstract( bool Find( const tiny_hash asset_hash ) const );
+
+	tiny_abstract( TinyAsset* GetAsset( const tiny_hash asset_hash ) );
 
 	tiny_abstract( const TinyAsset* GetAsset( const tiny_hash asset_hash ) const );
 

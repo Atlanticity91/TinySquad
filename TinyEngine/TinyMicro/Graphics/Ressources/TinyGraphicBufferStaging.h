@@ -35,7 +35,9 @@ public:
 
 	bool Create( TinyGraphicContext& context, tiny_uint length );
 
-	tiny_inline bool Create2( TinyGraphicContext& context, tiny_uint length );
+	bool CreateMap( TinyGraphicContext& context, tiny_uint length );
+
+	bool CreateMap( TinyGraphicContext& context, tiny_uint length, const c_pointer data );
 
 	tiny_inline bool Map( TinyGraphicContext& context, tiny_uint length );
 

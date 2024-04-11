@@ -73,10 +73,12 @@ bool TinyAssetManager::Load(
 ) {
 	auto state = false;
 
-	if ( path[ 0 ] == '@' )
-		state = LoadArchiveFile( game, path );
-	else
-		state = LoadAssetFile( game, alias, path );
+	if ( path.is_valid( ) ) {
+		if ( path[ 0 ] == '@' )
+			state = LoadArchiveFile( game, path );
+		else
+			state = LoadAssetFile( game, alias, path );
+	}
 
 	return state;
 }
@@ -104,7 +106,7 @@ bool TinyAssetManager::Acquire( TinyGame* game, TinyAssetHandle& handle ) {
 		if ( !container->Find( handle.Hash ) ) {
 			auto* container = GetContainer( TA_TYPE_ARCHIVE );
 
-			state = tiny_cast( container, TinyArchiveContainer* )->Load( game, handle.Hash );
+			state = tiny_cast( container, TinyArchiveContainer* )->Load( game, handle );
 		} 
 		
 		if ( state )
@@ -135,24 +137,23 @@ void TinyAssetManager::RegisterTypes( ) {
 	Register<TinyConfigContainer>( TA_TYPE_CONFIG );
 	Register<TinyArchiveContainer>( TA_TYPE_ARCHIVE );
 	Register<TinyTexture2DManager>( TA_TYPE_TEXTURE_2D );
-	//Register<TinyArchiveContainer>( TA_TYPE_TEXTURE_3D );
-	//Register<TinyArchiveContainer>( TA_TYPE_TEXTURE_CUBEMAP );
-	//Register<TinyArchiveContainer>( TA_TYPE_TEXTURE_ATLAS );
-	//Register<TinyArchiveContainer>( TA_TYPE_TEXTURE_LUT );
-	//Register<TinyArchiveContainer>( TA_TYPE_ANIMATION_2D );
-	//Register<TinyArchiveContainer>( TA_TYPE_ANIMATION_3D );
-	//Register<TinyFontManager>( TA_TYPE_FONT );
+	Register<TinyTexture3DManager>( TA_TYPE_TEXTURE_3D );
+	Register<TinyTextureAtlasManager>( TA_TYPE_TEXTURE_ATLAS );
+	Register<TinyTextureCubemapManager>( TA_TYPE_TEXTURE_CUBEMAP );
+	Register<TinyTextureLutManager>( TA_TYPE_TEXTURE_LUT );
+	Register<TinyAnimation2DManager>( TA_TYPE_ANIMATION_2D );
+	Register<TinyAnimation3DManager>( TA_TYPE_ANIMATION_3D );
+	Register<TinyFontManager>( TA_TYPE_FONT );
 	Register<TinyShaderManager>( TA_TYPE_SHADER );
 	Register<TinyMaterialManager>( TA_TYPE_MATERIAL );
-	//Register<TinyArchiveContainer>( TA_TYPE_GEOMETRY );
+	Register<TinyGeometryManager>( TA_TYPE_GEOMETRY );
 	Register<TinyCueManager>( TA_TYPE_CUE );
-	//Register<TinyArchiveContainer>( TA_TYPE_SANPLES );
-	//Register<TinyArchiveContainer>( TA_TYPE_SCRIPT );
-	//Register<TinyArchiveContainer>( TA_TYPE_SCENE );
-	//Register<TinyArchiveContainer>( TA_TYPE_LOCALISATION );
-	//Register<TinyArchiveContainer>( TA_TYPE_TROPHY );
-	//Register<TinyArchiveContainer>( TA_TYPE_SAVE );
-	Register<TinyAddonManager>( TA_TYPE_ADDON );
+	//Register<TinySampleManager>( TA_TYPE_SANPLES );
+	Register<TinyScriptManager>( TA_TYPE_SCRIPT );
+	//Register<TinySceneManager>( TA_TYPE_SCENE );
+	//Register<TinyLocalisationManager>( TA_TYPE_LOCALISATION );
+	//Register<TinyTrophyManager>( TA_TYPE_TROPHY );
+	//Register<TinySaveManager>( TA_TYPE_SAVE );
 }
 
 bool TinyAssetManager::LoadConfig( TinyFilesystem& filesystem, TinyConfig*& game_config ) {
@@ -166,13 +167,13 @@ bool TinyAssetManager::LoadConfig( TinyFilesystem& filesystem, TinyConfig*& game
 }
 
 bool TinyAssetManager::LoadArchiveFile( TinyGame* game, const tiny_string& path ) {
-	auto* container = GetContainer( TA_TYPE_ARCHIVE );
-	auto state = false;
+	auto* container = tiny_cast( GetContainer( TA_TYPE_ARCHIVE ), TinyArchiveContainer* );
+	auto state		= false;
 
 	if ( container ) {
 		auto asset_name = path.sub_string( 1 );
 
-		state = tiny_cast( container, TinyArchiveContainer* )->Load( game, asset_name );
+		state = container->Load( game, asset_name );
 	}
 
 	return state;
@@ -238,9 +239,19 @@ bool TinyAssetManager::GetExist( const TinyAssetHandle& handle ) const {
 	auto state		= false;
 
 	if ( container )
-		state = container->Find( handle.Hash );
+		state = container->Find( handle );
 
 	return state;
+}
+
+TinyAsset* TinyAssetManager::GetAsset( const TinyAssetHandle& handle ) {
+	auto* container = GetContainer( handle.Type );
+	auto* asset		= tiny_cast( nullptr, TinyAsset* );
+
+	if ( container )
+		asset = container->GetAsset( handle );
+
+	return  asset;
 }
 
 const TinyAsset* TinyAssetManager::GetAsset( const TinyAssetHandle& handle ) const {
@@ -248,7 +259,7 @@ const TinyAsset* TinyAssetManager::GetAsset( const TinyAssetHandle& handle ) con
 	auto* asset		= tiny_cast( nullptr, const TinyAsset* );
 
 	if ( container )
-		asset = container->GetAsset( handle.Hash );
+		asset = container->GetAsset( handle );
 
 	return  asset;
 }

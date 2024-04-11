@@ -27,8 +27,20 @@ te_class TinyTextureAtlasManager final
 {
 
 public:
-	TinyTextureAtlasManager( ) = default;
+	TinyTextureAtlasManager( );
 
 	~TinyTextureAtlasManager( ) = default;
+
+	tiny_implement( bool Create(
+		TinyGame* game,
+		const tiny_string& alias,
+		const c_pointer builder
+	) );
+
+	tiny_implement( bool Load(
+		TinyGame* game,
+		const tiny_string& alias,
+		TinyFile& file
+	) );
 
 };

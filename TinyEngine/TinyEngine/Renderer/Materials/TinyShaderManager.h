@@ -29,19 +29,16 @@ public:
 
 	~TinyShaderManager( ) = default;
 
-protected:
-	tiny_implement( bool OnLoad(
+	tiny_implement( bool Create(
 		TinyGame* game,
-		TinyFile& file,
-		TinyGraphicShader& shader
+		const tiny_string& alias,
+		const c_pointer builder
 	) );
 
-	tiny_implement( void OnUnLoad( TinyGame* game, TinyGraphicShader& shader ) );
-
-	tiny_implement( bool OnCreate(
+	tiny_implement( bool Load(
 		TinyGame* game,
-		c_pointer asset_builder,
-		TinyGraphicShader& shader
+		const tiny_string& alias,
+		TinyFile& file
 	) );
 
 };

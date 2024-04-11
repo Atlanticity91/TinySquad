@@ -31,7 +31,7 @@ TinyGeometry::TinyGeometry( )
 
 bool TinyGeometry::Create( 
 	TinyGraphicContext& context, 
-	const TinyGeometryBundle& bundle 
+	const TinyGeometryBuilder& builder
 ) {
 	auto state = _index.Create( context, { TGB_TYPE_INDEX, 0 } ) && 
 				 _vertex.Create( context, { TGB_TYPE_VERTEX, 0 } );
@@ -47,7 +47,10 @@ void TinyGeometry::Bind(
 	pipeline.BindIndex( work_context, _index );
 }
 
-void TinyGeometry::Terminate( TinyGraphicContext& context ) {
+void TinyGeometry::Terminate( TinyGame* game ) {
+	auto& graphics = game->GetGraphics( );
+	auto context   = graphics.GetContext( );
+
 	_index.Terminate( context );
 	_vertex.Terminate( context );
 }

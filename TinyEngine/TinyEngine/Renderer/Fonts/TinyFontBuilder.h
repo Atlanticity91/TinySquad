@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Renderer/Textures/TinyTextureAtlasManager.h>
+#include <TinyEngine/Renderer/Textures/TinyTextureLutManager.h>
 
 te_struct TinyCharVertice {
 

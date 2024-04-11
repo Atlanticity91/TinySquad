@@ -25,7 +25,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTexture2D::TinyTexture2D( )
 	: TinyGraphicTexture{ },
-	TinyTextureSpriteSheet{ }
+	TinyTextureSpriteSheet{ },
+	TinyAsset{ TA_TYPE_TEXTURE_2D }
 { }
 
 bool TinyTexture2D::Create(
@@ -40,6 +41,13 @@ bool TinyTexture2D::Create(
 		SetDimensions( builder.Columns, builder.Rows );
 
 	return state;
+}
+
+void TinyTexture2D::Terminate( TinyGame* game ) {
+	auto& graphics = game->GetGraphics( );
+	auto context   = graphics.GetContext( );
+
+	TinyGraphicTexture::Terminate( context );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

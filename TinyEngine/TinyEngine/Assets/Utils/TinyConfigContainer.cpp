@@ -50,6 +50,10 @@ bool TinyConfigContainer::Load( TinyFilesystem& filesystem, TinyConfig*& config 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+TinyAsset* TinyConfigContainer::GetAsset( const tiny_hash asset_hash ) {
+	return tiny_rvalue( _config );
+}
+
 const TinyAsset* TinyConfigContainer::GetAsset( const tiny_hash asset_hash ) const {
-	return tiny_cast( tiny_rvalue( _config ), const TinyAsset* );
+	return tiny_rvalue( _config );
 }

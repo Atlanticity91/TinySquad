@@ -29,21 +29,16 @@ public:
 
 	~TinyTexture2DManager( ) = default;
 
-	/*
-protected:
-	tiny_implement( bool OnLoad( 
-		TinyGame* game,
-		TinyFile& file, 
-		TinyTexture2D& texture 
+	tiny_implement( bool Create( 
+		TinyGame* game, 
+		const tiny_string& alias, 
+		const c_pointer builder 
 	) );
 
-	tiny_implement( void OnUnLoad( TinyGame* game, TinyTexture2D& texture ) );
-
-	tiny_implement( bool OnCreate(
+	tiny_implement( bool Load(
 		TinyGame* game,
-		c_pointer asset_builder, 
-		TinyTexture2D& element
+		const tiny_string& alias,
+		TinyFile& file
 	) );
-	*/
 
 };

@@ -22,13 +22,6 @@
 
 #include <TinyEngine/Tools/Editors/TinyToolLua.h>
 
-tiny_enum( TinyToolContentActions ) {
-
-	TTC_ACTION_EDIT = 0, 
-	TTC_ACTION_REMOVE
-
-};
-
 te_class TinyToolContent final 
 	: tiny_inherit( TinyToolCategory ),
 	tiny_inherit( TinyToolDialog )
@@ -37,13 +30,11 @@ te_class TinyToolContent final
 	typedef c_string ( *AssetTypeToString )( tiny_uint );
 
 private:
-	bool							_has_changed;
-	tiny_uint						_type_count;
-	AssetTypeToString				_type_to_string;
-	tiny_list<TinyToolAssetEditor*> _type_editors;
-	TinyToolContentActions			_action;
-	TinyAssetRegistry::MetaNode*	_metadata;
-	tiny_buffer<256>				_import_path;
+	bool				   _has_changed;
+	tiny_uint			   _type_count;
+	AssetTypeToString	   _type_to_string;
+	tiny_hash			   _to_remove;
+	tiny_buffer<256>	   _import_path;
 
 public:
 	TinyToolContent( );
@@ -52,31 +43,8 @@ public:
 
 	tiny_implement( void Create( TinyGame* game, TinyToolbox& toolbox ) );
 
-	bool OpenAssetEditor( TinyGame* game, const tiny_string& asset_name );
-
-	bool OpenAssetEditor(
-		TinyGame* game,
-		const tiny_string& name,
-		const TinyAssetMetadata& metadata 
-	);
-
-	void RenderEditors( TinyGame* game );
-
 protected:
 	tiny_implement( void OnTick( TinyGame* game, TinyToolbox& toolbox ) );
-
-public:
-	template<typename Type, tiny_uint AssetType>
-		requires tiny_is_child_of( Type, TinyToolAssetEditor )
-	void Register( ) { 
-		auto* editor = new Type{ };
-
-		if ( editor )
-			_type_editors.insert( AssetType - 1, editor );
-	};
-
-public:
-	bool GetHasEditor( tiny_uint asset_type ) const;
 
 private:
 	static c_string TypeToString( tiny_uint type );

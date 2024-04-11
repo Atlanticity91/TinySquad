@@ -24,52 +24,31 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyCueManager::TinyCueManager( )
-	: TinyAssetList{ }
+	: TinyAssetContainer{ }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyCueManager::OnLoad( TinyGame* game, TinyFile& file, TinyCue& sound_cue ) {
-	auto header = TinyAssetHeader{ };
-	auto state  = false;
-
-	file.Read( header );
-
-	if ( header.Type == TA_TYPE_CUE ) {
-		auto& storage = sound_cue.GetStorage( );
-		auto size	  = tiny_cast( 0, tiny_uint );
-
-		file.Read( sound_cue.GetFormat( ) );
-		file.Read( sound_cue.GetContext( ) );
-		file.Read( size );
-
-		state = tiny_allocate( storage, size );
-
-		if ( state ) {
-			auto* address = storage.GetAddress( );
-
-			state = file.Read( size, address ) == size;
-		}
-	}
+bool TinyCueManager::Create(
+	TinyGame* game,
+	const tiny_string& alias,
+	const c_pointer builder
+) {
+	auto* builder_ = tiny_cast( builder, TinyCueBuilder* );
+	auto& cue	   = Emplace( alias );
 	
-	return state;
+	return cue.Create( tiny_lvalue( builder_ ) );
 }
 
-void TinyCueManager::OnUnLoad( TinyGame* game, TinyCue& sound_cue ) {
-	tiny_deallocate( sound_cue.GetStorage( ) );
-}
+bool TinyCueManager::Load(
+	TinyGame* game,
+	const tiny_string& alias,
+	TinyFile& file
+) {
+	auto builder = TinyCueBuilder{ };
 
-bool TinyCueManager::OnCreate( TinyGame* game, c_pointer asset_builder, TinyCue& cue ) {
-	auto* builder = tiny_cast( asset_builder, TinyCueBuilder* );
-	auto state	  = builder != nullptr && builder->Size > 0;
+	file.Read( builder.Format );
+	file.Read( builder.Context );
+	file.Read( builder.Size );
+	//file.Read( builder.Size, builder.Data );
 
-	if ( state ) {
-		Tiny::Memcpy( tiny_rvalue( builder->Format ), tiny_rvalue( cue.GetFormat( ) ) );
-		Tiny::Memcpy( tiny_rvalue( builder->Context ), tiny_rvalue( cue.GetContext( ) ) );
-
-		state = tiny_allocate( cue.GetStorage( ), builder->Size );
-	}
-
-	return state;
+	return Create( game, alias, tiny_rvalue( builder ) );
 }

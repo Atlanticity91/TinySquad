@@ -24,66 +24,46 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyMaterialManager::TinyMaterialManager( ) 
-	: TinyAssetList{ }
+	: TinyAssetContainer{ }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyMaterialManager::OnLoad(
+bool TinyMaterialManager::Create(
 	TinyGame* game,
-	TinyFile& file,
-	TinyMaterial& material
+	const tiny_string& alias,
+	const c_pointer builder
 ) {
-	auto header = TinyAssetHeader{ };
-	auto state  = false;
+	auto* builder_ = tiny_cast( builder, TinyMaterialBuilder* );
+	auto& material = Emplace( alias );
+	auto& graphics = game->GetGraphics( );
 
-	file.Read( header );
-
-	if ( header.Type == TA_TYPE_MATERIAL ) {
-		auto descriptor_count = tiny_cast( 0 , tiny_uint );
-		auto& graphics		  = game->GetGraphics( );
-		auto builder		  = TinyMaterialBuilder{ };
-
-		file.Read( builder.PassType );
-		file.Read( builder.PassName );
-		file.Read( builder.Subpass );
-		file.Read( builder.ShaderStages );
-		file.Read( builder.InputBinding );
-		file.Read( builder.InputAttributes );
-		file.Read( builder.Topology );
-		file.Read( builder.Tessellation );
-		file.Read( builder.DepthEnable );
-		file.Read( builder.StencilEnable );
-		file.Read( builder.DepthOperation );
-		file.Read( builder.DepthStencilFront );
-		file.Read( builder.DepthStencilBack );
-		file.Read( builder.ColorBlends );
-		file.Read( builder.Dynamics );
-		file.Read( builder.Descriptors );
-		file.Read( builder.Constants );
-
-		state = builder.ShaderStages.size( ) > 1 && material.Create( game, graphics, builder );
-	}
-
-	return state;
+	return  builder_->ShaderStages.size( ) > 1 && 
+			material.Create( game, graphics, tiny_lvalue( builder_ ) );
 }
 
-void TinyMaterialManager::OnUnLoad( TinyGame* game, TinyMaterial& material ) {
-	auto& graphics = game->GetGraphics( );
-	auto& assets   = game->GetAssets( );
-	auto context   = graphics.GetContext( );
-
-	material.Terminate( game, assets, context );
-}
-
-bool TinyMaterialManager::OnCreate(
+bool TinyMaterialManager::Load(
 	TinyGame* game,
-	c_pointer asset_builder,
-	TinyMaterial& material
+	const tiny_string& alias,
+	TinyFile& file
 ) {
-	auto& graphics = game->GetGraphics( );
-	auto* builder  = tiny_cast( asset_builder, TinyMaterialBuilder* );
+	auto builder = TinyMaterialBuilder{ };
 
-	return builder && material.Create( game, graphics, *builder );
+	file.Read( builder.PassType );
+	file.Read( builder.PassName );
+	file.Read( builder.Subpass );
+	file.Read( builder.ShaderStages );
+	file.Read( builder.InputBinding );
+	file.Read( builder.InputAttributes );
+	file.Read( builder.Topology );
+	file.Read( builder.Tessellation );
+	file.Read( builder.DepthEnable );
+	file.Read( builder.StencilEnable );
+	file.Read( builder.DepthOperation );
+	file.Read( builder.DepthStencilFront );
+	file.Read( builder.DepthStencilBack );
+	file.Read( builder.ColorBlends );
+	file.Read( builder.Dynamics );
+	file.Read( builder.Descriptors );
+	file.Read( builder.Constants );
+
+	return Create( game, alias, tiny_rvalue( builder ) );
 }

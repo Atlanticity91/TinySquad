@@ -20,11 +20,13 @@
 
 #pragma once
 
-#include <TinyEngine/Framework/TinyFramework.h>
+#include "Trophies/TinyTrophyManager.h"
 
 te_abstract_class TinyProvider {
 
 	tiny_abstract( bool Initialize( TinyFilesystem& filesystem ) );
+
+	tiny_abstract( bool UnLock( const tiny_hash trophy_hash ) );
 
 	tiny_abstract( void Terminate( TinyFilesystem& filesystem ) );
 

@@ -61,6 +61,8 @@ bool TinyAssetHandle::GetNotEqual( const TinyAssetHandle& other ) const {
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAssetHandle::operator bool( ) const { return GetIsValid( ); }
 
+TinyAssetHandle::operator tiny_hash ( ) const { return Hash; }
+
 TinyAssetHandle& TinyAssetHandle::operator=( const TinyAssetHandle& other ) {
 	if ( !GetIsValid( ) && other.GetIsValid( ) ) {
 		Type = other.Type;

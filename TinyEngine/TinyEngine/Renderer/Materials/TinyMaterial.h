@@ -25,7 +25,7 @@
 te_class TinyMaterial : tiny_inherit( TinyAsset ), tiny_inherit( TinyGraphicPipeline ) {
 
 private:
-	tiny_list<TinyAsset> _shaders;
+	tiny_list<TinyAssetHandle> _shaders;
 
 public:
 	TinyMaterial( );
@@ -44,11 +44,7 @@ public:
 		const tiny_list<TinyGraphicPipelineBindpoint>& bindpoints
 	);
 
-	void Terminate(
-		TinyGame* game,
-		TinyAssetManager& assets, 
-		TinyGraphicContext& context 
-	);
+	tiny_implement( void Terminate( TinyGame* game ) );
 
 public:
 	static void CreateShaders( 

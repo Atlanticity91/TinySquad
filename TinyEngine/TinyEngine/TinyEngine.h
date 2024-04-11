@@ -38,7 +38,6 @@ private:
 	TinyNativeRegister  _natives;
 
 	// === MID LEVEL ===
-	TinyScriptManager   _scripts;
 	//TinyLocalisation	_localisation;
 	TinyRenderer		_renderer;
 	TinyECS				_ecs;
@@ -46,8 +45,12 @@ private:
 	// === HIGH LEVEL ===
 	//TinyUXManager		_ux;
 	//TinySceneManager  _scenes; // load/unload ecs scene + renderer composer
+	TinyAddonManager	_addons;
 	TinyProviderManager	_provider;
 	TinyToolbox			_toolbox;
+	
+	// === POINTERS ===
+	TinyScriptManager*  _scripts;
 
 public:
 	/**
@@ -120,8 +123,19 @@ public:
 	void Terminate( TinyGame* game );
 
 private:
+	/**
+	 * PreInit function
+	 * @note : Pre Initialize the current game engine instance.
+	 * @param game : Pointer to current game class instance.
+	 * @param game_config : Current game config instance.
+	 **/
 	bool PreInit( TinyGame* game, TinyConfig*& game_config );
 
+	/**
+	 * PostInit function
+	 * @note : Post Initialize the current game engine instance.
+	 * @param game : Pointer to current game class instance.
+	 **/
 	bool PostInit( TinyGame* game );
 
 	/**

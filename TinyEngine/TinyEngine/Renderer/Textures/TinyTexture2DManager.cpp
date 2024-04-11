@@ -24,76 +24,43 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTexture2DManager::TinyTexture2DManager( )
-	: TinyAssetList{ }
+	: TinyAssetContainer{ }
 { }
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PROTECTED ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyTexture2DManager::OnLoad(
-	TinyGame* game,
-	TinyFile& file,
-	TinyTexture2D& texture
+bool TinyTexture2DManager::Create(
+	TinyGame* game, 
+	const tiny_string& alias, 
+	const c_pointer builder
 ) {
-	auto header = TinyAssetHeader{ };
-	auto state  = false;
-
-	file.Read( header );
-
-	if ( header.Type == TA_TYPE_TEXTURE_2D ) {
-		auto& graphics = game->GetGraphics( );
-		auto context   = graphics.GetContext( );
-		auto builder   = TinyTexture2DBuilder{ };
-		auto staging   = TinyGraphicBufferStaging{ };
-
-		file.Read( builder.Rows );
-		file.Read( builder.Columns );
-		file.Read( builder.Properties );
-		file.Read( builder.Size );
-
-		state = staging.Create2( context, builder.Size );
-
-		if ( state ) {
-			file.Read( builder.Size, staging );
-
-			staging.UnMap( context );
-
-			state = texture.Create( graphics, builder, staging );
-
-			staging.Terminate( context );
-		}
-	}
-
-	return state;
-}
-
-void TinyTexture2DManager::OnUnLoad( TinyGame* game, TinyTexture2D& texture ) {
 	auto& graphics = game->GetGraphics( );
+	auto& builder_ = tiny_lvalue( tiny_cast( builder, const TinyTexture2DBuilder* ) );
 	auto context   = graphics.GetContext( );
-
-	texture.Terminate( context );
-}
-
-bool TinyTexture2DManager::OnCreate(
-	TinyGame* game,
-	c_pointer asset_builder,
-	TinyTexture2D& texture
-) {
-	auto& graphics = game->GetGraphics( );
-	auto* builder  = tiny_cast( asset_builder, TinyTexture2DBuilder* );
 	auto staging   = TinyGraphicBufferStaging{ };
-	auto context   = graphics.GetContext( );
-	auto state	   = staging.Create2( context, builder->Size );
+	auto state	   = false;
 
-	if ( state ) {
-		Tiny::Memcpy( tiny_cast( builder->Texels, const c_pointer ), staging, builder->Size );
+	if ( staging.CreateMap( context, builder_.Size, builder_.Texels ) ) {
+		auto& texture = Emplace( alias );
 
-		staging.UnMap( context );
-
-		state = texture.Create( graphics, tiny_lvalue( builder ), staging );
-
-		staging.Terminate( context );
+		state = texture.Create( graphics, builder_, staging );
 	}
+
+	staging.Terminate( context );
 
 	return state;
 }
+
+bool TinyTexture2DManager::Load(
+	TinyGame* game,
+	const tiny_string& alias,
+	TinyFile& file
+) {
+	auto builder = TinyTexture2DBuilder{ };
+
+	file.Read( builder.Rows );
+	file.Read( builder.Columns );
+	file.Read( builder.Properties );
+	file.Read( builder.Size );
+	//file.Read( builder.Size, staging );
+
+	return Create( game, alias, tiny_rvalue( builder ) );
+};

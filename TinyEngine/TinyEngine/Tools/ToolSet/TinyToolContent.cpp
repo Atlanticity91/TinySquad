@@ -29,56 +29,11 @@ TinyToolContent::TinyToolContent( )
     _has_changed{ false },
     _type_count{ TinyAssetTypes::TA_TYPE_COUNT },
     _type_to_string{ TinyToolContent::TypeToString },
-    _type_editors{ TA_TYPE_ADDON - 1 },
-    _action{ },
-    _metadata{ nullptr },
+    _to_remove{ },
     _import_path{ }
 { }
 
 void TinyToolContent::Create( TinyGame* game, TinyToolbox& toolbox ) {
-    Register<TinyToolTexture2D, TA_TYPE_TEXTURE_2D>( );
-    //Register<TinyToolCubemap, TA_TYPE_TEXTURE_CUBEMAP>( );
-    //Register<TinyToolAtlas, TA_TYPE_TEXTURE_ATLAS>( );
-    //Register<TinyToolLUT, TA_TYPE_TEXTURE_LUT>( );
-    //Register<TinyToolFont, TA_TYPE_FONT>( );
-    //Register<TinyToolShader, TA_TYPE_SHADER>( );
-    Register<TinyToolMaterial, TA_TYPE_MATERIAL>( );
-    //Register<TinyToolGeometry, TA_TYPE_GEOMETRY>( );
-    //Register<TinyToolCue, TA_TYPE_CUE>( );
-    Register<TinyToolLua, TA_TYPE_SCRIPT>( );
-    Register<TinyToolAnim2D, TA_TYPE_ANIMATION_2D>( );
-}
-
-bool TinyToolContent::OpenAssetEditor( TinyGame* game, const tiny_string& asset_name ) {
-    auto metadata = TinyAssetMetadata{ };
-    auto& assets  = game->GetAssets( );
-
-    return  assets.GetMetadata( asset_name, metadata ) &&
-            OpenAssetEditor( game, asset_name, metadata );
-}
-
-bool TinyToolContent::OpenAssetEditor( 
-    TinyGame* game, 
-    const tiny_string& name,
-    const TinyAssetMetadata& metadata 
-) {
-    auto& assets = game->GetAssets( );
-    auto asset   = TinyAsset{ metadata.Type, name };
-    auto state   = false;
-
-    if ( GetHasEditor( metadata.Type ) && assets.Acquire( game, asset ) )
-        state = _type_editors[ metadata.Type - 1 ]->Open( game, name, asset );
-
-    return state;
-}
-
-void TinyToolContent::RenderEditors( TinyGame* game ) {
-    auto& assets = game->GetAssets( );
-
-    for ( auto& editor : _type_editors ) {
-        if ( editor )
-            editor->Tick( game, assets );
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,12 +42,12 @@ void TinyToolContent::RenderEditors( TinyGame* game ) {
 void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     auto& filesystem = game->GetFilesystem( );
     auto& assets     = game->GetAssets( );
-    auto& registry   = assets.GetRegistry( );
+    //auto& registry   = assets.GetRegistry( );
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
         if ( OpenDialog( filesystem ) ) {
-            registry.Load( filesystem, _dialog_path );
+            //registry.Load( filesystem, _dialog_path );
 
             _has_changed = false;
         }
@@ -103,7 +58,7 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     ImGui::BeginDisabled( !_has_changed );
     if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
         if ( SaveDialog( filesystem ) ) {
-            registry.Save( filesystem, _dialog_path );
+            //registry.Save( filesystem, _dialog_path );
 
             _has_changed = false;
         }
@@ -158,7 +113,7 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
 
         while ( type < _type_count ) {
             auto name = _type_to_string( type );
-
+            /*
             if ( strlen( name ) > 0 ) {
                 ImGui::TableNextRow( );
                 ImGui::TableNextColumn( );
@@ -207,32 +162,18 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
                     ImGui::TreePop( );
                 }
             }
-
+            */
             type += 1;
         }
 
         ImGui::EndTable( );
     }
 
-    if ( _metadata ) {
-        switch ( _action ) {
-            case TTC_ACTION_EDIT   : OpenAssetEditor( game, _metadata->String, _metadata->Data ); break;
-            case TTC_ACTION_REMOVE : registry.Remove( _metadata->Hash );                          break;
+    if ( _to_remove ) {
+        //assets.UnLoad( game, { 0, _to_remove } );
 
-            default: break;
-        }
-
-        _metadata = nullptr;
+        _to_remove.empty( );
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC GET ===
-////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolContent::GetHasEditor( tiny_uint asset_type ) const {
-    asset_type -= 1;
-
-    return asset_type < _type_editors.size( ) && _type_editors[ asset_type ];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

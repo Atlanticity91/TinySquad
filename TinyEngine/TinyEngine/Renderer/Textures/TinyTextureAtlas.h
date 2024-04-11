@@ -22,7 +22,7 @@
 
 #include "TinyTexture3DManager.h"
 
-te_class TinyTextureAtlas final : tiny_inherit( TinyAsset) {
+te_class TinyTextureAtlas final : tiny_inherit( TinyAsset ) {
 
 private:
 	TinyAssetHandle _albedo;
@@ -59,6 +59,8 @@ public:
 		const tiny_hash normal,
 		const tiny_hash specular
 	);
+
+	tiny_implement( void Terminate( TinyGame* game ) );
 
 public:
 	tiny_uint GetComponents( ) const;
