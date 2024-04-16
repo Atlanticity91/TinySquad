@@ -22,7 +22,10 @@
 
 #include <TinyEngine/Utils/TinyNativeRegister.h>
 
+#define TINY_ASSET_EXT "tinyasset"
+
 static const char TinyAssetMagic[ 4 ] = "TMA";
+static const tiny_string TinyAssetExt = TINY_ASSET_EXT;
 
 te_struct TinyAssetHeader {
 

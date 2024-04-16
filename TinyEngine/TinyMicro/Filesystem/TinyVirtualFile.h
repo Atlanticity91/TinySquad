@@ -70,6 +70,23 @@ public:
 		return size;
 	};
 
+	template<>
+	tiny_uint Read<tiny_storage>( tiny_storage& storage ) {
+		auto count = tiny_cast( 0, tiny_uint );
+		auto type = tiny_cast( 0, tiny_uint );
+		auto size = tiny_cast( 0, tiny_uint );
+
+		if ( Read( type ) && Read( size ) ) {
+			if ( size > 0 && tiny_allocate( storage, size ) ) {
+				auto* data = storage.GetAddress( );
+
+				count = Read( size, data );
+			}
+		}
+
+		return count;
+	};
+
 	template<typename Type>
 		requires ( !std::is_pointer<Type>::value )
 	tiny_uint Read( tiny_list<Type>& list ) { 
@@ -165,6 +182,20 @@ public:
 		Write( length );
 
 		return Write( length * tiny_sizeof( char ), data );
+	};
+
+	template<>
+	tiny_uint Write<tiny_storage>( const tiny_storage& storage ) {
+		Write( tiny_cast( storage.Type, tiny_uint ) );
+		Write( storage.Capacity );
+
+		if ( storage ) {
+			auto* data = storage.GetAddress( );
+
+			Write( storage.Capacity, data );
+		}
+
+		return storage.Capacity;
 	};
 
 	template<typename Type>

@@ -38,6 +38,10 @@ namespace TinyImport {
 		TinyFile& file,
 		const c_pointer builder
 	) {
+		file.Write( TinyAssetHeader{ TA_TYPE_SCRIPT } );
+		//file.Write( length );
+		//file.Write( length, source );
+
 		return false;
 	}
 

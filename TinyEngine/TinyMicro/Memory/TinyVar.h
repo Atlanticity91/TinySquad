@@ -69,6 +69,8 @@ struct tiny_var {
 
 	operator tiny_storage&( ) { return Storage; };
 
+	operator const tiny_storage& ( ) const { return Storage; };
+
 	operator ref_t( ) { return Get( ); }
 
 	Type* operator->( ) { return Storage.As<Type>( ); };
