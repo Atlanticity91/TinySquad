@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 11/04/2024
+ * @creation : 16/04/2024
  * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -18,32 +18,13 @@
  *
  ******************************************************************************************/
 
-#include <TinyEngine/__tiny_engine_pch.h>
+#pragma once
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-TinyTextureAtlasManager::TinyTextureAtlasManager( )
-	: TinyAssetContainer{ } 
-{ }
+#include "TinyComponent.h"
 
-bool TinyTextureAtlasManager::Create(
-	TinyGame* game,
-	const tiny_string& alias,
-	const c_pointer builder
-) {
-	auto state = false;
+template<typename Component>
+concept TinyIsComponent = tiny_is_child_of( Component, TinyComponent );
 
-	if ( builder ) {
-	}
-
-	return state;
-}
-
-bool TinyTextureAtlasManager::Load(
-	TinyGame* game,
-	const tiny_string& alias,
-	TinyFile& file
-) {
-	return Create( game, alias, nullptr );
-}
+template<typename... Components>
+	requires ( TinyIsComponent<Components> && ... )
+struct TinyComponentGroup { };

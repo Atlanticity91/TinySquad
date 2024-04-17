@@ -148,12 +148,11 @@ void TinyAssetManager::RegisterTypes( ) {
 	Register<TinyMaterialManager>( TA_TYPE_MATERIAL );
 	Register<TinyGeometryManager>( TA_TYPE_GEOMETRY );
 	Register<TinyCueManager>( TA_TYPE_CUE );
-	//Register<TinySampleManager>( TA_TYPE_SANPLES );
+	Register<TinySampleManager>( TA_TYPE_SANPLES );
 	Register<TinyScriptManager>( TA_TYPE_SCRIPT );
-	//Register<TinySceneManager>( TA_TYPE_SCENE );
-	//Register<TinyLocalisationManager>( TA_TYPE_LOCALISATION );
-	//Register<TinyTrophyManager>( TA_TYPE_TROPHY );
-	//Register<TinySaveManager>( TA_TYPE_SAVE );
+	Register<TinySceneManager>( TA_TYPE_SCENE );
+	Register<TinyLocalisationManager>( TA_TYPE_LOCALISATION );
+	Register<TinyTrophyManager>( TA_TYPE_TROPHY );
 }
 
 bool TinyAssetManager::LoadConfig( TinyFilesystem& filesystem, TinyConfig*& game_config ) {
@@ -237,6 +236,18 @@ const ITinyAssetContainer* TinyAssetManager::GetContainer(
 		container = _containers[ asset_type ].As<ITinyAssetContainer>( );
 
 	return container;
+}
+
+TinyScriptManager& TinyAssetManager::GetScripts( ) { 
+	auto* container = GetContainerAs<TinyScriptManager>( TA_TYPE_SCRIPT );
+
+	return tiny_lvalue( container );
+}
+
+TinySceneManager& TinyAssetManager::GetScenes( ) {
+	auto* container = GetContainerAs<TinySceneManager>( TA_TYPE_SCENE );
+
+	return tiny_lvalue( container );
 }
 
 bool TinyAssetManager::GetExist( const TinyAssetHandle& handle ) const {

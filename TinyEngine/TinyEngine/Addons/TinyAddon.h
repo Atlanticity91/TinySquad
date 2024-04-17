@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Tools/TinyToolbox.h>
+#include <TinyEngine/UX/TinyUXManager.h>
 
 te_class TinyAddon final {
 

@@ -32,12 +32,18 @@ bool TinyShaderManager::Create(
 	const tiny_string& alias,
 	const c_pointer builder
 ) {
-	auto* builder_ = tiny_cast( builder, TinyGraphicShaderSpecification* );
-	auto& graphics = game->GetGraphics( );
-	auto context   = graphics.GetContext( );
-	auto& shader   = Emplace( alias );
+	auto state = false;
 
-	return shader.Create( context, tiny_lvalue( builder_ ) );
+	if ( builder ) {
+		auto* builder_ = tiny_cast( builder, TinyGraphicShaderSpecification* );
+		auto& graphics = game->GetGraphics( );
+		auto context   = graphics.GetContext( );
+		auto& shader   = Emplace( alias );
+
+		state = shader.Create( context, tiny_lvalue( builder_ ) );
+	}
+
+	return state;
 }
 
 bool TinyShaderManager::Load(

@@ -260,7 +260,21 @@ public:
 	 * @return : TinyECS
 	 **/
 	tiny_inline TinyECS& GetECS( );
-	
+
+	/**
+	 * GetScenes function
+	 * @note : Get current scene manager instance.
+	 * @return : TinySceneManager
+	 **/
+	tiny_inline TinySceneManager& GetScenes( );
+
+	/**
+	 * GetUX function
+	 * @note : Get current UX manager instance.
+	 * @return : TinyUXManager
+	 **/
+	tiny_inline TinyUXManager& GetUX( );
+
 	/**
 	 * GetAddons function
 	 * @note : Get current addon manager instance.

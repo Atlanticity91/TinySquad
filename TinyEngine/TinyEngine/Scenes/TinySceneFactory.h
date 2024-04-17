@@ -10,40 +10,23 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 11/04/2024
- * @version  : 2024.2.7
+ * @creation : 16/04/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
-#include <TinyEngine/__tiny_engine_pch.h>
+#include <TinyEngine/ECS/TinyECS.h>
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-TinyAnimation3DManager::TinyAnimation3DManager( ) 
-	: TinyAssetContainer{ }
-{ }
+te_abstract_class TinySceneFactory {
 
-bool TinyAnimation3DManager::Create(
-	TinyGame* game,
-	const tiny_string& alias,
-	const c_pointer builder
-) {
-	auto state = false;
+public:
+	TinySceneFactory( ) = default;
 
-	if ( builder ) {
-	}
+	virtual ~TinySceneFactory( ) = default;
 
-	return state;
-}
+	tiny_abstract( void Spawn( const tiny_uint entity_id, TinyGame* game, TinyECS& ecs ) );
 
-bool TinyAnimation3DManager::Load(
-	TinyGame* game,
-	const tiny_string& alias,
-	TinyFile& file
-) {
-	return Create( game, alias, nullptr );
-}
+};

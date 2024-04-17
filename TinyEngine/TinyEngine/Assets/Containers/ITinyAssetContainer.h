@@ -22,6 +22,9 @@
 
 #include "TinyAsset.h"
 
+template<typename Asset>
+concept TinyIsAsset = tiny_is_child_of( Asset, TinyAsset );
+
 te_interface ITinyAssetContainer {
 
 	tiny_abstract( bool Create( 

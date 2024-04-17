@@ -22,6 +22,9 @@
 
 #include "Utils/TinyArchiveContainer.h"
 
+class TinyScriptManager;
+class TinySceneManager;
+
 te_class TinyAssetManager final {
 
 private:
@@ -60,7 +63,7 @@ public:
 
 public:
 	template<typename Container>
-		requires tiny_is_child_of( Container, ITinyAssetContainer )
+		requires TinyIsAssetContainer<Container>
 	void Register( const tiny_uint asset_type ) {
 		auto container = tiny_storage{ };
 
@@ -95,6 +98,10 @@ public:
 
 	const ITinyAssetContainer* GetContainer( const tiny_uint asset_type ) const;
 
+	TinyScriptManager& GetScripts( );
+	
+	TinySceneManager& GetScenes( );
+
 	bool GetExist( const TinyAssetHandle& handle ) const;
 
 	bool GetExist( const tiny_uint type, const tiny_hash asset_hash ) const;
@@ -107,7 +114,7 @@ public:
 
 public:
 	template<typename Asset>
-		requires tiny_is_child_of( Asset, TinyAsset )
+		requires TinyIsAsset<Asset>
 	Asset* GetAssetAs( const TinyAssetHandle& handle ) {
 		auto* asset = GetAsset( handle );
 
@@ -115,7 +122,7 @@ public:
 	};
 	
 	template<typename Asset>
-		requires tiny_is_child_of( Asset, TinyAsset )
+		requires TinyIsAsset<Asset>
 	const Asset* GetAssetAs( const TinyAssetHandle& handle ) const {
 		auto* asset = GetAsset( handle );
 
@@ -123,7 +130,7 @@ public:
 	};
 
 	template<typename Container>
-		requires tiny_is_child_of( Container, ITinyAssetContainer )
+		requires TinyIsAssetContainer<Container>
 	Container* GetContainerAs( const tiny_uint type ) {
 		auto* container = GetContainer( type );
 
@@ -131,7 +138,7 @@ public:
 	};
 
 	template<typename Container>
-		requires tiny_is_child_of( Container, ITinyAssetContainer )
+		requires TinyIsAssetContainer<Container>
 	const Container* GetContainerAs( const tiny_uint type ) const {
 		auto* container = GetContainer( type );
 		

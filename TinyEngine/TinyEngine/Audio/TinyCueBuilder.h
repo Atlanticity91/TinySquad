@@ -32,9 +32,9 @@
 
 te_struct TinyRiffChunck {
 
-	tiny_uint RIFF;
-	tiny_uint Size;
-	tiny_uint Type;
+	tiny_uint RIFF = 0;
+	tiny_uint Size = 0;
+	tiny_uint Type = 0;
 
 };
 

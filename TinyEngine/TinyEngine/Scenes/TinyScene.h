@@ -10,35 +10,21 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 14/01/2024
- * @version  : 2024.2
+ * @creation : 16/04/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
-#pragma once
+#include "TinySceneFactory.h"
 
-#include "TinyComponentGroup.h"
+te_class TinyScene final : tiny_inherit( TinyAsset ) {
 
-namespace TinyLua::Component {
+public:
+	TinyScene( );
 
-	template<typename Component>
-		requires TinyIsComponent<Component>
-	Component* Get( lua_State* context, tiny_int param_id ) {
-		auto* comp = tiny_cast( nullptr, c_pointer );
-
-		if ( lua_istable( context, param_id ) )
-			tli_get_field( param_id, "value", comp );
-
-		return tiny_cast( comp, Component* );
-	};
-
-	tiny_dll tiny_int Create( lua_State* context, const tiny_string& name );
-
-	tiny_dll tiny_hash GetHash( lua_State* context, tiny_int param_id );
-
-	tiny_dll tiny_int ToString( lua_State* context, const tiny_string& name );
+	~TinyScene( ) = default;
 
 };

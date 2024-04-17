@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Framework/TinyFramework.h>
+#include <TinyEngine/Addons/TinyAddonManager.h>
 
 te_class TinyTrophy final : tiny_inherit( TinyAsset ) { 
 

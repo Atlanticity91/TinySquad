@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/ECS/TinyECS.h>
+#include <TinyEngine/Scenes/TinySceneManager.h>
 
 TINY_FRAMEWORK_COMP( TinyTransform2D ) {
 

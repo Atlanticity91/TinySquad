@@ -49,7 +49,7 @@ const c_pointer tiny_storage::GetAddress( ) const { return tiny_get_address( tin
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_storage::operator bool( ) const { return GetIsValid( ); }
 
-tiny_storage::operator c_pointer( ) const { return GetAddress( ); }
+tiny_storage::operator c_pointer ( ) const { return GetAddress( ); }
 
 tiny_storage::operator const c_pointer( ) const { return GetAddress( ); }
 

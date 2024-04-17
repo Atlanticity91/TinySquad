@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Audio/TinyCueManager.h>
+#include <TinyEngine/Audio/TinySampleManager.h>
 
 te_class TinyRenderBuffer final {
 

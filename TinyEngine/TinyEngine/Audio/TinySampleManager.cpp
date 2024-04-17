@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 11/04/2024
+ * @creation : 17/04/2024
  * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -23,11 +23,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyTextureAtlasManager::TinyTextureAtlasManager( )
-	: TinyAssetContainer{ } 
+TinySampleManager::TinySampleManager( )
+	: TinyAssetContainer{ }
 { }
 
-bool TinyTextureAtlasManager::Create(
+bool TinySampleManager::Create(
 	TinyGame* game,
 	const tiny_string& alias,
 	const c_pointer builder
@@ -36,11 +36,11 @@ bool TinyTextureAtlasManager::Create(
 
 	if ( builder ) {
 	}
-
+	
 	return state;
 }
 
-bool TinyTextureAtlasManager::Load(
+bool TinySampleManager::Load(
 	TinyGame* game,
 	const tiny_string& alias,
 	TinyFile& file

@@ -37,15 +37,12 @@ TinyEngine::TinyEngine(
 	_audio{ },
 	_graphics{ orientation },
 	_natives{ },
-	//_localisation{ },
 	_renderer{ },
 	_ecs{ },
-	//_ux{ },
-	//_scenes{ },
+	_ux{ },
 	_addons{ },
 	_provider{ },
-	_toolbox{ },
-	_scripts{ nullptr }
+	_toolbox{ }
 { }
 
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
@@ -89,8 +86,6 @@ void TinyEngine::Stop( ) { _is_running = false; }
 bool TinyEngine::PreTick( TinyGame* game ) {
 	auto state = _window.Tick( );
 
-	_scripts = _assets.GetContainerAs<TinyScriptManager>( TA_TYPE_SCRIPT );
-
 	if ( state ) {
 		_addons.PreTick( game );
 		_ecs.PreTick( game );
@@ -103,7 +98,7 @@ bool TinyEngine::PreTick( TinyGame* game ) {
 void TinyEngine::PostTick( TinyGame* game ) {
 	_addons.PostTick( game );
 	_ecs.PostTick( game );
-	//_ux.Tick( game );
+	_ux.Tick( game );
 	_audio.Tick( _inputs );
 	_renderer.Compose( game );
 	_toolbox.Tick( game );
@@ -112,12 +107,13 @@ void TinyEngine::PostTick( TinyGame* game ) {
 }
 
 void TinyEngine::Terminate( TinyGame* game ) {
+	auto& scripts = _assets.GetScripts( );
+
 	_toolbox.Terminate( game );
 	_provider.Terminate( _filesystem );
 	_addons.Terminate( game );
 	
-	if ( _scripts )
-		_scripts->Terminate( );
+	scripts.Terminate( );
 	
 	_renderer.Terminate( _graphics );
 	_assets.Terminate( game );
@@ -138,9 +134,9 @@ bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
 				 _assets.Initialize( _filesystem, game_config );
 
 	if ( state ) {
-		_scripts = _assets.GetContainerAs<TinyScriptManager>( TA_TYPE_SCRIPT );
+		auto& scripts = _assets.GetScripts( );
 
-		state = _scripts->Initialize( ) &&
+		state = scripts.Initialize( ) &&
 				_addons.Initialize( game );
 	}
 
@@ -296,11 +292,15 @@ TinyGraphicManager& TinyEngine::GetGraphics( ) { return _graphics; }
 
 TinyNativeRegister& TinyEngine::GetNatives( ) { return _natives; }
 
-TinyScriptManager& TinyEngine::GetScripts( ) { return tiny_lvalue( _scripts ); }
+TinyScriptManager& TinyEngine::GetScripts( ) { return _assets.GetScripts( ); }
 
 TinyRenderer& TinyEngine::GetRenderer( ) { return _renderer; }
 
 TinyECS& TinyEngine::GetECS( ) { return _ecs; }
+
+TinySceneManager& TinyEngine::GetScenes( ) { return _assets.GetScenes( ); }
+
+TinyUXManager& TinyEngine::GetUX( ) { return _ux; }
 
 TinyAddonManager& TinyEngine::GetAddons( ) { return _addons; }
 

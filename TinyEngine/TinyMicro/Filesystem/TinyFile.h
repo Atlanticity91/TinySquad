@@ -191,16 +191,18 @@ public:
 
 	template<>
 	tiny_uint Write<tiny_storage>( const tiny_storage& storage ) {
+		auto length = tiny_cast( storage.Capacity, tiny_uint );
+
 		Write( tiny_cast( storage.Type, tiny_uint ) );
-		Write( storage.Capacity );
+		Write( length );
 
 		if ( storage ) {
 			auto* data = storage.GetAddress( );
 
-			Write( storage.Capacity, data );
+			length = Write( length, data );
 		}
 
-		return storage.Capacity;
+		return length;
 	};
 
 	template<typename Type>

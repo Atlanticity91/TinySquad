@@ -98,7 +98,7 @@ TinyTextureAtlas& TinyTextureAtlas::Set(
 ) {
 	auto albedo_hash = tiny_hash{ albedo };
 	auto normal_hash = tiny_hash{ normal };
-	auto spec_hash = tiny_hash{ specular };
+	auto spec_hash   = tiny_hash{ specular };
 
 	return Set( game, albedo_hash, normal_hash, spec_hash );
 }

@@ -29,6 +29,7 @@ tiny_enum( TinyStorageTypes ) {
 	TS_TYPE_THREAD,
 	TS_TYPE_GRAPHICS,
 	TS_TYPE_ASSETS,
+	TS_TYPE_HEAP,
 		
 	TS_TYPE_UNDEFINED
 
@@ -52,9 +53,9 @@ tm_struct tiny_storage {
 
 	operator bool( ) const;
 
-	operator c_pointer ( ) const;
+	operator c_pointer( ) const;
 
-	operator const c_pointer( ) const;
+	operator const c_pointer ( ) const;
 
 	tiny_storage& operator=( const tiny_storage& other );
 

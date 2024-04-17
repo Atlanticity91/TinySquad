@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "Addons/TinyAddonManager.h"
+#include "Tools/TinyToolbox.h"
 
 te_class TinyEngine final {
 
@@ -38,19 +38,15 @@ private:
 	TinyNativeRegister  _natives;
 
 	// === MID LEVEL ===
-	//TinyLocalisation	_localisation;
+	//TinyNetwork		_network;
 	TinyRenderer		_renderer;
 	TinyECS				_ecs;
 
 	// === HIGH LEVEL ===
-	//TinyUXManager		_ux;
-	//TinySceneManager  _scenes; // load/unload ecs scene + renderer composer
+	TinyUXManager		_ux;
 	TinyAddonManager	_addons;
 	TinyProviderManager	_provider;
 	TinyToolbox			_toolbox;
-	
-	// === POINTERS ===
-	TinyScriptManager*  _scripts;
 
 public:
 	/**
@@ -313,6 +309,20 @@ public:
 	 * @return : TinyECS
 	 **/
 	TinyECS& GetECS( );
+
+	/**
+	 * GetScenes function
+	 * @note : Get current scene manager instance.
+	 * @return : TinySceneManager
+	 **/
+	TinySceneManager& GetScenes( );
+
+	/**
+	 * GetUX function
+	 * @note : Get current UX manager instance.
+	 * @return : TinyUXManager
+	 **/
+	TinyUXManager& GetUX( );
 
 	/**
 	 * GetAddons function

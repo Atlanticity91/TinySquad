@@ -30,27 +30,39 @@ namespace TinyImport {
 		TinyFile& file,
 		const TinyPathInformation& path_info
 	) {
+		auto storage = tiny_storage{ TS_TYPE_HEAP };
 		auto builder = TinyTexture2DBuilder{ };
 		auto img_w   = tiny_cast( 0, tiny_int );
 		auto img_h   = tiny_cast( 0, tiny_int );
 		auto img_c   = tiny_cast( 0, tiny_int );
 		auto state   = false;
+		auto size	 = file.GetSize( );
 
-		builder.Texels = stbi_load_from_memory( nullptr, 0, tiny_rvalue( img_w ), tiny_rvalue( img_h ), tiny_rvalue( img_c ), 4 );
+		if ( tiny_allocate( storage, size ) ) {
+			auto* data = storage.GetAddress( );
 
-		if ( builder.Texels ) {
-			builder.Properties.Type   = TGT_TYPE_TEXTURE_2D;
-			builder.Properties.Width  = tiny_cast( img_w, tiny_uint );
-			builder.Properties.Height = tiny_cast( img_h, tiny_uint );
-			builder.Size			  = tiny_cast( img_w * img_h * 4, tiny_uint );
-			builder.Rows			  = 1;
-			builder.Columns			  = 1;
+			if ( file.ReadAll( size, data ) ) {
+				builder.Texels = stbi_load_from_memory( tiny_cast( data, tiny_pointer ), size, tiny_rvalue( img_w ), tiny_rvalue( img_h ), tiny_rvalue( img_c ), 4 );
 
-			auto& filesystem = game->GetFilesystem( );
-			auto path		 = filesystem.CreatePath( path_info.Name, TINY_ASSET_EXT );
-			auto file		 = filesystem.OpenFile( path, Tiny::TF_ACCESS_WRITE );
+				if ( builder.Texels ) {
+					builder.Properties.Type   = TGT_TYPE_TEXTURE_2D;
+					builder.Properties.Width  = tiny_cast( img_w, tiny_uint );
+					builder.Properties.Height = tiny_cast( img_h, tiny_uint );
+					builder.Size			  = tiny_cast( img_w * img_h * 4, tiny_uint );
+					builder.Rows			  = 1;
+					builder.Columns			  = 1;
 
-			state = ExportTexture2D( game, file, tiny_rvalue( builder ) );
+					auto& filesystem = game->GetFilesystem( );
+					auto path		 = filesystem.CreatePath( path_info.Name, TINY_ASSET_EXT );
+					auto file		 = filesystem.OpenFile( path, Tiny::TF_ACCESS_WRITE );
+
+					state = ExportTexture2D( game, file, tiny_rvalue( builder ) );
+					
+					stbi_image_free( builder.Texels );
+				}
+			}
+
+			tiny_deallocate( storage );
 		}
 
 		return state;
@@ -71,12 +83,8 @@ namespace TinyImport {
 			file.Write( builder_->Properties );
 			file.Write( builder_->Size );
 
-			if ( builder_->Texels ) {
+			if ( builder_->Texels )
 				file.Write( builder_->Size, builder_->Texels );
-
-				if ( !builder_->IsUserDefined )
-					stbi_image_free( builder_->Texels );
-			}
 		}
 
 		return state;

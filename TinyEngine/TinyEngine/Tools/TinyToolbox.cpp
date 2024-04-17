@@ -428,9 +428,9 @@ void TinyToolbox::CreateSpriteShaders(
         TinyMaterial::CreateAttribute(
             material,
             {
-                { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Position ) },
-                { 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Texture  ) },
-                { 2, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderSpriteVertices, Color    ) }
+                { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( Position, TinyRenderSpriteVertices ) },
+                { 1, 0, TPA_TYPE_VEC4, tiny_offset_of( Texture , TinyRenderSpriteVertices ) },
+                { 2, 0, TPA_TYPE_VEC4, tiny_offset_of( Color   , TinyRenderSpriteVertices ) }
             }
         );
         TinyMaterial::CreateSetBind( material, TRS_ID_CORE   , { 0, TGBP_TYPE_UNIFORM , 1              , TGS_STAGE_VERTEX   } );
@@ -467,9 +467,9 @@ void TinyToolbox::CreateTextShaders(
         TinyMaterial::CreateAttribute(
             material,
             {
-                { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderTextVertice, Location   ) },
-                { 1, 0, TPA_TYPE_VEC2, tiny_offset_of( TinyRenderTextVertice, UV         ) },
-                { 2, 0, TPA_TYPE_UINT, tiny_offset_of( TinyRenderTextVertice, Parameters ) }
+                { 0, 0, TPA_TYPE_VEC4, tiny_offset_of( Location  , TinyRenderTextVertice ) },
+                { 1, 0, TPA_TYPE_VEC2, tiny_offset_of( UV        , TinyRenderTextVertice ) },
+                { 2, 0, TPA_TYPE_UINT, tiny_offset_of( Parameters, TinyRenderTextVertice ) }
             }
         );
         TinyMaterial::CreateSetBind( material, TRS_ID_CORE   , { 0, TGBP_TYPE_UNIFORM , 1             , TGS_STAGE_VERTEX   } );

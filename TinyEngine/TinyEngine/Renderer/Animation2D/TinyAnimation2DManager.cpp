@@ -32,7 +32,12 @@ bool TinyAnimation2DManager::Create(
 	const tiny_string& alias,
 	const c_pointer builder
 ) {
-	return false;
+	auto state = false;
+
+	if ( builder ) {
+	}
+
+	return state;
 }
 
 bool TinyAnimation2DManager::Load(
@@ -46,5 +51,5 @@ bool TinyAnimation2DManager::Load(
 	return file.Read( collection );
 	*/
 
-	return false;
+	return Create( game, alias, nullptr );
 }

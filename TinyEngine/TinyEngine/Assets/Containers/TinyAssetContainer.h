@@ -22,8 +22,11 @@
 
 #include "ITinyAssetContainer.h"
 
+template<typename Container>
+concept TinyIsAssetContainer = tiny_is_child_of( Container, ITinyAssetContainer );
+
 template<typename Asset>
-	requires tiny_is_child_of( Asset, TinyAsset )
+	requires TinyIsAsset<Asset>
 class TinyAssetContainer : tiny_inherit( ITinyAssetContainer ) {
 
 protected:

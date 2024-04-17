@@ -24,9 +24,8 @@
 
 te_struct TinyTexture2DBuilder : tiny_inherit( TinyGraphicTextureSpecification ) {
 
-	tiny_uint Rows     = 0;
-	tiny_uint Columns  = 0;
-	bool IsUserDefined = false;
+	tiny_uint Rows    = 0;
+	tiny_uint Columns = 0;
 
 };
 

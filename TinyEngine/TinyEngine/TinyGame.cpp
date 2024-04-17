@@ -167,6 +167,10 @@ TinyRenderer& TinyGame::GetRenderer( ) { return _engine.GetRenderer( ); }
 
 TinyECS& TinyGame::GetECS( ) { return _engine.GetECS( ); }
 
+TinySceneManager& TinyGame::GetScenes( ) { return _engine.GetScenes( ); }
+
+TinyUXManager& TinyGame::GetUX( ) { return _engine.GetUX( ); }
+
 TinyAddonManager& TinyGame::GetAddons( ) { return _engine.GetAddons( ); }
 
 TinyToolbox& TinyGame::GetToolbox( ) { return _engine.GetToolbox( ); }

@@ -32,10 +32,16 @@ bool TinyCueManager::Create(
 	const tiny_string& alias,
 	const c_pointer builder
 ) {
-	auto* builder_ = tiny_cast( builder, TinyCueBuilder* );
-	auto& cue	   = Emplace( alias );
-	
-	return cue.Create( tiny_lvalue( builder_ ) );
+	auto state = false;
+
+	if ( builder ) {
+		auto* builder_ = tiny_cast( builder, TinyCueBuilder* );
+		auto& cue	   = Emplace( alias );
+
+		state = cue.Create( tiny_lvalue( builder_ ) );
+	}
+
+	return state;
 }
 
 bool TinyCueManager::Load(

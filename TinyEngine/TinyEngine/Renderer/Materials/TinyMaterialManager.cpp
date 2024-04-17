@@ -32,12 +32,20 @@ bool TinyMaterialManager::Create(
 	const tiny_string& alias,
 	const c_pointer builder
 ) {
-	auto* builder_ = tiny_cast( builder, TinyMaterialBuilder* );
-	auto& material = Emplace( alias );
-	auto& graphics = game->GetGraphics( );
+	auto state = false;
 
-	return  builder_->ShaderStages.size( ) > 1 && 
-			material.Create( game, graphics, tiny_lvalue( builder_ ) );
+	if ( builder ) {
+		auto* builder_ = tiny_cast( builder, TinyMaterialBuilder* );
+
+		if ( builder_->ShaderStages.size( ) > 1 ) {
+			auto& material = Emplace( alias );
+			auto& graphics = game->GetGraphics( );
+
+			state = material.Create( game, graphics, tiny_lvalue( builder_ ) );
+		}
+	}
+
+	return state;
 }
 
 bool TinyMaterialManager::Load(

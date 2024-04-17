@@ -153,52 +153,52 @@ bool TinyRenderDebugManager::BuildShaders( TinyGraphicManager& graphics ) {
 }
 
 bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
+	auto builder = graphics.CreatePipeline( TGP_TYPE_NONE, TINY_OUTPASS_NAME, 1 );
 	auto context = graphics.GetContext( );
 	auto limits  = graphics.GetPipelineLimits( );
-	auto bundle  = graphics.CreatePipeline( TGP_TYPE_NONE, TINY_OUTPASS_NAME, 1 );
 
-	bundle.Topology		 = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-	bundle.Shaders		 = 2;
-	bundle.Shaders[ 0 ]  = _shaders[ 0 ];
-	bundle.Shaders[ 1 ]  = _shaders[ 1 ];
+	builder.Topology		 = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+	builder.Shaders		 = 2;
+	builder.Shaders[ 0 ]  = _shaders[ 0 ];
+	builder.Shaders[ 1 ]  = _shaders[ 1 ];
 
-	TinyGraphicPipeline::CreateBinding( bundle, { 0, tiny_sizeof( TinyRenderDebugLineVertice ) } );
+	TinyGraphicPipeline::CreateBinding( builder, { 0, tiny_sizeof( TinyRenderDebugLineVertice ) } );
 	TinyGraphicPipeline::CreateAttribute( 
-		bundle,
+		builder,
 		{
-			{ 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderDebugLineVertice, Position ) },
-			{ 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderDebugLineVertice, Color	) }
+			{ 0, 0, TPA_TYPE_VEC4, tiny_offset_of( Position, TinyRenderDebugLineVertice ) },
+			{ 1, 0, TPA_TYPE_VEC4, tiny_offset_of( Color   , TinyRenderDebugLineVertice ) }
 		}
 	);
-	TinyGraphicPipeline::CreateSetBind( bundle, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
+	TinyGraphicPipeline::CreateSetBind( builder, TRS_ID_CORE, { 0, TGBP_TYPE_UNIFORM, 1, TGS_STAGE_VERTEX } );
 
-	bundle.DepthEnable   = false;
-	bundle.StencilEnable = false;
-	bundle.Dynamics.emplace_back( VK_DYNAMIC_STATE_LINE_WIDTH );
+	builder.DepthEnable   = false;
+	builder.StencilEnable = false;
+	builder.Dynamics.emplace_back( VK_DYNAMIC_STATE_LINE_WIDTH );
 
-	auto state = _pipelines[ 0 ].Create( context, limits, bundle );
+	auto state = _pipelines[ 0 ].Create( context, limits, builder );
 
 	if ( state ) {
-		bundle.Topology		= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		bundle.Shaders[ 0 ] = _shaders[ 2 ];
-		bundle.Shaders[ 1 ] = _shaders[ 3 ];
+		builder.Topology		= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		builder.Shaders[ 0 ] = _shaders[ 2 ];
+		builder.Shaders[ 1 ] = _shaders[ 3 ];
 
-		bundle.InputBinding.clear( );
-		bundle.InputAttributes.clear( );
+		builder.InputBinding.clear( );
+		builder.InputAttributes.clear( );
 		
-		TinyGraphicPipeline::CreateBinding( bundle, { 0, tiny_sizeof( TinyRenderDebugCircleVertice ) } );
+		TinyGraphicPipeline::CreateBinding( builder, { 0, tiny_sizeof( TinyRenderDebugCircleVertice ) } );
 		TinyGraphicPipeline::CreateAttribute(
-			bundle,
+			builder,
 			{
-				{ 0, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderDebugCircleVertice, Position ) },
-				{ 1, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderDebugCircleVertice, Circle   ) },
-				{ 2, 0, TPA_TYPE_VEC4, tiny_offset_of( TinyRenderDebugCircleVertice, Color    ) }
+				{ 0, 0, TPA_TYPE_VEC4, tiny_offset_of( Position, TinyRenderDebugCircleVertice ) },
+				{ 1, 0, TPA_TYPE_VEC4, tiny_offset_of( Circle  , TinyRenderDebugCircleVertice ) },
+				{ 2, 0, TPA_TYPE_VEC4, tiny_offset_of( Color   , TinyRenderDebugCircleVertice ) }
 			}
 		);
 
-		bundle.Dynamics.pop_back( );
+		builder.Dynamics.pop_back( );
 
-		state = _pipelines[ 1 ].Create( context, limits, bundle );
+		state = _pipelines[ 1 ].Create( context, limits, builder );
 	}
 
 	return state;

@@ -55,7 +55,7 @@ public:
 
 	tiny_string( const tiny_string& other );
 
-	tiny_string( c_pointer address, tiny_uint length );
+	tiny_string( tiny_uint length, c_pointer address );
 
 	~tiny_string( ) = default;
 

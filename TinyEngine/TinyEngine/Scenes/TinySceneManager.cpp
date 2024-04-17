@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 11/04/2024
- * @version  : 2024.2.7
+ * @creation : 16/04/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,27 +23,35 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyTextureAtlasManager::TinyTextureAtlasManager( )
-	: TinyAssetContainer{ } 
+TinySceneManager::TinySceneManager( ) 
+	: TinyAssetContainer{ }
 { }
 
-bool TinyTextureAtlasManager::Create(
+bool TinySceneManager::Create(
 	TinyGame* game,
 	const tiny_string& alias,
 	const c_pointer builder
 ) {
-	auto state = false;
-
-	if ( builder ) {
-	}
-
-	return state;
+	return false;
 }
 
-bool TinyTextureAtlasManager::Load(
+bool TinySceneManager::Load(
 	TinyGame* game,
 	const tiny_string& alias,
 	TinyFile& file
 ) {
-	return Create( game, alias, nullptr );
+	return false;
+}
+
+void TinySceneManager::Spawn(
+	TinyGame* game,
+	const tiny_string& entity_name,
+	std::function<void( const tiny_uint, TinyGame*, TinyECS& )> entity_factory
+) {
+	if ( entity_name.is_valid( ) && entity_factory ) {
+		auto& ecs	   = game->GetECS( );
+		auto entity_id = ecs.Create( entity_name );
+
+		std::invoke( entity_factory, entity_id, game, ecs );
+	}
 }

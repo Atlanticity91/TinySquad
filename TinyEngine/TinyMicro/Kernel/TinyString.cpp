@@ -46,7 +46,7 @@ tiny_string::tiny_string( const tiny_string& other )
 	asign( other );
 }
 
-tiny_string::tiny_string( c_pointer address, tiny_uint length )
+tiny_string::tiny_string( tiny_uint length, c_pointer address )
 	: _handle{ tiny_cast( address, under_layer ) },
 	_length{ length }
 { }

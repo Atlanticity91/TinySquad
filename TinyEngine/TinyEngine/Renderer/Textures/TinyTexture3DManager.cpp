@@ -32,7 +32,12 @@ bool TinyTexture3DManager::Create(
 	const tiny_string& alias,
 	const c_pointer builder
 ) {
-	return false;
+	auto state = false;
+
+	if ( builder ) {
+	}
+
+	return state;
 }
 
 bool TinyTexture3DManager::Load(

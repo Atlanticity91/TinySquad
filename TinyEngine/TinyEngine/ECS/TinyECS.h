@@ -25,16 +25,6 @@
 #define _eRegisterCompt( COMP, TARGET ) Register< ##COMP##System>( this, TARGET )
 #define _eRegisterComp( COMP ) _eRegisterCompt( COMP, TINY_UINT_MAX )
 
-template<typename Component>
-concept TinyIsComponent = tiny_is_child_of( Component, TinyComponent );
-
-template<typename... Components>
-	requires ( TinyIsComponent<Components> && ... )
-struct TinyComponentGroup { };
-
-template<typename System>
-concept TinyIsSysten = tiny_is_child_of( System, ITinySystem );
-
 te_class TinyECS final {
 
 private:
@@ -251,21 +241,6 @@ public:
 
 		return tiny_cast( component, Component* );
 	};
-
-	/*
-	template<typename Component>
-		requires TinyIsComponent<Component>
-	Component* Append(
-		TinyGame* game,
-		 engine, 
-		const tiny_uint entity_id
-	) {
-		auto component_name = Component::sGetName( );
-		auto* component		= Append( game, engine, entity_id, component_name );
-
-		return tiny_cast( component, Component* );
-	};
-	*/
 
 	template<typename... Components>
 		requires ( TinyIsComponent<Components> && ... )

@@ -42,7 +42,7 @@ bool TinyScriptLua::Create( TinyLuaContext& context, TinyFile& file ) {
 		state = file.Read( length, address );
 
 		if ( state ) {
-			auto source = tiny_string{ _source.GetAddress( ), length + 1 };
+			auto source = tiny_string{ length + 1, _source.GetAddress( ), };
 
 			source[ length ] = '\0';
 
@@ -59,7 +59,7 @@ bool TinyScriptLua::Create( TinyLuaContext& context, tiny_pointer source ) {
 
 	if ( state ) {
 		auto length = tiny_lvalue( address );
-		auto source = tiny_string{ tiny_cast( address + 1 , c_pointer ), length };
+		auto source = tiny_string{ length, tiny_cast( address + 1 , c_pointer ) };
 
 		source[ length ] = '\0';
 

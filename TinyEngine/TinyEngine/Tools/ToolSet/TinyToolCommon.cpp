@@ -270,7 +270,7 @@ void TinyToolCommon::ConvertShader(
         auto* buffer = file_memory.GetAddress( );
 
         context.Name   = in_path.Name;
-        context.Source = tiny_string{ buffer, tiny_cast( file_memory.Capacity, tiny_uint ) };
+        context.Source = tiny_string{ tiny_cast( file_memory.Capacity, tiny_uint ), buffer };
         
         if ( file.ReadAll( size, buffer ) && graphic.CompileShader( context, shader ) ) {
             auto file = filesystem.OpenFile( out_path, Tiny::FileAccesses::TF_ACCESS_WRITE );

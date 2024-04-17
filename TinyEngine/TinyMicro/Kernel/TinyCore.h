@@ -145,7 +145,7 @@ extern "C" {
 #define tiny_size_chars( ARRAY ) ( tiny_size_array( ARRAY ) - 1 )
 #define tiny_sizeof( TYPE ) tiny_cast( sizeof( TYPE ), tiny_uint )
 #define tiny_countof( TYPE ) tiny_cast( sizeof...( TYPE ), tiny_uint )
-#define tiny_offset_of( TYPE, FIELD ) offsetof( TYPE, FIELD )
+#define tiny_offset_of( FIELD, TYPE ) offsetof( TYPE, FIELD )
 #define tiny_lvalue( PTR ) ( *( PTR ) )
 #define tiny_rvalue( REF ) ( &( REF ) )
 #define tiny_unused( VAR ) tiny_cast( VAR, void )

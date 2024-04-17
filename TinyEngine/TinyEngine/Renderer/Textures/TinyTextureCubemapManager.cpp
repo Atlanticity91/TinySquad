@@ -32,7 +32,12 @@ bool TinyTextureCubemapManager::Create(
 	const tiny_string& alias,
 	const c_pointer builder
 ) {
-	return false;
+	auto state = false;
+
+	if ( builder ) {
+	}
+
+	return state;
 }
 
 bool TinyTextureCubemapManager::Load(
@@ -40,5 +45,5 @@ bool TinyTextureCubemapManager::Load(
 	const tiny_string& alias,
 	TinyFile& file
 ) {
-	return false;
+	return Create( game, alias, nullptr );
 };

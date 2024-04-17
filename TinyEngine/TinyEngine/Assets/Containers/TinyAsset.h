@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include <TinyEngine/Assets/TinyAssetHandle.h>
+#include "TinyAssetHandle.h"
 
-te_class TinyAsset {
+te_abstract_class TinyAsset {
 
 protected:
 	tiny_uint _type;
