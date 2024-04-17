@@ -110,8 +110,7 @@ void TinyGraphicManager::Acquire( const TinyWindow& window ) {
 	if ( _need_recreation )
 		ReCreate( window );
 
-	if ( !_swapchain.Acquire( _logical, _work_context ) )
-		ReCreate( window );
+	_need_recreation = !_swapchain.Acquire( _logical, _work_context );
 }
 
 bool TinyGraphicManager::BeginPass( const tiny_string& pass_name ) {
@@ -171,10 +170,8 @@ void TinyGraphicManager::EndPass( ) {
 void TinyGraphicManager::Present( const TinyWindow& window ) {
 	EndPass( );
 	
-	auto state = !_swapchain.Present( _logical, _queues, _work_context );
-
 	if ( !_need_recreation )
-		_need_recreation = state;
+		_need_recreation = !_swapchain.Present( _logical, _queues, _work_context );
 }
 
 void TinyGraphicManager::Terminate( TinyFilesystem& file_system, TinyWindow& window ) {
@@ -204,6 +201,8 @@ void TinyGraphicManager::ReCreate( const TinyWindow& window ) {
 	_boundaries.ReCreate( window );
 	_swapchain.ReCreate( context );
 	_passes.ReCreate( context );
+
+	_work_context.WorkID = 0;
 
 	_need_recreation = false;
 }

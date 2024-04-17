@@ -135,12 +135,12 @@ TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipeline2D( )
 	pipeline.InputAttributes[ 0 ].location = 0;
 	pipeline.InputAttributes[ 0 ].binding  = pipeline.InputBinding[ 0 ].binding;
 	pipeline.InputAttributes[ 0 ].format   = VK_FORMAT_R32G32_SFLOAT;
-	pipeline.InputAttributes[ 0 ].offset   = tiny_offset_of( VkVertex2D, Location );
+	pipeline.InputAttributes[ 0 ].offset   = tiny_offset_of( Location, VkVertex2D );
 
 	pipeline.InputAttributes[ 1 ].location = 1;
 	pipeline.InputAttributes[ 1 ].binding  = pipeline.InputBinding[ 0 ].binding;
 	pipeline.InputAttributes[ 1 ].format   = VK_FORMAT_R32G32_SFLOAT;
-	pipeline.InputAttributes[ 1 ].offset   = tiny_offset_of( VkVertex2D, UV );
+	pipeline.InputAttributes[ 1 ].offset   = tiny_offset_of( UV, VkVertex2D );
 
 	return pipeline;
 }
@@ -157,12 +157,12 @@ TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipeline3D( )
 	pipeline.InputAttributes[ 0 ].location = 0;
 	pipeline.InputAttributes[ 0 ].binding  = pipeline.InputBinding[ 0 ].binding;
 	pipeline.InputAttributes[ 0 ].format   = VK_FORMAT_R32G32B32_SFLOAT;
-	pipeline.InputAttributes[ 0 ].offset   = tiny_offset_of( VkVertex3D, Location );
+	pipeline.InputAttributes[ 0 ].offset   = tiny_offset_of( Location, VkVertex3D );
 
 	pipeline.InputAttributes[ 1 ].location = 1;
 	pipeline.InputAttributes[ 1 ].binding  = pipeline.InputBinding[ 0 ].binding;
 	pipeline.InputAttributes[ 1 ].format   = VK_FORMAT_R32G32_SFLOAT;
-	pipeline.InputAttributes[ 1 ].offset   = tiny_offset_of( VkVertex3D, UV );
+	pipeline.InputAttributes[ 1 ].offset   = tiny_offset_of( UV, VkVertex3D );
 
 	return pipeline;
 }

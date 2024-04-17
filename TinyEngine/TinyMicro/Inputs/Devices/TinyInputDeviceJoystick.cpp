@@ -74,9 +74,8 @@ bool TinyInputDeviceJoystick::PeekJoystick( ) {
 
             break;
         }
-    }
-
-    _is_present = glfwJoystickPresent( _joystick );
+    } else
+        _is_present = glfwJoystickPresent( _joystick );
 
     return _is_present;
 }

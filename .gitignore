@@ -405,11 +405,13 @@ FodyWeavers.xsd
 *.exe
 /bin/*.lib
 /bin/TinyEngine.dll
+/bin/Thirdparty/GLFW.lib
 /bin/Thirdparty/FreeType.lib
 /bin/Thirdparty/ImGui.lib
 /bin/Thirdparty/Lua.lib
 /bin/Thirdparty/MSDF.lib
 /bin/Thirdparty/MSDF-Atlas.lib
 /bin/Thirdparty/Yaml.lib
+/bin/Thirdparty/Lz4.lib
 /bin/Thirdparty/TinyNut.lib
 /bin/TinyNut.dll

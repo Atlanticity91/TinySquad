@@ -33,7 +33,8 @@
 #define tiny_range_f(  min, max ) tiny_range<float, min, max>
 #define tiny_range_d(  min, max ) tiny_range<double, min, max>
 
-template<typename Type, Type Min, Type Max, typename = std::enable_if<std::is_arithmetic<Type>::value>>
+template<typename Type, Type Min, Type Max>
+	requires tiny_is_literal( Type )
 struct tiny_range {
 
 	Type Value;
@@ -58,12 +59,50 @@ struct tiny_range {
 		return tiny_self;
 	};
 
+	tiny_range operator+( const tiny_range& operand ) {
+		return tiny_range<Type, Min, Max>( Value + operand.Value );
+	}
+
+	tiny_range operator-( const tiny_range& operand ) {
+		return tiny_range<Type, Min, Max>( Value - operand.Value );
+	}
+
+	tiny_range operator*( const tiny_range& operand ) {
+		return tiny_range<Type, Min, Max>( Value * operand.Value );
+	}
+
+	tiny_range operator/( const tiny_range& operand ) {
+		return tiny_range<Type, Min, Max>( Value / operand.Value );
+	}
+
+	template<typename Operand = Type>
+		requires tiny_is_int( Operand )
+	Type operator%( const Operand operand ) {
+		return Value % operand;
+	};
+
+	bool operator<( const Type& other ) {
+		return Value < other.Value;
+	};
+
+	bool operator<=( const Type& other ) {
+		return Value <= other.Value;
+	};
+
+	bool operator>( const Type& other ) {
+		return Value > other.Value;
+	};
+
+	bool operator>=( const Type& other ) {
+		return Value >= other.Value;
+	};
+
 	bool operator==( const Type& other ) {
-		return Value == other;
+		return Value == other.Value;
 	};
 
 	bool operator!=( const Type& other ) {
-		return Value != other;
+		return Value != other.Value;
 	};
 
 };

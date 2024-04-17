@@ -131,7 +131,8 @@ extern "C" {
 #define tiny_is_child_of( TYPE, BASE ) std::is_base_of<BASE, TYPE>::value
 #define tiny_has_contstuctor( TYPE, ARGS ) std::is_constructible<TYPE, ARGS...>::value
 #define tiny_is_int( TYPE ) std::is_integral<TYPE>::value
-#define tiny_is_float( TYPE ) std::is_floating_point<TYPE>::value 
+#define tiny_is_float( TYPE ) std::is_floating_point<TYPE>::value
+#define tiny_is_literal( TYPE ) std::is_arithmetic<TYPE>::value
 #define tiny_is_pointer( TYPE ) std::is_pointer<TYPE>::value
 #define tiny_compile_if( ... ) if constexpr ( __VA_ARGS__ )
 #define tiny_compile_elif( ... ) else tiny_compile_if( __VA_ARGS__ )

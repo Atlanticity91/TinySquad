@@ -25,11 +25,13 @@ project "TinyThirdparty"
     }
 
     links {
+        "Lz4",
         "FreeType",
         "MSDF",
         "MSDF-Atlas",
         "Lua",
         "Yaml",
+        "GLFW",
         "ImGui"
     }
 

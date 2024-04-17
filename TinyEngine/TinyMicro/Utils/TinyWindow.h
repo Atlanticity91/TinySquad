@@ -26,6 +26,7 @@ tiny_enum( TinyWindowCallbacks ) {
 
 	TWC_WINDOW_SIZE = 0,
 	TWC_WINDOW_CLOSE,
+	TWC_WINDOW_HIT,
 	TWC_KEY,
 	TWC_CURSOR,
 	TWC_MOUSE,

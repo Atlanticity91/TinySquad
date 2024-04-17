@@ -21,4 +21,5 @@
 #pragma once 
 
 #define YAML_CPP_STATIC_DEFINE
+
 #include <TinyLibs/Yaml/yaml.h>

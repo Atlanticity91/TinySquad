@@ -63,10 +63,13 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, c_pointer user_data ) 
 	return state;
 }
 
+typedef void( *GLFWwindowhitfun )( GLFWwindow*, int, int, int* );
+
 void TinyWindow::SetCallback( TinyWindowCallbacks query, c_pointer callback ) {
 	switch ( query ) {
 		case TWC_WINDOW_SIZE  : glfwSetWindowSizeCallback( _handle, tiny_cast( callback, GLFWwindowsizefun ) );   break;
 		case TWC_WINDOW_CLOSE : glfwSetWindowCloseCallback( _handle, tiny_cast( callback, GLFWwindowclosefun ) ); break;
+		//case TWC_WINDOW_HIT: glfwSetTitlebarHitTestCallback( _handle, tiny_cast( callback, GLFWwindowhitfun ) ); break;
 		case TWC_KEY		  : glfwSetKeyCallback( _handle, tiny_cast( callback, GLFWkeyfun ) );				  break;
 		case TWC_CURSOR		  : glfwSetCursorPosCallback( _handle, tiny_cast( callback, GLFWcursorposfun ) );	  break;
 		case TWC_MOUSE		  : glfwSetMouseButtonCallback( _handle, tiny_cast( callback, GLFWmousebuttonfun ) ); break;

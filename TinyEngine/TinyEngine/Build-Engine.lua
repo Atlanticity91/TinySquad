@@ -39,7 +39,8 @@ project "TinyEngine"
         links {
             vulkan.."/Lib/SPIRV.lib",
             vulkan.."/Lib/vulkan-1.lib",
-            "%{wks.location}/bin/Thirdparty/glfw3.lib",
+            "%{wks.location}/bin/Thirdparty/GLFW.lib",
+            "%{wks.location}/bin/Thirdparty/Lz4.lib",
             "%{wks.location}/bin/Thirdparty/EOSSDK-Win64-Shipping.lib",
             "%{wks.location}/bin/Thirdparty/steam_api64.lib",
             "%{wks.location}/bin/Thirdparty/FreeType.lib",
