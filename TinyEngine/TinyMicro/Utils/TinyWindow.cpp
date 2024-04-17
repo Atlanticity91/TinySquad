@@ -41,7 +41,7 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, c_pointer user_data ) 
 		if ( config.Icon.Pixels ) {
 			auto icon = GLFWimage{ };
 
-			icon.width = tiny_cast( config.Icon.Width, tiny_int );
+			icon.width  = tiny_cast( config.Icon.Width, tiny_int );
 			icon.height = tiny_cast( config.Icon.Height, tiny_int );
 			icon.pixels = tiny_cast( config.Icon.Pixels.GetAddress( ), tiny_ubyte* );
 
@@ -67,6 +67,12 @@ void TinyWindow::SetCallback( TinyWindowCallbacks query, c_pointer callback ) {
 		default : break;
 	}
 	
+}
+
+void TinyWindow::SetIcon( tiny_int width, tiny_int height, tiny_pointer pixels ) {
+	auto icon = GLFWimage{ width, height, pixels };
+
+	glfwSetWindowIcon( _handle, 1, tiny_rvalue( icon ) );
 }
 
 void TinyWindow::ToggleMinimized( bool is_minimized ) { _is_minimized = is_minimized; }

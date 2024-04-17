@@ -258,7 +258,7 @@ bool TinyToolbox::CreateImGui( ) {
 
     auto& io = ImGui::GetIO( );
 
-    io.BackendFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     return _imgui != nullptr;
 }
@@ -334,7 +334,7 @@ void TinyToolbox::CreateImGuiTheme( ) {
 
     colors[ ImGuiCol_Text                  ] = TinyImGui::Theme::Text;
     colors[ ImGuiCol_TextDisabled          ] = TinyImGui::Theme::TextDarker;
-    colors[ ImGuiCol_WindowBg              ] = TinyImGui::Theme::Titlebar;
+    colors[ ImGuiCol_WindowBg              ] = TinyImGui::Theme::Background;
     colors[ ImGuiCol_ChildBg               ] = TinyImGui::Theme::Background;
     colors[ ImGuiCol_PopupBg               ] = TinyImGui::Theme::BackgroundPopup;
     colors[ ImGuiCol_Border                ] = TinyImGui::Theme::BackgroundDark;
@@ -357,8 +357,8 @@ void TinyToolbox::CreateImGuiTheme( ) {
     colors[ ImGuiCol_ButtonHovered         ] = TinyImGui::Theme::HoverPurple;
     colors[ ImGuiCol_ButtonActive          ] = TinyImGui::Theme::ActivePurple;
     colors[ ImGuiCol_Header                ] = TinyImGui::Theme::GroupHeader;
-    colors[ ImGuiCol_HeaderHovered         ] = TinyImGui::Theme::GroupHeader;
-    colors[ ImGuiCol_HeaderActive          ] = TinyImGui::Theme::GroupHeader;
+    colors[ ImGuiCol_HeaderHovered         ] = TinyImGui::Theme::HoverPurple;
+    colors[ ImGuiCol_HeaderActive          ] = TinyImGui::Theme::ActivePurple;
     colors[ ImGuiCol_Separator             ] = TinyImGui::Theme::BackgroundDark;
     colors[ ImGuiCol_SeparatorHovered      ] = TinyImGui::Theme::HoverPurple;
     colors[ ImGuiCol_SeparatorActive       ] = TinyImGui::Theme::Highlight;
@@ -370,6 +370,8 @@ void TinyToolbox::CreateImGuiTheme( ) {
     colors[ ImGuiCol_TabActive             ] = TinyImGui::Theme::ActivePurple;
     colors[ ImGuiCol_TabUnfocused          ] = TinyImGui::Theme::Titlebar;
     colors[ ImGuiCol_TabUnfocusedActive    ] = TinyImGui::Theme::HoverPurple;
+    colors[ ImGuiCol_DockingPreview        ] = TinyImGui::Theme::HoverPurple;
+    colors[ ImGuiCol_DockingEmptyBg        ] = TinyImGui::Theme::Background;
     colors[ ImGuiCol_PlotLines             ] = TinyImGui::Theme::ActivePurple;
     colors[ ImGuiCol_PlotLinesHovered      ] = TinyImGui::Theme::HoverPurple;
     colors[ ImGuiCol_PlotHistogram         ] = ImVec4( 0.90f, 0.70f, 0.00f, 1.00f );

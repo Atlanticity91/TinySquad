@@ -20,6 +20,8 @@
 
 #include "Glfw_win32.h"
 
+#include <stdio.h>
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	INTERNAL ===
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,8 +33,8 @@ WNDPROC glfw_internal_proc;
 glfwTitlebarHitCallback glfw_internal_titlebarhit = nullptr;
 
 LRESULT CALLBACK glfwWin32Hook( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam ) {
-    auto* window = (GLFWwindow*)GetPropW( hWnd, L"GLFW" );
-
+    auto window = GetPropW( hWnd, L"GLFW" );
+    
     switch ( uMsg ) {
         case WM_NCCALCSIZE: 
         {
@@ -83,7 +85,7 @@ LRESULT CALLBACK glfwWin32Hook( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                 return HTRIGHT;
             }
 
-            if ( glfw_internal_titlebarhit && glfw_internal_titlebarhit( window ) )
+            if ( glfw_internal_titlebarhit && glfw_internal_titlebarhit( (GLFWwindow*)window ) )
                 return HTCAPTION;
 
             return HTCLIENT;

@@ -51,7 +51,7 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 	_is_running = PreInit( game, game_config );
 
 	if ( _is_running ) {
-		_is_running = _window.Initialize( tiny_lvalue( game_config ), tiny_cast( this, c_pointer ) ) &&
+		_is_running = _window.Initialize( tiny_lvalue( game_config ), tiny_cast( game, c_pointer ) ) &&
 					  _inputs.Initialize( _filesystem, _window )									 &&
 					  _audio.Initialize( _filesystem, _window )										 &&
 					  _graphics.Initialize( _filesystem, _window );
@@ -181,7 +181,7 @@ void TinyEngine::JobRun( c_pointer game ) {
 }
 
 void TinyEngine::Resize( GLFWwindow* handle, tiny_int width, tiny_int height ) {
-	auto* engine   = tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
+	auto* engine   = tiny_cast( glfwGetWindowUserPointer( handle ), TinyGame* );
 	auto& window   = engine->GetWindow( );
 	auto& graphics = engine->GetGraphics( );
 	auto state	   = width > 0 && height > 0;
@@ -193,7 +193,7 @@ void TinyEngine::Resize( GLFWwindow* handle, tiny_int width, tiny_int height ) {
 }
 
 void TinyEngine::Close( GLFWwindow* handle ) {
-	auto* engine = tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
+	auto* engine = tiny_cast( glfwGetWindowUserPointer( handle ), TinyGame* );
 
 	engine->Stop( );
 }
@@ -205,7 +205,7 @@ void TinyEngine::ProcessKey(
 	tiny_int action,
 	tiny_int mods 
 ) {
-	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
+	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyGame* );
 	auto& inputs    = engine->GetInputs( );
 	auto descriptor = TinyInputDescriptor{ TI_DEVICE_KEYBOARD, TI_TYPE_BUTTON, TinyInputs::ConvertKey( key ) };
 
@@ -219,7 +219,7 @@ void TinyEngine::ProcessKey(
 }
 
 void TinyEngine::ProcessCursor( GLFWwindow* handle, double cursor_x, double cursor_y ) {
-	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
+	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyGame* );
 	auto& inputs	= engine->GetInputs( );
 	auto descriptor = TinyInputDescriptor{ TI_DEVICE_MOUSE, TI_TYPE_AXIS_2D, TIK_MOUSE_CURSOR };
 
@@ -239,7 +239,7 @@ void TinyEngine::ProcessMouse(
 	tiny_int action,
 	tiny_int mods
 ) {
-	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
+	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyGame* );
 	auto& inputs	= engine->GetInputs( );
 	auto descriptor = TinyInputDescriptor{ TI_DEVICE_MOUSE, TI_TYPE_BUTTON, (TinyInputKeys)button };
 
@@ -253,7 +253,7 @@ void TinyEngine::ProcessMouse(
 }
 
 void TinyEngine::ProcessScroll( GLFWwindow* handle, double offset_x, double offset_y ) {
-	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyEngine* );
+	auto* engine	= tiny_cast( glfwGetWindowUserPointer( handle ), TinyGame* );
 	auto& inputs	= engine->GetInputs( );
 	auto descriptor = TinyInputDescriptor{ TI_DEVICE_MOUSE, TI_TYPE_AXIS_2D, TIK_MOUSE_SCROLL };
 

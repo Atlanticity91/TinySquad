@@ -31,11 +31,12 @@ tn_class TinyNutWindow final {
 
 protected:
 	bool			 _is_over;
+	bool			 _has_dockspace;
 	tiny_string		 _name;
 	tiny_map<Icon_t> _icons;
 
 public:
-	TinyNutWindow( const tiny_string& name );
+	TinyNutWindow( const tiny_string& name, bool enable_dockspace );
 
 	virtual ~TinyNutWindow( ) = default;
 
@@ -54,6 +55,8 @@ public:
 	void Terminate( TinyNut* nut_game );
 
 private:
+	void Initialize( TinyNut* nut_game );
+
 	void DrawBorder( );
 
 	void DrawTitlebarBorder(
@@ -63,6 +66,8 @@ private:
 	);
 
 	void DrawTitlebarLogo( bool is_maximized, const ImVec2& passing );
+
+	void DrawMenubar( TinyNut* nut_game, bool is_maximized );
 
 	void DrawTitlebarText( const ImVec2& passing );
 
@@ -75,8 +80,6 @@ private:
 	);
 
 	void DrawTitlebar( TinyNut* nut_game, bool is_maximized );
-
-	void DrawMenubar( TinyNut* nut_game, bool is_maximized, bool& is_overed );
 
 	bool Prepare( TinyNut* nut_game, TinyWindow& window );
 
@@ -95,5 +98,7 @@ private:
 
 public:
 	bool GetIsTitlevarHovered( ) const;
+
+	bool GetHasDockspace( ) const;
 
 };

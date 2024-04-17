@@ -52,6 +52,8 @@ public:
 
 	void SetCallback( TinyWindowCallbacks query, c_pointer callback );
 
+	void SetIcon( tiny_int width, tiny_int height, tiny_pointer pixels );
+
 	void ToggleMinimized( bool is_minimized );
 
 	void Minimize( );

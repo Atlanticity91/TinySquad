@@ -24,6 +24,9 @@
 
 class TinyBacker final : tiny_inherit( TinyNut ) {
 
+private:
+	tiny_list<std::string> _history;
+
 public:
 	TinyBacker( );
 
@@ -33,5 +36,8 @@ protected:
 	tiny_implement( void TickMenubar( ) );
 
 	tiny_implement( void TickUI( ) );
+
+private:
+	c_string TypeToStr( const tiny_uint type ) const;
 
 };

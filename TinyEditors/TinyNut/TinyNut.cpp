@@ -24,9 +24,13 @@
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyNut::TinyNut( const tiny_string& title )
+	: TinyNut{ title, false }
+{ }
+
+TinyNut::TinyNut( const tiny_string& title, bool enable_dockspace )
 	: TinyGame{ title, TGO_PAYSAGE_16x9, true },
 	_context{ },
-	_window{ title }
+	_window{ title, enable_dockspace }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

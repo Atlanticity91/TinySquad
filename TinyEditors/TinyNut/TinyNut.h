@@ -33,6 +33,8 @@ private:
 public:
 	TinyNut( const tiny_string& title );
 
+	TinyNut( const tiny_string& title, bool enable_dockspace );
+
 	virtual ~TinyNut( ) = default;
 
 protected:
