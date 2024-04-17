@@ -23,5 +23,7 @@
 #define GLFW_EXPOSE_NATIVE_COCOA
 #define GLFW_INCLUDE_NONE
 
+#define GLFW_DLL
+
 #include <TinyLibs/GLFW/glfw3.h>
 #include <TinyLibs/GLFW/glfw3native.h>

@@ -172,10 +172,23 @@ namespace TinyNutUI {
 		const ImU32& hovered,
 		const ImU32& pressed
 	) {
+		auto bound_min = ImGui::GetItemRectMin( );
+		auto bound_max = ImGui::GetItemRectMax( );
+
+		ButtonImage( image, normal, hovered, pressed, { bound_min, bound_max } );
+	}
+
+	void ButtonImage(
+		const Image& image,
+		const ImU32& normal,
+		const ImU32& hovered,
+		const ImU32& pressed,
+		const ImRect& bounding
+	) {
 		if ( image.Descriptor ) {
 			auto* draw_list = ImGui::GetForegroundDrawList( );
-			auto bound_min  = ImGui::GetItemRectMin( );
-			auto bound_max  = ImGui::GetItemRectMax( );
+			auto bound_min  = bounding.Min;
+			auto bound_max  = bounding.Max;
 
 			if ( ImGui::IsItemActive( ) )
 				draw_list->AddImage( image.Descriptor, bound_min, bound_max, { 0.f, 0.f }, { 1.f, 1.f }, pressed );

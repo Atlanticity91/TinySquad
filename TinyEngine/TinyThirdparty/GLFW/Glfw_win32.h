@@ -23,5 +23,44 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_INCLUDE_NONE
 
+#define GLFW_DLL
+
 #include <TinyLibs/GLFW/glfw3.h>
 #include <TinyLibs/GLFW/glfw3native.h>
+
+#ifdef _WIN32
+#	ifdef TT_BUILD
+#		define glfw_api __declspec( dllexport )
+#	else
+#		define glfw_api __declspec( dllimport )
+#	endif
+#else
+#	define glfw_api
+#endif
+
+typedef bool( *glfwTitlebarHitCallback )( GLFWwindow* );
+
+struct GlfwWindow {
+
+	GLFWwindow* Handle;
+
+	GlfwWindow( );
+
+	operator GLFWwindow* ( );
+
+	operator GLFWwindow* ( ) const;
+
+};
+
+glfw_api void glfwSetTitlebarHitCallback( glfwTitlebarHitCallback callback );
+
+glfw_api bool glfwCreateWindow(
+	GlfwWindow& window,
+	const char* title,
+	int width,
+	int height,
+	bool headless,
+	bool full_screen
+);
+
+glfw_api void glfwDestroyWindow( GlfwWindow& window );

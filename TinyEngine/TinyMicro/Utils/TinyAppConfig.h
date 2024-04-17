@@ -32,8 +32,9 @@ tm_struct TinyAppIcon {
 
 tm_struct TinyAppConfig {
 
-	tiny_int Width  = 0;
-	tiny_int Height = 0;
+	bool IsFullScreen = false;
+	tiny_int Width    = 0;
+	tiny_int Height   = 0;
 	TinyAppIcon Icon{ };
 
 };

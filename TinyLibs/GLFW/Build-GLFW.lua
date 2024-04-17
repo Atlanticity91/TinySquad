@@ -4,6 +4,8 @@ project "GLFW"
 	cdialect "C17"
     staticruntime "off"
 
+    defines { "_GLFW_BUILD_DLL" }
+
 	files {
 		"glfw3.h",
 		"glfw3native.h",

@@ -22,7 +22,7 @@
 
 #include "TinyNutUI.h"
 
-te_class TinyNutContext final {
+tn_class TinyNutContext final {
 
 public:
 	TinyNutContext( );

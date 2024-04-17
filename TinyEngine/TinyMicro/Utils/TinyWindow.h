@@ -38,9 +38,10 @@ tm_class TinyWindow final {
 
 private:
 	tiny_string _title;
-	GLFWwindow* _handle;
+	GlfwWindow  _handle;
 	bool		_is_minimized;
 	bool		_is_headless;
+	bool		_is_full_screen;
 
 public:
 	TinyWindow( tiny_string title, bool is_headless );
@@ -63,15 +64,14 @@ public:
 
 	void Terminate( );
 
-private:
-	void SetupHeadless( const TinyAppConfig& config );
-
 public:
 	tiny_string GetTitle( ) const;
 
 	bool GetIsHeadless( ) const;
 
-	GLFWwindow* GetHandle( ) const;
+	bool GetIsFullScreen( ) const;
+
+	const GlfwWindow& GetHandle( ) const;
 
 	HWND GetWin32Handle( ) const;
 

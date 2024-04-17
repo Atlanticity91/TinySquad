@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyConfig::TinyConfig( )
 	: TinyAsset{ TA_TYPE_CONFIG },
-	_application{ 1280, 720 },
+	_application{ false, 1280, 720 },
 	_archives{ },
 	_start_scene{ }
 { }
@@ -48,6 +48,7 @@ bool TinyConfig::Load( TinyFile& file ) {
 	auto state = header.GetIsAsset( _type );
 
 	if ( state ) {
+		file.Read( _application.IsFullScreen );
 		file.Read( _application.Width );
 		file.Read( _application.Height );
 		file.Read( _application.Icon.Width );
@@ -72,6 +73,7 @@ void TinyConfig::Save( TinyFile& file ) {
 	auto header = TinyAssetHeader{ _type };
 
 	file.Write( header );
+	file.Write( _application.IsFullScreen );
 	file.Write( _application.Width );
 	file.Write( _application.Height );
 	file.Write( _application.Icon.Width );

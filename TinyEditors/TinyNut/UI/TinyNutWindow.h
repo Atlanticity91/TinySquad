@@ -30,6 +30,7 @@ tn_class TinyNutWindow final {
 	using Icon_t = TinyNutUI::Icon;
 
 protected:
+	bool			 _is_over;
 	tiny_string		 _name;
 	tiny_map<Icon_t> _icons;
 
@@ -69,6 +70,7 @@ private:
 		TinyNut* nut_game,
 		const ImVec2& offset, 
 		const ImVec2& padding,
+		const ImVec2& expand,
 		const tiny_string& name
 	);
 
@@ -88,5 +90,10 @@ private:
 	static void Maximize( TinyNut* nut_game );
 
 	static void Close( TinyNut* nut_game );
+
+	static bool TitlebarHit( GLFWwindow* window );
+
+public:
+	bool GetIsTitlevarHovered( ) const;
 
 };
