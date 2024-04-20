@@ -41,14 +41,20 @@ namespace TinyImport {
 		if ( tiny_allocate( storage, size ) ) {
 			auto* data = storage.GetAddress( );
 
-			if ( file.ReadAll( size, data ) ) {
-				builder.Texels = stbi_load_from_memory( tiny_cast( data, tiny_pointer ), size, tiny_rvalue( img_w ), tiny_rvalue( img_h ), tiny_rvalue( img_c ), 4 );
+			if ( 
+				file.ReadAll( size, data ) &&
+				stbi_info_from_memory( tiny_cast( data, tiny_pointer ), size, tiny_rvalue( img_w ), tiny_rvalue( img_h ), tiny_rvalue( img_c ) ) 
+			) {
+				auto* pixels = stbi_load_from_memory( tiny_cast( data, tiny_pointer ), size, tiny_rvalue( img_w ), tiny_rvalue( img_h ), tiny_rvalue( img_c ), 4 );
+				
+				if ( pixels ) {
+					builder.Texels = tiny_list<tiny_ubyte>{ tiny_cast( img_w * img_h * 4, tiny_uint ), pixels };
 
-				if ( builder.Texels ) {
+					stbi_image_free( builder.Texels );
+
 					builder.Properties.Type   = TGT_TYPE_TEXTURE_2D;
 					builder.Properties.Width  = tiny_cast( img_w, tiny_uint );
 					builder.Properties.Height = tiny_cast( img_h, tiny_uint );
-					builder.Size			  = tiny_cast( img_w * img_h * 4, tiny_uint );
 					builder.Rows			  = 1;
 					builder.Columns			  = 1;
 
@@ -57,8 +63,6 @@ namespace TinyImport {
 					auto file		 = filesystem.OpenFile( path, Tiny::TF_ACCESS_WRITE );
 
 					state = ExportTexture2D( game, file, tiny_rvalue( builder ) );
-					
-					stbi_image_free( builder.Texels );
 				}
 			}
 
@@ -81,10 +85,7 @@ namespace TinyImport {
 			file.Write( builder_->Rows );
 			file.Write( builder_->Columns );
 			file.Write( builder_->Properties );
-			file.Write( builder_->Size );
-
-			if ( builder_->Texels )
-				file.Write( builder_->Size, builder_->Texels );
+			file.Write( builder_->Texels );
 		}
 
 		return state;

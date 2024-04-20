@@ -31,7 +31,7 @@ TinyCue::TinyCue( )
 { }
 
 bool TinyCue::Create( const TinyCueBuilder& builder ) {
-    return false;
+    return true;
 }
 
 void TinyCue::Terminate( TinyGame* game ) { tiny_deallocate( _storage ); }

@@ -25,8 +25,7 @@
 tm_struct TinyGraphicTextureSpecification {
 
 	TinyGraphicTextureProperties Properties;
-	tiny_uint Size;
-	tiny_pointer Texels;
+	tiny_list<tiny_ubyte> Texels;
 
 	TinyGraphicTextureSpecification( );
 

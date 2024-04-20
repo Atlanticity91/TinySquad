@@ -22,10 +22,24 @@
 
 #include <TinyNut/TinyNut.h>
 
+struct TinyBackerEntry {
+
+	tiny_uint Type    = 0;
+	bool IsCompressed = false;
+	std::string Alias = "";
+	std::string Path  = "";
+
+};
+
 class TinyBacker final : tiny_inherit( TinyNut ) {
 
 private:
-	tiny_list<std::string> _history;
+	tiny_int				   _history_id;
+	tiny_uint				   _delete_id;
+	std::string				   _import_path;
+	tiny_list<std::string>	   _history;
+	tiny_list<TinyBackerEntry> _entries;
+	TinyImGui::DropdownContext _dropdown;
 
 public:
 	TinyBacker( );
@@ -36,6 +50,15 @@ protected:
 	tiny_implement( void TickMenubar( ) );
 
 	tiny_implement( void TickUI( ) );
+
+private:
+	void LoadContent( );
+
+	void DrawEntry( tiny_uint entry_id, TinyBackerEntry& entry );
+
+	void DrawContent( );
+
+	void DrawPopups( );
 
 private:
 	c_string TypeToStr( const tiny_uint type ) const;

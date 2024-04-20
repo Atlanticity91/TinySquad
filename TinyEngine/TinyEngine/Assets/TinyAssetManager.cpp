@@ -150,6 +150,7 @@ void TinyAssetManager::RegisterTypes( ) {
 	Register<TinyCueManager>( TA_TYPE_CUE );
 	Register<TinySampleManager>( TA_TYPE_SANPLES );
 	Register<TinyScriptManager>( TA_TYPE_SCRIPT );
+	Register<TinyPrefabManager>( TA_TYPE_PREFAB );
 	Register<TinySceneManager>( TA_TYPE_SCENE );
 	Register<TinyLocalisationManager>( TA_TYPE_LOCALISATION );
 	Register<TinyTrophyManager>( TA_TYPE_TROPHY );

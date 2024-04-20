@@ -21,6 +21,44 @@
 #include <TinyEngine/__tiny_engine_pch.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
+//		===	INTERNAL ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool Internal_ImportShader(
+	TinyGame* game,
+	TinyFile& file,
+	const TinyPathInformation& path_info,
+	bool is_hlsl
+) {
+	auto storage = tiny_storage{ TS_TYPE_HEAP };
+	auto builder = TinyGraphicShaderSpecification{ };
+	auto state   = false;
+	auto size    = file.GetSize( );
+
+	if ( tiny_allocate( storage, size ) ) {
+		auto* data = storage.GetAddress( );
+
+		if ( file.ReadAll( size, data ) ) {
+			auto& graphics = game->GetGraphics( );
+			auto context   = TinyGraphicShaderCompilationContext{
+				TGS_OPTIMIZATION_PERF,
+				{ path_info.Name },
+				"main",
+				{ size, data }
+			};
+
+			context.IsHLSL = is_hlsl;
+
+			if ( graphics.CompileShader( context, builder ) )
+				state = TinyImport::ExportShader( game, file, tiny_rvalue( builder ) );
+		}
+
+		tiny_deallocate( storage );
+	}
+
+	return state;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 namespace TinyImport {
@@ -30,33 +68,7 @@ namespace TinyImport {
 		TinyFile& file,
 		const TinyPathInformation& path_info
 	) {
-		/*
-		auto state = tiny_make_storage( storage, TinyGraphicShaderSpecification );
-
-		if ( state ) {
-			auto& graphics = game->GetGraphics( );
-			auto* builder = storage.As<TinyGraphicShaderSpecification>( );
-			auto* source = file.GetAddress( );
-			auto context = TinyGraphicShaderCompilationContext{ };
-
-			context.Name = tiny_string{ path.Name };
-			context.Source = tiny_string{ source, tiny_cast( file.Capacity, tiny_uint ) };
-
-			if ( path.Extension == "hlsl" )
-				context.IsHLSL = true;
-
-			state = graphics.CompileShader( context, tiny_lvalue( builder ) );
-		}
-		*/
-
-		auto builder = TinyGraphicShaderSpecification{ };
-		auto state   = false;
-
-		if ( true ) {
-			state = ExportShader( game, file, tiny_rvalue( builder ) );
-		}
-
-		return state;
+		return Internal_ImportShader( game, file, path_info, false );
 	}
 	
 	bool ImportShaderHLSL(
@@ -64,7 +76,7 @@ namespace TinyImport {
 		TinyFile& file,
 		const TinyPathInformation& path_info
 	) {
-		return false;
+		return Internal_ImportShader( game, file, path_info, true );
 	}
 	
 	bool ExportShader(

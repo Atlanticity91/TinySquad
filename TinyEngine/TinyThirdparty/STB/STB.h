@@ -20,4 +20,5 @@
 
 #pragma once
 
-#include "StbImage.h"
+#include "StbImageRead.h"
+#include "StbImageWrite.h"

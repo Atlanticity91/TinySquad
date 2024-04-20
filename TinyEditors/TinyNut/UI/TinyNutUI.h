@@ -66,6 +66,8 @@ namespace TinyNutUI {
 		Image Icon;
 		Callback_t Callback;
 
+		operator ImTextureID ( ) const { return Icon.Descriptor; };
+
 	};
 
 	tiny_nut_dll Image CreateImage(

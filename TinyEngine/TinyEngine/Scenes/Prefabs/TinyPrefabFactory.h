@@ -18,13 +18,15 @@
  *
  ******************************************************************************************/
 
-#include "Prefabs/TinyPrefabFactory.h"
+#include "TinyPrefabManager.h"
 
-te_class TinyScene final : tiny_inherit( TinyAsset ) {
+te_abstract_class TinyPrefabFactory {
 
 public:
-	TinyScene( );
+	TinyPrefabFactory( ) = default;
 
-	~TinyScene( ) = default;
+	virtual ~TinyPrefabFactory( ) = default;
+
+	tiny_abstract( void Spawn( const tiny_uint entity_id, TinyGame* game, TinyECS& ecs ) );
 
 };

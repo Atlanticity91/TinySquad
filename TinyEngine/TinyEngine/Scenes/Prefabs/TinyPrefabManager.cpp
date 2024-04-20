@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 24/11/2023
- * @version  : 2024.1
+ * @creation : 20/04/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,45 +23,42 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyTexture2DManager::TinyTexture2DManager( )
+TinyPrefabManager::TinyPrefabManager( ) 
 	: TinyAssetContainer{ }
 { }
 
-bool TinyTexture2DManager::Create(
-	TinyGame* game, 
-	const tiny_string& alias, 
+bool TinyPrefabManager::Create(
+	TinyGame* game,
+	const tiny_string& alias,
 	const c_pointer builder
-) {
-	auto& graphics = game->GetGraphics( );
-	auto& builder_ = tiny_lvalue( tiny_cast( builder, const TinyTexture2DBuilder* ) );
-	auto context   = graphics.GetContext( );
-	auto staging   = TinyGraphicBufferStaging{ };
-	auto state	   = false;
-	auto size	   = builder_.Texels.size( );
-	auto* data	   = tiny_cast( builder_.Texels.data( ), const c_pointer );
-
-	if ( staging.CreateMap( context, size, data ) ) {
-		auto& texture = Emplace( alias );
-
-		state = texture.Create( graphics, builder_, staging );
-	}
-
-	staging.Terminate( context );
-
-	return state;
+) { 
+	return false;
 }
 
-bool TinyTexture2DManager::Load(
+bool TinyPrefabManager::Load(
 	TinyGame* game,
 	const tiny_string& alias,
 	TinyFile& file
 ) {
-	auto builder = TinyTexture2DBuilder{ };
+	return Create( game, alias, nullptr );
+}
 
-	file.Read( builder.Rows );
-	file.Read( builder.Columns );
-	file.Read( builder.Properties );
-	file.Read( builder.Texels );
+tiny_uint TinyPrefabManager::Spawn(
+	TinyGame* game,
+	const tiny_string& entity_name,
+	const tiny_string& prefab_name
+) {
+	auto entity_id = TINY_UINT_MAX;
+	auto* prefab   = tiny_cast( GetAsset( tiny_hash{ prefab_name } ), TinyPrefab* );
 
-	return Create( game, alias, tiny_rvalue( builder ) );
-};
+	if ( prefab ) {
+		auto& ecs = game->GetECS( );
+
+		entity_id = ecs.Create( entity_name );
+
+		if ( entity_id < TINY_UINT_MAX )
+			prefab->Spawn( game, ecs, entity_id );
+	}
+
+	return entity_id;
+}

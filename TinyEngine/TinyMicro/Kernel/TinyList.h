@@ -56,6 +56,15 @@ public:
 			element = def_value;
 	};
 
+	tiny_list( tiny_uint size, const tiny_pointer data ) 
+		: _data{ size / tiny_sizeof( Type ) }
+	{ 
+		auto* dst = tiny_cast( _data.data( ), tiny_pointer );
+
+		if ( data && dst )
+			Tiny::Memcpy( data, dst, size );
+	};
+
 	~tiny_list( ) = default;
 
 	tiny_list& clear( ) { 

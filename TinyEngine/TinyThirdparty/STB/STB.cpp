@@ -10,21 +10,14 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/04/2024
- * @version  : 2024.2.8
+ * @creation : 20/04/2024
+ * @version  : 2024.2.7
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
-#include "Prefabs/TinyPrefabFactory.h"
-
-te_class TinyScene final : tiny_inherit( TinyAsset ) {
-
-public:
-	TinyScene( );
-
-	~TinyScene( ) = default;
-
-};
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "STB.h"

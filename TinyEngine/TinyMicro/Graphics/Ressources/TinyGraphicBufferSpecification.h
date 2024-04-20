@@ -34,7 +34,7 @@ tiny_enum( TinyGraphicBufferTypes ) {
 
 tm_struct TinyGraphicBufferSpecification {
 
-	TinyGraphicBufferTypes Type;
-	tiny_uint Size;
+	TinyGraphicBufferTypes Type = TGB_TYPE_VERTEX;
+	tiny_uint Size				= 0;
 
 };

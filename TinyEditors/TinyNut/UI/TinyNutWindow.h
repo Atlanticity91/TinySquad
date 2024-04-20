@@ -101,4 +101,6 @@ public:
 
 	bool GetHasDockspace( ) const;
 
+	const Icon_t* GetIcon( const tiny_string& alias ) const;
+
 };

@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 16/04/2024
+ * @creation : 20/04/2024
  * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -18,15 +18,14 @@
  *
  ******************************************************************************************/
 
-#include <TinyEngine/ECS/TinyECS.h>
+#include <TinyEngine/__tiny_engine_pch.h>
 
-te_abstract_class TinySceneFactory {
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+TinyPrefab::TinyPrefab( )
+	: TinyAsset{ TA_TYPE_PREFAB }
+{ }
 
-public:
-	TinySceneFactory( ) = default;
-
-	virtual ~TinySceneFactory( ) = default;
-
-	tiny_abstract( void Spawn( const tiny_uint entity_id, TinyGame* game, TinyECS& ecs ) );
-
-};
+void TinyPrefab::Spawn( TinyGame* game, TinyECS& ecs, tiny_uint entity_id ) {
+}

@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 04/01/2024
- * @version  : 2024.1
+ * @creation : 20/04/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,35 +20,15 @@
 
 #pragma once
 
-#include <TinyEngine/Scripts/TinyScriptManager.h>
+#include <TinyEngine/ECS/TinyECS.h>
 
-#define TINY_CUE_RIFF TINY_FOURCC( RIFF )
-#define TINY_CUE_WAVE TINY_FOURCC( WAVE )
-#define TINY_CUE_XWMA TINY_FOURCC( XWMA )
-#define TINY_CUE_JUNK TINY_FOURCC( JUNK )
-#define TINY_CUE_DATA TINY_FOURCC( data )
-#define TINY_CUE_DPDS TINY_FOURCC( dpds )
-#define TINY_CUE_FMT  TINY_FOURCC2( "fmt " )
+te_class TinyPrefab final : tiny_inherit( TinyAsset ) { 
 
-te_struct TinyRiffChunck {
+public:
+	TinyPrefab( );
 
-	tiny_uint RIFF = 0;
-	tiny_uint Size = 0;
-	tiny_uint Type = 0;
+	~TinyPrefab( ) = default;
 
-};
-
-te_struct TinyCueContext {
-
-	float FadeIn  = .0f;
-	float FadeOut = .0f;
-
-};
-
-te_struct TinyCueBuilder {
-
-	TinyCueFormat Format{ };
-	TinyCueContext Context{ };
-	tiny_list<tiny_ubyte> Data{ };
+	void Spawn( TinyGame* game, TinyECS& ecs, tiny_uint entity_id );
 
 };

@@ -24,8 +24,12 @@
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyBacker::TinyBacker( )
-	: TinyNut{ "Tiny Backer" },
-    _history{ }
+    : TinyNut{ "Tiny Backer" },
+    _history_id{ 0 },
+    _delete_id{ TINY_UINT_MAX },
+    _import_path{ },
+    _history{ },
+    _entries{ }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,6 +37,14 @@ TinyBacker::TinyBacker( )
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyBacker::TickMenubar( ) {
     if ( ImGui::BeginMenu( "File" ) ) {
+        if ( ImGui::MenuItem( "New" ) ) {
+        }
+
+        if ( ImGui::MenuItem( "Import" ) ) {
+        }
+
+        ImGui::Separator( );
+
         if ( ImGui::MenuItem( "Exit" ) )
             Stop( );
 
@@ -49,19 +61,35 @@ void TinyBacker::TickMenubar( ) {
 
 void TinyBacker::TickUI( ) {
     TinyImGui::BeginVars( );
-    TinyImGui::TextVar( "Pack", "%s", "Dev/Test.tinyasset" );
+    
 
-    //ImGui::Combo( "Pack :", nullptr, nullptr, _history.size( ) );
+    //TinyImGui::Dropdown( "Pack", );
+    TinyImGui::InputBegin( "Pack" );
 
-    ImGui::SameLine( );
+    auto list = tiny_list<c_string>{ };
 
-    if ( ImGui::Button( "..." ) ) {
-        auto& filesystem = GetFilesystem( );
-        auto path        = filesystem.GetDevDir( );
+    /*
+    for ( auto& history : _history )
+        list.emplace( history.c_str( ) );
+    */
+    TINY_IMGUI_SCOPE_ID(
+        if ( ImGui::Combo( "", tiny_rvalue( _history_id ), list.data( ), (int)list.size( ) ) ) {
+            if ( _history_id == 0 ) {
+                auto& filesystem = GetFilesystem( );
+                auto path = filesystem.GetDevDir( );
 
-        if ( filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, "", path ) )
-            _history.emplace_back( path.as_string( ) );
-    }
+                if ( filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, "", path ) ) {
+                    auto path_str = path.as_string( );
+
+                    _history_id = _history.size( );
+                    _history.emplace_back( path_str );
+
+                    LoadContent( );
+                }
+            }
+        }
+    );
+    TinyImGui::InputEnd( );
 
     TinyImGui::TextVar( "Author", "%s", "Atlanticity91" );
     TinyImGui::TextVar( "Version", "%d.%d.%d", 2024, 2, 7 );
@@ -70,29 +98,103 @@ void TinyBacker::TickUI( ) {
 
     ImGui::SeparatorText( "Content" );
 
-    const auto flags = ImGuiTableFlags_Borders | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTableFlags_RowBg;
+    if ( ImGui::Button( "Import" ) ) {
+        auto& filesystem = GetFilesystem( );
+        auto path        = filesystem.GetDevDir( );
+
+        if ( filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, "All Files (*.*)\0*.*\0", path ) ) {
+            auto& assets   = GetAssets( );
+            auto& importer = assets.GetImporter( );
+
+            _import_path = path.as_string( );
+
+            if ( !assets.Import( this, path ) ) 
+                ImGui::OpenPopup( "Import Fail" );
+        }
+    }
+
+    DrawContent( );
+    DrawPopups( );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// === PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyBacker::LoadContent( ) {
+
+}
+
+void TinyBacker::DrawEntry( tiny_uint entry_id, TinyBackerEntry& entry ) {
+    auto* type_str  = TypeToStr( entry.Type );
+    auto* alias_str = entry.Alias.c_str( );
+    auto* path_str  = entry.Path.c_str( );
+
+    ImGui::TableNextRow( );
+    ImGui::TableNextColumn( );
+
+    if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) )
+        _delete_id = entry_id;
+
+    ImGui::TableNextColumn( );
+
+    TINY_IMGUI_SCOPE_ID(
+        ImGui::Checkbox( "", tiny_rvalue( entry.IsCompressed ) );
+    );
+
+    ImGui::TableNextColumn( );
+    ImGui::Text( "%s", type_str );
+    ImGui::TableNextColumn( );
+    ImGui::Text( "%s", alias_str );
+    ImGui::TableNextColumn( );
+    ImGui::Text( "%s", path_str );
+}
+
+void TinyBacker::DrawContent( ) {
+    const auto flags     = ImGuiTableFlags_Borders | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTableFlags_RowBg;
     const auto char_size = ImGui::CalcTextSize( "#" ).x;
 
-    if ( ImGui::BeginTable( "Asset List", 4, flags ) ) {
-        ImGui::TableSetupColumn( "Type", ImGuiTableColumnFlags_WidthFixed, char_size * 4.0f );
+    if ( _delete_id < _entries.size( ) ) {
+        _entries.erase( _delete_id );
+
+        _delete_id = TINY_UINT_MAX;
+    }
+
+    if ( ImGui::BeginTable( "Asset List", 5, flags ) ) {
+        ImGui::TableSetupColumn( "##_Delete", ImGuiTableColumnFlags_WidthFixed, char_size * 3.f );
+        ImGui::TableSetupColumn( "Lz4", ImGuiTableColumnFlags_WidthFixed, char_size * 3.f );
+        ImGui::TableSetupColumn( "Type", ImGuiTableColumnFlags_WidthFixed, char_size * 14.f );
         ImGui::TableSetupColumn( "Alias", ImGuiTableColumnFlags_WidthStretch );
         ImGui::TableSetupColumn( "Path", ImGuiTableColumnFlags_WidthStretch );
-        ImGui::TableSetupColumn( "Compressed", ImGuiTableColumnFlags_WidthFixed, char_size * 10.0f );
         ImGui::TableHeadersRow( );
 
-        const auto node_flags = ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_SpanAllColumns;
-        const auto leaf_flags = node_flags |
-            ImGuiTreeNodeFlags_FramePadding |
-            ImGuiTreeNodeFlags_Leaf |
-            ImGuiTreeNodeFlags_Bullet |
-            ImGuiTreeNodeFlags_NoTreePushOnOpen |
-            ImGuiTreeNodeFlags_AllowOverlap;
+        auto entry_id = tiny_cast( 0, tiny_uint );
 
-        auto spacing = ImGui::GetStyle( ).ItemSpacing.x;
-
-        //auto* type_str = TypeToStr( 0 );
-
+        for ( auto& entry : _entries )
+            DrawEntry( entry_id++, entry );
+        
         ImGui::EndTable( );
+    }
+}
+
+void TinyBacker::DrawPopups( ) {
+    if ( ImGui::BeginPopupModal( "Import Fail", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) ) {
+        auto& window = GetNutWindow( );
+        auto* icon   = window.GetIcon( "Logo" );
+
+        ImGui::Image( icon->Icon.Descriptor, { 48.f, 48.f } );
+
+        ImGui::SameLine( );
+        TinyImGui::ShiftCursorX( 20.f );
+
+        ImGui::BeginGroup( );
+        ImGui::Text( "Failed to import asset :" );
+        ImGui::Text( _import_path.c_str( ) );
+        ImGui::EndGroup( );
+
+        if ( ImGui::Button( "Close" ) ) 
+            ImGui::CloseCurrentPopup( );
+
+        ImGui::EndPopup( );
     }
 }
 

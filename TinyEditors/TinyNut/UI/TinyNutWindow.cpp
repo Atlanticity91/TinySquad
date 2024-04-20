@@ -201,7 +201,7 @@ void TinyNutWindow::DrawTitlebarLogo( bool is_maximized, const ImVec2& padding )
 		logo_min.y + logo_size 
 	};
 
-	draw_list->AddImage( _icons[ "Logo" ].Icon.Descriptor, logo_min, logo_max );
+	draw_list->AddImage( _icons[ "Logo" ], logo_min, logo_max );
 }
 
 void TinyNutWindow::DrawMenubar( TinyNut* nut_game, bool is_maximized ) {
@@ -221,7 +221,7 @@ void TinyNutWindow::DrawMenubar( TinyNut* nut_game, bool is_maximized ) {
 		}
 	};
 
-	if ( TinyNutUI::BeginMenubar( bounding ) )
+	if ( TinyNutUI::BeginMenubar( bounding ) ) 
 		nut_game->TickMenubar( );
 
 	TinyNutUI::EndMenubar( );
@@ -241,7 +241,7 @@ void TinyNutWindow::DrawTitlebarText( const ImVec2& padding ) {
 
 	ImGui::SetCursorPos( { ImGui::GetWindowWidth( ) * 0.5f - size.x * 0.5f, 8.0f + padding.y } );
 	ImGui::Text( "%s", name_str );
-	//ImGui::SetCursorPos( cursor );
+	ImGui::SetCursorPos( { cursor.x + size.x, cursor.y } );
 }
 
 void TinyNutWindow::DrawTitlebarIcon(
@@ -251,6 +251,13 @@ void TinyNutWindow::DrawTitlebarIcon(
 	const ImVec2& expand,
 	const tiny_string& name
 ) {
+	/*
+	auto& icon = _icons[ name ];
+	auto size = ImVec2{ 14.f, 14.f };
+
+	ImGui::ImageButton( icon.Icon.Descriptor, size );
+	*/
+	
 	auto* name_str = name.as_chars( );
 	auto col_n	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text,  .9f );
 	auto col_h	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text, 1.2f );
@@ -258,8 +265,8 @@ void TinyNutWindow::DrawTitlebarIcon(
 	auto& icon	   = _icons[ name ];
 	auto size	   = ImVec2{ 14.f, 14.f };
 
-	ImGui::Spring( spring );
-	TinyImGui::ShiftCursorY( 8.f );
+	//ImGui::Spring( spring );
+	//ImGui::SetCursorPosY( 8.f );
 
 	if ( ImGui::InvisibleButton( name_str, size ) )
 		std::invoke( icon.Callback, nut_game );
@@ -272,6 +279,7 @@ void TinyNutWindow::DrawTitlebarIcon(
 	};
 
 	TinyNutUI::ButtonImage( icon.Icon, col_n, col_h, col_p, bounding );
+	
 }
 
 void TinyNutWindow::DrawTitlebar( TinyNut* nut_game, bool is_maximized ) {
@@ -284,10 +292,10 @@ void TinyNutWindow::DrawTitlebar( TinyNut* nut_game, bool is_maximized ) {
 	
 	ImGui::BeginHorizontal( "Titlebar", { ImGui::GetWindowWidth( ) - padding.y * 2.0f, ImGui::GetFrameHeightWithSpacing( ) } );
 
-	auto width = ImGui::GetContentRegionAvail( ).x;
+	auto width = ImGui::GetContentRegionAvail( ).x - 84.f;
 
 	ImGui::SetCursorPos( cursor );
-	ImGui::InvisibleButton( "##__TinyTitleDragZone", { width - 94.f, height } );
+	ImGui::InvisibleButton( "##__TinyTitleDragZone", { width, height } );
 
 	_is_over = ImGui::IsItemHovered( );
 
@@ -301,9 +309,12 @@ void TinyNutWindow::DrawTitlebar( TinyNut* nut_game, bool is_maximized ) {
 	DrawMenubar( nut_game, is_maximized );
 	DrawTitlebarText( padding );
 
+	ImGui::SetCursorPos( { width, padding.y + 6.f } );
+
 	DrawTitlebarIcon( nut_game, { -1.f, 19.f }, padding, { 0.f, -6.f }, "Minimize" );
 	DrawTitlebarIcon( nut_game, { -1.f, 17.f }, padding, { 0.f, 0.f }, is_maximized ? "Restore" : "Maximize" );
 	DrawTitlebarIcon( nut_game, { -1.f, 15.f }, padding, { 0.f, 0.f }, "Close" );
+	
 
 	ImGui::Spring( -1.f, 18.f );
 	ImGui::EndHorizontal( );
@@ -382,3 +393,13 @@ bool TinyNutWindow::TitlebarHit( GLFWwindow* window ) {
 bool TinyNutWindow::GetIsTitlevarHovered( ) const { return _is_over; }
 
 bool TinyNutWindow::GetHasDockspace( ) const { return _has_dockspace; }
+
+const TinyNutWindow::Icon_t* TinyNutWindow::GetIcon( const tiny_string& alias ) const {
+	auto icon_id = tiny_cast( 0, tiny_uint );
+	auto* icon   = tiny_cast( nullptr, const TinyNutWindow::Icon_t* );
+
+	if ( _icons.find( alias, icon_id ) )
+		icon = tiny_rvalue( _icons.at( icon_id ) );
+
+	return icon;
+}

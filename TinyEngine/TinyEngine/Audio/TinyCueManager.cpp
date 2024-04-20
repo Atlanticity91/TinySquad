@@ -53,8 +53,7 @@ bool TinyCueManager::Load(
 
 	file.Read( builder.Format );
 	file.Read( builder.Context );
-	file.Read( builder.Size );
-	//file.Read( builder.Size, builder.Data );
+	file.Read( builder.Data );
 
 	return Create( game, alias, tiny_rvalue( builder ) );
 }

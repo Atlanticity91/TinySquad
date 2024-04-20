@@ -43,15 +43,39 @@ bool TinySceneManager::Load(
 	return false;
 }
 
-void TinySceneManager::Spawn(
+tiny_uint TinySceneManager::Spawn(
 	TinyGame* game,
 	const tiny_string& entity_name,
 	std::function<void( const tiny_uint, TinyGame*, TinyECS& )> entity_factory
 ) {
-	if ( entity_name.is_valid( ) && entity_factory ) {
-		auto& ecs	   = game->GetECS( );
-		auto entity_id = ecs.Create( entity_name );
+	auto entity_id = TINY_UINT_MAX;
 
-		std::invoke( entity_factory, entity_id, game, ecs );
+	if ( entity_name.is_valid( ) && entity_factory ) {
+		auto& ecs = game->GetECS( );
+		
+		entity_id = ecs.Create( entity_name );
+
+		if ( entity_id < TINY_UINT_MAX )
+			std::invoke( entity_factory, entity_id, game, ecs );
 	}
+
+	return entity_id;
+}
+
+tiny_uint TinySceneManager::Spawn(
+	TinyGame* game,
+	const tiny_string& entity_name,
+	const tiny_string& prefab_name
+) {
+	auto entity_id = TINY_UINT_MAX;
+
+	if ( entity_name.is_valid( ) && prefab_name.is_valid( ) ) {
+		auto& assets  = game->GetAssets( );
+		auto* prefabs = assets.GetContainerAs<TinyPrefabManager>( TA_TYPE_PREFAB );
+
+		if ( prefabs )
+			entity_id = prefabs->Spawn( game, entity_name, prefab_name );
+	}
+
+	return entity_id;
 }

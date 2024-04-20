@@ -25,6 +25,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicTextureSpecification::TinyGraphicTextureSpecification( )
 	: Properties{ },
-	Size{ 0 },
-	Texels{ nullptr }
+	Texels{ }
 { }
