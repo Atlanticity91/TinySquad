@@ -42,34 +42,30 @@ TinyEngine::TinyEngine(
 	_ux{ },
 	_addons{ },
 	_provider{ },
+	_states{ },
 	_toolbox{ }
 { }
 
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 	auto* game_config = tiny_cast( nullptr, TinyConfig* );
 	
-	_is_running = PreInit( game, game_config );
-
-	if ( _is_running ) {
-		_is_running = _window.Initialize( tiny_lvalue( game_config ), tiny_cast( game, c_pointer ) ) &&
-					  _inputs.Initialize( _filesystem, _window )									 &&
-					  _audio.Initialize( _filesystem, _window )										 &&
-					  _graphics.Initialize( _filesystem, _window );
-
-		if ( _is_running ) {
-			_is_running = PostInit( game )				  && 
-						  ProcessArgs( game, argc, argv );
-
-			if ( _is_running && !_window.GetIsHeadless( ) ) {
-				_inputs.Register( 
-					"Show Dev", 
-					{ 
-						{ TinyInputKey( KEY_F1 ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
-						{ TinyInputKey( KEY_GRAVE_ACCENT ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
-					} 
-				);
-			}
+	if ( 
+		PreInit( game, game_config )			 &&
+		Init( game, tiny_lvalue( game_config ) ) &&
+		PostInit( game )						 && 
+		ProcessArgs( game, argc, argv )
+	) {
+		if ( !_window.GetIsHeadless( ) ) {
+			_inputs.Register(
+				"Show Dev",
+				{
+					{ TinyInputKey( KEY_F1 ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
+					{ TinyInputKey( KEY_GRAVE_ACCENT ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
+				}
+			);
 		}
+
+		_is_running = true;
 	}
 
 	return _is_running;
@@ -82,6 +78,18 @@ void TinyEngine::Restore( ) { _window.Restore( ); }
 void TinyEngine::Maximize( ) { _window.Maximize( ); }
 
 void TinyEngine::Stop( ) { _is_running = false; }
+
+void TinyEngine::Switch( TinyGame* game, const tiny_uint state_id ) {
+	_states.Switch( game, state_id );
+}
+
+void TinyEngine::Switch( TinyGame* game, const tiny_string& state_name ) {
+	_states.Switch( game, state_name );
+}
+
+void TinyEngine::Switch( TinyGame* game, const tiny_hash state_hash ) {
+	_states.Switch( game, state_hash );
+}
 
 bool TinyEngine::PreTick( TinyGame* game ) {
 	auto state = _window.Tick( );
@@ -141,6 +149,13 @@ bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
 	}
 
 	return state;
+}
+
+bool TinyEngine::Init( TinyGame* game, const TinyConfig& config ) {
+	return  _window.Initialize( config, tiny_cast( game, c_pointer ) ) &&
+			_inputs.Initialize( _filesystem, _window )				   &&
+			_audio.Initialize( _filesystem, _window )				   &&
+			_graphics.Initialize( _filesystem, _window );
 }
 
 bool TinyEngine::PostInit( TinyGame* game ) {
@@ -303,5 +318,7 @@ TinySceneManager& TinyEngine::GetScenes( ) { return _assets.GetScenes( ); }
 TinyUXManager& TinyEngine::GetUX( ) { return _ux; }
 
 TinyAddonManager& TinyEngine::GetAddons( ) { return _addons; }
+
+TinyGameStateManager& TinyEngine::GetGameStates( ) { return _states; }
 
 TinyToolbox& TinyEngine::GetToolbox( ) { return _toolbox; }

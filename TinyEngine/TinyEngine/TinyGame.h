@@ -85,6 +85,12 @@ public:
 	 **/
 	tiny_inline void Stop( );
 
+	tiny_inline void SwitchGameState( TinyGame* game, const tiny_uint state_id );
+
+	tiny_inline void SwitchGameState( TinyGame* game, const tiny_string& state_name );
+
+	tiny_inline void SwitchGameState( TinyGame* game, const tiny_hash state_hash );
+
 	/**
 	 * Run method
 	 * @note : Run the current game.
@@ -96,6 +102,13 @@ public:
 	 * @note : Close current game.
 	 **/
 	void Close( );
+
+public:
+	template<typename GameState>
+		requires TinyIsGameState<GameState>
+	void RegisterGameState( const tiny_string& name ) {
+		_engine.Register<GameState>( name );
+	};
 
 protected:
 	/**
@@ -282,6 +295,8 @@ public:
 	 **/
 	tiny_inline TinyAddonManager& GetAddons( );
 	
+	tiny_inline TinyGameStateManager& GetGameStates( );
+
 	/**
 	 * GetToolbox function
 	 * @note : Get current toolbox instance.

@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 19/10/2023
- * @version  : 2024.1
+ * @creation : 21/04/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,43 +20,17 @@
 
 #pragma once
 
-#include <TinyEngine/States/TinyGameStateManager.h>
+#include <TinyEngine/Provider/TinyProviderManager.h>
 
-namespace TinyImGui {
+te_abstract_class TinyGameState {
 
-	te_struct Var {
+public:
+	TinyGameState( ) = default;
 
-		ImGuiStyleVar Label;
-		ImVec2 Value;
+	virtual ~TinyGameState( ) = default;
 
-	};
+	tiny_virtual( void OnChange( TinyGame* game, tiny_uint previous ) );
 
-	te_class ScopeVars final {
-
-	private:
-		tiny_int _count;
-
-	public:
-		ScopeVars( );
-
-		ScopeVars( const Var& var );
-
-		ScopeVars( tiny_init<Var> vars );
-
-		ScopeVars( ImGuiStyleVar label, const ImVec2& value );
-
-		~ScopeVars( );
-
-		tiny_inline void Push( const Var& var );
-
-		void Push( tiny_init<Var> vars );
-
-		tiny_inline void Push( ImGuiStyleVar label, const ImVec2& value );
-
-		tiny_inline void Pop( );
-
-		void Pop( tiny_int count );
-
-	};
+	tiny_virtual( void OnQuit( TinyGame* game, tiny_uint upcoming ) );
 
 };

@@ -25,28 +25,29 @@
 te_class TinyEngine final {
 
 private:
-	bool			    _is_running;
+	bool			     _is_running;
 
 	// === LOW LEVEL ===
-	TinyJobManager		_jobs;
-	TinyFilesystem		_filesystem;
-	TinyAssetManager	_assets;
-	TinyWindow			_window;
-	TinyInputManager	_inputs;
-	TinyAudioManager	_audio;
-	TinyGraphicManager	_graphics;
-	TinyNativeRegister  _natives;
+	TinyJobManager		 _jobs;
+	TinyFilesystem		 _filesystem;
+	TinyAssetManager	 _assets;
+	TinyWindow			 _window;
+	TinyInputManager	 _inputs;
+	TinyAudioManager	 _audio;
+	TinyGraphicManager	 _graphics;
+	TinyNativeRegister   _natives;
 
 	// === MID LEVEL ===
-	//TinyNetwork		_network;
-	TinyRenderer		_renderer;
-	TinyECS				_ecs;
+	//TinyNetwork		 _network;
+	TinyRenderer		 _renderer;
+	TinyECS				 _ecs;
 
 	// === HIGH LEVEL ===
-	TinyUXManager		_ux;
-	TinyAddonManager	_addons;
-	TinyProviderManager	_provider;
-	TinyToolbox			_toolbox;
+	TinyUXManager		 _ux;
+	TinyAddonManager	 _addons;
+	TinyProviderManager	 _provider;
+	TinyGameStateManager _states;
+	TinyToolbox			 _toolbox;
 
 public:
 	/**
@@ -95,6 +96,12 @@ public:
 	 * @note : Signal the game to shutdown.
 	 **/
 	void Stop( );
+	
+	void Switch( TinyGame* game, const tiny_uint state_id );
+
+	void Switch( TinyGame* game, const tiny_string& state_name );
+
+	void Switch( TinyGame* game, const tiny_hash state_hash );
 
 	/**
 	 * PreTick function
@@ -118,6 +125,13 @@ public:
 	 **/
 	void Terminate( TinyGame* game );
 
+public:
+	template<typename GameState>
+		requires TinyIsGameState<GameState>
+	void Register( const tiny_string& name ) {
+		_states.Register<GameState>( name );
+	};
+
 private:
 	/**
 	 * PreInit function
@@ -126,6 +140,8 @@ private:
 	 * @param game_config : Current game config instance.
 	 **/
 	bool PreInit( TinyGame* game, TinyConfig*& game_config );
+
+	bool Init( TinyGame* game, const TinyConfig& config );
 
 	/**
 	 * PostInit function
@@ -330,6 +346,8 @@ public:
 	 * @return : TinyAddonManager
 	 **/
 	TinyAddonManager& GetAddons( );
+
+	TinyGameStateManager& GetGameStates( );
 
 	/**
 	 * GetToolbox function

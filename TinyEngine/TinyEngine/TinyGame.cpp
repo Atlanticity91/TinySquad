@@ -62,6 +62,18 @@ void TinyGame::Maximize( ) { _engine.Maximize( ); }
 
 void TinyGame::Stop( ) { _engine.Stop( ); }
 
+void TinyGame::SwitchGameState( TinyGame* game, const tiny_uint state_id ) {
+	_engine.Switch( game, state_id );
+}
+
+void TinyGame::SwitchGameState( TinyGame* game, const tiny_string& state_name ) {
+	_engine.Switch( game, state_name );
+}
+
+void TinyGame::SwitchGameState( TinyGame* game, const tiny_hash state_hash ) {
+	_engine.Switch( game, state_hash );
+}
+
 void TinyGame::Run( ) {
 	while ( _engine.GetShouldRun( ) ) {
 		if ( _engine.PreTick( this ) ) {
@@ -172,5 +184,7 @@ TinySceneManager& TinyGame::GetScenes( ) { return _engine.GetScenes( ); }
 TinyUXManager& TinyGame::GetUX( ) { return _engine.GetUX( ); }
 
 TinyAddonManager& TinyGame::GetAddons( ) { return _engine.GetAddons( ); }
+
+TinyGameStateManager& TinyGame::GetGameStates( ) { return _engine.GetGameStates( ); }
 
 TinyToolbox& TinyGame::GetToolbox( ) { return _engine.GetToolbox( ); }

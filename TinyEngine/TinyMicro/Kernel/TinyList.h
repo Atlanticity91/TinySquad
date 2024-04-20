@@ -36,8 +36,10 @@ public:
 	{ };
 
 	tiny_list( tiny_uint capacity ) 
-		: _data{ capacity > 0 ? capacity : 1 }
-	{ };
+		: _data{ }
+	{ 
+		_data.resize( capacity > 0 ? capacity : 1 );
+	};
 
 	tiny_list( tiny_init<Type> elements )
 		: _data{ elements } 
@@ -50,15 +52,19 @@ public:
 	};
 
 	tiny_list( tiny_uint capacity, const Type& def_value )
-		: _data{ capacity > 0 ? capacity : 1 } 
-	{ 
+		: _data{ } 
+	{
+		_data.resize( capacity > 0 ? capacity : 1 );
+
 		for ( auto& element : _data )
 			element = def_value;
 	};
 
 	tiny_list( tiny_uint size, const tiny_pointer data ) 
-		: _data{ size / tiny_sizeof( Type ) }
+		: _data{ }
 	{ 
+		_data.resize( size / tiny_sizeof( Type ) );
+
 		auto* dst = tiny_cast( _data.data( ), tiny_pointer );
 
 		if ( data && dst )
