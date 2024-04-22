@@ -161,7 +161,7 @@ const tiny_list<tiny_string> TinySystemManager::GetComponentListFor(
 	auto components = tiny_list<tiny_string>{ };
 
 	for ( auto& component : _systems_ids ) {
-		if ( !( component_mask & TINY_LEFT_SHIFT( component.Data ) ) ) {
+		if ( !( component_mask & TINY_LEFT_SHIFT( 1, component.Data ) ) ) {
 			auto name = tiny_string{ component.String };
 
 			components.emplace_back( name );
@@ -196,7 +196,7 @@ tiny_uint TinySystemManager::GetComponentMask( tiny_init<tiny_string> components
 
 	for ( auto& component : components ) {
 		if ( _systems_ids.find( component, component_id ) )
-			component_mask |= TINY_LEFT_SHIFT( component_id );
+			component_mask |= TINY_LEFT_SHIFT( 1, component_id );
 	}
 
 	return component_mask;

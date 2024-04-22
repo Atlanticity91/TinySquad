@@ -77,7 +77,11 @@ void TinyWindow::SetIcon( tiny_int width, tiny_int height, tiny_pointer pixels )
 
 void TinyWindow::ToggleMinimized( bool is_minimized ) { _is_minimized = is_minimized; }
 
-void TinyWindow::Minimize( ) { glfwIconifyWindow( _handle ); }
+void TinyWindow::Minimize( ) { 
+	glfwIconifyWindow( _handle ); 
+
+	_is_minimized = true;
+}
 
 void TinyWindow::Restore( ) { glfwRestoreWindow( _handle ); }
 

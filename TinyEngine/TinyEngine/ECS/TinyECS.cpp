@@ -794,7 +794,7 @@ tiny_list<TinyComponent*> TinyECS::GetComponents( const tiny_uint entity_id ) {
 		_entities.GetEntityHash( entity_id, entity_hash );
 
 		while ( comp_id-- > 0 ) {
-			if ( entity->Components & TINY_LEFT_SHIFT( comp_id ) ) {
+			if ( entity->Components & TINY_LEFT_SHIFT( 1, comp_id ) ) {
 				auto* comp = _systems.GetComponent( entity_hash, comp_id );
 
 				comps.emplace_front( comp );

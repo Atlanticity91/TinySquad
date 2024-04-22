@@ -246,18 +246,9 @@ void TinyNutWindow::DrawTitlebarText( const ImVec2& padding ) {
 
 void TinyNutWindow::DrawTitlebarIcon(
 	TinyNut* nut_game,
-	const ImVec2& spring,
-	const ImVec2& padding,
-	const ImVec2& expand,
+	const ImVec2& position,
 	const tiny_string& name
 ) {
-	/*
-	auto& icon = _icons[ name ];
-	auto size = ImVec2{ 14.f, 14.f };
-
-	ImGui::ImageButton( icon.Icon.Descriptor, size );
-	*/
-	
 	auto* name_str = name.as_chars( );
 	auto col_n	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text,  .9f );
 	auto col_h	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text, 1.2f );
@@ -265,21 +256,16 @@ void TinyNutWindow::DrawTitlebarIcon(
 	auto& icon	   = _icons[ name ];
 	auto size	   = ImVec2{ 14.f, 14.f };
 
-	//ImGui::Spring( spring );
-	//ImGui::SetCursorPosY( 8.f );
+	ImGui::SetCursorPos( position );
 
 	if ( ImGui::InvisibleButton( name_str, size ) )
 		std::invoke( icon.Callback, nut_game );
 
 	auto bound_min = ImGui::GetItemRectMin( );
 	auto bound_max = ImGui::GetItemRectMax( );
-	auto bounding = ImRect{
-		{ bound_min.x - expand.x, bound_min.y - expand.y },
-		{ bound_max.x + expand.x, bound_max.y - expand.y }
-	};
+	auto bounding  = ImRect{ bound_min, bound_max };
 
-	TinyNutUI::ButtonImage( icon.Icon, col_n, col_h, col_p, bounding );
-	
+	TinyNutUI::ButtonImage( icon.Icon, col_n, col_h, col_p, bounding );	
 }
 
 void TinyNutWindow::DrawTitlebar( TinyNut* nut_game, bool is_maximized ) {
@@ -309,12 +295,9 @@ void TinyNutWindow::DrawTitlebar( TinyNut* nut_game, bool is_maximized ) {
 	DrawMenubar( nut_game, is_maximized );
 	DrawTitlebarText( padding );
 
-	ImGui::SetCursorPos( { width, padding.y + 6.f } );
-
-	DrawTitlebarIcon( nut_game, { -1.f, 19.f }, padding, { 0.f, -6.f }, "Minimize" );
-	DrawTitlebarIcon( nut_game, { -1.f, 17.f }, padding, { 0.f, 0.f }, is_maximized ? "Restore" : "Maximize" );
-	DrawTitlebarIcon( nut_game, { -1.f, 15.f }, padding, { 0.f, 0.f }, "Close" );
-	
+	DrawTitlebarIcon( nut_game, { width + 32.f, padding.y + 6.f }, "Minimize" );
+	DrawTitlebarIcon( nut_game, { width + 48.f, padding.y + 6.f }, is_maximized ? "Restore" : "Maximize" );
+	DrawTitlebarIcon( nut_game, { width + 64.f, padding.y + 6.f }, "Close" );
 
 	ImGui::Spring( -1.f, 18.f );
 	ImGui::EndHorizontal( );

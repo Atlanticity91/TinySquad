@@ -40,7 +40,7 @@ bool TinyEntity::GetHasParent( ) const { return Parent < TINY_UINT_MAX; }
 bool TinyEntity::GetHasChild( ) const { return Next < TINY_UINT_MAX; }
 
 bool TinyEntity::GetHasFlag( const tiny_uint flag_id ) const {
-	return Flags & TINY_LEFT_SHIFT( flag_id ); 
+	return Flags & TINY_LEFT_SHIFT( 1, flag_id ); 
 }
 
 bool TinyEntity::GetHasFlags( const tiny_uint flags ) const {
@@ -48,7 +48,7 @@ bool TinyEntity::GetHasFlags( const tiny_uint flags ) const {
 }
 
 bool TinyEntity::GetHasComponent( const tiny_uint compoment_id ) const {
-	return Components & TINY_LEFT_SHIFT( compoment_id );
+	return Components & TINY_LEFT_SHIFT( 1, compoment_id );
 }
 
 bool TinyEntity::GetHasComponents( const tiny_uint components ) const {

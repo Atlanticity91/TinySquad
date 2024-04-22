@@ -20,40 +20,19 @@
 
 #pragma once
 
-#include "TinyArchive.h"
+#include "TinyArchiveBuilder.h"
 
-te_struct TinyArchiveEntry {
-
-	tiny_hash  Archive{ };
-	tiny_uint Type    = 0;
-	tiny_ulong Offset = 0;
-	
-};
-
-te_class TinyArchiveContainer final : tiny_inherit( TinyAssetContainer<TinyArchive> ) {
+te_class TinyArchive final : tiny_inherit( TinyAsset ) {
 
 private:
-	tiny_map<TinyArchiveEntry> _entries;
+	tiny_ulong  _begin;
+	std::string _path;
 
 public:
-	TinyArchiveContainer( );
+	TinyArchive( );
 
-	~TinyArchiveContainer( ) = default;
+	~TinyArchive( ) = default;
 
-	tiny_implement( bool Create(
-		TinyGame* game,
-		const tiny_string& alias,
-		const c_pointer builder
-	) );
-
-	tiny_implement( bool Load(
-		TinyGame* game,
-		const tiny_string& alias,
-		TinyFile& file
-	) );
-
-	bool Load( TinyGame* game, const tiny_string& asset_name );
-
-	bool Load( TinyGame* game, const TinyAssetHandle& asset_handle );
+	TinyFile Access( TinyGame* game, tiny_ulong offset );
 
 };

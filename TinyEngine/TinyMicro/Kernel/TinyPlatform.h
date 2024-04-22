@@ -56,8 +56,8 @@ namespace Tiny {
 
 	tiny_enum( FileAccesses ) {
 
-		TF_ACCESS_READ  = TINY_LEFT_SHIFT( 0 ),
-		TF_ACCESS_WRITE = TINY_LEFT_SHIFT( 1 ),
+		TF_ACCESS_READ  = TINY_LEFT_SHIFT( 1, 0 ),
+		TF_ACCESS_WRITE = TINY_LEFT_SHIFT( 1, 1 ),
 		TF_ACCESS_EDIT  = TF_ACCESS_READ | TF_ACCESS_WRITE,
 
 	};

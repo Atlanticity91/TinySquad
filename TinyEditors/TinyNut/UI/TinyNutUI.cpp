@@ -36,15 +36,15 @@ namespace TinyNutUI {
 		auto* width		   = tiny_cast( tiny_rvalue( specification.Properties.Width  ), tiny_int* );
 		auto* height	   = tiny_cast( tiny_rvalue( specification.Properties.Height ), tiny_int* );
 
-		specification.Texels = stbi_load_from_memory( image, length, width, height, tiny_rvalue( channels ), 4 );
-		specification.Size   = tiny_lvalue( width ) * tiny_lvalue( height ) * 4;
+		auto* pixels = stbi_load_from_memory( image, length, width, height, tiny_rvalue( channels ), 4 );
+		auto size    = tiny_lvalue( width ) * tiny_lvalue( height ) * 4;
 
-		staging.Map( context, specification.Size, specification.Texels );
+		staging.Map( context, size, pixels );
+
+		stbi_image_free( pixels );
 
 		if ( image_.Texture.Create( context, specification, staging ) )
 			image_.Descriptor = TinyImGui::CreateTextureID( image_.Texture );
-
-		stbi_image_free( specification.Texels );
 
 		return image_;
 	}

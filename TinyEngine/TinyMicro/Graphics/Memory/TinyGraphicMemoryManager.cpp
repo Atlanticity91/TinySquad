@@ -106,7 +106,7 @@ tiny_uint TinyGraphicMemoryManager::GetMemoryFamily(
 	
 	while ( memory_family < _properties.memoryTypeCount ) {
 		if ( 
-			( requirements.memoryTypeBits & TINY_LEFT_SHIFT( memory_family ) ) &&
+			( requirements.memoryTypeBits & TINY_LEFT_SHIFT( 1, memory_family ) ) &&
 			( _properties.memoryTypes[ memory_family ].propertyFlags & usage ) == usage 
 		)
 			break;

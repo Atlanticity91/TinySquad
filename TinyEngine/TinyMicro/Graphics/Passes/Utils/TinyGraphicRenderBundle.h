@@ -55,8 +55,8 @@ tm_struct TinyGraphicRenderTargetDescriptor {
 
 tiny_enum( TinyGraphicRenderpassAccesses ) {
 
-	TGR_ACCESS_WRITE = TINY_LEFT_SHIFT( 1 ),
-	TGR_ACCESS_READ  = TINY_LEFT_SHIFT( 2 )
+	TGR_ACCESS_WRITE = TINY_LEFT_SHIFT( 1, 1 ),
+	TGR_ACCESS_READ  = TINY_LEFT_SHIFT( 1, 2 )
 
 };
 

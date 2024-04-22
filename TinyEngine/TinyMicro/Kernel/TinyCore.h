@@ -185,8 +185,8 @@ TINY_INT_REG( int64_t, long  );
 #define tiny_signi( VAL ) ( ( 0 < VAL ) - ( VAL < 0 ) )
 #define tiny_signf( VAL ) ( ( .0f < VAL ) - ( VAL < .0f ) )
 
-#define TINY_LEFT_SHIFT( VAL ) ( 1 << VAL )
-#define TINY_RIGHT_SHIFT( VAL ) ( 1 >> VAL )
+#define TINY_LEFT_SHIFT( VALUE, OFFSET ) ( VALUE << OFFSET )
+#define TINY_RIGHT_SHIFT( VALUE, OFFSET ) ( VALUE >> OFFSET )
 
 #define TINY_STR_OP( NAME, ... ) constexpr tiny_ulong operator""_##NAME##( tiny_ulong size ) { __VA_ARGS__; }
 

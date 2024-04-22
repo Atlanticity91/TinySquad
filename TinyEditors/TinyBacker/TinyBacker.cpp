@@ -40,7 +40,13 @@ void TinyBacker::TickMenubar( ) {
         if ( ImGui::MenuItem( "New" ) ) {
         }
 
+        if ( ImGui::MenuItem( "Save" ) ) {
+        }
+
         if ( ImGui::MenuItem( "Import" ) ) {
+        }
+
+        if ( ImGui::MenuItem( "Create" ) ) {
         }
 
         ImGui::Separator( );

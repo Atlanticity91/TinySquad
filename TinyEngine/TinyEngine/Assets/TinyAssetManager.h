@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "Utils/TinyArchiveContainer.h"
+#include "Archives/TinyArchiveContainer.h"
 
 class TinyScriptManager;
 class TinySceneManager;

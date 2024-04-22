@@ -31,6 +31,15 @@ struct TinyBackerEntry {
 
 };
 
+struct TinyBackerArchive { 
+
+	std::string Author{ };
+	tiny_uint Version = 0;
+	Tiny::Date Data{ };
+	tiny_list<TinyBackerEntry> _entries;
+
+};
+
 class TinyBacker final : tiny_inherit( TinyNut ) {
 
 private:

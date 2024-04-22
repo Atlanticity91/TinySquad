@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 07/04/2024
- * @version  : 2024.2.7
+ * @creation : 22/04/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,19 +20,21 @@
 
 #pragma once
 
-#include "TinyConfigContainer.h"
+#include <TinyEngine/Assets/Utils/TinyConfigContainer.h>
 
-te_class TinyArchive final : tiny_inherit( TinyAsset ) {
+te_struct TinyArchiveEntryBuilder {
 
-private:
-	tiny_ulong  _begin;
-	std::string _path;
+	std::string Alias = "";
+	std::string Path = "";
+	Tiny::Date Date{ };
+	tiny_ulong Offset = 0;
+	tiny_ulong Size = 0;
 
-public:
-	TinyArchive( );
+};
 
-	~TinyArchive( ) = default;
+te_struct TinyArchiveBuilder {
 
-	TinyFile Access( TinyGame* game, tiny_ulong offset );
+	std::string Author = "";
+	tiny_map<TinyArchiveEntryBuilder> Entries{ };
 
 };

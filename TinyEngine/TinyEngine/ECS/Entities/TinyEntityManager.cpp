@@ -36,8 +36,8 @@ tiny_uint TinyEntityManager::Create( const tiny_string& name, const tiny_uint pa
 	if ( !_entities.find( name, entity_id ) ) {
 		auto entity = TinyEntity{ };
 
-		entity.Flags |= TINY_LEFT_SHIFT( TE_FLAG_ALIVE );
-		entity.Flags |= TINY_LEFT_SHIFT( TE_FLAG_VISIBLE );
+		entity.Flags |= TINY_LEFT_SHIFT( 1, TE_FLAG_ALIVE );
+		entity.Flags |= TINY_LEFT_SHIFT( 1, TE_FLAG_VISIBLE );
 
 		_entities.emplace( name, entity );
 		_entities.find( name, entity_id );
@@ -65,7 +65,7 @@ bool TinyEntityManager::Rename( const tiny_uint entity_id, const tiny_string& ne
 void TinyEntityManager::Kill( const tiny_uint entity_id ) {
 	auto& entity = _entities.node( entity_id );
 	
-	entity.Data.Flags ^= TINY_LEFT_SHIFT( TE_FLAG_ALIVE );
+	entity.Data.Flags ^= TINY_LEFT_SHIFT( 1, TE_FLAG_ALIVE );
 
 	_removed.create_back( entity.Hash, entity_id, TINY_UINT_MAX );
 }
@@ -94,11 +94,11 @@ void TinyEntityManager::Detach( const tiny_uint entity_id ) {
 }
 
 void TinyEntityManager::AddFlag( const tiny_uint entity_id, tiny_uint flag_id ) {
-	_entities.at( entity_id ).Flags |= TINY_LEFT_SHIFT( flag_id );
+	_entities.at( entity_id ).Flags |= TINY_LEFT_SHIFT( 1, flag_id );
 }
 
 void TinyEntityManager::DeleteFlag( const tiny_uint entity_id, tiny_uint flag_id ) {
-	_entities.at( entity_id ).Flags ^= TINY_LEFT_SHIFT( flag_id );
+	_entities.at( entity_id ).Flags ^= TINY_LEFT_SHIFT( 1, flag_id );
 }
 
 void TinyEntityManager::AddFlags( const tiny_uint entity_id, tiny_uint flags ) {
@@ -120,14 +120,14 @@ bool TinyEntityManager::Append(
 		auto& entity = _entities.at( entity_id );
 
 		if ( !entity.GetHasComponent( component_id ) )
-			entity.Components |= TINY_LEFT_SHIFT( component_id );
+			entity.Components |= TINY_LEFT_SHIFT( 1, component_id );
 	}
 
 	return state;
 }
 
 void TinyEntityManager::Remove( const tiny_uint entity_id, const tiny_uint component_id ) {
-	_entities.at( entity_id ).Components ^= TINY_LEFT_SHIFT( component_id );
+	_entities.at( entity_id ).Components ^= TINY_LEFT_SHIFT( 1, component_id );
 	_removed.create_back( _entities.node( entity_id ).Hash, entity_id, component_id );
 }
 

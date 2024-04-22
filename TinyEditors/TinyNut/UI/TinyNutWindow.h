@@ -73,9 +73,7 @@ private:
 
 	void DrawTitlebarIcon( 
 		TinyNut* nut_game,
-		const ImVec2& offset, 
-		const ImVec2& padding,
-		const ImVec2& expand,
+		const ImVec2& position,
 		const tiny_string& name
 	);
 

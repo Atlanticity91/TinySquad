@@ -27,9 +27,9 @@ concept TinyIsSysten = tiny_is_child_of( System, ITinySystem );
 
 tiny_enum( TinySystemFlags ) { 
 
-	TS_FLAG_IS_ACTIVE	 = TINY_LEFT_SHIFT( 0 ),
-	TS_FLAG_USE_PRETICK  = TINY_LEFT_SHIFT( 1 ),
-	TS_FLAG_USE_POSTTICK = TINY_LEFT_SHIFT( 2 ),
+	TS_FLAG_IS_ACTIVE	 = TINY_LEFT_SHIFT( 1, 0 ),
+	TS_FLAG_USE_PRETICK  = TINY_LEFT_SHIFT( 1, 1 ),
+	TS_FLAG_USE_POSTTICK = TINY_LEFT_SHIFT( 1, 2 ),
 
 };
 
