@@ -20,17 +20,6 @@
 
 #pragma once
 
-#define TINY_ENGINE_VERSION_MAJOR 2024
-#define TINY_ENGINE_VERSION_MINOR 2
-#define TINY_ENGINE_VERSION_PATCH 7
-#define TINY_ENGINE_VERSION tiny_cast( (\
-		TINY_LEFT_SHIFT( TINY_ENGINE_VERSION_MAJOR, 16 ) |\
-		TINY_LEFT_SHIFT( TINY_ENGINE_VERSION_MINOR,  8 ) |\
-		TINY_ENGINE_VERSION_PATCH\
-	), tiny_uint )
-
-#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES
-
 #include <TinyMicro/Jobs/TinyJobManager.h>
 #include <TinyThirdparty/MSDF/MSDF.h>
 #include <TinyThirdparty/ImGui/ImGui.h>

@@ -30,6 +30,8 @@
 #   define T_IMGUI_API
 #endif
 
+#define IMGUI_IMPL_VULKAN_NO_PROTOTYPES
+
 #include <TinyLibs/ImGui/imgui.h>
 #include <TinyLibs/ImGui/imgui_internal.h>
 #include <TinyLibs/ImGui/imgui_impl_vulkan.h>

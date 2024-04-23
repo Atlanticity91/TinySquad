@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyCore.h"
+#include "TinyVersion.h"
 
 namespace YAML {
 
