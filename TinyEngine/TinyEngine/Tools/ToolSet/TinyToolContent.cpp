@@ -66,10 +66,7 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     ImGui::EndDisabled( );
 
     if ( ImGui::Button( "Import", { -1.f, 0.f } ) ) {
-        auto dev_dir = filesystem.GetDevDir( );
-        auto path = std::string{ dev_dir.as_chars( ) };
-
-        if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, path, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", _import_path.length( ), _import_path ) ) {
+        if ( filesystem.OpenDialog( TD_TYPE_OPEM_FILE, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", _import_path ) ) {
             _has_changed = assets.Import( game, _import_path );
 
             if ( !_has_changed )
@@ -179,7 +176,7 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-c_string TinyToolContent::TypeToString( tiny_uint type ) {
+native_string TinyToolContent::TypeToString( tiny_uint type ) {
     auto string = "";
 
     switch ( type ) {

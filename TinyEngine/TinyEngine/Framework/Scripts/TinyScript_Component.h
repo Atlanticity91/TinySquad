@@ -79,7 +79,7 @@ public:
 	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
 
 private:
-	void DisplayMeta( TinyGame* game, c_string label, TinyScriptMetadata& metadata );
+	void DisplayMeta( TinyGame* game, native_string label, TinyScriptMetadata& metadata );
 
 public:
 	TINY_COMP_NAME( TinyScript );

@@ -30,7 +30,7 @@ te_interface ITinyAssetContainer {
 	tiny_abstract( bool Create( 
 		TinyGame* game,
 		const tiny_string& alias, 
-		const c_pointer builder 
+		const native_pointer builder 
 	) );
 
 	tiny_abstract( bool Load(

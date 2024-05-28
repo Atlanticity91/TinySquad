@@ -22,26 +22,21 @@
 
 #include "TinyJobQueueManager.h"
 
-tm_class TinyJobManager final {
+typedef std::function<void( native_pointer )> TinyThreadRun;
 
-private:
-	TinyThreadManager   _threads;
-	TinyJobQueueManager _queues;
+tm_class TinyJobManager final {
 
 public:
 	TinyJobManager( );
 
 	~TinyJobManager( ) = default;
 
-	bool Initialize( TinyThreadRun thread_run, c_pointer data );
+	bool Initialize( TinyThreadRun thread_run, native_pointer data );
 
 	bool Dispatch( const TinyJob& job );
 
 	void Wait( );
 
 	void Terminate( );
-
-public:
-	bool DeQueue( TinyJob& job );
 
 };

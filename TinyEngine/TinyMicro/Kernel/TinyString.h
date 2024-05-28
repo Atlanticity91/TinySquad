@@ -22,23 +22,18 @@
 
 #include "TinyIterator.h"
 
-typedef void c_pointer_base;
-typedef c_pointer_base* c_pointer;
-typedef tiny_ubyte tiny_pointer_base;
-typedef tiny_pointer_base* tiny_pointer;
-
-typedef const char* c_string;
+typedef const char* native_string;
 
 tm_struct tiny_string_view {
 
-	const c_string* Address = nullptr;
-	tiny_uint Count   = 0;
+	const native_string* Address = nullptr;
+	tiny_uint Count				 = 0;
 
 };
 
 tm_class tiny_string final {
 
-	using under_layer	 = c_string;
+	using under_layer	 = native_string;
 	using iterator		 = tiny_iterator<char>;
 	using regex_iterator = std::cregex_iterator;
 
@@ -51,11 +46,11 @@ public:
 
 	tiny_string( under_layer string );
 
-	tiny_string( const std::string& string );
+	explicit tiny_string( const std::string& string );
 
 	tiny_string( const tiny_string& other );
 
-	tiny_string( tiny_uint length, c_pointer address );
+	tiny_string( tiny_uint length, native_pointer address );
 
 	~tiny_string( ) = default;
 

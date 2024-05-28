@@ -54,6 +54,6 @@ TinyCueBuffer TinyCue::GetBuffer( ) const {
         0, 0,
         0, 0,
         1,
-        tiny_cast( tiny_rvalue( _context ), c_pointer )
+        tiny_cast( tiny_rvalue( _context ), native_pointer )
     };
 }

@@ -110,7 +110,7 @@ void TinyToolCommon::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
 
                 ImGui::SameLine( );
 
-                ImGui::Text( function.String.c_str( ) );
+                ImGui::Text( function.Alias.c_str( ) );
             }
 
             if ( to_remove ) {
@@ -139,7 +139,7 @@ void TinyToolCommon::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
             tiny_buffer<256> buffer;
 
             if ( ImGui::Button( "Convert TTF", { -1.f, 0.f } ) ) {
-                if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, ttf_filters, buffer.length( ), buffer.as_chars( ) ) ) {
+                if ( Tiny::OpenDialog( TD_TYPE_OPEM_FILE, "", ttf_filters, buffer.length( ), buffer.as_chars( ) ) ) {
                     auto info = filesystem.GetInformation( buffer.as_chars( ) );
                     auto path = info.Path + "\\" + info.Name + "_to_array.cpp";
 
@@ -148,7 +148,7 @@ void TinyToolCommon::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
             }
 
             if ( ImGui::Button( "Convert Shader", { -1.f, .0f } ) ) {
-                if ( Tiny::OpenDialog( Tiny::TD_TYPE_OPEM_FILE, shader_filters, buffer.length( ), buffer.as_chars( ) ) ) {
+                if ( Tiny::OpenDialog( TD_TYPE_OPEM_FILE, "", shader_filters, buffer.length( ), buffer.as_chars( ) ) ) {
                     auto info = filesystem.GetInformation( buffer.as_chars( ) );
                     auto path = info.Path + "\\" + info.Name + "_to_array.cpp";
 
@@ -224,7 +224,7 @@ void TinyToolCommon::DrawPasses( TinyGraphicManager& graphics ) {
     auto& bundles = passes.GetBundles( );
 
     for ( auto& bundle : bundles ) {
-        auto* name_str = bundle.String.c_str( );
+        auto* name_str = bundle.Alias.c_str( );
 
         if ( ImGui::CollapsingHeader( name_str, 0 ) ) {
             TinyImGui::BeginVars( );
@@ -262,7 +262,7 @@ void TinyToolCommon::ConvertShader(
     auto file_memory = tiny_storage{ };
     auto shader      = TinyGraphicShaderSpecification{ };
 
-    auto file = filesystem.OpenFile( in_path.Full.as_chars( ), Tiny::TF_ACCESS_READ );
+    auto file = filesystem.OpenFile( in_path.Full, TF_ACCESS_READ );
     auto size = file.GetSize( );
 
     if ( size > 0 && tiny_allocate( file_memory, size ) ) {
@@ -272,18 +272,21 @@ void TinyToolCommon::ConvertShader(
         context.Name   = in_path.Name;
         context.Source = tiny_string{ tiny_cast( file_memory.Capacity, tiny_uint ), buffer };
         
-        if ( file.ReadAll( size, buffer ) && graphic.CompileShader( context, shader ) ) {
-            auto file = filesystem.OpenFile( out_path, Tiny::FileAccesses::TF_ACCESS_WRITE );
+        file.ReadAll( size, buffer );
+
+        if ( graphic.CompileShader( context, shader ) ) {
+            auto file = filesystem.OpenFile( out_path, TF_ACCESS_WRITE );
+            auto* file_ = tiny_cast( tiny_rvalue( file ), TinyFile* );
 
             size = shader.Code.size( );
 
-            file.Write( "static const tiny_uint TinyShaderSize = %u;\n", size );
-            file.Write( "static const tiny_uint TinyShader[ TinyShaderSize ] = {" ); 
+            file_->Write( "static const tiny_uint TinyShaderSize = %u;\n", size );
+            file_->Write( "static const tiny_uint TinyShader[ TinyShaderSize ] = {" );
             
             for ( auto idx = tiny_cast( 0, tiny_uint ); idx < size; idx++ )
-                file.Write( "%s0x%08x%c", ( idx % 4 == 0 ) ? "\n\t" : " ", shader.Code[ idx ], ( idx < size - 1 ) ? ',' : ' ' );
+                file_->Write( "%s0x%08x%c", ( idx % 4 == 0 ) ? "\n\t" : " ", shader.Code[ idx ], ( idx < size - 1 ) ? ',' : ' ' );
             
-            file.Write( "\n};\n" );
+            file_->Write( "\n};\n" );
         }
     }
 

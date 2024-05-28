@@ -39,9 +39,9 @@ public:
 
 	bool Remap( const tiny_string& component, tiny_uint target_id );
 
-	tiny_inline void RegisterCallback( tiny_uint type, c_pointer callback );
+	tiny_inline void RegisterCallback( tiny_uint type, native_pointer callback );
 
-	tiny_inline void RegisterCallback( tiny_uint type, tiny_init<c_pointer> callbacks );
+	tiny_inline void RegisterCallback( tiny_uint type, tiny_init<native_pointer> callbacks );
 
 	void Enable( TinyGame* game, const tiny_string& component );
 

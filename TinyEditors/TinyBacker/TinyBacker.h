@@ -63,6 +63,8 @@ protected:
 private:
 	void LoadContent( );
 
+	void ImportAsset( );
+
 	void DrawEntry( tiny_uint entry_id, TinyBackerEntry& entry );
 
 	void DrawContent( );
@@ -70,6 +72,6 @@ private:
 	void DrawPopups( );
 
 private:
-	c_string TypeToStr( const tiny_uint type ) const;
+	native_string TypeToStr( const tiny_uint type ) const;
 
 };

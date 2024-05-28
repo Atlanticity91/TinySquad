@@ -30,18 +30,25 @@ protected:
 public:
 	/**
 	 * Constructor
+	 * @param developer : Game developer.
 	 * @param title : Game window title.
 	 * @param orientation : Desired game orientation for graphics adaptation.
 	 **/
-	TinyGame( const tiny_string& title, TinyGameOrientations orientation );
+	TinyGame( 
+		const tiny_string& developer, 
+		const tiny_string& title,
+		TinyGameOrientations orientation 
+	);
 
 	/**
 	 * Constructor
+	 * @param developer : Game developer.
 	 * @param title : Game window title.
 	 * @param orientation : Desired game orientation for graphics adaptation.
 	 * @param is_headless : Defined is the game window as OS decoration.
 	 **/
 	TinyGame( 
+		const tiny_string& developer,
 		const tiny_string& title, 
 		TinyGameOrientations orientation,
 		bool is_headless

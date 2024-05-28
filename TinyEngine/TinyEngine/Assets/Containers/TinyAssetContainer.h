@@ -79,8 +79,11 @@ protected:
 
 public:
 	tiny_implement( void GetAssetList( tiny_list<tiny_string>& list ) const ) { 
-		for ( auto& asset : _assets )
-			list.emplace_back( { asset.String } );
+		for ( auto& asset : _assets ) {
+			auto asset_name = tiny_string{ asset.Alias };
+
+			list.emplace_back( asset_name );
+		}
 	};
 
 	tiny_implement( bool Find( const tiny_hash asset_hash ) const ) { 

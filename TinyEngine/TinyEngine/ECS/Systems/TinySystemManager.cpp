@@ -150,7 +150,7 @@ const tiny_list<tiny_string> TinySystemManager::GetComponentList( ) const {
 	components = _systems_ids.size( );
 
 	for ( auto& component : _systems_ids )
-		components[ component_id++ ] = component.String.c_str( );
+		components[ component_id++ ] = tiny_string{ component.Alias };
 
 	return components;
 }
@@ -162,7 +162,7 @@ const tiny_list<tiny_string> TinySystemManager::GetComponentListFor(
 
 	for ( auto& component : _systems_ids ) {
 		if ( !( component_mask & TINY_LEFT_SHIFT( 1, component.Data ) ) ) {
-			auto name = tiny_string{ component.String };
+			auto name = tiny_string{ component.Alias };
 
 			components.emplace_back( name );
 		}

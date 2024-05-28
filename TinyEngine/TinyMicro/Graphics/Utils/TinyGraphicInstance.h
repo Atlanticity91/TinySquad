@@ -37,7 +37,7 @@ public:
 	void Terminate( );
 
 private:
-	tiny_list<c_string> GetExtensions( ) const;
+	tiny_list<native_string> GetExtensions( ) const;
 
 public:
 	operator VkInstance ( ) const;

@@ -32,7 +32,7 @@ te_struct TinyAssetHeader {
 	char Magic[ 4 ];
 	tiny_uint Version;
 	tiny_uint Type;
-	Tiny::Date Date;
+	tiny_date Date;
 	tiny_uint Padding;
 
 	TinyAssetHeader( );

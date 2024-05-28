@@ -45,22 +45,25 @@ public:
 
 	tiny_inline void Clear( );
 
-	tiny_inline void Register( tiny_string input_alias, tiny_init<TinyInputQuery> querys );
+	tiny_inline void Register( 
+		const tiny_string& input_alias, 
+		tiny_init<TinyInputQuery> querys 
+	);
 
 	tiny_inline void Register( 
-		tiny_string input_alias, 
+		const tiny_string& input_alias, 
 		const tiny_list<TinyInputQuery>& querys 
 	);
 
-	tiny_inline void Lock( tiny_string input_alias );
+	tiny_inline void Lock( const tiny_string& input_alias );
 
-	tiny_inline void UnLock( tiny_string input_alias );
+	tiny_inline void UnLock( const tiny_string& input_alias );
 
-	void Toggle( tiny_string input_alias, bool state );
+	void Toggle( const tiny_string& input_alias, bool state );
 
 	tiny_inline void Notify( const TinyInputNotification& notification );
 
-	bool Evaluate( tiny_string input_alias, bool consume );
+	bool Evaluate( const tiny_string& input_alias, bool consume );
 
 	void Erase( const tiny_string& input );
 

@@ -38,7 +38,7 @@ void TinyToolAnim2D::Save( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolAnim2D::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
+bool TinyToolAnim2D::OnOpen( TinyGame* game, const tiny_string& name, native_pointer asset ) {
 	_collection = tiny_cast( asset, TinyAnimation2D* );
 
 	if ( false ) {
@@ -90,9 +90,9 @@ void TinyToolAnim2D::DrawNames( ) {
 
 	for ( auto& animation : collection ) {
 		if ( animation.Hash != _animation )
-			ImGui::Text( animation.String.c_str( ) );
+			ImGui::Text( animation.Alias.c_str( ) );
 		else
-			ImGui::Text( "# %s", animation.String.c_str( ) );
+			ImGui::Text( "# %s", animation.Alias.c_str( ) );
 	}
 
 	//ImGui::InputText( "Animation Name" )

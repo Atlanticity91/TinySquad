@@ -24,8 +24,8 @@
 
 tm_struct TinyGraphicShaderMacro {
 
-	tiny_string Name  = "";
-	tiny_string Value = "";
+	tiny_string Name{ };
+	tiny_string Value{ };
 
 };
 

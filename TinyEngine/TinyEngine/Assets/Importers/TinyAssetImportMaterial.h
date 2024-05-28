@@ -26,26 +26,26 @@ namespace TinyImport {
 
 	tiny_dll bool ImportShaderGLSL(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	);
 
 	tiny_dll bool ImportShaderHLSL(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	);
 
 	tiny_dll bool ExportShader(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 	tiny_dll bool ExportMaterial(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 };

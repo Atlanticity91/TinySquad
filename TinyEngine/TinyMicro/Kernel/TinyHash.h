@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyPlatform.h"
+#include "Platform/TinyPlatform.h"
 
 tm_class tiny_hash final {
 
@@ -34,7 +34,7 @@ public:
 
 	tiny_hash( const tiny_hash& other );
 
-	explicit tiny_hash( c_string string );
+	explicit tiny_hash( native_string string );
 
 	explicit tiny_hash( const tiny_string& string );
 
@@ -50,7 +50,7 @@ public:
 
 	tiny_inline tiny_hash& asign( const tiny_hash& other );
 
-	tiny_inline tiny_hash& asign( c_string other );
+	tiny_inline tiny_hash& asign( native_string other );
 
 	tiny_inline tiny_hash& asign( const std::string& other );
 

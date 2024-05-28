@@ -40,7 +40,7 @@ bool TinyScriptManager::Initialize( ) {
 bool TinyScriptManager::Create(
 	TinyGame* game,
 	const tiny_string& alias,
-	const c_pointer builder
+	const native_pointer builder
 ) {
 
 	auto* builder_ = tiny_cast( builder, tiny_pointer );
@@ -67,7 +67,7 @@ void TinyScriptManager::UnRegister( const tiny_string& name ) {
 	_context.UnRegister( name ); 
 }
 
-void TinyScriptManager::SetGlobal( const tiny_string& name, c_pointer value ) {
+void TinyScriptManager::SetGlobal( const tiny_string& name, native_pointer value ) {
 	_context.SetGlobal( name, value );
 }
 
@@ -131,7 +131,7 @@ bool TinyScriptManager::Pop( TinyLuaParameter& parameter ) {
 	return _context.Pop( parameter );
 }
 
-bool TinyScriptManager::Execute( c_string source ) { return _context.Execute( source ); }
+bool TinyScriptManager::Execute( native_string source ) { return _context.Execute( source ); }
 
 bool TinyScriptManager::Execute( const tiny_string& source ) { 
 	return _context.Execute( source ); 

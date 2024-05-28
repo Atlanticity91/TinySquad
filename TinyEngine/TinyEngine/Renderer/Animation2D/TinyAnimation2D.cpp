@@ -115,10 +115,8 @@ tiny_map<TinyAnimation2D::FrameCollection>& TinyAnimation2D::GetCollection( ) {
 }
 
 void TinyAnimation2D::GetAnimations( tiny_list<tiny_string>& list ) const {
-	auto node_str = tiny_string{ };
-
 	for ( auto& node : _collection ) {
-		node_str = node.String;
+		auto node_str = tiny_string{ node.Alias };
 
 		list.emplace_back( node_str );
 	}

@@ -29,11 +29,11 @@ TinyArchive::TinyArchive( )
 	_path{ }
 { }
 
-TinyFile TinyArchive::Access( TinyGame* game, tiny_ulong offset ) {
+TinyPhysicalFile TinyArchive::Access( TinyGame* game, tiny_ulong offset ) {
 	auto& filesystem = game->GetFilesystem( );
-	auto file		 = filesystem.OpenFile( _path, Tiny::TF_ACCESS_READ );
+	auto file		 = filesystem.OpenFile( _path, TF_ACCESS_BINARY_READ );
 
-	file.Seek( Tiny::TF_ORIGIN_BEGIN, _begin + offset );
+	file.Seek( TF_ORIGIN_BEGIN, _begin + offset );
 
 	return file;
 }

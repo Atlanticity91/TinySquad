@@ -27,7 +27,7 @@ namespace TinyLua::Component {
 	template<typename Component>
 		requires TinyIsComponent<Component>
 	Component* Get( lua_State* context, tiny_int param_id ) {
-		auto* comp = tiny_cast( nullptr, c_pointer );
+		auto* comp = tiny_cast( nullptr, native_pointer );
 
 		if ( lua_istable( context, param_id ) )
 			tli_get_field( param_id, "value", comp );

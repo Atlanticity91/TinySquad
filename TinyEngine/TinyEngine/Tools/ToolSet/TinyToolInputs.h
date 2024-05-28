@@ -32,7 +32,7 @@ private:
 	TinyInputQuery		_new_query;
 	tiny_hash			_input_remove;
 	tiny_uint			_input_query;
-	tiny_list<c_string> _input_devices;
+	tiny_list<native_string> _input_devices;
 	tiny_string_view	_input_states;
 	tiny_string_view	_input_modifier;
 

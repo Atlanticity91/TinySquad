@@ -41,12 +41,15 @@ extern "C" {
 
 };
 
+#include <algorithm>
 #include <array>
 #include <bitset>
 #include <chrono>
 #include <concepts>
+#include <condition_variable>
 #include <filesystem>
 #include <functional>
+#include <iomanip>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -64,6 +67,7 @@ extern "C" {
 #include <TinyThirdparty/Vulkan/Vulkan.h>
 
 #ifdef _WIN64
+
 #	define TINY_WIN
 #	ifdef TM_BUILD
 #		define tm_dll __declspec( dllexport )
@@ -72,38 +76,61 @@ extern "C" {
 #	endif
 
 #	ifdef TINY_DEBUG
-#	define tiny_breakpoint __debugbreak( )
-#	define tiny_assert( TEST, FORMAT, ... )\
+#	define TINY_BREAKPOINT __debugbreak( )
+#	define TINY_ASSERT_FORMAT( CHECK, FORMAT, ... )\
 	do {\
         if (\
-            !( TEST ) &&\
-            ( 1 == _CrtDbgReport( _CRT_ASSERT, __FILE__, __LINE__, #TEST, FORMAT, __VA_ARGS__ ) )\
+            !( CHECK ) &&\
+            ( 1 == _CrtDbgReport( _CRT_ASSERT, __FILE__, __LINE__, #CHECK, FORMAT, __VA_ARGS__ ) )\
         )\
-            _CrtDbgBreak( );\
+            TINY_BREAKPOINT;\
     } while( 0 )
+#   define TINY_ASSERT( CHECK, MESSAGE ) TINY_ASSERT_FORMAT( CHECK, MESSAGE, "" ) 
 #	else
-#		define tiny_breakpoint 
-#		define tiny_assert( ... ) 
+#		define TINY_BREAKPOINT 
+#       define TINY_ASSERT_FORMAT( ... )
+#		define TINY_ASSERT( ... ) 
 #	endif
 
 #   include <TinyThirdparty/XAudio2/XAudio2.h>
 #   include <TinyThirdparty/GLFW/Glfw_win32.h>
 
 #elif __linux__ || __linux || linux
+
 #	define TINY_LINUX
 #	define tm_dll
-#	if __has_builtin(__builtin_debugtrap)
-#		define tiny_breakpoint __builtin_debugtrap( )
-#	elif defined( SIGTRAP )
-#		define tiny_breakpoint raise( SIGTRAP )
-#	endif
+
+#	ifdef TINY_DEBUG
+#	    if __has_builtin(__builtin_debugtrap)
+#		    define TINY_BREAKPOINT __builtin_debugtrap( )
+#	    elif defined( SIGTRAP )
+#		    define TINY_BREAKPOINT raise( SIGTRAP )
+#	    endif
+
+#	    define TINY_ASSERT_FORMAT( CHECK, FORMAT, ... )
+#       define TINY_ASSERT( CHECK, MESSAGE ) TINY_ASSERT_FORMAT( CHECK, MESSAGE, "" ) 
+#   else
+#	    define TINY_BREAKPOINT
+#       define TINY_ASSERT_FORMAT( ... )
+#		define TINY_ASSERT( ... ) 
+#   endif
 
 #   include <TinyThirdparty/GLFW/Glfw_linux.h>
 
 #elif __APPLE__
+
 #	define TINY_APPLE
 #	define tm_dll
-#	define tiny_breakpoint
+
+#	ifdef TINY_DEBUG
+#	    define TINY_BREAKPOINT
+#	    define TINY_ASSERT_FORMAT( CHECK, FORMAT, ... )
+#       define TINY_ASSERT( CHECK, MESSAGE ) TINY_ASSERT_FORMAT( CHECK, MESSAGE, "" ) 
+#   else
+#	    define TINY_BREAKPOINT
+#       define TINY_ASSERT_FORMAT( ... )
+#		define TINY_ASSERT( ... ) 
+#   endif
 
 #   include <TinyThirdparty/GLFW/Glfw_osx.h>
 
@@ -166,6 +193,14 @@ TINY_INT_REG( int16_t, short );
 TINY_INT_REG( int32_t, int   );
 TINY_INT_REG( int64_t, long  );
 
+typedef void native_pointer_base;
+typedef native_pointer_base* native_pointer;
+typedef tiny_ubyte tiny_pointer_base;
+typedef tiny_pointer_base* tiny_pointer;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Helper's Definition
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define TINY_UBYTE_MAX	tiny_cast( UCHAR_MAX, tiny_ubyte )
 #define TINY_USHORT_MAX tiny_cast( USHRT_MAX, tiny_ushort )
 #define TINY_UINT_MAX	tiny_cast( UINT_MAX, tiny_uint )

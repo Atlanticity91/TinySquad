@@ -24,8 +24,8 @@
 
 te_struct TinyAssetConverter {
 
-	using Import_t = std::function<bool( TinyGame*, TinyFile&, const TinyPathInformation& )>;
-	using Export_t = std::function<bool( TinyGame*, TinyFile&, const c_pointer )>;
+	using Import_t = std::function<bool( TinyGame*, TinyFile*, const TinyPathInformation& )>;
+	using Export_t = std::function<bool( TinyGame*, TinyFile*, const native_pointer )>;
 
 	Import_t Import;
 	Export_t Export;

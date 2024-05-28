@@ -90,7 +90,7 @@ namespace TinyLua {
 	tiny_dll void CreateField(
 		lua_State* context,
 		const tiny_string& name,
-		c_pointer& value
+		native_pointer& value
 	);
 
 	tiny_dll void LinkMetatable( lua_State* context, const tiny_string& name );
@@ -113,7 +113,7 @@ namespace TinyLua {
 		lua_State* context,
 		tiny_int table_id,
 		const tiny_string& name,
-		c_pointer& value
+		native_pointer& value
 	);
 
 	tiny_dll void SetField( 

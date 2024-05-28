@@ -30,7 +30,7 @@ TinyTexture2DManager::TinyTexture2DManager( )
 bool TinyTexture2DManager::Create(
 	TinyGame* game, 
 	const tiny_string& alias, 
-	const c_pointer builder
+	const native_pointer builder
 ) {
 	auto& graphics = game->GetGraphics( );
 	auto& builder_ = tiny_lvalue( tiny_cast( builder, const TinyTexture2DBuilder* ) );
@@ -38,7 +38,7 @@ bool TinyTexture2DManager::Create(
 	auto staging   = TinyGraphicBufferStaging{ };
 	auto state	   = false;
 	auto size	   = builder_.Texels.size( );
-	auto* data	   = tiny_cast( builder_.Texels.data( ), const c_pointer );
+	auto* data	   = tiny_cast( builder_.Texels.data( ), const native_pointer );
 
 	if ( staging.CreateMap( context, size, data ) ) {
 		auto& texture = Emplace( alias );

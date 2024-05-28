@@ -48,9 +48,9 @@ public:
 
 	~TinyWindow( ) = default;
 
-	bool Initialize( const TinyAppConfig& config, c_pointer user_data );
+	bool Initialize( const TinyAppConfig& config, native_pointer user_data );
 
-	void SetCallback( TinyWindowCallbacks query, c_pointer callback );
+	void SetCallback( TinyWindowCallbacks query, native_pointer callback );
 
 	void SetIcon( tiny_int width, tiny_int height, tiny_pointer pixels );
 

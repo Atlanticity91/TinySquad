@@ -278,7 +278,7 @@ void TinyGraphicRenderManager::CreateBarriers(
 	auto barrier_count = references.Passes.size( );
 	auto barriers	   = tiny_list<TinyGraphicRenderBarrierBundle>{ barrier_count + 1 };
 
-	//_barriers.Create( bundle.Name.c_string( ), barriers );
+	//_barriers.Create( bundle.Name.native_string( ), barriers );
 }
 
 tiny_list<VkClearValue> TinyGraphicRenderManager::CreatePassClears(
@@ -484,7 +484,7 @@ bool TinyGraphicRenderManager::CreatePasse(
 ) {
 	auto renderpass = TinyGraphicRenderpassBundle{ };
 	auto references = CreatePassReferences( bundle.Data );
-	auto* name_str  = bundle.String.c_str( );
+	auto name_str = tiny_string{ bundle.Alias };
 	
 	renderpass.Frame		= _frames.GetCount( );
 	renderpass.Viewport		= viewport;
@@ -507,8 +507,8 @@ bool TinyGraphicRenderManager::CreateFrame(
 	const VkScissor& scissor,
 	const BundleNode& bundle
 ) {
-	auto* name_str = bundle.String.c_str( );
-	auto frame	   = TinyGraphicRenderFrameProperties{ };
+	auto name_str = tiny_string{ bundle.Alias };
+	auto frame	  = TinyGraphicRenderFrameProperties{ };
 
 	frame.Pass	  = GetPass( name_str );
 	frame.Width   = scissor.extent.width;

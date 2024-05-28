@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyLua::Anim2D::Convert( lua_State* context, TinyComponent* component ) {
-	auto* tmp = tiny_cast( component, c_pointer );
+	auto* tmp = tiny_cast( component, native_pointer );
 
 	tli_create_new(
 		TINY_ANIM2D_NAME,

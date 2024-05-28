@@ -11,7 +11,7 @@
  *
  * @author   : ALVES Quentin
  * @creation : 23/04/2024
- * @version  : 2024.2.7
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -28,18 +28,20 @@
 #define TINY_ENGINE_VERSION\
 	Tiny::MakeVersion( TINY_ENGINE_MAJOR, TINY_ENGINE_MINOR, TINY_ENGINE_PATCH )
 
-namespace Tiny { 
+typedef tiny_uint tiny_version;
 
-	tiny_dll tiny_uint MakeVersion(
+namespace Tiny {
+
+	tiny_dll tiny_version MakeVersion(
 		const tiny_ushort major, 
 		const tiny_ubyte minor, 
 		tiny_ubyte patch 
 	);
 
-	tiny_dll tiny_uint GetVersionMajor( const tiny_uint version );
+	tiny_dll tiny_uint GetVersionMajor( const tiny_version version );
 
-	tiny_dll tiny_uint GetVersionMinor( const tiny_uint version );
+	tiny_dll tiny_uint GetVersionMinor( const tiny_version version );
 
-	tiny_dll tiny_uint GetVersionPatch( const tiny_uint version );
+	tiny_dll tiny_uint GetVersionPatch( const tiny_version version );
 
 };

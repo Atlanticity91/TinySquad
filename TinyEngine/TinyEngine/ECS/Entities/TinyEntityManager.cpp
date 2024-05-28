@@ -54,7 +54,7 @@ bool TinyEntityManager::Rename( const tiny_uint entity_id, const tiny_string& ne
 	auto state = !GetEntityID( new_name, other );
 
 	if ( state ) {
-		auto old_name = _entities.node( entity_id ).String;
+		auto old_name = _entities.node( entity_id ).Alias;
 
 		_entities.remap( old_name, new_name );
 	}

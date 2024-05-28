@@ -75,9 +75,14 @@ tiny_list<tiny_ubyte> TinyGraphicPipelineManager::LoadCache( TinyFilesystem& fil
 	auto cache_path = filesystem.GetCachePath( );
 
 	if ( filesystem.GetFileExist( cache_path ) ) {
-		auto file = filesystem.OpenFile( cache_path, Tiny::TF_ACCESS_READ );
-		
-		file.Read( cache_data );
+		auto file = filesystem.OpenFile( cache_path, TF_ACCESS_BINARY_READ );
+		auto length = tiny_cast( file.GetSize( ), tiny_uint );
+
+		cache_data = length;
+
+		auto* data = tiny_cast( cache_data.data( ), native_pointer );
+
+		file.ReadAll( length, data );
 	}
 
 	return cache_data;
@@ -91,9 +96,10 @@ void TinyGraphicPipelineManager::WriteCache(
 	auto cache_path = filesystem.GetCachePath( );
 
 	if ( vk::GetPipelineCache( logical, _cache, cache_data ) ) {
-		auto file = filesystem.OpenFile( cache_path, Tiny::TF_ACCESS_WRITE );
+		auto* data  = tiny_cast( cache_data.data( ), const native_pointer );
+		auto length = tiny_cast( cache_data.size( ), tiny_uint );
 
-		file.Write( cache_data );
+		filesystem.Dump( cache_path, length, data );
 	}
 }
 
@@ -115,12 +121,12 @@ bool TinyGraphicPipelineManager::CreateCache(
 void TinyGraphicPipelineManager::CreateDescriptorLimits( ) {
 	const tiny_uint MAX_DESCRIPTOR = 128;
 
-	_limits.create( VK_DESCRIPTOR_TYPE_SAMPLER, MAX_DESCRIPTOR );
+	_limits.create( VK_DESCRIPTOR_TYPE_SAMPLER,				   MAX_DESCRIPTOR );
 	_limits.create( VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, MAX_DESCRIPTOR );
+	_limits.create( VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,		   MAX_DESCRIPTOR );
+	_limits.create( VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,		   MAX_DESCRIPTOR );
+	_limits.create( VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,		   MAX_DESCRIPTOR );
+	_limits.create( VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,	   MAX_DESCRIPTOR );
 }
 
 TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipeline2D( ) {

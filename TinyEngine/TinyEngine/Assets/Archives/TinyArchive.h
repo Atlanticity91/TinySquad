@@ -33,6 +33,6 @@ public:
 
 	~TinyArchive( ) = default;
 
-	TinyFile Access( TinyGame* game, tiny_ulong offset );
+	TinyPhysicalFile Access( TinyGame* game, tiny_ulong offset );
 
 };

@@ -31,7 +31,7 @@ TinyWindow::TinyWindow( tiny_string title, bool is_headless )
 	_is_full_screen{ false }
 { }
 
-bool TinyWindow::Initialize( const TinyAppConfig& config, c_pointer user_data ) {
+bool TinyWindow::Initialize( const TinyAppConfig& config, native_pointer user_data ) {
 	auto* title = _title.as_chars( );
 	auto state  = glfwCreateWindow( _handle, title, config.Width, config.Height, _is_headless, config.IsFullScreen );
 
@@ -54,7 +54,7 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, c_pointer user_data ) 
 	return state;
 }
 
-void TinyWindow::SetCallback( TinyWindowCallbacks query, c_pointer callback ) {
+void TinyWindow::SetCallback( TinyWindowCallbacks query, native_pointer callback ) {
 	switch ( query ) {
 		case TWC_WINDOW_SIZE  : glfwSetWindowSizeCallback( _handle, tiny_cast( callback, GLFWwindowsizefun ) );	  break;
 		case TWC_WINDOW_CLOSE : glfwSetWindowCloseCallback( _handle, tiny_cast( callback, GLFWwindowclosefun ) ); break;

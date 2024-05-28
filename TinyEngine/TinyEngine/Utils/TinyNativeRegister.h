@@ -31,14 +31,14 @@ te_class TinyNativeRegister final {
 	using return_type = typename std::conditional<( !std::is_same<Type, void>::value ), std::optional<Type>, bool>::type;
 
 private:
-	tiny_map<c_pointer> _functions;
+	tiny_map<native_pointer> _functions;
 
 public:
 	TinyNativeRegister( );
 
 	~TinyNativeRegister( ) = default;
 
-	void Register( const tiny_string& alias, const c_pointer function );
+	void Register( const tiny_string& alias, const native_pointer function );
 
 	void Remove( const tiny_string& function_alias );
 
@@ -90,10 +90,10 @@ public:
 
 	bool GetExist( const tiny_hash function_hash ) const;
 
-	tiny_list<c_string> GetList( ) const;
+	tiny_list<native_string> GetList( ) const;
 
-	tiny_map<c_pointer>& GetNatives( );
+	tiny_map<native_pointer>& GetNatives( );
 
-	const tiny_map<c_pointer>& GetNatives( ) const;
+	const tiny_map<native_pointer>& GetNatives( ) const;
 
 };

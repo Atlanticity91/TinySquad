@@ -53,13 +53,13 @@ namespace TinyMath {
 
 	typedef tiny_vec3( *GrabSignature )( tiny_mat4& );
 
-	tiny_vec3 GrabTransform( tiny_mat4& matrix );
+	tm_dll tiny_vec3 GrabTransform( tiny_mat4& matrix );
 	
-	tiny_vec3 GrabRotation( tiny_mat4& matrix );
+	tm_dll tiny_vec3 GrabRotation( tiny_mat4& matrix );
 	
-	tiny_vec3 GrabScale( tiny_mat4& matrix );
+	tm_dll tiny_vec3 GrabScale( tiny_mat4& matrix );
 
-	void Decompose( 
+	tm_dll void Decompose(
 		tiny_mat4& matrix, 
 		tiny_vec3& transform, 
 		tiny_vec3& rotation,

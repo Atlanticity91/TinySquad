@@ -23,16 +23,21 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGame::TinyGame( const tiny_string& title, TinyGameOrientations orientation )
-	: TinyGame{ title, orientation, false }
+TinyGame::TinyGame(
+	const tiny_string& developer, 
+	const tiny_string& title, 
+	TinyGameOrientations orientation
+)
+	: TinyGame{ developer, title, orientation, false }
 { }
 
 TinyGame::TinyGame( 
+	const tiny_string& developer,
 	const tiny_string& title,
 	TinyGameOrientations orientation,
 	bool is_headless
 )
-	: _engine{ title, orientation, is_headless }
+	: _engine{ developer, title, orientation, is_headless }
 { }
 
 bool TinyGame::Start( tiny_int argc, char** argv ) {

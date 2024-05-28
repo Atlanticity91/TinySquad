@@ -56,7 +56,7 @@ TinyLuaParameter::TinyLuaParameter( double& value )
 	: TinyLuaParameter{ TL_TYPE_DOUBLE, tiny_rvalue( value ) } 
 { }
 
-TinyLuaParameter::TinyLuaParameter( c_pointer user_data )
+TinyLuaParameter::TinyLuaParameter( native_pointer user_data )
 	: TinyLuaParameter{ TL_TYPE_USERDATA, user_data }
 { }
 
@@ -69,5 +69,5 @@ TinyLuaParameter::TinyLuaParameter( tiny_pointer user_data )
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyLuaParameter::TinyLuaParameter( TinyLuaTypes type, auto* data )
 	: Type{ type },
-	Value{ tiny_cast( data, c_pointer ) }
+	Value{ tiny_cast( data, native_pointer ) }
 { }

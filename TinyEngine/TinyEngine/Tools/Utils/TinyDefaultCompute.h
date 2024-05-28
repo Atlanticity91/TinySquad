@@ -22,4 +22,4 @@
 
 #include "TinyDefaultFragment.h"
 
-static const c_string TinyDefaultCompute = R"()";
+static const native_string TinyDefaultCompute = R"()";

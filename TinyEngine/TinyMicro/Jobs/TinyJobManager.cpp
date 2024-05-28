@@ -24,25 +24,22 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyJobManager::TinyJobManager( ) 
-	: _threads{ },
-	_queues{ }
 { }
 
-bool TinyJobManager::Initialize( TinyThreadRun thread_run, c_pointer data ) {
-	return _threads.Create( thread_run, data );
+bool TinyJobManager::Initialize( TinyThreadRun thread_run, native_pointer data ) {
+	return Tiny::Initialize( );
 }
 
 bool TinyJobManager::Dispatch( const TinyJob& job ) {
-	return _queues.EnQueue( job );
+	return false;
 }
 
-void TinyJobManager::Wait( ) { _queues.Wait( ); }
+void TinyJobManager::Wait( ) { }
 
 void TinyJobManager::Terminate( ) {
-	_threads.Terminate( );
+	Tiny::Terminate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyJobManager::DeQueue( TinyJob& job ) { return _queues.DeQueue( job ); }

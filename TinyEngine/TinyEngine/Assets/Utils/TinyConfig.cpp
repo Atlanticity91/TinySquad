@@ -96,7 +96,7 @@ const TinyAppConfig& TinyConfig::GetAppConfig( ) const { return _application; }
 
 const tiny_list<std::string>& TinyConfig::GetArchives( ) const { return _archives; }
 
-const tiny_string TinyConfig::GetStartScene( ) const { return { _start_scene }; }
+const tiny_string TinyConfig::GetStartScene( ) const { return tiny_string{ _start_scene }; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

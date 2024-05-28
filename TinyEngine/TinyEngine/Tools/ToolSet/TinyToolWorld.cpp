@@ -65,7 +65,7 @@ void TinyToolWorld::DrawEntity(
 				 ImGuiTreeNodeFlags_AllowOverlap   | 
 				 ImGuiTreeNodeFlags_FramePadding;
 
-	auto entity_name = tiny_buffer<32>{ entity.String };
+	auto entity_name = tiny_buffer<32>{ entity.Alias };
 	auto* name_str   = entity_name.as_chars( );
 	auto region		 = ImGui::GetContentRegionAvail( );
 	auto& toolbox	 = game->GetToolbox( );

@@ -52,11 +52,17 @@ private:
 public:
 	/**
 	 * Constructor
+	 * @param developer : Game developer.
 	 * @param title : Game window title.
 	 * @param orientation : Desired game orientation for graphics adaptation.
 	 * @param is_headless : Defined is the game window as OS decoration.
 	 **/
-	TinyEngine( const tiny_string& title, TinyGameOrientations orientation, bool is_headless );
+	TinyEngine( 
+		const tiny_string& developer,
+		const tiny_string& title, 
+		TinyGameOrientations orientation, 
+		bool is_headless 
+	);
 
 	/**
 	 * Destructor
@@ -166,7 +172,7 @@ private:
 	 * @note : Child Thread execution loop.
 	 * @param game : Pointer to current game class instance.
 	 **/
-	static void JobRun( c_pointer game );
+	static void JobRun( native_pointer game );
 
 	/**
 	 * Resize static method

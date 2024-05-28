@@ -22,7 +22,7 @@
 
 #include <TinyEngine/Tools/Fonts/TinyFont.h>
 
-static const c_string TinyDefaultSpriteVertex = R"(
+static const native_string TinyDefaultSpriteVertex = R"(
 #version 450 core
 #pragma shader_stage( vertex )
 
@@ -58,7 +58,7 @@ void main( ) {
 }
 )";
 
-static const c_string TinyDefaultTextVertex = R"(
+static const native_string TinyDefaultTextVertex = R"(
 #version 450 core
 #pragma shader_stage( vertex )
 

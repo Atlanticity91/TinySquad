@@ -24,13 +24,14 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyEngine::TinyEngine(
+	const tiny_string& developer,
 	const tiny_string& title,
 	TinyGameOrientations orientation, 
 	bool is_headless 
 )
 	: _is_running{ true },
 	_jobs{ },
-	_filesystem{ },
+	_filesystem{ developer },
 	_assets{ },
 	_window{ title, is_headless },
 	_inputs{ },
@@ -152,7 +153,7 @@ bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
 }
 
 bool TinyEngine::Init( TinyGame* game, const TinyConfig& config ) {
-	return  _window.Initialize( config, tiny_cast( game, c_pointer ) ) &&
+	return  _window.Initialize( config, tiny_cast( game, native_pointer ) ) &&
 			_inputs.Initialize( _filesystem, _window )				   &&
 			_audio.Initialize( _filesystem, _window )				   &&
 			_graphics.Initialize( _filesystem, _window );
@@ -176,11 +177,12 @@ bool TinyEngine::ProcessArgs( TinyGame* game, tiny_int argc, char** argv ) { ret
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE STATIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyEngine::JobRun( c_pointer game ) {
+void TinyEngine::JobRun( native_pointer game ) {
 	auto* _game  = tiny_cast( game, TinyGame* );
 	auto& engine = _game->GetEngine( );
 
 	while ( engine.GetIsRunning( ) ) {
+		/*
 		TinyJob job;
 		
 		if ( engine.GetJobs( ).DeQueue( job ) ) {
@@ -191,6 +193,7 @@ void TinyEngine::JobRun( c_pointer game ) {
 			else if ( !result && job.Failure )
 				std::invoke( job.Failure, job.Data, game );
 		} else
+		*/
 			tiny_sleep_for( 100 );
 	}
 }

@@ -88,6 +88,6 @@ public:
 
 	tiny_uint GetSize( ) const { return _count * tiny_sizeof( Type ); };
 
-	c_pointer GetData( ) const { return tiny_get_address( _storage ); };
+	native_pointer GetData( ) const { return tiny_get_address( _storage ); };
 
 };

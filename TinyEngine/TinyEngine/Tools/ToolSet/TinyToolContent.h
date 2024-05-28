@@ -27,7 +27,7 @@ te_class TinyToolContent final
 	tiny_inherit( TinyToolDialog )
 {
 
-	typedef c_string ( *AssetTypeToString )( tiny_uint );
+	typedef native_string ( *AssetTypeToString )( tiny_uint );
 
 private:
 	bool				   _has_changed;
@@ -47,6 +47,6 @@ protected:
 	tiny_implement( void OnTick( TinyGame* game, TinyToolbox& toolbox ) );
 
 private:
-	static c_string TypeToString( tiny_uint type );
+	static native_string TypeToString( tiny_uint type );
 
 };

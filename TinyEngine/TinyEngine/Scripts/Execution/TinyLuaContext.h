@@ -38,7 +38,7 @@ public:
 
 	bool Create( );
 
-	bool Compile( c_string alias, c_string source );
+	bool Compile( native_string alias, native_string source );
 
 	tiny_inline bool Compile( const tiny_string& alias, const tiny_string& source );
 
@@ -76,7 +76,7 @@ public:
 
 	bool Pop( TinyLuaParameter& parameter );
 
-	bool Execute( c_string source );
+	bool Execute( native_string source );
 
 	tiny_inline bool Execute( const tiny_string& source );
 

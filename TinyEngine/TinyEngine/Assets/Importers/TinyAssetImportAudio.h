@@ -26,20 +26,20 @@ namespace TinyImport {
 
 	tiny_dll bool ImportAudioWav(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	);
 
 	tiny_dll bool ImportAudioMp3(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	);
 
 	tiny_dll bool ExportAudio(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 };

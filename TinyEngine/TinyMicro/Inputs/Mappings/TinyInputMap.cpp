@@ -29,7 +29,10 @@ TinyInputMap::TinyInputMap( )
 
 void TinyInputMap::Clear( ) { _queries.clear( ); }
 
-void TinyInputMap::Register( tiny_string input_alias, tiny_init<TinyInputQuery> querys ) {
+void TinyInputMap::Register(
+	const tiny_string& input_alias, 
+	tiny_init<TinyInputQuery> querys 
+) {
 	auto input_hash = tiny_hash{ input_alias };
 	
 	if ( !Find( input_hash ) )
@@ -38,7 +41,10 @@ void TinyInputMap::Register( tiny_string input_alias, tiny_init<TinyInputQuery> 
 	_queries[ input_hash ].Values.emplace_back( querys );
 }
 
-void TinyInputMap::Register( tiny_string input_alias, const tiny_list<TinyInputQuery>& querys ) {
+void TinyInputMap::Register( 
+	const tiny_string& input_alias, 
+	const tiny_list<TinyInputQuery>& querys 
+) {
 	auto input_hash = tiny_hash{ input_alias };
 
 	if ( !Find( input_hash ) )

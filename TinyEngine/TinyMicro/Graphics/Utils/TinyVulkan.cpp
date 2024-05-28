@@ -91,8 +91,8 @@ tiny_string vkGetScopeString( VkSystemAllocationScope scope ) {
     return text;
 }
 
-c_pointer vk_AllocationFunction(
-    c_pointer user_data,
+native_pointer vk_AllocationFunction(
+    native_pointer user_data,
     tiny_ulong size,
     tiny_ulong alignment,
     VkSystemAllocationScope scope 
@@ -109,14 +109,14 @@ c_pointer vk_AllocationFunction(
     return memory;
 }
 
-c_pointer vk_ReallocationFunction(
-    c_pointer user_data,
-    c_pointer original,
+native_pointer vk_ReallocationFunction(
+    native_pointer user_data,
+    native_pointer original,
     tiny_ulong size,
     tiny_ulong alignment,
     VkSystemAllocationScope scope
 ) { 
-    auto* memory = tiny_cast( nullptr, c_pointer );
+    auto* memory = tiny_cast( nullptr, native_pointer );
 
     if ( original ) {
         memory = realloc( original, size );
@@ -129,7 +129,7 @@ c_pointer vk_ReallocationFunction(
     return memory;
 }
 
-void vk_FreeFunction( c_pointer user_data, c_pointer memory ) {
+void vk_FreeFunction( native_pointer user_data, native_pointer memory ) {
     if ( memory ) {
 #       ifdef TINY_DEBUG
         vk_allocation_stats.Size -= 1;
@@ -141,7 +141,7 @@ void vk_FreeFunction( c_pointer user_data, c_pointer memory ) {
 }
 
 void vk_InternalAllocationNotification(
-    c_pointer user_data,
+    native_pointer user_data,
     tiny_ulong size,
     VkInternalAllocationType type,
     VkSystemAllocationScope scope 
@@ -154,7 +154,7 @@ void vk_InternalAllocationNotification(
 }
 
 void vk_InternalFreeNotification(
-    c_pointer user_data,
+    native_pointer user_data,
     tiny_ulong size,
     VkInternalAllocationType type,
     VkSystemAllocationScope scope 
@@ -181,9 +181,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
     tiny_ulong object,
     tiny_ulong location, 
     tiny_int message_code,
-    c_string layer_prefix,
-    c_string message,
-    c_pointer user_data 
+    native_string layer_prefix,
+    native_string message,
+    native_pointer user_data 
 ) {
     (void)flags; (void)object; (void)location; (void)message_code; (void)layer_prefix; (void)user_data;
 
@@ -482,7 +482,7 @@ VkClearColorValue vk::CastColor( const tiny_color& color ) {
 #define VK_TO_STRING( ENUM_VAL )\
     case ENUM_VAL: text = #ENUM_VAL; break;
 
-c_string vk::CastFormat( const VkFormat format ) {
+native_string vk::CastFormat( const VkFormat format ) {
     auto text = "UNDEFINED";
 
     switch ( format ) {
@@ -743,7 +743,7 @@ c_string vk::CastFormat( const VkFormat format ) {
     return text;
 }
 
-c_string vk::CastColorSpace( const VkColorSpaceKHR color_space ) {
+native_string vk::CastColorSpace( const VkColorSpaceKHR color_space ) {
     auto text = tiny_string{ "UNDEFINED" };
 
     switch ( color_space ) {
@@ -770,7 +770,7 @@ c_string vk::CastColorSpace( const VkColorSpaceKHR color_space ) {
     return text;
 }
 
-c_string vk::CastPresentMode( const VkPresentModeKHR present_mode ) {
+native_string vk::CastPresentMode( const VkPresentModeKHR present_mode ) {
     auto text = "UNDEFINED";
 
     switch ( present_mode ) {
@@ -787,7 +787,7 @@ c_string vk::CastPresentMode( const VkPresentModeKHR present_mode ) {
     return text;
 }
 
-c_string vk::CastLayout( const VkImageLayout layout ) {
+native_string vk::CastLayout( const VkImageLayout layout ) {
     auto text = "UNDEFINED";
 
     switch ( layout ) {
@@ -822,7 +822,7 @@ c_string vk::CastLayout( const VkImageLayout layout ) {
     return text;
 }
 
-c_string vk::CastAspect( const VkImageAspectFlags aspect ) {
+native_string vk::CastAspect( const VkImageAspectFlags aspect ) {
     auto text = "UNDEFINED";
 
     switch ( aspect ) {
@@ -845,7 +845,7 @@ c_string vk::CastAspect( const VkImageAspectFlags aspect ) {
     return text;
 }
 
-c_string vk::CastSamples( const VkSampleCountFlags samples ) {
+native_string vk::CastSamples( const VkSampleCountFlags samples ) {
     auto text = "UNDEFINED";
 
     switch ( samples ) {
@@ -863,7 +863,7 @@ c_string vk::CastSamples( const VkSampleCountFlags samples ) {
     return text;
 }
 
-c_string vk::CastTiling( const VkImageTiling tiling ) {
+native_string vk::CastTiling( const VkImageTiling tiling ) {
     auto text = "UNDEFINED";
 
     switch ( tiling ) {

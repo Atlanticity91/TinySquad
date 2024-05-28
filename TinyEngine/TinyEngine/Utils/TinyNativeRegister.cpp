@@ -27,7 +27,7 @@ TinyNativeRegister::TinyNativeRegister( )
 	: _functions{ }
 { }
 
-void TinyNativeRegister::Register( const tiny_string& alias, const c_pointer function ) {
+void TinyNativeRegister::Register( const tiny_string& alias, const native_pointer function ) {
 	if ( !_functions.find( alias ) && function )
 		_functions.emplace( alias, function );
 }
@@ -56,16 +56,16 @@ bool TinyNativeRegister::GetExist( const tiny_hash function_hash ) const {
 	return _functions.find( function_hash );
 }
 
-tiny_list<c_string> TinyNativeRegister::GetList( ) const {
+tiny_list<native_string> TinyNativeRegister::GetList( ) const {
 	auto count = _functions.size( );
-	auto list  = tiny_list<c_string>{ };
+	auto list  = tiny_list<native_string>{ };
 
 	list = count + 1;
 
 	list[ 0 ] = "Undefined";
 
 	while ( count-- > 0) {
-		auto& name = _functions.node( count ).String;
+		auto& name = _functions.node( count ).Alias;
 
 		list[ count + 1 ] = name.c_str( );
 	}
@@ -73,6 +73,6 @@ tiny_list<c_string> TinyNativeRegister::GetList( ) const {
 	return list;
 }
 
-tiny_map<c_pointer>& TinyNativeRegister::GetNatives( ) { return _functions; }
+tiny_map<native_pointer>& TinyNativeRegister::GetNatives( ) { return _functions; }
 
-const tiny_map<c_pointer>& TinyNativeRegister::GetNatives( ) const { return _functions; }
+const tiny_map<native_pointer>& TinyNativeRegister::GetNatives( ) const { return _functions; }

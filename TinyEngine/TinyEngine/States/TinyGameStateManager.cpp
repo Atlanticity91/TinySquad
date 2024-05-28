@@ -68,7 +68,7 @@ tiny_string TinyGameStateManager::GetStateName( ) const {
 	if ( _current < _states.size( ) ) {
 		auto& node = _states.node( _current );
 
-		state_name = tiny_string{ node.String };
+		state_name = tiny_string{ node.Alias };
 	}
 
 	return state_name;

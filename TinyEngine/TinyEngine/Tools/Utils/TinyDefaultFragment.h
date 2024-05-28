@@ -22,7 +22,7 @@
 
 #include "TinyDefaultVertex.h"
 
-static const c_string TinyDefaultSpriteFragment = R"(
+static const native_string TinyDefaultSpriteFragment = R"(
 #version 450 core
 #pragma shader_stage( fragment )
 #extension GL_EXT_nonuniform_qualifier : require
@@ -43,7 +43,7 @@ void main( ) {
 }
 )";
 
-static const c_string TinyDefaultTextFragment = R"(
+static const native_string TinyDefaultTextFragment = R"(
 #version 450 core
 #pragma shader_stage( fragment )
 #extension GL_EXT_nonuniform_qualifier : require

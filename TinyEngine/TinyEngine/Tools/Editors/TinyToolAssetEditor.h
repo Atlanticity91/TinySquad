@@ -50,7 +50,7 @@ protected:
 	tiny_virtualv( true, bool OnOpen(
 		TinyGame* game, 
 		const tiny_string& name, 
-		c_pointer asset 
+		native_pointer asset 
 	) );
 
 	tiny_virtual( void OnTick( TinyGame* game, TinyAssetManager& assets ) );

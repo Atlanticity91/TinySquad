@@ -27,7 +27,7 @@ tm_struct TinyGraphicPipelineConstant {
 	VkShaderStageFlags Stage;
 	tiny_uint Offset;
 	tiny_uint Size;
-	c_pointer Value;
+	native_pointer Value;
 
 	template<typename Type>
 	TinyGraphicPipelineConstant( VkShaderStageFlags stage, const Type& data ) 

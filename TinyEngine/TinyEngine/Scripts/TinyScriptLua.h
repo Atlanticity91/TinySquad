@@ -26,7 +26,7 @@ te_struct TinyScriptExecution {
 
 	TinyAssetHandle Script{ TA_TYPE_SCRIPT };
 	tiny_string Function = "";
-	c_pointer Component  = nullptr;
+	native_pointer Component  = nullptr;
 
 };
 

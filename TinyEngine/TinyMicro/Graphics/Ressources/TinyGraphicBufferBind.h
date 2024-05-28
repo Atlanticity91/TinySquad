@@ -27,23 +27,23 @@ tm_struct TinyGraphicBufferBind {
 	TinyGraphicBuffer& Buffer;
 	tiny_uint Offset;
 	tiny_uint Size;
-	c_pointer Data;
+	native_pointer Data;
 
-	TinyGraphicBufferBind( TinyGraphicBuffer& buffer, c_pointer data );
+	TinyGraphicBufferBind( TinyGraphicBuffer& buffer, native_pointer data );
 
 	TinyGraphicBufferBind(
 		TinyGraphicBuffer& buffer,
 		tiny_uint size,
-		c_pointer data
+		native_pointer data
 	);
 
 	TinyGraphicBufferBind(
 		TinyGraphicBuffer& buffer,
 		tiny_uint offset,
 		tiny_uint size,
-		c_pointer data
+		native_pointer data
 	);
 
-	TinyGraphicBufferBind( const TinyGraphicBufferBind& other, c_pointer data );
+	TinyGraphicBufferBind( const TinyGraphicBufferBind& other, native_pointer data );
 
 };

@@ -33,7 +33,7 @@ void TinyToolLua::Save( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolLua::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
+bool TinyToolLua::OnOpen( TinyGame* game, const tiny_string& name, native_pointer asset ) {
 	return true;
 }
 

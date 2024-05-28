@@ -47,13 +47,13 @@ public:
 		const TinyAssetConverter& converter 
 	);
 
-	bool Import( TinyGame* game, TinyFile& file, const TinyPathInformation& path_info );
+	bool Import( TinyGame* game, TinyFile* file, const TinyPathInformation& path_info );
 
 	bool Export( 
 		TinyGame* game,
 		const tiny_uint type,
 		const tiny_string& alias, 
-		const c_pointer builder 
+		const native_pointer builder 
 	);
 	
 private:

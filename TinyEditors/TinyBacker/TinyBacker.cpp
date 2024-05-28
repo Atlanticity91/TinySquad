@@ -30,7 +30,9 @@ TinyBacker::TinyBacker( )
     _import_path{ },
     _history{ },
     _entries{ }
-{ }
+{
+    _entries.emplace_back( { 0, false, "t_texture", "Dev/t_texture.png" } );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PROTECTED ===
@@ -72,7 +74,7 @@ void TinyBacker::TickUI( ) {
     //TinyImGui::Dropdown( "Pack", );
     TinyImGui::InputBegin( "Pack" );
 
-    auto list = tiny_list<c_string>{ };
+    auto list = tiny_list<native_string>{ };
 
     /*
     for ( auto& history : _history )
@@ -99,35 +101,39 @@ void TinyBacker::TickUI( ) {
 
     TinyImGui::TextVar( "Author", "%s", "Atlanticity91" );
     TinyImGui::TextVar( "Version", "%d.%d.%d", 2024, 2, 7 );
-    TinyImGui::TextVar( "Date", "%d/%d/%d", 18, 04, 2024 );
+    TinyImGui::TextVar( "Date", "%d/%d/%d-%d:%d:%d", 18, 04, 2024, 0, 0, 0 );
     TinyImGui::EndVars( );
 
     ImGui::SeparatorText( "Content" );
 
-    if ( ImGui::Button( "Import" ) ) {
-        auto& filesystem = GetFilesystem( );
-        auto path        = filesystem.GetDevDir( );
-
-        if ( filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, "All Files (*.*)\0*.*\0", path ) ) {
-            auto& assets   = GetAssets( );
-            auto& importer = assets.GetImporter( );
-
-            _import_path = path.as_string( );
-
-            if ( !assets.Import( this, path ) ) 
-                ImGui::OpenPopup( "Import Fail" );
-        }
-    }
+    if ( ImGui::Button( "Import" ) )
+        ImportAsset( );
 
     DrawContent( );
     DrawPopups( );
+
+    static bool b = true;
+    ImGui::ShowDemoWindow( &b );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyBacker::LoadContent( ) {
+void TinyBacker::LoadContent( ) { }
 
+void TinyBacker::ImportAsset( ) {
+    auto& filesystem = GetFilesystem( );
+    auto path        = filesystem.GetDevDir( );
+
+    if ( filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, "All Files (*.*)\0*.*\0", path ) ) {
+        auto& assets   = GetAssets( );
+        auto& importer = assets.GetImporter( );
+
+        _import_path = path.as_string( );
+
+        if ( !assets.Import( this, path ) )
+            ImGui::OpenPopup( "Import Fail" );
+    }
 }
 
 void TinyBacker::DrawEntry( tiny_uint entry_id, TinyBackerEntry& entry ) {
@@ -141,18 +147,31 @@ void TinyBacker::DrawEntry( tiny_uint entry_id, TinyBackerEntry& entry ) {
     if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) )
         _delete_id = entry_id;
 
+    ImGui::SameLine( .0f, .0f );
+
+    if ( TinyImGui::Button( TF_ICON_REDO ) ) { }
+
+    ImGui::SameLine( .0f, .0f );
+
+    if ( TinyImGui::Button( TF_ICON_EDIT ) ) { }
+
     ImGui::TableNextColumn( );
 
     TINY_IMGUI_SCOPE_ID(
         ImGui::Checkbox( "", tiny_rvalue( entry.IsCompressed ) );
     );
 
-    ImGui::TableNextColumn( );
-    ImGui::Text( "%s", type_str );
-    ImGui::TableNextColumn( );
-    ImGui::Text( "%s", alias_str );
-    ImGui::TableNextColumn( );
-    ImGui::Text( "%s", path_str );
+    {
+        //TinyImGui::Theme::NotifYellow NotifOrange
+        auto c = TinyImGui::ScopeColors{ ImGuiCol_Text, TinyImGui::Theme::NotifOrange };
+
+        ImGui::TableNextColumn( );
+        ImGui::Text( "%s", type_str );
+        ImGui::TableNextColumn( );
+        ImGui::Text( "%s", alias_str );
+        ImGui::TableNextColumn( );
+        ImGui::Text( "%s", path_str );
+    }
 }
 
 void TinyBacker::DrawContent( ) {
@@ -166,11 +185,11 @@ void TinyBacker::DrawContent( ) {
     }
 
     if ( ImGui::BeginTable( "Asset List", 5, flags ) ) {
-        ImGui::TableSetupColumn( "##_Delete", ImGuiTableColumnFlags_WidthFixed, char_size * 3.f );
-        ImGui::TableSetupColumn( "Lz4", ImGuiTableColumnFlags_WidthFixed, char_size * 3.f );
-        ImGui::TableSetupColumn( "Type", ImGuiTableColumnFlags_WidthFixed, char_size * 14.f );
-        ImGui::TableSetupColumn( "Alias", ImGuiTableColumnFlags_WidthStretch );
-        ImGui::TableSetupColumn( "Path", ImGuiTableColumnFlags_WidthStretch );
+        ImGui::TableSetupColumn( "##_Actions", ImGuiTableColumnFlags_WidthFixed, char_size * 9.f );
+        ImGui::TableSetupColumn( "Lz4"       , ImGuiTableColumnFlags_WidthFixed, char_size * 3.f );
+        ImGui::TableSetupColumn( "Type"      , ImGuiTableColumnFlags_WidthFixed, char_size * 14.f );
+        ImGui::TableSetupColumn( "Alias"     , ImGuiTableColumnFlags_WidthStretch );
+        ImGui::TableSetupColumn( "Path"      , ImGuiTableColumnFlags_WidthStretch );
         ImGui::TableHeadersRow( );
 
         auto entry_id = tiny_cast( 0, tiny_uint );
@@ -207,7 +226,7 @@ void TinyBacker::DrawPopups( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-c_string TinyBacker::TypeToStr( const tiny_uint type ) const {
+native_string TinyBacker::TypeToStr( const tiny_uint type ) const {
     auto type_str = "Custom";
 
     switch ( type ) {

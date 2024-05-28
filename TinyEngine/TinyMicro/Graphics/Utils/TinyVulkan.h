@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyMicro/Audio/TinyAudioManager.h>
+#include "TinyColorPalettes.h"
 
 #define VK_NULL_FLAGS 0
 
@@ -89,13 +89,13 @@ tm_struct VkAllocationStas {
 
 namespace vk {
 
-	static constexpr c_string LAYERS[] = {
+	static constexpr native_string LAYERS[] = {
 
 		"VK_LAYER_KHRONOS_validation"
 
 	};
 
-	static constexpr c_string EXTENSIONS[] = {
+	static constexpr native_string EXTENSIONS[] = {
 		
 		VK_KHR_MAINTENANCE3_EXTENSION_NAME,
 		VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
@@ -162,18 +162,18 @@ namespace vk {
 
 	tm_dll VkClearColorValue CastColor( const tiny_color& color );
 
-	tm_dll c_string CastFormat( const VkFormat format );
+	tm_dll native_string CastFormat( const VkFormat format );
 
-	tm_dll c_string CastColorSpace( const VkColorSpaceKHR color_space );
+	tm_dll native_string CastColorSpace( const VkColorSpaceKHR color_space );
 
-	tm_dll c_string CastPresentMode( const VkPresentModeKHR present_mode );
+	tm_dll native_string CastPresentMode( const VkPresentModeKHR present_mode );
 
-	tm_dll c_string CastLayout( const VkImageLayout layout );
+	tm_dll native_string CastLayout( const VkImageLayout layout );
 
-	tm_dll c_string CastAspect( const VkImageAspectFlags aspect );
+	tm_dll native_string CastAspect( const VkImageAspectFlags aspect );
 
-	tm_dll c_string CastSamples( const VkSampleCountFlags samples );
+	tm_dll native_string CastSamples( const VkSampleCountFlags samples );
 
-	tm_dll c_string CastTiling( const VkImageTiling tiling );
+	tm_dll native_string CastTiling( const VkImageTiling tiling );
 
 };

@@ -105,13 +105,10 @@ bool TinyToolbox::AddFont(
     float size
 ) {
     auto& io = ImGui::GetIO( );
-    auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, c_pointer ), length, size );
+    auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, native_pointer ), length, size );
 
-    if ( font ) {
-        auto alias_str = alias.as_chars( );
-
-        _fonts.emplace( alias_str, font );
-    }
+    if ( font )
+        _fonts.emplace( alias, font );
 
     return io.Fonts->Build( );
 }
@@ -438,7 +435,7 @@ void TinyToolbox::CreateSpriteShaders(
         TinyMaterial::CreateSetBind( material, TRS_ID_CORE   , { 0, TGBP_TYPE_UNIFORM , 1              , TGS_STAGE_VERTEX   } );
         TinyMaterial::CreateSetBind( material, TRS_ID_TEXTURE - 1, { 0, TGBP_TYPE_COMBINED, TINY_MAX_VERTEX, TGS_STAGE_FRAGMENT } );
 
-        auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
+        auto* material_addr = tiny_cast( tiny_rvalue( material ), native_pointer );
 
         assets.Export( game, TA_TYPE_MATERIAL, "m_sprite_dev", material_addr );
     }
@@ -478,7 +475,7 @@ void TinyToolbox::CreateTextShaders(
         TinyMaterial::CreateSetBind( material, TRS_ID_RENDER , { 0, TGBP_TYPE_UNIFORM , 1             , TGS_STAGE_VERTEX   } );
         TinyMaterial::CreateSetBind( material, TRS_ID_TEXTURE, { 0, TGBP_TYPE_COMBINED, TINY_MAX_FONTS, TGS_STAGE_FRAGMENT } );
 
-        auto* material_addr = tiny_cast( tiny_rvalue( material ), c_pointer );
+        auto* material_addr = tiny_cast( tiny_rvalue( material ), native_pointer );
 
         assets.Export( game, TA_TYPE_MATERIAL, "m_text_dev", material_addr );
     }

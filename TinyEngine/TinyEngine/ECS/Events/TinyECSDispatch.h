@@ -24,7 +24,7 @@
 
 te_class TinyECSDispatch final {
 
-	using CallbackList = tiny_list<c_pointer>;
+	using CallbackList = tiny_list<native_pointer>;
 
 private:
 	tiny_list<CallbackList> _callbacks;
@@ -34,9 +34,9 @@ public:
 
 	~TinyECSDispatch( ) = default;
 
-	void Register( tiny_uint type, c_pointer callback );
+	void Register( tiny_uint type, native_pointer callback );
 
-	void Register( tiny_uint type, tiny_init<c_pointer> callbacks );
+	void Register( tiny_uint type, tiny_init<native_pointer> callbacks );
 
 public:
 	template<typename Event, typename... Args>

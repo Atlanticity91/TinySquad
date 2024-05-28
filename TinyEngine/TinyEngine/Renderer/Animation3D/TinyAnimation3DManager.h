@@ -34,7 +34,7 @@ public:
 	tiny_implement( bool Create(
 		TinyGame* game,
 		const tiny_string& alias,
-		const c_pointer builder
+		const native_pointer builder
 	) );
 
 	tiny_implement( bool Load(

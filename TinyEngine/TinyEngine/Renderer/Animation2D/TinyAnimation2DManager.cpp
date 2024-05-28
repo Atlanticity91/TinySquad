@@ -30,7 +30,7 @@ TinyAnimation2DManager::TinyAnimation2DManager( )
 bool TinyAnimation2DManager::Create(
 	TinyGame* game,
 	const tiny_string& alias,
-	const c_pointer builder
+	const native_pointer builder
 ) {
 	auto state = false;
 

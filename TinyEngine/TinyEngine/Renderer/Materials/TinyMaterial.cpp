@@ -34,13 +34,14 @@ bool TinyMaterial::Create(
 	TinyGraphicManager& graphic, 
 	TinyMaterialBuilder& builder 
 ) { 
-	auto shader_id = builder.ShaderStages.size( );
 	auto& assets   = game->GetAssets( );
+	auto shader_id = builder.ShaderStages.size( );
+	auto pass_name = tiny_string{ builder.PassName };
 	auto context   = graphic.GetContext( );
 	auto limits    = graphic.GetPipelineLimits( );
 	auto state     = true;
 
-	builder.Pass			= graphic.GetRenderPass( builder.PassName );
+	builder.Pass			= graphic.GetRenderPass( pass_name );
 	builder.Shaders			= shader_id;
 	builder.DescriptorCount = graphic.GetSwapchainCapacity( );
 

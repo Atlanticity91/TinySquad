@@ -33,7 +33,7 @@ void TinyToolTexture2D::Save( TinyGame* game ) {
 	auto& properties = _texture->GetProperties( );
 	auto& assets	 = game->GetAssets( );
 	auto builder	 = TinyTexture2DBuilder{ };
-	auto* address	 = tiny_cast( tiny_rvalue( builder ), c_pointer );
+	auto* address	 = tiny_cast( tiny_rvalue( builder ), native_pointer );
 
 	Tiny::Memcpy( tiny_rvalue( properties ), tiny_rvalue( builder.Properties ) );
 
@@ -46,7 +46,7 @@ void TinyToolTexture2D::Save( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolTexture2D::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
+bool TinyToolTexture2D::OnOpen( TinyGame* game, const tiny_string& name, native_pointer asset ) {
 	_texture = tiny_cast( asset, TinyTexture2D* );
 	_image   = TinyImGui::CreateTextureID( _texture );
 

@@ -44,7 +44,7 @@ public:
 		TinyGame* game,
 		const tiny_uint type,
 		const tiny_string& alias,
-		const c_pointer builder
+		const native_pointer builder
 	);
 
 	tiny_inline bool Load( TinyGame* game, const tiny_string& path );

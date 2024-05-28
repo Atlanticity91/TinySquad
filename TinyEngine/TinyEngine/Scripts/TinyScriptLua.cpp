@@ -59,7 +59,7 @@ bool TinyScriptLua::Create( TinyLuaContext& context, tiny_pointer source ) {
 
 	if ( state ) {
 		auto length = tiny_lvalue( address );
-		auto source = tiny_string{ length, tiny_cast( address + 1 , c_pointer ) };
+		auto source = tiny_string{ length, tiny_cast( address + 1 , native_pointer ) };
 
 		source[ length ] = '\0';
 

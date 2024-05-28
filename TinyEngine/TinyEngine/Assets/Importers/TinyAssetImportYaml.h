@@ -26,14 +26,14 @@ namespace TinyImport {
 
 	tiny_dll bool ImportYaml(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	);
 
 	tiny_dll bool ExportYaml(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 };

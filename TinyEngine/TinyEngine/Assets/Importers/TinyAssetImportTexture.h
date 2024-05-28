@@ -26,38 +26,38 @@ namespace TinyImport {
 
 	tiny_dll bool ImportTexture2D( 
 		TinyGame* game, 
-		TinyFile& file, 
+		TinyFile* file, 
 		const TinyPathInformation& path_info
 	);
 
 	tiny_dll bool ExportTexture2D(
 		TinyGame* game, 
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 	tiny_dll bool ExportCubemap(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 	tiny_dll bool ExportAtlas(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 	tiny_dll bool ExportLut(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 	tiny_dll bool ExportAnimation2D(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 };

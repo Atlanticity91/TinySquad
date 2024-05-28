@@ -86,7 +86,7 @@ void TinyAssetImporter::Register(
 
 bool TinyAssetImporter::Import( 
 	TinyGame* game, 
-	TinyFile& file,
+	TinyFile* file,
 	const TinyPathInformation& path_info 
 ) {
 	auto extension_id = tiny_cast( 0, tiny_uint );
@@ -109,7 +109,7 @@ bool TinyAssetImporter::Export(
 	TinyGame* game,
 	const tiny_uint type,
 	const tiny_string& alias,
-	const c_pointer builder
+	const native_pointer builder
 ) {
 	auto state = false;
 
@@ -117,13 +117,13 @@ bool TinyAssetImporter::Export(
 		auto converter_id = _types[ type ];
 		auto& filesystem  = game->GetFilesystem( );
 		auto& converter   = _converters[ converter_id ];
-		auto path		  = filesystem.CreatePath( alias, "tinyasset" );
-		auto file		  = filesystem.OpenFile( { path }, Tiny::TF_ACCESS_WRITE );
+		auto path		  = filesystem.CreatePath( TP_TYPE_DEV, alias, "tinyasset" );
+		auto file		  = filesystem.OpenFile( { path }, TF_ACCESS_BINARY_WRITE ); // TODO : TEXT & BINARY EXPORT
 
 		state = tiny_cast( converter.Export, bool );
 
-		if ( state )
-			state = std::invoke( converter.Export, game, file, builder );
+		if ( state ) 
+			state = std::invoke( converter.Export, game, tiny_rvalue( file ), builder );
 	}
 
 	return state;

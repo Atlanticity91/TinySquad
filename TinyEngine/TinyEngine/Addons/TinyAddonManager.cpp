@@ -29,7 +29,7 @@ TinyAddonManager::TinyAddonManager( )
 bool TinyAddonManager::Initialize( TinyGame* game ) {
 	auto& filesystem = game->GetFilesystem( );
 
-	auto dir = std::string{ filesystem.GetGameDir( ).get( ) } + "Addons\\";
+	auto dir = filesystem.GetGameDir( ) + "Addons\\";
 
 	if ( !filesystem.GetDirExist( dir ) )
 		filesystem.CreateDir( dir );

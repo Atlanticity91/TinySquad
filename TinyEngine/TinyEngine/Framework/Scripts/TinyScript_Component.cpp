@@ -101,7 +101,7 @@ void TinyScript::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyScript::DisplayMeta( 
 	TinyGame* game, 
-	c_string label, 
+	native_string label, 
 	TinyScriptMetadata& metadata 
 ) {
 	auto is_open = ImGui::TreeNode( label );

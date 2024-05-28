@@ -24,7 +24,7 @@
 //		===	INTERNAL ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 static ImVec2 img_tooltip    = ImVec2{ 128.f, 128.f };
-static c_string vec_axises[] = { "X", "Y", "Z", "W" };
+static native_string vec_axises[] = { "X", "Y", "Z", "W" };
 static ImU32 vec_colors[]    = {
 
     IM_COL32( 168,  46,   2, 255 ),
@@ -90,26 +90,26 @@ namespace TinyImGui {
         : DropdownContext{ { } }
     { }
 
-    DropdownContext::DropdownContext( tiny_init<c_string> values )
+    DropdownContext::DropdownContext( tiny_init<native_string> values )
         : Index{ 0 },
         Values{ values }
     { }
 
     DropdownContext::DropdownContext(
-        tiny_init<c_string> values,
+        tiny_init<native_string> values,
         const tiny_string& value
     ) : DropdownContext{ values, tiny_hash{ value } }
     { }
 
     DropdownContext::DropdownContext( 
-        tiny_init<c_string> values, 
+        tiny_init<native_string> values, 
         const tiny_hash value 
     ) : DropdownContext{ values } 
     { 
         Find( value );
     }
 
-    DropdownContext::DropdownContext( const tiny_list<c_string>& values )
+    DropdownContext::DropdownContext( const tiny_list<native_string>& values )
         : DropdownContext{ { } }
     { 
         Values = values;
@@ -129,7 +129,7 @@ namespace TinyImGui {
     }
 
     DropdownContext::DropdownContext(
-        const tiny_list<c_string>& values, 
+        const tiny_list<native_string>& values, 
         const tiny_string& value
     )
         : DropdownContext{ values }
@@ -153,7 +153,7 @@ namespace TinyImGui {
         Find( value );
     }
 
-    DropdownContext::DropdownContext( tiny_uint index, tiny_init<c_string> values ) 
+    DropdownContext::DropdownContext( tiny_uint index, tiny_init<native_string> values ) 
         : Index{ index < values.size( ) ? index : 0 },
         Values{ values }
     { }
@@ -696,7 +696,7 @@ namespace TinyImGui {
         return state;
     }
 
-    bool Combo( tiny_uint& index, const tiny_list<c_string>& list, const float width ) {
+    bool Combo( tiny_uint& index, const tiny_list<native_string>& list, const float width ) {
         auto view = tiny_string_view{ list.data( ), list.size( ) };
 
         return Combo( index, view, width );

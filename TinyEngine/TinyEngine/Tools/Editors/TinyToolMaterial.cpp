@@ -34,7 +34,7 @@ void TinyToolMaterial::Save( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolMaterial::OnOpen( TinyGame* game, const tiny_string& name, c_pointer asset ) {
+bool TinyToolMaterial::OnOpen( TinyGame* game, const tiny_string& name, native_pointer asset ) {
 	_material = tiny_cast( asset, TinyMaterial* );
 
 	return _material;

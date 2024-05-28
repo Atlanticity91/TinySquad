@@ -26,15 +26,17 @@ te_struct TinyArchiveEntryBuilder {
 
 	std::string Alias = "";
 	std::string Path = "";
-	Tiny::Date Date{ };
+	tiny_date Date{ };
 	tiny_ulong Offset = 0;
 	tiny_ulong Size = 0;
 
 };
 
-te_struct TinyArchiveBuilder {
+te_struct TinyArchiveBuilder{
 
 	std::string Author = "";
+	tiny_version Version{ };
+	tiny_date Date{ };
 	tiny_map<TinyArchiveEntryBuilder> Entries{ };
 
 };

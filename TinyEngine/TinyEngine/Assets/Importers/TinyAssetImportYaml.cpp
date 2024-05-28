@@ -27,7 +27,7 @@ namespace TinyImport {
 
 	bool ImportYaml(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	) {
 		return false;
@@ -35,8 +35,8 @@ namespace TinyImport {
 	
 	bool ExportYaml(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	) {
 		return false;
 	}

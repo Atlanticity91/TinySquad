@@ -47,7 +47,7 @@ tiny_hash::tiny_hash( const tiny_string& string, tiny_uint offset, tiny_uint len
 	asign( string, offset, length );
 }
 
-tiny_hash::tiny_hash( c_string string )
+tiny_hash::tiny_hash( native_string string )
 	: tiny_hash{ } 
 {
 	asign( string );
@@ -77,7 +77,7 @@ tiny_hash& tiny_hash::asign( const tiny_hash& other ) {
 	return tiny_self;
 }
 
-tiny_hash& tiny_hash::asign( c_string other ) {
+tiny_hash& tiny_hash::asign( native_string other ) {
 	auto _other = tiny_string{ other };
 
 	return asign( _other );

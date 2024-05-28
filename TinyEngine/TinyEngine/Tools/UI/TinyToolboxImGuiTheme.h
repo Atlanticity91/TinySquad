@@ -30,7 +30,6 @@ namespace TinyImGui::Theme {
 	static constexpr auto IndentSpacing	  = 11.f;
 
 	static constexpr auto Dark			  = ImColor{   0,   0,   0,   0 };
-	static constexpr auto Accent		  = ImColor{ 236, 158,  36, 255 };
 	static constexpr auto Highlight		  = ImColor{  39, 185, 242, 255 };
 	static constexpr auto NiceBlue		  = ImColor{  83, 232, 254, 255 };
 	static constexpr auto Compliment	  = ImColor{  78, 151, 166, 255 };
@@ -47,10 +46,11 @@ namespace TinyImGui::Theme {
 	static constexpr auto Selection		  = ImColor{ 237, 192, 119, 255 };
 	static constexpr auto SelectionMuted  = ImColor{ 237, 201, 142,  23 };
 	static constexpr auto BackgroundPopup = ImColor{  50,  50,  50, 255 };
-	static constexpr auto ValidPrefab	  = ImColor{  82, 179, 222, 255 };
-	static constexpr auto InvalidPrefab	  = ImColor{ 222,  43,  43, 255 };
+	static constexpr auto NotifBlue		  = ImColor{  82, 179, 222, 255 };
+	static constexpr auto NotifYellow	  = ImColor{ 236, 158,  36, 255 };
+	static constexpr auto NotifOrange	  = ImColor{ 250, 101,  23, 255 };
+	static constexpr auto NotifRed		  = ImColor{ 222,  43,  43, 255 };
 	static constexpr auto MissingMesh	  = ImColor{ 230, 102,  76, 255 };
-	static constexpr auto MeshNotSet	  = ImColor{ 250, 101,  23, 255 };
 	static constexpr auto HoverPurple	  = ImColor{ 125,  95, 255, 255 };
 	static constexpr auto ActivePurple	  = ImColor{ 113,  88, 226, 255 };
 	static constexpr auto HoverNeutral	  = ImColor{ 255, 225, 135,  30 };

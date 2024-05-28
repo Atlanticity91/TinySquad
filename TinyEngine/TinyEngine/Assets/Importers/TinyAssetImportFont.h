@@ -26,14 +26,14 @@ namespace TinyImport {
 
 	tiny_dll bool ImportFont(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	);
 
 	tiny_dll bool ExportFont(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 };

@@ -36,7 +36,7 @@ bool TinyLuaContext::Create( ) {
 	return _lua_state;
 }
 
-bool TinyLuaContext::Compile( c_string alias, c_string source ) {
+bool TinyLuaContext::Compile( native_string alias, native_string source ) {
 	auto state = luaL_dostring( _lua_state, source ) == LUA_OK;
 
 	if ( state ) {
@@ -284,7 +284,7 @@ bool TinyLuaContext::Pop( TinyLuaParameter& parameter ) {
 	return state;
 }
 
-bool TinyLuaContext::Execute( c_string source ) {
+bool TinyLuaContext::Execute( native_string source ) {
 	return source && luaL_dostring( _lua_state, source ) == LUA_OK;
 }
 

@@ -39,7 +39,7 @@ public:
 	tiny_implement( bool Create(
 		TinyGame* game,
 		const tiny_string& alias,
-		const c_pointer builder
+		const native_pointer builder
 	) );
 
 	tiny_implement( bool Load(
@@ -52,7 +52,7 @@ public:
 
 	tiny_inline void UnRegister( const tiny_string& name );
 
-	tiny_inline void SetGlobal( const tiny_string& name, c_pointer value );
+	tiny_inline void SetGlobal( const tiny_string& name, native_pointer value );
 
 	tiny_inline void SetGlobal( const tiny_string& name, bool value );
 
@@ -84,7 +84,7 @@ public:
 
 	tiny_inline bool Pop( TinyLuaParameter& parameter );
 
-	tiny_inline bool Execute( c_string source );
+	tiny_inline bool Execute( native_string source );
 
 	tiny_inline bool Execute( const tiny_string& source );
 

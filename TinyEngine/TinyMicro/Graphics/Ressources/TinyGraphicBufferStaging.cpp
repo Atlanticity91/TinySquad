@@ -39,7 +39,7 @@ bool TinyGraphicBufferStaging::CreateMap( TinyGraphicContext& context, tiny_uint
 bool TinyGraphicBufferStaging::CreateMap(
 	TinyGraphicContext& context, 
 	tiny_uint length, 
-	const c_pointer data 
+	const native_pointer data 
 ) {
 	auto state = Create( context, length ) && Map( context, 0, length, data );
 	
@@ -90,7 +90,7 @@ void TinyGraphicBufferStaging::UnMap( TinyGraphicContext& context ) {
 bool TinyGraphicBufferStaging::Map(
 	TinyGraphicContext& context,
 	tiny_uint length,
-	const c_pointer data
+	const native_pointer data
 ) {
 	return Map( context, 0, length, data );
 }
@@ -99,12 +99,12 @@ bool TinyGraphicBufferStaging::Map(
 	TinyGraphicContext& context,
 	tiny_uint offset,
 	tiny_uint length,
-	const c_pointer data
+	const native_pointer data
 ) {
 	auto state = Map( context, offset, length );
 
 	if ( state ) {
-		Tiny::Memcpy( data, _access, length );
+		Tiny::Memcpy( data, _access, tiny_cast( length, tiny_ulong ) );
 
 		UnMap( context );
 	}
@@ -131,7 +131,7 @@ tiny_uint TinyGraphicBufferStaging::GetSize( ) const {
 
 const TinyGraphicBuffer& TinyGraphicBufferStaging::GetBuffer( ) const { return _buffer; }
 
-c_pointer TinyGraphicBufferStaging::GetAccess( ) const { return _access; }
+native_pointer TinyGraphicBufferStaging::GetAccess( ) const { return _access; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
@@ -140,4 +140,4 @@ TinyGraphicBufferStaging::operator const TinyGraphicBuffer&( ) const {
 	return GetBuffer( ); 
 }
 
-TinyGraphicBufferStaging::operator c_pointer( ) const { return GetAccess( ); }
+TinyGraphicBufferStaging::operator native_pointer( ) const { return GetAccess( ); }

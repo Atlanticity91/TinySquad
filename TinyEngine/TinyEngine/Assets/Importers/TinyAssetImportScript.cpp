@@ -27,23 +27,23 @@ namespace TinyImport {
 
 	bool ImportScript(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	) {
 		auto storage = tiny_storage{ TS_TYPE_HEAP };
-		auto length  = file.GetSize( );
+		auto length  = file->GetSize( );
 		auto state   = tiny_allocate( storage, length );
 
 		if ( state ) {
 			auto* data = storage.GetAddress( );
 
-			if ( file.ReadAll( length, data ) ) {
+			if ( file->ReadAll( length, data ) ) {
 				auto& filesystem = game->GetFilesystem( );
-				auto builder	 = tiny_string{ length, data };
-				auto path		 = filesystem.CreatePath( path_info.Name, TINY_ASSET_EXT );
-				auto file_		 = filesystem.OpenFile( path, Tiny::TF_ACCESS_WRITE );
+				auto builder	 = tiny_string{ tiny_cast( length, tiny_uint ), data };
+				auto path		 = filesystem.CreatePath( TP_TYPE_DEV, path_info.Name, TINY_ASSET_EXT );
+				auto file_		 = filesystem.OpenFile( path, TF_ACCESS_WRITE );
 
-				state = ExportScript( game, file_, tiny_rvalue( builder ) );
+				state = TinyImport::ExportScript( game, tiny_rvalue( file_ ), tiny_rvalue( builder ) );
 			}
 
 			tiny_deallocate( storage );
@@ -54,8 +54,8 @@ namespace TinyImport {
 
 	bool ExportScript(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	) {
 		auto* builder_ = tiny_cast( builder, tiny_string* );
 		auto state	   = false;
@@ -63,10 +63,10 @@ namespace TinyImport {
 		if ( builder ) {
 			auto length = builder_->length( );
 
-			file.Write( TinyAssetHeader{ TA_TYPE_SCRIPT } );
-			file.Write( length );
+			file->Write( TinyAssetHeader{ TA_TYPE_SCRIPT } );
+			file->Write( length );
 
-			state = file.Write( length, builder_->as_chars( ) ) == length;
+			state = file->Write( length, builder_->as_chars( ) ) == length;
 		}
 
 		return state;

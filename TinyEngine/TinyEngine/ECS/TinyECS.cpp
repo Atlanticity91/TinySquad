@@ -33,11 +33,11 @@ bool TinyECS::Remap( const tiny_string& component, tiny_uint target_id ) {
 	return _systems.Remap( component, target_id );
 }
 
-void TinyECS::RegisterCallback( tiny_uint type, c_pointer callback ) {
+void TinyECS::RegisterCallback( tiny_uint type, native_pointer callback ) {
 	_dispatcher.Register( type, callback );
 }
 
-void TinyECS::RegisterCallback( tiny_uint type, tiny_init<c_pointer> callbacks ) {
+void TinyECS::RegisterCallback( tiny_uint type, tiny_init<native_pointer> callbacks ) {
 	_dispatcher.Register( type, callbacks );
 }
 

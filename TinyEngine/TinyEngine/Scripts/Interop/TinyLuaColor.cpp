@@ -138,7 +138,7 @@ tli_implementfn( TinyLua::Color::Set ) {
 
 	if ( lua_istable( context, tli_param_one ) ) {
 		if ( param_count == 2 && lua_istable( context, tli_param_two ) ) {
-			c_string channels[ 4 ] = { "r", "g", "b", "a" };
+			native_string channels[ 4 ] = { "r", "g", "b", "a" };
 
 			auto value = lua_Number{ };
 
@@ -147,7 +147,7 @@ tli_implementfn( TinyLua::Color::Set ) {
 				tli_set_field( channel, value );
 			}
 		} else if ( param_count == 2 && lua_isnumber( context, tli_param_two ) ) {
-			c_string channels[ 4 ] = { "r", "g", "b", "a" };
+			native_string channels[ 4 ] = { "r", "g", "b", "a" };
 
 			auto value = lua_tonumber( context, tli_param_two );
 
@@ -172,7 +172,7 @@ tli_implementfn( TinyLua::Color::Set ) {
 
 tli_implementfn( TinyLua::Color::Add ) {
 	if ( lua_istable( context, tli_param_one ) ) {
-		c_string channels[ 4 ] = { "r", "g", "b", "a" };
+		native_string channels[ 4 ] = { "r", "g", "b", "a" };
 		
 		auto value_1 = lua_Number{ };
 
@@ -199,7 +199,7 @@ tli_implementfn( TinyLua::Color::Add ) {
 
 tli_implementfn( TinyLua::Color::Sub ) {
 	if ( lua_istable( context, tli_param_one ) ) {
-		c_string channels[ 4 ] = { "r", "g", "b", "a" };
+		native_string channels[ 4 ] = { "r", "g", "b", "a" };
 
 		auto value_1 = lua_Number{ };
 
@@ -333,7 +333,7 @@ tli_implementfn( TinyLua::Color::Equal ) {
 		lua_istable( context, tli_param_one ) && 
 		lua_istable( context, tli_param_two )
 	) {
-		c_string channels[ 4 ] = { "r", "g", "b", "a" };
+		native_string channels[ 4 ] = { "r", "g", "b", "a" };
 
 		auto state = true;
 		auto col_0 = lua_Number{ };
@@ -360,7 +360,7 @@ tli_implementfn( TinyLua::Color::Less ) {
 		lua_istable( context, tli_param_one ) &&
 		lua_istable( context, tli_param_two )
 	) {
-		c_string channels[ 4 ] = { "r", "g", "b", "a" };
+		native_string channels[ 4 ] = { "r", "g", "b", "a" };
 		
 		auto state = true;
 		auto col_0 = lua_Number{ };
@@ -387,7 +387,7 @@ tli_implementfn( TinyLua::Color::LessEqual ) {
 		lua_istable( context, tli_param_one ) &&
 		lua_istable( context, tli_param_two )
 	) {
-		c_string channels[ 4 ] = { "r", "g", "b", "a" };
+		native_string channels[ 4 ] = { "r", "g", "b", "a" };
 
 		auto state = true;
 		auto col_0 = lua_Number{ };

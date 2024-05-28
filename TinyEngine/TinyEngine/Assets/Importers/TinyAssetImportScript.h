@@ -26,14 +26,14 @@ namespace TinyImport {
 
 	tiny_dll bool ImportScript(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	);
 
 	tiny_dll bool ExportScript(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	);
 
 };

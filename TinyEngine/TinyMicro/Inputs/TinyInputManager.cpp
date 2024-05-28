@@ -44,27 +44,33 @@ void TinyInputManager::Toggle( bool state ) { _is_active = state; }
 
 void TinyInputManager::Clear( ) { _map.Clear( ); }
 
-void TinyInputManager::Register( tiny_string input_alias, tiny_init<TinyInputQuery> querys ) {
+void TinyInputManager::Register(
+	const tiny_string& input_alias, 
+	tiny_init<TinyInputQuery> querys 
+) {
 	_map.Register( input_alias, querys );
 }
 
-void TinyInputManager::Register( tiny_string input_alias, const tiny_list<TinyInputQuery>& querys ) {
+void TinyInputManager::Register( 
+	const tiny_string& input_alias, 
+	const tiny_list<TinyInputQuery>& querys 
+) {
 	_map.Register( input_alias, querys );
 }
 
-void TinyInputManager::Lock( tiny_string input_alias ) {
+void TinyInputManager::Lock( const tiny_string& input_alias ) {
 	auto input_hash = tiny_hash{ input_alias };
 
 	_map.Lock( input_hash );
 }
 
-void TinyInputManager::UnLock( tiny_string input_alias ) {
+void TinyInputManager::UnLock( const tiny_string& input_alias ) {
 	auto input_hash = tiny_hash{ input_alias };
 
 	_map.UnLock( input_hash );
 }
 
-void TinyInputManager::Toggle( tiny_string input_alias, bool state ) {
+void TinyInputManager::Toggle( const tiny_string& input_alias, bool state ) {
 	auto input_hash = tiny_hash{ input_alias };
 
 	if ( state )
@@ -77,7 +83,7 @@ void TinyInputManager::Notify( const TinyInputNotification& notification ) {
 	_devices.Notify( notification );
 }
 
-bool TinyInputManager::Evaluate( tiny_string input_alias, bool consume ) {
+bool TinyInputManager::Evaluate( const tiny_string& input_alias, bool consume ) {
 	auto state = _is_active;
 
 	if ( state ) {

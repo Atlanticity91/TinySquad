@@ -121,7 +121,7 @@ void TinyLua::CreateField(
 void TinyLua::CreateField(
 	lua_State* context,
 	const tiny_string& name,
-	c_pointer& value
+	native_pointer& value
 ) {
 	if ( value ) {
 		auto name_str = name.as_chars( );
@@ -181,7 +181,7 @@ bool TinyLua::GetField(
 	lua_State* context,
 	tiny_int table_id,
 	const tiny_string& name,
-	c_pointer& value
+	native_pointer& value
 ) {
 	auto name_str = name.as_chars( );
 

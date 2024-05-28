@@ -11,7 +11,7 @@
  *
  * @author   : ALVES Quentin
  * @creation : 23/04/2024
- * @version  : 2024.2.7
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -25,27 +25,27 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 namespace Tiny {
 
-	tiny_uint MakeVersion(
+	tiny_version MakeVersion(
 		const tiny_ushort major,
 		const tiny_ubyte minor,
 		tiny_ubyte patch
 	) {
 		return tiny_cast( (
 			TINY_LEFT_SHIFT( major, 16 ) |
-			TINY_LEFT_SHIFT( minor, 8 )  |
+			TINY_LEFT_SHIFT( minor,  8 ) |
 			patch
-		), tiny_uint );
+		), tiny_version );
 	}
 
-	tiny_uint GetVersionMajor( const tiny_uint version ) {
+	tiny_uint GetVersionMajor( const tiny_version version ) {
 		return TINY_RIGHT_SHIFT( version, 16 ) & 0x0000ffff;
 	}
 
-	tiny_uint GetVersionMinor( const tiny_uint version ) {
+	tiny_uint GetVersionMinor( const tiny_version version ) {
 		return TINY_RIGHT_SHIFT( version, 8 ) & 0x000000ff;
 	}
 
-	tiny_uint GetVersionPatch( const tiny_uint version ) {
+	tiny_uint GetVersionPatch( const tiny_version version ) {
 		return version & 0x000000ff;
 	}
 

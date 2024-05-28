@@ -38,9 +38,15 @@ public:
 
 	void UnLock( tiny_hash input_hash );
 
-	void Register( tiny_string input_alias, tiny_init<TinyInputQuery> querys );
+	void Register( 
+		const tiny_string& input_alias, 
+		tiny_init<TinyInputQuery> querys 
+	);
 
-	void Register( tiny_string input_alias, const tiny_list<TinyInputQuery>& querys );
+	void Register( 
+		const tiny_string& input_alias, 
+		const tiny_list<TinyInputQuery>& querys 
+	);
 
 	void Erase( const tiny_string& input );
 

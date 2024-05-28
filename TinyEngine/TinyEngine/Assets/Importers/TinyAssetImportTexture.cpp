@@ -27,7 +27,7 @@ namespace TinyImport {
 
 	bool ImportTexture2D(
 		TinyGame* game,
-		TinyFile& file,
+		TinyFile* file,
 		const TinyPathInformation& path_info
 	) {
 		auto storage = tiny_storage{ TS_TYPE_HEAP };
@@ -36,13 +36,13 @@ namespace TinyImport {
 		auto img_h   = tiny_cast( 0, tiny_int );
 		auto img_c   = tiny_cast( 0, tiny_int );
 		auto state   = false;
-		auto size	 = file.GetSize( );
+		auto size	 = tiny_cast( file->GetSize( ), tiny_uint );
 
 		if ( tiny_allocate( storage, size ) ) {
 			auto* data = storage.GetAddress( );
 
 			if ( 
-				file.ReadAll( size, data ) &&
+				file->ReadAll( size, data ) &&
 				stbi_info_from_memory( tiny_cast( data, tiny_pointer ), size, tiny_rvalue( img_w ), tiny_rvalue( img_h ), tiny_rvalue( img_c ) ) 
 			) {
 				auto* pixels = stbi_load_from_memory( tiny_cast( data, tiny_pointer ), size, tiny_rvalue( img_w ), tiny_rvalue( img_h ), tiny_rvalue( img_c ), 4 );
@@ -50,7 +50,7 @@ namespace TinyImport {
 				if ( pixels ) {
 					builder.Texels = tiny_list<tiny_ubyte>{ tiny_cast( img_w * img_h * 4, tiny_uint ), pixels };
 
-					stbi_image_free( builder.Texels );
+					stbi_image_free( pixels );
 
 					builder.Properties.Type   = TGT_TYPE_TEXTURE_2D;
 					builder.Properties.Width  = tiny_cast( img_w, tiny_uint );
@@ -59,10 +59,10 @@ namespace TinyImport {
 					builder.Columns			  = 1;
 
 					auto& filesystem = game->GetFilesystem( );
-					auto path		 = filesystem.CreatePath( path_info.Name, TINY_ASSET_EXT );
-					auto file		 = filesystem.OpenFile( path, Tiny::TF_ACCESS_WRITE );
+					auto path		 = filesystem.CreatePath( TP_TYPE_DEV, path_info.Name, TINY_ASSET_EXT );
+					auto file		 = filesystem.OpenFile( path, TF_ACCESS_BINARY_WRITE );
 
-					state = ExportTexture2D( game, file, tiny_rvalue( builder ) );
+					state = TinyImport::ExportTexture2D( game, tiny_rvalue( file ), tiny_rvalue( builder ) );
 				}
 			}
 
@@ -74,18 +74,18 @@ namespace TinyImport {
 	
 	bool ExportTexture2D(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	) {
 		auto* builder_ = tiny_cast( builder, TinyTexture2DBuilder* );
 		auto state	   = builder != nullptr;
 
 		if ( state ) {
-			file.Write( TinyAssetHeader{ TA_TYPE_TEXTURE_2D } );
-			file.Write( builder_->Rows );
-			file.Write( builder_->Columns );
-			file.Write( builder_->Properties );
-			file.Write( builder_->Texels );
+			file->Write( TinyAssetHeader{ TA_TYPE_TEXTURE_2D } );
+			file->Write( builder_->Rows );
+			file->Write( builder_->Columns );
+			file->Write( builder_->Properties );
+			file->Write( builder_->Texels );
 		}
 
 		return state;
@@ -93,32 +93,32 @@ namespace TinyImport {
 	
 	bool ExportCubemap(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	) {
 		return false;
 	}
 	
 	bool ExportAtlas(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	) {
 		return false;
 	}
 	
 	bool ExportLut(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	) {
 		return false;
 	}
 	
 	bool ExportAnimation2D(
 		TinyGame* game,
-		TinyFile& file,
-		const c_pointer builder
+		TinyFile* file,
+		const native_pointer builder
 	) {
 		return false;
 	}

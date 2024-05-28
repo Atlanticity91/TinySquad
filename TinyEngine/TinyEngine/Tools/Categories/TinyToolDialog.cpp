@@ -23,22 +23,22 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyToolDialog::TinyToolDialog( const tiny_string& filters )
+TinyToolDialog::TinyToolDialog( const std::string& filters )
 	: _dialog_filters{ filters },
 	_dialog_path{ }
 { }
 
 bool TinyToolDialog::OpenDialog( TinyFilesystem& filesystem ) {
-	return filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, _dialog_filters, _dialog_path );
+	return filesystem.OpenDialog( TD_TYPE_OPEM_FILE, _dialog_filters, _dialog_path );
 }
 
 bool TinyToolDialog::SaveDialog( TinyFilesystem& filesystem ) {
-	return filesystem.OpenDialog( Tiny::TD_TYPE_SAVE_FILE, _dialog_filters, _dialog_path );
+	return filesystem.OpenDialog( TD_TYPE_SAVE_FILE, _dialog_filters, _dialog_path );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const tiny_string& TinyToolDialog::GetFilters( ) const { return _dialog_filters; }
+const std::string& TinyToolDialog::GetFilters( ) const { return _dialog_filters; }
 
-const tiny_string& TinyToolDialog::GetPath( ) const { return _dialog_path; }
+const std::string& TinyToolDialog::GetPath( ) const { return _dialog_path; }

@@ -27,11 +27,11 @@ TinyECSDispatch::TinyECSDispatch( )
 	: _callbacks{ }
 { }
 
-void TinyECSDispatch::Register( tiny_uint type, c_pointer callback ) {
+void TinyECSDispatch::Register( tiny_uint type, native_pointer callback ) {
 	Register( type, { callback } );
 }
 
-void TinyECSDispatch::Register( tiny_uint type, tiny_init<c_pointer> callbacks ) {
+void TinyECSDispatch::Register( tiny_uint type, tiny_init<native_pointer> callbacks ) {
 	if ( type >= _callbacks.size( ) )
 		_callbacks.create( type );
 

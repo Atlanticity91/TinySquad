@@ -160,7 +160,7 @@ void TinyToolInputs::DrawInputMap( tiny_map<TinyInputQueries>& inputs ) {
         auto& style      = ImGui::GetStyle( );
         auto line_height = font_size + style.FramePadding.y * 2.f;
         auto flags       = ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowOverlap;
-        auto is_open     = ImGui::TreeNodeEx( input.String.c_str( ), flags );
+        auto is_open     = ImGui::TreeNodeEx( input.Alias.c_str( ), flags );
 
         ImGui::SameLine( region.x - line_height * 2.2f );
 

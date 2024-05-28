@@ -31,9 +31,15 @@ TinyArchiveContainer::TinyArchiveContainer( )
 bool TinyArchiveContainer::Create(
 	TinyGame* game,
 	const tiny_string& alias,
-	const c_pointer builder
+	const native_pointer builder
 ) {
-	return false;
+	auto* builder_ = tiny_cast( builder, TinyArchiveBuilder* );
+	auto state	   = false;
+
+	if ( builder_&& builder_->Entries.size( ) > 0 ) {
+	}
+
+	return state;
 }
 
 bool TinyArchiveContainer::Load(
@@ -41,7 +47,12 @@ bool TinyArchiveContainer::Load(
 	const tiny_string& alias,
 	TinyFile& file
 ) {
-	return false;
+	auto builder = TinyArchiveBuilder{ };
+
+	file.Read( builder.Author );
+	file.Read( builder.Entries );
+
+	return Create( game, alias, tiny_rvalue( builder ) );
 }
 
 bool TinyArchiveContainer::Load( TinyGame* game, const tiny_string& asset_name ) {
@@ -57,10 +68,11 @@ bool TinyArchiveContainer::Load( TinyGame* game, const tiny_string& asset_name )
 		auto* container  = assets.GetContainer( entry.Type );
 
 		if ( container ) {
-			auto file = archive->Access( game, entry.Offset );
+			auto entry_name = tiny_string{ entry_node.Alias };
+			auto file		= archive->Access( game, entry.Offset );
 
 			if ( file )
-				state = container->Load( game, { entry_node.String }, file );
+				state = container->Load( game, entry_name, file );
 		}
 	}
 
@@ -81,10 +93,11 @@ bool TinyArchiveContainer::Load( TinyGame* game, const TinyAssetHandle& asset_ha
 			auto* container = assets.GetContainer( entry.Type );
 
 			if ( container ) {
-				auto file = archive->Access( game, entry.Offset );
+				auto entry_name = tiny_string{ entry_node.Alias };
+				auto file		= archive->Access( game, entry.Offset );
 
 				if ( file )
-					state = container->Load( game, { entry_node.String }, file );
+					state = container->Load( game, entry_name, file );
 			}
 		}
 	}

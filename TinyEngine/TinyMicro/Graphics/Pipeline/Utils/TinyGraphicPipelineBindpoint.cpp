@@ -35,7 +35,7 @@ TinyGraphicPipelineBindpoint::TinyGraphicPipelineBindpoint(
 	: TinyGraphicPipelineBindpoint{ TGB_TYPE_TEXTURE, set, binding } 
 {
 	Description = texture.GetDescriptorType( );
-	Value = tiny_cast( texture.GetDescriptor( ), c_pointer );
+	Value = tiny_cast( texture.GetDescriptor( ), native_pointer );
 }
 
 TinyGraphicPipelineBindpoint::TinyGraphicPipelineBindpoint(
@@ -46,7 +46,7 @@ TinyGraphicPipelineBindpoint::TinyGraphicPipelineBindpoint(
 	: TinyGraphicPipelineBindpoint{ TGB_TYPE_BUFFER, set, binding } 
 {
 	Description = buffer.GetDescriptorType( );
-	Value = tiny_cast( buffer.GetDescriptor( ), c_pointer );
+	Value = tiny_cast( buffer.GetDescriptor( ), native_pointer );
 }
 
 TinyGraphicPipelineBindpoint::TinyGraphicPipelineBindpoint(
@@ -58,7 +58,7 @@ TinyGraphicPipelineBindpoint::TinyGraphicPipelineBindpoint(
 	: TinyGraphicPipelineBindpoint{ TGB_TYPE_BUFFER, set, binding } 
 {
 	Description = type;
-	Value = tiny_cast( buffer, c_pointer );
+	Value = tiny_cast( buffer, native_pointer );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

@@ -25,11 +25,11 @@
 te_class TinyToolDialog {
 
 protected:
-	tiny_string _dialog_filters;
-	tiny_string _dialog_path;
+	std::string _dialog_filters;
+	std::string _dialog_path;
 
 public:
-	TinyToolDialog( const tiny_string& filters );
+	TinyToolDialog( const std::string& filters );
 
 	virtual ~TinyToolDialog( ) = default;
 
@@ -38,8 +38,8 @@ public:
 	bool SaveDialog( TinyFilesystem& filesystem );
 
 public:
-	const tiny_string& GetFilters( ) const;
+	const std::string& GetFilters( ) const;
 
-	const tiny_string& GetPath( ) const;
+	const std::string& GetPath( ) const;
 
 };

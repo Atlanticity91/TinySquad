@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyColorGradientPalettes.h"
+#include "TinyRemap.h"
 
 tm_struct TinyAppIcon {
 

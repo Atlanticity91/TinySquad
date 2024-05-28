@@ -36,19 +36,19 @@ namespace TinyImGui {
 	te_struct DropdownContext {
 
 		tiny_uint Index;
-		tiny_list<c_string> Values;
+		tiny_list<native_string> Values;
 
 		DropdownContext( );
 
-		DropdownContext( tiny_init<c_string> values );
+		DropdownContext( tiny_init<native_string> values );
 
-		DropdownContext( tiny_init<c_string> values, const tiny_string& value );
+		DropdownContext( tiny_init<native_string> values, const tiny_string& value );
 
-		DropdownContext( tiny_init<c_string> values, const tiny_hash value );
+		DropdownContext( tiny_init<native_string> values, const tiny_hash value );
 
-		DropdownContext( const tiny_list<c_string>& values );
+		DropdownContext( const tiny_list<native_string>& values );
 
-		DropdownContext( const tiny_list<c_string>& values, const tiny_string& value );
+		DropdownContext( const tiny_list<native_string>& values, const tiny_string& value );
 
 		DropdownContext( const tiny_list<tiny_string>& values );
 
@@ -56,7 +56,7 @@ namespace TinyImGui {
 
 		DropdownContext( const tiny_list<tiny_string>& values, const tiny_hash value );
 
-		DropdownContext( tiny_uint index, tiny_init<c_string> values );
+		DropdownContext( tiny_uint index, tiny_init<native_string> values );
 
 		void Find( const tiny_hash& hash );
 
@@ -294,7 +294,7 @@ namespace TinyImGui {
 		return InputText( Length, buffer_chars );
 	};
 
-	tiny_dll bool Combo( tiny_uint& index, const tiny_list<c_string>& list, const float width );
+	tiny_dll bool Combo( tiny_uint& index, const tiny_list<native_string>& list, const float width );
 
 	tiny_dll bool Combo( tiny_uint& index, const tiny_string_view& view, const float width );
 

@@ -45,9 +45,9 @@ bool TinyAssetManager::Import( TinyGame* game, const tiny_string& path ) {
 
 	if ( path.is_valid( ) && filesystem.GetFileExist( path ) ) {
 		auto path_info = filesystem.GetInformation( path );
-		auto file	   = filesystem.OpenFile( path, Tiny::TF_ACCESS_READ );
+		auto file	   = filesystem.OpenFile( path, TF_ACCESS_BINARY_READ ); // TODO : ADD TEXT & BINARY IMPORT
 
-		state = _importer.Import( game, file, path_info );
+		state = _importer.Import( game, tiny_rvalue( file ), path_info );
 	}
 
 	return state;
@@ -57,7 +57,7 @@ bool TinyAssetManager::Export(
 	TinyGame* game,
 	const tiny_uint type,
 	const tiny_string& alias,
-	const c_pointer builder
+	const native_pointer builder
 ) {
 	return _importer.Export( game, type, alias, builder );
 }
@@ -188,12 +188,12 @@ bool TinyAssetManager::LoadAssetFile(
 	auto state		 = false;
 
 	if ( !path.is_empty( ) && filesystem.GetFileExist( path ) ) {
-		auto file = filesystem.OpenFile( path, Tiny::TF_ACCESS_READ );
+		auto file = filesystem.OpenFile( path, TF_ACCESS_READ );
 
 		if ( file.GetIsValid( ) ) {
 			auto header = TinyAssetHeader{ };
 
-			file.Read( header );
+			file.Read( tiny_sizeof( header ), tiny_rvalue( header ) );
 
 			if ( header.GetIsAsset( ) ) {
 				auto* container = GetContainer( header.Type );
@@ -202,9 +202,10 @@ bool TinyAssetManager::LoadAssetFile(
 					if ( !alias.is_empty( ) )
 						state = container->Load( game, alias, file );
 					else {
-						auto file_info = filesystem.GetInformation( path );
+						auto file_info  = filesystem.GetInformation( path );
+						auto asset_name = tiny_string{ file_info.Name };
 
-						state = container->Load( game, { file_info.Name }, file );
+						state = container->Load( game, asset_name, file );
 					}
 				}
 			}

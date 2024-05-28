@@ -39,7 +39,7 @@ tiny_enum( TinyLuaTypes ) {
 te_struct TinyLuaParameter {
 
 	TinyLuaTypes Type;
-	c_pointer Value;
+	native_pointer Value;
 
 	TinyLuaParameter( );
 
@@ -57,7 +57,7 @@ te_struct TinyLuaParameter {
 
 	TinyLuaParameter( double& value );
 
-	TinyLuaParameter( c_pointer user_data );
+	TinyLuaParameter( native_pointer user_data );
 
 	TinyLuaParameter( tiny_pointer user_data );
 
