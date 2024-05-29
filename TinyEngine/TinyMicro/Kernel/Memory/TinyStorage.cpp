@@ -58,7 +58,7 @@ tiny_storage& tiny_storage::operator=( const tiny_storage& other ) {
 		if ( GetIsValid( ) )
 			tiny_deallocate( tiny_self );
 
-		Tiny::Memcpy( tiny_rvalue( other ), this );
+		Tiny::Memcpy( other, tiny_self );
 	}
 
 	return tiny_self;

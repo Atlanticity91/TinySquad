@@ -60,7 +60,7 @@ bool TinyToolAssetEditor::Open( TinyGame* game, const tiny_string& name, TinyAss
 
 void TinyToolAssetEditor::Tick( TinyGame* game, TinyAssetManager& assets ) {
 	if ( _in_use ) {
-		auto* name_str = _name.as_chars( );
+		auto* name_str = _name.get( );
 		auto win_size  = TinyImGui::ScopeVars{ ImGuiStyleVar_WindowMinSize, _min_size };
 
 		if ( ImGui::Begin( name_str, tiny_rvalue( _in_use ), ImGuiWindowFlags_AlwaysVerticalScrollbar ) )

@@ -29,7 +29,7 @@ TinyEngine::TinyEngine(
 	TinyGameOrientations orientation, 
 	bool is_headless 
 )
-	: _is_running{ true },
+	: _is_running{ false },
 	_jobs{ },
 	_filesystem{ developer },
 	_assets{ },
@@ -139,8 +139,8 @@ void TinyEngine::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
 	auto state = _jobs.Initialize( TinyEngine::JobRun, game ) &&
-				 _filesystem.Initialize( _window )			  &&
-				 _assets.Initialize( _filesystem, game_config );
+				_filesystem.Initialize( _window )			  &&
+				_assets.Initialize( game, game_config );
 
 	if ( state ) {
 		auto& scripts = _assets.GetScripts( );
@@ -154,8 +154,8 @@ bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
 
 bool TinyEngine::Init( TinyGame* game, const TinyConfig& config ) {
 	return  _window.Initialize( config, tiny_cast( game, native_pointer ) ) &&
-			_inputs.Initialize( _filesystem, _window )				   &&
-			_audio.Initialize( _filesystem, _window )				   &&
+			_inputs.Initialize( _filesystem, _window )						&&
+			_audio.Initialize( _filesystem, _window )						&&
 			_graphics.Initialize( _filesystem, _window );
 }
 
@@ -242,7 +242,8 @@ void TinyEngine::ProcessCursor( GLFWwindow* handle, double cursor_x, double curs
 	auto descriptor = TinyInputDescriptor{ TI_DEVICE_MOUSE, TI_TYPE_AXIS_2D, TIK_MOUSE_CURSOR };
 
 	inputs.Notify( 
-		{ descriptor, TI_MODIFIER_UNDEFINED, 
+		{ 
+			descriptor, TI_MODIFIER_UNDEFINED, 
 			{ 
 				tiny_cast( cursor_x, float ), 
 				tiny_cast( cursor_y, float )
@@ -276,7 +277,8 @@ void TinyEngine::ProcessScroll( GLFWwindow* handle, double offset_x, double offs
 	auto descriptor = TinyInputDescriptor{ TI_DEVICE_MOUSE, TI_TYPE_AXIS_2D, TIK_MOUSE_SCROLL };
 
 	inputs.Notify( 
-		{ descriptor, TI_MODIFIER_UNDEFINED, 
+		{ 
+			descriptor, TI_MODIFIER_UNDEFINED, 
 			{
 				tiny_cast( offset_x, float ),
 				tiny_cast( offset_y, float ) 

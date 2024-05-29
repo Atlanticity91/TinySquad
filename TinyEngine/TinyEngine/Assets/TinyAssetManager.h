@@ -36,7 +36,7 @@ public:
 
 	~TinyAssetManager( ) = default;
 
-	bool Initialize( TinyFilesystem& filesystem, TinyConfig*& game_config );
+	bool Initialize( TinyGame* game, TinyConfig*& game_config );
 
 	bool Import( TinyGame* game, const tiny_string& path );
 
@@ -74,7 +74,9 @@ public:
 				else
 					tiny_deallocate( container );
 			} else {
-				if ( asset_type < _containers.size( ) + 1 )
+				auto container_count = _containers.size( );
+
+				if ( asset_type < container_count + 1 )
 					_containers.emplace_back( container );
 				else
 					tiny_deallocate( container );
@@ -85,7 +87,7 @@ public:
 private:
 	void RegisterTypes( );
 
-	bool LoadConfig( TinyFilesystem& filesystem, TinyConfig*& game_config );
+	bool LoadConfig( TinyGame* game, TinyConfig*& game_config );
 
 	bool LoadArchiveFile( TinyGame* game, const tiny_string& path );
 

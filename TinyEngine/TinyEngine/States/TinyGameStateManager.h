@@ -46,7 +46,7 @@ public:
 	template<typename GameState>
 		requires TinyIsGameState<GameState>
 	void Register( const tiny_string& name ) { 
-		if ( name.is_valid( ) && !_states.find( name ) ) {
+		if ( name.get_is_valid( ) && !_states.find( name ) ) {
 			auto storage = tiny_storage{ TS_TYPE_STATIC };
 
 			if ( tiny_make_storage( storage, GameState ) )

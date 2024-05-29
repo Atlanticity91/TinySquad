@@ -35,7 +35,7 @@ public:
 		: _data{ } 
 	{ };
 
-	tiny_list( tiny_uint capacity ) 
+	tiny_list( const tiny_uint capacity )
 		: _data{ }
 	{ 
 		_data.resize( capacity > 0 ? capacity : 1 );
@@ -51,7 +51,7 @@ public:
 		emplace_back( element );
 	};
 
-	tiny_list( tiny_uint capacity, const Type& def_value )
+	tiny_list( const tiny_uint capacity, const Type& def_value )
 		: _data{ } 
 	{
 		_data.resize( capacity > 0 ? capacity : 1 );
@@ -60,14 +60,14 @@ public:
 			element = def_value;
 	};
 
-	tiny_list( tiny_uint size, const tiny_pointer data ) 
+	tiny_list( const tiny_uint size, const native_pointer data ) 
 		: _data{ }
 	{ 
 		_data.resize( size / tiny_sizeof( Type ) );
 
-		auto* dst = tiny_cast( _data.data( ), tiny_pointer );
+		auto* dst = tiny_cast( _data.data( ), native_pointer );
 
-		if ( data && dst )
+		if ( data != nullptr && dst != nullptr )
 			Tiny::Memcpy( data, dst, size );
 	};
 
@@ -79,13 +79,13 @@ public:
 		return tiny_self;
 	};
 
-	tiny_list& resize( tiny_uint capacity ) { 
+	tiny_list& resize( const tiny_uint capacity ) {
 		_data.resize( capacity );
 
 		return tiny_self;
 	};
 
-	tiny_list& insert( tiny_uint element_id, const Type& element ) { 
+	tiny_list& insert( const tiny_uint element_id, const Type& element ) {
 		_data.insert( _data.begin( ) + element_id, element );
 
 		return tiny_self;
@@ -113,7 +113,7 @@ public:
 		return tiny_self;
 	};
 
-	tiny_list& duplicate( tiny_uint element_id ) {
+	tiny_list& duplicate( const tiny_uint element_id ) {
 		if ( element_id < size( ) )
 			emplace_back( _data[ element_id ] );
 
@@ -133,7 +133,7 @@ public:
 		return tiny_self;
 	};
 
-	std::optional<Type> erase( tiny_uint element_id ) {
+	std::optional<Type> erase( const tiny_uint element_id ) {
 		if ( exist( element_id ) ) {
 			auto element = _data[ element_id ];
 

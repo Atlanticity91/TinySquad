@@ -67,7 +67,7 @@ bool TinyToolbox::LoadFont(
 
     if ( state ) {
         auto& io    = ImGui::GetIO( );
-        auto* path  = font.Path.as_chars( );
+        auto* path  = font.Path.get( );
         auto* _font = io.Fonts->AddFontFromFileTTF( path, font.Size );
 
         if ( _font ) {

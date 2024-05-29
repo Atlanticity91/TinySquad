@@ -96,9 +96,9 @@ tiny_uint TinyRenderBatchSprite::UploadBuffers(
 
 		staging.Map( context, size );
 
-		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
+		auto* dst = staging.GetAccess( );
 
-		Tiny::Memcpy( vertex.Values, staging_addr, size );
+		Tiny::Memcpy( vertex.Values, dst, size );
 
 		staging.UnMap( context );
 

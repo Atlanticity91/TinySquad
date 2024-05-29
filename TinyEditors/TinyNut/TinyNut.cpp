@@ -28,7 +28,7 @@ TinyNut::TinyNut( const tiny_string& title )
 { }
 
 TinyNut::TinyNut( const tiny_string& title, bool enable_dockspace )
-	: TinyGame{ title, TGO_PAYSAGE_16x9, true },
+	: TinyGame{ "TinySquadStudio", title, TGO_PAYSAGE_16x9, true },
 	_context{ },
 	_window{ title, enable_dockspace }
 { }

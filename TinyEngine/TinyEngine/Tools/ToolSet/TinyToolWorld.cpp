@@ -65,10 +65,12 @@ void TinyToolWorld::DrawEntity(
 				 ImGuiTreeNodeFlags_AllowOverlap   | 
 				 ImGuiTreeNodeFlags_FramePadding;
 
-	auto entity_name = tiny_buffer<32>{ entity.Alias };
+	auto entity_name = tiny_buffer<32>{ };
 	auto* name_str   = entity_name.as_chars( );
 	auto region		 = ImGui::GetContentRegionAvail( );
 	auto& toolbox	 = game->GetToolbox( );
+
+	entity_name = entity.Alias;
 
 	if ( entity.Hash == toolbox.GetGuizmoSelection( ) )
 		flags |= ImGuiTreeNodeFlags_Selected;
@@ -113,7 +115,7 @@ void TinyToolWorld::DrawEntity(
 
 			for ( auto& component : components ) {
 				auto comp_name = component->GetName( );
-				auto* name_str = comp_name.as_chars( );
+				auto* name_str = comp_name.get( );
 				auto is_active = component->GetIsActive( );
 
 				open = ImGui::CollapsingHeader( name_str, ImGuiTreeNodeFlags_AllowOverlap );
@@ -164,7 +166,7 @@ void TinyToolWorld::DrawNewEntity( TinyECS& ecs ) {
 		auto entity_name = _new_entity.as_string( );
 
 		if ( ecs.FindEntity( entity_name ) )
-			_new_entity.store( "New Entity %u", _new_entity_id++ );
+			Tiny::Sprintf( _new_entity, "New Entity %u", _new_entity_id++ );
 
 		ecs.Create( entity_name );
 	}

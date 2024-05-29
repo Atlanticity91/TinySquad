@@ -164,11 +164,11 @@ void TinyScript::DisplayMeta(
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyScript::GetHasPreTick( ) const { 
-	return GetIsActive( ) && _pre_tick.Function.is_valid( ); 
+	return GetIsActive( ) && _pre_tick.Function.get_is_valid( ); 
 }
 
 bool TinyScript::GetHasPostTick( ) const { 
-	return GetIsActive( ) && _post_tick.Function.is_valid( );
+	return GetIsActive( ) && _post_tick.Function.get_is_valid( );
 }
 
 TinyScriptMetadata& TinyScript::GetPreTick( ) { return _pre_tick; }

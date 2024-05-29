@@ -48,15 +48,15 @@ bool TinyLuaContext::Compile( native_string alias, native_string source ) {
 }
 
 bool TinyLuaContext::Compile( const tiny_string& alias, const tiny_string& source ) {
-	auto* alias_str  = alias.as_chars( );
-	auto* source_str = source.as_chars( );
+	auto* alias_str  = alias.get( );
+	auto* source_str = source.get( );
 
 	return Compile( alias_str, source_str );
 }
 
 void TinyLuaContext::Register( const tiny_string& name, TinyLuaPrototype prototype ) {
-	if ( name.is_valid( ) ) {
-		auto* name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto* name_str = name.get( );
 
 		if ( prototype )
 			lua_register( _lua_state, name_str, prototype );
@@ -70,8 +70,8 @@ void TinyLuaContext::Register( const tiny_string& name, TinyLuaPrototype prototy
 void TinyLuaContext::UnRegister( const tiny_string& name ) { RemoveGlobal( name ); }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, bool value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		lua_pushboolean( _lua_state, value );
 		lua_setglobal( _lua_state, name_str );
@@ -79,8 +79,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, bool value ) {
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, tiny_int value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		lua_pushinteger( _lua_state, value );
 		lua_setglobal( _lua_state, name_str );
@@ -88,8 +88,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, tiny_int value ) {
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, tiny_uint value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		lua_pushinteger( _lua_state, value );
 		lua_setglobal( _lua_state, name_str );
@@ -97,8 +97,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, tiny_uint value ) {
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, tiny_long value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		lua_pushinteger( _lua_state, value );
 		lua_setglobal( _lua_state, name_str );
@@ -106,8 +106,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, tiny_long value ) {
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, tiny_ulong value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		lua_pushinteger( _lua_state, value );
 		lua_setglobal( _lua_state, name_str );
@@ -115,8 +115,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, tiny_ulong value ) {
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, float value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		lua_pushnumber( _lua_state, value );
 		lua_setglobal( _lua_state, name_str );
@@ -124,8 +124,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, float value ) {
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, double value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		lua_pushnumber( _lua_state, value );
 		lua_setglobal( _lua_state, name_str );
@@ -133,8 +133,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, double value ) {
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_point& value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		TinyLua::Point::Create( tiny_self, value );
 
@@ -143,8 +143,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_point& value
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_vec2& value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		TinyLua::Vec2::Create( tiny_self, value );
 
@@ -153,8 +153,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_vec2& value 
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_vec3& value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		TinyLua::Vec3::Create( tiny_self, value );
 
@@ -163,8 +163,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_vec3& value 
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_vec4& value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		TinyLua::Vec4::Create( tiny_self, value );
 
@@ -173,8 +173,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_vec4& value 
 }
 
 void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_color& value ) {
-	if ( name.is_valid( ) ) {
-		auto name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto name_str = name.get( );
 
 		TinyLua::Color::Create( tiny_self, value );
 
@@ -183,8 +183,8 @@ void TinyLuaContext::SetGlobal( const tiny_string& name, const tiny_color& value
 }
 
 void TinyLuaContext::RemoveGlobal( const tiny_string& name ) {
-	if ( name.is_valid( ) ) {
-		auto* name_str = name.as_chars( );
+	if ( name.get_is_valid( ) ) {
+		auto* name_str = name.get( );
 
 		lua_pushnil( _lua_state );
 		lua_setglobal( _lua_state, name_str );
@@ -289,10 +289,10 @@ bool TinyLuaContext::Execute( native_string source ) {
 }
 
 bool TinyLuaContext::Execute( const tiny_string& source ) {
-	auto state = source.is_valid( );
+	auto state = source.get_is_valid( );
 
 	if ( state ) {
-		auto* source_str = source.as_chars( );
+		auto* source_str = source.get( );
 
 		state = Execute( source_str );
 	}
@@ -309,7 +309,7 @@ void TinyLuaContext::Terminate( ) {
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyLuaContext::GetExist( const tiny_string& name ) const {
-	auto* name_str = name.as_chars( );
+	auto* name_str = name.get( );
 
 	return lua_getglobal( _lua_state, name_str ) == LUA_OK;
 }

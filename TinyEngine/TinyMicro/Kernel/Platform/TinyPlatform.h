@@ -51,6 +51,9 @@ tiny_enum( TinyDialogTypes ) {
 
 };
 
+template<typename Type_a, typename Type_b >
+concept TinyIsCopyable = ( !tiny_is_pointer( Type_a ) && !tiny_is_pointer( Type_b ) );
+
 namespace Tiny {
 
 	tm_dll bool Initialize( );
@@ -59,32 +62,42 @@ namespace Tiny {
 
 	tm_dll void DumpLeaks( );
 
-	tm_dll bool Memcpy( const native_pointer src, native_pointer dst, const tiny_ulong size );
+	template<typename Type_a, typename Type_b>
+		requires TinyIsCopyable<Type_a, Type_b>
+	bool Memcpy( const Type_a* src, Type_b* dst, const tiny_ulong length ) {
+		auto* src_ = tiny_cast( src, const native_pointer );
+		auto* dst_ = tiny_cast( dst, native_pointer );
+		auto state = false;
 
-	template<typename Type>
-	bool Memcpy( const Type* src, Type* dst, const tiny_uint count ) {
-		auto block_size = tiny_cast( count * tiny_sizeof( Type ), tiny_ulong );
+	#	ifdef TINY_WIN
+		state = ( memmove_s( dst, length, src, length ) == 0 );
+	#	else
+		state = ( memmove( dst, src, length ) == dst );
+	#	endif
 
-		return Memcpy( tiny_cast( src, const native_pointer ), tiny_cast( dst, native_pointer ), block_size );
+		return state;
 	};
 
 	template<typename Type>
-	bool Memcpy( const Type* src, Type* dst ) {
-		return Memcpy( src, dst, 1 );
+		requires TinyIsCopyable<Type, Type>
+	bool Memcpy( const Type& src, Type& dst ) {
+		return Memcpy<Type, Type>( tiny_rvalue( src ), tiny_rvalue( dst ), tiny_sizeof( Type ) );
 	};
 
 	template<tiny_uint Length, typename... Args >
 	bool Sprintf( tiny_buffer<Length>& buffer, const tiny_string& format, Args&&... args ) { 
-	#	ifdef TINY_WIN
 		auto* buffer_str = buffer.as_chars( );
-		auto* format_str = format.as_chars( );
+		auto* format_str = format.get( );
 
-		buffer.Cursor = sprintf_s( buffer_str, Length, format_str, std::forward<Args>( args )... );
+	#	ifdef TINY_WIN
+		auto count = tiny_cast( sprintf_s( buffer_str, Length, format_str, std::forward<Args>( args )... ), tiny_uint );
 	#	else
-		buffer.Cursor = sprintf( buffer_str, format_str, args... );
+		auto count = sprintf( buffer_str, format_str, args... ), tiny_uint );
 	#	endif
+		
+		buffer.set_cursor( count );
 
-		return buffer.Cursor > 0;
+		return count > 0;
 	};
 
 	tm_dll bool OpenDialog( 

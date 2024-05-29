@@ -124,7 +124,7 @@ namespace TinyImGui {
 
 	template<typename Func, typename... Args>
 	void Collapsing( const tiny_string& name, Func&& draw, Args&... args ) {
-		auto* name_str = name.as_chars( );
+		auto* name_str = name.get( );
 
 		if ( ImGui::CollapsingHeader( name_str, IMGUI_NO_FLAGS ) ) {
 			draw( args... );
@@ -135,7 +135,7 @@ namespace TinyImGui {
 
 	template<typename Func, typename... Args>
 	void CollapsingOpen( const tiny_string& name, Func&& draw, Args&... args ) {
-		auto* name_str = name.as_chars( );
+		auto* name_str = name.get( );
 
 		if ( ImGui::CollapsingHeader( name_str, ImGuiTreeNodeFlags_DefaultOpen ) ) {
 			draw( args... );

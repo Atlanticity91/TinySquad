@@ -77,7 +77,7 @@ void TinyToolScene::DrawSystems( TinyGame* game, TinyECS& ecs ) {
 	while ( system_id < system_count ) {
 		auto* system   = systems[ system_id ];
 		auto is_active = system->GetIsActive( );
-		auto* name_str = system->GetName( ).as_chars( );
+		auto* name_str = system->GetName( ).get( );
 
 		ImGui::BeginDisabled( system_id == 0 );
 		TINY_IMGUI_SCOPE_ID(

@@ -42,10 +42,15 @@ namespace Tiny {
 			}
 
 	#		ifdef TINY_WIN
-			fopen_s( tiny_rvalue( file.Handle ), path, "w" );
+			fopen_s( tiny_rvalue( file.Handle ), path, mode );
 	#		else
-			file.Handle = fopen( path, "w" );
+			file.Handle = fopen( path, mode );
 	#		endif
+
+			if ( file.Handle != nullptr ) {
+				file.Size   = GetSize( file );
+				file.Access = access;
+			}
 		}
 
 		return file;
@@ -54,8 +59,11 @@ namespace Tiny {
 	bool FileSeek( tiny_file& file, TinyFileOrigin origin, tiny_ulong offset ) {
 		auto state = false;
 
-		if ( GetFileIsValid( file ) && file.Access > TF_ACCESS_NONE ) 
-			state = fseek( file.Handle, tiny_cast( offset, tiny_long ), tiny_cast( origin, tiny_int ) ) == 0;
+		if ( GetFileIsValid( file ) && file.Access > TF_ACCESS_NONE ) {
+			auto offset_ = tiny_cast( offset, long );
+
+			state = fseek( file.Handle, offset_, tiny_cast( origin, tiny_int ) ) == 0;
+		}
 
 		return state;
 	}
@@ -69,9 +77,9 @@ namespace Tiny {
 
 		if ( GetFileIsValid( file ) ) {
 	#		ifdef TINY_WIN
-			read_bytes = tiny_cast( fread_s( data, length, length, 1, file.Handle ), tiny_uint );
+			read_bytes = tiny_cast( fread_s( data, length, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_uint );
 	#		else
-			read_bytes = tiny_cast( fread( data, length, 1, file.Handle ), tiny_uint );
+			read_bytes = tiny_cast( fread( data, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_uint );
 	#		endif
 		}
 
@@ -86,7 +94,7 @@ namespace Tiny {
 		auto write_bytes = tiny_cast( 0, tiny_uint );
 
 		if ( GetFileIsValid( file ) )
-			write_bytes = tiny_cast( fwrite( data, length, 1, file.Handle ), tiny_uint );
+			write_bytes = tiny_cast( fwrite( data, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_uint );
 
 		return write_bytes;
 	}
@@ -99,7 +107,7 @@ namespace Tiny {
 	bool GetFileIsValid( const tiny_file& file ) { return file.Handle != nullptr; }
 	
 	bool GetFileCan( const tiny_file& file, TinyFileAccesses access ) {
-		return GetFileIsValid( file ) && file.Access == access;
+		return GetFileIsValid( file ) && ( file.Access & access );
 	}
 	
 	tiny_ulong GetFileCursor( const tiny_file& file ) {
@@ -109,6 +117,20 @@ namespace Tiny {
 			cursor = ftell( file.Handle );
 
 		return cursor;
+	}
+
+	tiny_ulong GetSize( const tiny_file& file ) {
+		auto size = tiny_cast( 0, tiny_ulong );
+
+		if ( file.Handle != nullptr ) {
+			fseek( file.Handle, 0, SEEK_END );
+
+			size = tiny_cast( ftell( file.Handle ), tiny_ulong );
+
+			fseek( file.Handle, 0, SEEK_SET );
+		}
+
+		return size;
 	}
 
 };

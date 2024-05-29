@@ -48,7 +48,7 @@ bool TinyRenderUniformManager::Create(
 	TinyGraphicManager& graphics, 
 	const TinyRenderUniformBuilder& builder 
 ) {
-	auto state = !builder.Name.is_empty( ) && !_uniforms.find( builder.Name );
+	auto state = !builder.Name.get_is_empty( ) && !_uniforms.find( builder.Name );
 	
 	if ( state ) {
 		auto uniform = TinyRenderUniform{ };
@@ -111,7 +111,12 @@ void TinyRenderUniformManager::GenerateIndexBuffer(
 		auto size	 = TINY_QUAD_INDEX_SIZE;
 
 		staging.Map( context, size );
-		Tiny::Memcpy( indexes.data( ), staging.GetAccess( ), size );
+
+		auto* src = indexes.data( );
+		auto* dst = staging.GetAccess( );
+
+		Tiny::Memcpy( src, dst, size );
+		
 		staging.UnMap( context );
 
 		auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };

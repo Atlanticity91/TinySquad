@@ -39,7 +39,7 @@ bool TinyGraphicBufferBinder::Read(
 		state = memory != nullptr;
 
 		if ( state ) {
-			Tiny::Memcpy( storage, bind.Data, tiny_cast( bind.Size, tiny_ulong ) );
+			Tiny::Memcpy( storage, bind.Data, bind.Size );
 
 			Unmap( context.Logical, memory );
 		}
@@ -61,7 +61,7 @@ bool TinyGraphicBufferBinder::Write(
 		state = memory != nullptr;
 
 		if ( state ) {
-			Tiny::Memcpy( bind.Data, storage, tiny_cast( bind.Size, tiny_ulong ) );
+			Tiny::Memcpy( bind.Data, storage, bind.Size );
 
 			Unmap( context.Logical, memory );
 		}

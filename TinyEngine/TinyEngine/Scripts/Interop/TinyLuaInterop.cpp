@@ -26,7 +26,7 @@
 tiny_int TinyLua::CreateTable( TinyLuaContext& context, const tiny_string& name ) {
 	lua_newtable( context );
 
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 	auto table_id = lua_gettop( context );
 
 	lua_pushvalue( context, table_id );
@@ -41,7 +41,7 @@ void TinyLua::CreateFunction(
 	TinyLuaPrototype callback
 ) {
 	if ( callback ) {
-		auto name_str = name.as_chars( );
+		auto name_str = name.get( );
 
 		lua_pushcfunction( context, callback );
 		lua_setfield( context, -2, name_str );
@@ -56,7 +56,7 @@ bool TinyLua::CreateMetatable(
 	auto state = lua_istable( context, table_id );
 
 	if ( state ) {
-		auto name_str = name.as_chars( );
+		auto name_str = name.get( );
 
 		luaL_newmetatable( context, name_str );
 		lua_pushstring( context, "__index" );
@@ -73,7 +73,7 @@ void TinyLua::CreateOperator(
 	TinyLuaPrototype callback
 ) {
 	if ( callback ) {
-		auto name_str = name.as_chars( );
+		auto name_str = name.get( );
 
 		lua_pushstring( context, name_str );
 		lua_pushcfunction( context, callback );
@@ -86,8 +86,8 @@ void TinyLua::CreateField(
 	const tiny_string& name,
 	const tiny_string& value
 ) {
-	auto value_str = value.as_chars( );
-	auto name_str = name.as_chars( );
+	auto value_str = value.get( );
+	auto name_str = name.get( );
 
 	lua_pushstring( context, name_str );
 	lua_pushstring( context, name_str );
@@ -99,7 +99,7 @@ void TinyLua::CreateField(
 	const tiny_string& name,
 	const lua_Integer& value
 ) {
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 
 	lua_pushstring( context, name_str );
 	lua_pushinteger( context, value );
@@ -111,7 +111,7 @@ void TinyLua::CreateField(
 	const tiny_string& name,
 	const lua_Number& value
 ) {
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 
 	lua_pushstring( context, name_str );
 	lua_pushnumber( context, value );
@@ -124,7 +124,7 @@ void TinyLua::CreateField(
 	native_pointer& value
 ) {
 	if ( value ) {
-		auto name_str = name.as_chars( );
+		auto name_str = name.get( );
 		
 		lua_pushstring( context, name_str );
 		lua_pushlightuserdata( context, value );
@@ -133,7 +133,7 @@ void TinyLua::CreateField(
 }
 
 void TinyLua::LinkMetatable( lua_State* context, const tiny_string& name ) {
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 
 	luaL_getmetatable( context, name_str );
 	lua_setmetatable( context, -2 );
@@ -145,7 +145,7 @@ bool TinyLua::GetField(
 	const tiny_string& name,
 	lua_Integer& value
 ) {
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 
 	lua_pushstring( context, name_str );
 	lua_gettable( context, table_id );
@@ -164,7 +164,7 @@ bool TinyLua::GetField(
 	const tiny_string& name,
 	lua_Number& value
 ) {
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 
 	lua_pushstring( context, name_str );
 	lua_gettable( context, table_id );
@@ -183,7 +183,7 @@ bool TinyLua::GetField(
 	const tiny_string& name,
 	native_pointer& value
 ) {
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 
 	lua_pushstring( context, name_str );
 	lua_gettable( context, table_id );
@@ -201,7 +201,7 @@ void TinyLua::SetField(
 	const tiny_string& name,
 	const lua_Integer& value
 ) { 
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 
 	lua_pushinteger( context, value );
 	lua_setfield( context, tli_self, name_str );
@@ -212,7 +212,7 @@ void TinyLua::SetField(
 	const tiny_string& name,
 	const lua_Number& value
 ) {
-	auto name_str = name.as_chars( );
+	auto name_str = name.get( );
 
 	lua_pushnumber( context, value );
 	lua_setfield( context, tli_self, name_str );

@@ -41,15 +41,14 @@ bool TinyInputDeviceJoystick::Evaluate( const TinyInputQuery& query ) {
 
 void TinyInputDeviceJoystick::Tick( ) {
     if ( PeekJoystick( ) ) {
-        tiny_int count;
+        auto button_count = tiny_cast( 0, tiny_int );
+        auto stick_count  = tiny_cast( 0, tiny_int );
+        auto* buttons     = glfwGetJoystickButtons( _joystick, tiny_rvalue( button_count ) );
+        auto* sticks      = glfwGetJoystickAxes( _joystick, tiny_rvalue( stick_count ) );
 
-        Tiny::Memcpy( &_news, &_olds );
-
-        auto* buttons = (bool*)glfwGetJoystickButtons( _joystick, &count );
-        Tiny::Memcpy( buttons, _news.Buttons, tiny_min( count, TINY_JOYSTICK_BUTTONS ) );
-
-        auto* sticks = glfwGetJoystickAxes( _joystick, &count );
-        Tiny::Memcpy( sticks, _news.Axis, tiny_min( count, TINY_JOYSTICK_AXIS ) );
+        Tiny::Memcpy( _news, _olds );
+        Tiny::Memcpy( buttons, _news.Buttons, tiny_min( button_count, TINY_JOYSTICK_BUTTONS ) * tiny_sizeof( bool )  );
+        Tiny::Memcpy( sticks , _news.Axis   , tiny_min( stick_count , TINY_JOYSTICK_AXIS    ) * tiny_sizeof( float ) );
 
         ProcessDeadzone( );
     }

@@ -24,19 +24,13 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_string::tiny_string( )
-	: _handle( "" ),
+	: _handle( nullptr ),
 	_length{ 0 }
 { }
 
-tiny_string::tiny_string( under_layer string )
+tiny_string::tiny_string( native_string string )
 	: tiny_string{ }
 { 
-	asign( string );
-}
-
-tiny_string::tiny_string( const std::string& string )
-	: tiny_string{ } 
-{
 	asign( string );
 }
 
@@ -46,35 +40,44 @@ tiny_string::tiny_string( const tiny_string& other )
 	asign( other );
 }
 
-tiny_string::tiny_string( tiny_uint length, native_pointer address )
-	: _handle{ tiny_cast( address, under_layer ) },
-	_length{ length }
-{ }
-
-tiny_string& tiny_string::asign( under_layer string ) {
-	if ( string ) {
-		_length = tiny_cast( strlen( string ), tiny_uint );
-
-		if ( _length > 0 )
-			_handle = string;
-	} else {
-		_handle = nullptr;
-		_length = 0;
-	}
-
-	return tiny_self;
+tiny_string::tiny_string( const std::string& string )
+	: tiny_string{ } 
+{
+	asign( string );
+}
+tiny_string::tiny_string( const tiny_uint length, const native_pointer data )
+	: tiny_string{ }
+{ 
+	asign( length, data );
 }
 
-tiny_string& tiny_string::asign( const std::string& string ) {
-	_handle = string.c_str( );
-	_length = tiny_cast( string.length( ), tiny_uint );
+tiny_string& tiny_string::asign( native_string string ) {
+	auto* data  = tiny_cast( string, const native_pointer );
+	auto length = tiny_cast( strlen( string ), tiny_uint );
 
-	return tiny_self;
+	return asign( length, data );
 }
 
 tiny_string& tiny_string::asign( const tiny_string& other ) {
-	_handle = other.get( );
-	_length = other.length( );
+	auto* data  = other.as_native( );
+	auto length = other.length( );
+
+	return asign( length, data );
+}
+
+tiny_string& tiny_string::asign( const std::string& string ) {
+	auto* data  = tiny_cast( string.c_str( ), const native_pointer );
+	auto length = tiny_cast( string.length( ), tiny_uint );
+
+	return asign( length, data );
+}
+
+tiny_string& tiny_string::asign( const tiny_uint length, const native_pointer data ) {
+	TINY_ASSERT( length > 0, "You can't extract buffer data to a 0 length array" );
+	TINY_ASSERT( data != nullptr, "You can't extract buffer data to a null array" );
+
+	_handle = tiny_cast( data, char* );
+	_length = length;
 
 	return tiny_self;
 }
@@ -82,25 +85,36 @@ tiny_string& tiny_string::asign( const tiny_string& other ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool tiny_string::is_valid( ) const { return _handle && _length > 0; }
+bool tiny_string::get_is_valid( ) const { return _handle != nullptr && _length > 0; }
 
-tiny_string::under_layer tiny_string::get( ) const { return _handle; }
+bool tiny_string::get_is_empty( ) const { return length( ) == 0; }
 
-char* tiny_string::as_chars( ) const { return tiny_cast( _handle, char* ); }
+tiny_uint tiny_string::length( ) const { return _length; }
 
-std::string tiny_string::as_string( ) const { return std::string{ _handle }; }
+char* tiny_string::get( ) const { return _handle; }
 
-char& tiny_string::at( tiny_uint char_id ) {
-	char_id = char_id < _length ? char_id : _length + 1;
+char* tiny_string::last( ) const { return _handle + _length; }
 
-	return tiny_lvalue( tiny_cast( tiny_rvalue( _handle[ char_id ] ), char* ) );
+native_string tiny_string::as_string( ) const { return _handle; }
+
+native_pointer tiny_string::as_native( ) { return tiny_cast( _handle, native_pointer ); }
+
+const native_pointer tiny_string::as_native( ) const { 
+	return tiny_cast( _handle, const native_pointer ); 
 }
 
-const char tiny_string::at( tiny_uint char_id ) const {
-	if ( char_id < length( ) )
-		return _handle[ char_id ];
+std::string tiny_string::to_string( ) const { return std::string{ _handle, _length }; }
 
-	return '\0';
+char& tiny_string::at( const tiny_uint char_id ) {
+	TINY_ASSERT_FORMAT( char_id < _length, "You can't access character outside the string limits {0:%u}", _length );
+
+	return tiny_lvalue( _handle + char_id );
+}
+
+const char tiny_string::at( const tiny_uint char_id ) const {
+	TINY_ASSERT_FORMAT( char_id < _length, "You can't access character outside the string limits {0:%u}", _length );
+	
+	return _handle[ char_id ];
 }
 
 std::string tiny_string::make_string( char start, char stop ) const {
@@ -111,31 +125,29 @@ std::string tiny_string::make_string( char start, char stop ) const {
 	return string.substr( str_start, str_stop - str_start );
 }
 
-tiny_uint tiny_string::length( ) const { return _length; }
-
-bool tiny_string::is_empty( ) const { return _handle && length( ) == 0; }
-
-tiny_string::under_layer tiny_string::sub_chars( 
+native_string tiny_string::sub_chars(
 	const tiny_string& sequence, 
 	bool cut_after
 ) const {
-	auto* sub = tiny_cast( nullptr, under_layer );
+	auto* sub_string = tiny_cast( nullptr, native_string );
 
-	if ( is_valid( ) && sequence.is_valid( ) ) {
-		sub = strstr( _handle, sequence.as_chars( ) );
+	if ( get_is_valid( ) && sequence.get_is_valid( ) ) {
+		auto* sequence_ = sequence.as_string( );
+		sub_string		= strstr( _handle, sequence_ );
 
-		if ( sub && cut_after )
-			sub += sequence.length( );
+		if ( sub_string && cut_after )
+			sub_string += sequence.length( );
 	}
 
-	return sub;
+	return sub_string;
 }
 
 tiny_string tiny_string::sub_string( const tiny_string& sequence, bool cut_after ) const {
 	auto sub = tiny_string{ };
 
-	if ( is_valid( ) && sequence.is_valid( ) ) {
-		auto* tmp = strstr( _handle, sequence.as_chars( ) );
+	if ( get_is_valid( ) && sequence.get_is_valid( ) ) {
+		auto* sequence_ = sequence.as_string( );
+		auto* tmp		= strstr( _handle, sequence_ );
 
 		if ( tmp && cut_after )
 			tmp += sequence.length( );
@@ -155,10 +167,10 @@ tiny_string tiny_string::sub_string( const tiny_uint offset ) const {
 	return sub;
 }
 
-bool tiny_string::equal( under_layer string ) const {
-	auto state = is_valid( string ) && length( ) > 0;
+bool tiny_string::equal( native_string string ) const {
+	auto state = false;
 
-	if ( state )
+	if ( get_is_valid( string ) && length( ) > 0 )
 		state = strcmp( string, _handle ) == 0;
 
 	return state;
@@ -176,7 +188,7 @@ bool tiny_string::equal( const std::string& other ) const {
 	return equal( string );
 }
 
-bool tiny_string::not_equal( under_layer string ) const {
+bool tiny_string::not_equal( native_string string ) const {
 	return !equal( string );
 }
 
@@ -188,20 +200,20 @@ bool tiny_string::not_equal( const std::string& other ) const {
 	return !equal( other );
 }
 
-tiny_string::iterator tiny_string::begin( ) { return { as_chars( ) }; }
+tiny_string::iterator tiny_string::begin( ) { return { get( ) }; }
 
-tiny_string::iterator tiny_string::end( ) { return { as_chars( ) + ( _length + 1 ) }; }
+tiny_string::iterator tiny_string::end( ) { return { last( ) + 1 }; }
 
-const tiny_string::iterator tiny_string::begin( ) const { return { as_chars( ) }; }
+const tiny_string::iterator tiny_string::begin( ) const { return { get( ) }; }
 
-const tiny_string::iterator tiny_string::end( ) const { 
-	return { as_chars( ) + ( _length + 1 ) };
-}
+const tiny_string::iterator tiny_string::end( ) const { return { last( ) + 1 }; }
 
 tiny_string::regex_iterator tiny_string::begin_regex( const tiny_string& regex ) const {
-	auto expression = std::regex{ regex.as_chars( ), regex.length( ) };
+	auto* string	= regex.get( );
+	auto length		= regex.length( );
+	auto expression = std::regex{ string, length };
 
-	return regex_iterator{ _handle, tiny_rvalue( _handle[ _length + 1 ] ), expression };
+	return regex_iterator{ _handle, _handle + ( _length + 1 ), expression };
 }
 
 tiny_string::regex_iterator tiny_string::end_regex( ) const { return regex_iterator{ }; }
@@ -209,32 +221,32 @@ tiny_string::regex_iterator tiny_string::end_regex( ) const { return regex_itera
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool tiny_string::is_valid( under_layer string ) const { 
-	return string && strlen( string ) > 0;
+bool tiny_string::get_is_valid( native_string string ) const {
+	return string != nullptr && strlen( string ) > 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_string::operator bool( ) const { return is_valid( ); }
+tiny_string::operator bool( ) const { return get_is_valid( ); }
 
-tiny_string::operator under_layer ( ) const { return get( ); }
+tiny_string::operator native_string ( ) const { return get( ); }
 
-tiny_string::operator std::string ( ) const { return as_chars( ); }
+tiny_string::operator std::string ( ) const { return to_string( ); }
 
-tiny_string& tiny_string::operator=( under_layer string ) { return asign( string ); }
+tiny_string& tiny_string::operator=( native_string string ) { return asign( string ); }
 
 tiny_string& tiny_string::operator=( const std::string string ) { return asign( string ); }
 
 tiny_string& tiny_string::operator=( const tiny_string& other ) { return asign( other ); }
 
-bool tiny_string::operator==( under_layer string ) const { return equal( string ); }
+bool tiny_string::operator==( native_string string ) const { return equal( string ); }
 
 bool tiny_string::operator==( const tiny_string& other ) const { return equal( other ); }
 
 bool tiny_string::operator==( const std::string& other ) const { return equal( other ); }
 
-bool tiny_string::operator!=( under_layer string ) const {
+bool tiny_string::operator!=( native_string string ) const {
 	return not_equal( string );
 }
 

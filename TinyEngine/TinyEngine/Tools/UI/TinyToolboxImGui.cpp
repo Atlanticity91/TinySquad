@@ -124,7 +124,7 @@ namespace TinyImGui {
             Values = count;
 
             while ( count-- > 0 )
-                Values[ count ] = values[ count ].as_chars( );
+                Values[ count ] = values[ count ].get( );
         }
     }
 
@@ -202,7 +202,7 @@ namespace TinyImGui {
         Values = count;
 
         while ( count-- > 0 )
-            Values[ count ] = values[ count ].as_chars( );
+            Values[ count ] = values[ count ].get( );
 
         return tiny_self;
     }
@@ -236,7 +236,7 @@ namespace TinyImGui {
     void EndModal( ) { ImGui::EndPopup( ); }
 
     ImVec2 CalcTextSize( const tiny_string& text ) {
-        auto* text_str = text.as_chars( );
+        auto* text_str = text.get( );
         auto& style    = ImGui::GetStyle( );
         auto size      = ImGui::CalcTextSize( text_str );
 
@@ -256,7 +256,7 @@ namespace TinyImGui {
     void EndVars( ) { ImGui::EndColumns( ); }
 
     void SeparatorText( const tiny_string& label ) {
-        auto label_str = label.as_chars( );
+        auto label_str = label.get( );
 
         EndVars( );
 
@@ -271,7 +271,7 @@ namespace TinyImGui {
 
     bool Button( const tiny_string& label, const ImVec2& size ) {
         TINY_IMGUI_SCOPE_ID(
-            auto* label_str = label.as_chars( );
+            auto* label_str = label.get( );
             auto state      = ImGui::Button( label_str, size );
         );
 

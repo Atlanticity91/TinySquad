@@ -86,8 +86,8 @@ void TinyBacker::TickUI( ) {
                 auto& filesystem = GetFilesystem( );
                 auto path = filesystem.GetDevDir( );
 
-                if ( filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, "", path ) ) {
-                    auto path_str = path.as_string( );
+                if ( filesystem.OpenDialog( TD_TYPE_OPEM_FILE, "", path ) ) {
+                    auto path_str = path.c_str( );
 
                     _history_id = _history.size( );
                     _history.emplace_back( path_str );
@@ -125,13 +125,14 @@ void TinyBacker::ImportAsset( ) {
     auto& filesystem = GetFilesystem( );
     auto path        = filesystem.GetDevDir( );
 
-    if ( filesystem.OpenDialog( Tiny::TD_TYPE_OPEM_FILE, "All Files (*.*)\0*.*\0", path ) ) {
+    if ( filesystem.OpenDialog( TD_TYPE_OPEM_FILE, "All Files (*.*)\0*.*\0", path ) ) {
         auto& assets   = GetAssets( );
         auto& importer = assets.GetImporter( );
+        auto path_ = tiny_string{ path };
 
-        _import_path = path.as_string( );
+        _import_path = path.c_str( );
 
-        if ( !assets.Import( this, path ) )
+        if ( !assets.Import( this, path_ ) )
             ImGui::OpenPopup( "Import Fail" );
     }
 }

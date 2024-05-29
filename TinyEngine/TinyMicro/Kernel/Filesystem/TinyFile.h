@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyMicro/Kernel/Memory/TinyRef.h>
+#include <TinyMicro/Kernel/Memory/TinyMemoryManager.h>
 
 tm_abstract_class TinyFile {
 
@@ -142,12 +142,15 @@ public:
 
 	template<>
 	tiny_uint Write<tiny_string>( const tiny_string& string ) {
-		auto* chars = tiny_cast( string.as_chars( ), const native_pointer );
+		auto* chars = string.as_native( );
 		auto length = string.length( );
 
 		Write( length );
 
-		return Write( length, chars );
+		if ( length > 0 )
+			length = Write( length, chars );
+
+		return length;
 	};
 
 	template<>
@@ -157,7 +160,10 @@ public:
 
 		Write( length );
 
-		return Write( length, chars );
+		if ( length > 0 )
+			length = Write( length, chars );
+
+		return length;
 	};
 
 	template<typename Type, tiny_uint Size>
@@ -192,10 +198,13 @@ public:
 
 		Write( size );
 
-		size = 0;
+		if ( size > 0 ) {
+			size = 0;
 
-		for ( auto& element : list )
-			size += Write( element );
+			for ( auto& element : list )
+				size += Write( element );
+		} else
+			size = 0;
 
 		return size;
 	};
@@ -207,19 +216,22 @@ public:
 
 		Write( size );
 
-		size = 0;
+		if ( size > 0 ) {
+			size = 0;
 
-		for ( auto& element : map ) {
-			size += Write( element.String );
-			size += Write( element.Data );
-		}
+			for ( auto& element : map ) {
+				size += Write( element.String );
+				size += Write( element.Data );
+			}
+		} else
+			size = 0;
 
 		return size;
 	};
 
 	template<typename... Args>
 	tiny_uint Write( const tiny_string& format, const Args&... args ) {
-		auto* data  = tiny_cast( format.as_chars( ), const native_pointer );
+		auto* data  = format.as_native( );
 		auto length = format.length( );
 
 		tiny_compile_if( tiny_countof( Args ) > 0 ) {
@@ -228,12 +240,15 @@ public:
 			Tiny::Sprintf( buffer, format, args... );
 
 			length = buffer.size( );
-			data   = buffer.get( );
+			data   = buffer.as_native( );
 		}
 
 		Write( length );
 
-		return Write( length, data );
+		if ( length > 0 )
+			length = Write( length, data );
+
+		return length;
 	};
 
 

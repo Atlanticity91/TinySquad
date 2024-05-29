@@ -14,7 +14,7 @@
  * @version  : 2024.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
- *			   Tiny Squad team use originaly.
+ *			  Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
@@ -28,22 +28,19 @@ TinyAssetManager::TinyAssetManager( )
 	_containers{ TA_TYPE_COUNT }
 { }
 
-bool TinyAssetManager::Initialize(
-	TinyFilesystem& filesystem,
-	TinyConfig*& game_config
-) {
+bool TinyAssetManager::Initialize( TinyGame* game, TinyConfig*& game_config ) {
 	_importer.Initialize( );
 
 	RegisterTypes( );
 
-	return LoadConfig( filesystem, game_config );
+	return LoadConfig( game, game_config );
 }
 
 bool TinyAssetManager::Import( TinyGame* game, const tiny_string& path ) {
 	auto& filesystem = game->GetFilesystem( );
 	auto state		 = false;
 
-	if ( path.is_valid( ) && filesystem.GetFileExist( path ) ) {
+	if ( path.get_is_valid( ) && filesystem.GetFileExist( path ) ) {
 		auto path_info = filesystem.GetInformation( path );
 		auto file	   = filesystem.OpenFile( path, TF_ACCESS_BINARY_READ ); // TODO : ADD TEXT & BINARY IMPORT
 
@@ -73,7 +70,7 @@ bool TinyAssetManager::Load(
 ) {
 	auto state = false;
 
-	if ( path.is_valid( ) ) {
+	if ( path.get_is_valid( ) ) {
 		if ( path[ 0 ] == '@' )
 			state = LoadArchiveFile( game, path );
 		else
@@ -156,9 +153,10 @@ void TinyAssetManager::RegisterTypes( ) {
 	Register<TinyTrophyManager>( TA_TYPE_TROPHY );
 }
 
-bool TinyAssetManager::LoadConfig( TinyFilesystem& filesystem, TinyConfig*& game_config ) {
-	auto* container = tiny_cast( GetContainer( TA_TYPE_CONFIG ), TinyConfigContainer* );
-	auto state		= false;
+bool TinyAssetManager::LoadConfig( TinyGame* game, TinyConfig*& game_config ) {
+	auto& filesystem = game->GetFilesystem( );
+	auto* container  = tiny_cast( GetContainer( TA_TYPE_CONFIG ), TinyConfigContainer* );
+	auto state		 = false;
 
 	if ( container )
 		state = container->Load( filesystem, game_config );
@@ -187,7 +185,7 @@ bool TinyAssetManager::LoadAssetFile(
 	auto& filesystem = game->GetFilesystem( );
 	auto state		 = false;
 
-	if ( !path.is_empty( ) && filesystem.GetFileExist( path ) ) {
+	if ( !path.get_is_empty( ) && filesystem.GetFileExist( path ) ) {
 		auto file = filesystem.OpenFile( path, TF_ACCESS_READ );
 
 		if ( file.GetIsValid( ) ) {
@@ -199,7 +197,7 @@ bool TinyAssetManager::LoadAssetFile(
 				auto* container = GetContainer( header.Type );
 
 				if ( container ) {
-					if ( !alias.is_empty( ) )
+					if ( !alias.get_is_empty( ) )
 						state = container->Load( game, alias, file );
 					else {
 						auto file_info  = filesystem.GetInformation( path );

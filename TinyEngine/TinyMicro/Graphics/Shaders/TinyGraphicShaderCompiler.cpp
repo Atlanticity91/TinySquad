@@ -41,10 +41,10 @@ void TinyGraphicShaderCompiler::AddMacro(
 	const tiny_string& name,
 	const tiny_string& value 
 ) {
-	if ( !name.is_empty( ) && !value.is_empty( ) ) {
-		auto* name_str  = name.as_chars( );
+	if ( !name.get_is_empty( ) && !value.get_is_empty( ) ) {
+		auto* name_str  = name.get( );
 		auto name_len	= name.length( );
-		auto* value_str = value.as_chars( );
+		auto* value_str = value.get( );
 		auto value_len  = value.length( );
 
 		_options.AddMacroDefinition( name_str, name_len, value_str, value_len );
@@ -75,9 +75,9 @@ bool TinyGraphicShaderCompiler::CompileGLSL(
 	_options.SetSourceLanguage( shaderc_source_language_glsl );
 	_options.SetOptimizationLevel( shaderc_optimization_level_performance );
 
-	auto* source_str = context.Source.as_chars( );
+	auto* source_str = context.Source.get( );
 	auto source_len  = context.Source.length( );
-	auto* name_str   = context.Name.as_chars( );
+	auto* name_str   = context.Name.get( );
 	auto preprocess  = _compiler.PreprocessGlsl( source_str, source_len, shaderc_glsl_infer_from_source, name_str, _options );
 	auto status		 = preprocess.GetCompilationStatus( );
 	
@@ -87,13 +87,16 @@ bool TinyGraphicShaderCompiler::CompileGLSL(
 		status = spirv.GetCompilationStatus( );
 		
 		if ( status == shaderc_compilation_status_success ) {
-			auto size = tiny_cast( spirv.end( ) - spirv.begin( ), tiny_uint );
-
+			auto size = tiny_cast( spirv.end( ) - spirv.begin( ), tiny_uint ) * tiny_sizeof( tiny_uint );
+			
 			specification.Type  = PeekType( context.Source );
 			specification.Entry = context.Entry.as_string( );
-			specification.Code  = size * tiny_sizeof( tiny_uint );
+			specification.Code  = size;
 
-			Tiny::Memcpy( spirv.begin( ), specification.Code.data( ), size );
+			auto* src = spirv.begin( );
+			auto* dst = specification.Code.data( );
+
+			Tiny::Memcpy( src, dst, size );
 		} else
 			printf( "[ VK ] Shader Compilation Error : %s\n%s\n", name_str, spirv.GetErrorMessage( ).c_str( ) );
 	} else 

@@ -120,7 +120,7 @@ bool TinyRenderDebugManager::CompileShader(
 		shader_info.pNext	 = VK_NULL_HANDLE;
 		shader_info.flags	 = VK_NULL_FLAGS;
 		shader_info.codeSize = shader_properties.Code.size( );
-		shader_info.pCode	 = tiny_cast( shader_properties.Code.data( ), const tiny_uint* );
+		shader_info.pCode	 = shader_properties.Code.data( );
 
 		state = vk::Check( vkCreateShaderModule( logical, tiny_rvalue( shader_info ), vk::GetAllocator( ), tiny_rvalue( _shaders[ shader.ShaderID ].module ) ) );
 	}
@@ -266,7 +266,12 @@ void TinyRenderDebugManager::DrawLines(
 		auto context   = graphics.GetContext( );
 
 		staging.Map( context, vert_size );
-		Tiny::Memcpy( _lines.data( ), staging.GetAccess( ), vert_size );
+		
+		auto* src = _lines.data( );
+		auto* dst = staging.GetAccess( );
+
+		Tiny::Memcpy( src, dst, vert_size );
+
 		staging.UnMap( context );
 
 		auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
@@ -301,8 +306,8 @@ void TinyRenderDebugManager::DrawCircles(
 		
 		staging.Map( context, size );
 
-		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
-		auto* vertex_addr  = tiny_cast( _circles.data( )	, tiny_pointer );
+		auto* staging_addr = staging.GetAccess( );
+		auto* vertex_addr  = _circles.data( );
 
 		Tiny::Memcpy( vertex_addr, staging_addr, size );
 

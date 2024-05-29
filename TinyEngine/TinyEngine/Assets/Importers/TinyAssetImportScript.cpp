@@ -61,12 +61,13 @@ namespace TinyImport {
 		auto state	   = false;
 
 		if ( builder ) {
+			auto* data  = builder_->get( );
 			auto length = builder_->length( );
 
 			file->Write( TinyAssetHeader{ TA_TYPE_SCRIPT } );
 			file->Write( length );
 
-			state = file->Write( length, builder_->as_chars( ) ) == length;
+			state = file->Write( length, data ) == length;
 		}
 
 		return state;

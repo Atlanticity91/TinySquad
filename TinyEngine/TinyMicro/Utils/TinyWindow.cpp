@@ -32,7 +32,7 @@ TinyWindow::TinyWindow( tiny_string title, bool is_headless )
 { }
 
 bool TinyWindow::Initialize( const TinyAppConfig& config, native_pointer user_data ) {
-	auto* title = _title.as_chars( );
+	auto* title = _title.get( );
 	auto state  = glfwCreateWindow( _handle, title, config.Width, config.Height, _is_headless, config.IsFullScreen );
 
 	if ( state ) {

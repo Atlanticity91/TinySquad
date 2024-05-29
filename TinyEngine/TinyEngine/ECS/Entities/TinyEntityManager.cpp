@@ -164,7 +164,7 @@ bool TinyEntityManager::GetExist( const tiny_uint entity_id ) const {
 }
 
 bool TinyEntityManager::GetEntityID( const tiny_string& name, tiny_uint& entity_id ) const {
-	return !name.is_empty( ) && _entities.find( name, entity_id );
+	return !name.get_is_empty( ) && _entities.find( name, entity_id );
 }
 
 bool TinyEntityManager::GetEntityID( const tiny_hash entity_hash, tiny_uint& entity_id ) const {

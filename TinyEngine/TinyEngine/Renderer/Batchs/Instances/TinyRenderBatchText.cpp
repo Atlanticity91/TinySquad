@@ -159,7 +159,7 @@ void TinyRenderBatchText::PushVertex(
 	tiny_uint font_id
 ) {
 	auto char_id  = draw_context.Text.length( );
-	auto* text	  = draw_context.Text.as_chars( );
+	auto* text	  = draw_context.Text.get( );
 	auto vertex   = TinyRenderTextVertex{ };
 	auto location = tiny_vec3{ draw_context.Location, 0.f };
 	auto scale	  = tiny_vec3{ draw_context.Size, draw_context.Size, 1.f };
@@ -193,8 +193,10 @@ void TinyRenderBatchText::PushParameters(
 	tiny_uint font_id
 ) {
 	auto parameters = TinyRenderTextParameters{ };
+	auto* src		= tiny_rvalue( draw_context.Background );
+	auto* dst		= tiny_rvalue( parameters.Background );
 
-	Tiny::Memcpy( tiny_rvalue( draw_context.Background ), tiny_rvalue( parameters.Background ), 2 );
+	Tiny::Memcpy( src, dst, 2 * tiny_sizeof( tiny_vec4 ) );
 
 	parameters.Range = font->GetRange( ); 
 	parameters.Miter = font->GetMiter( );

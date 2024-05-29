@@ -68,18 +68,6 @@ namespace Tiny {
 	#	endif
 	}
 
-	bool Tiny::Memcpy( const native_pointer src, native_pointer dst, const tiny_ulong size ) {
-		auto state = false;
-
-	#	ifdef TINY_WIN
-		state = ( memmove_s( dst, size, src, size ) == 0 );
-	#	else
-		state = memmove( dst, src, size ) == dst;
-	#	endif
-
-		return state;
-	}
-
 	bool OpenDialog(
 		TinyDialogTypes type, 
 		const tiny_string& path,
@@ -98,12 +86,12 @@ namespace Tiny {
 		context.hwndOwner    = GetActiveWindow( );
 		context.lpstrFile    = data;
 		context.nMaxFile	 = length;
-		context.lpstrFilter  = filters.as_chars( );
+		context.lpstrFilter  = filters.get( );
 		context.nFilterIndex = 1;
 		context.Flags		 = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
 		if ( path )
-			context.lpstrInitialDir = path.as_chars( );
+			context.lpstrInitialDir = path.get( );
 
 		if ( type == TD_TYPE_OPEM_FILE )
 			state = GetOpenFileNameA( tiny_rvalue( context ) ) == TRUE;

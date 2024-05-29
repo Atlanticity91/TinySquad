@@ -43,7 +43,7 @@ public:
 
 	tiny_abstract( bool Evaluate( const TinyInputQuery& query ) );
 
-	virtual void Tick( ) { Tiny::Memcpy( _news, _olds, KeyCount ); };
+	virtual void Tick( ) { Tiny::Memcpy( _news, _olds, MetaSize ); };
 
 public:
 	tiny_abstract( TinyInputValue GetValue( const TinyInputDescriptor& descriptor ) const );

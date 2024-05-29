@@ -41,7 +41,7 @@ void TinyConfig::AddArchive( const std::string& archive ) {
 }
 
 bool TinyConfig::Load( TinyFile& file ) {
-	auto header = TinyAssetHeader{};
+	auto header = TinyAssetHeader{ };
 
 	file.Read( header );
 

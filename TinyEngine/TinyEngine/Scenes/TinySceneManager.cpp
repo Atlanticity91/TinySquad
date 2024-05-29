@@ -50,7 +50,7 @@ tiny_uint TinySceneManager::Spawn(
 ) {
 	auto entity_id = TINY_UINT_MAX;
 
-	if ( entity_name.is_valid( ) && entity_factory ) {
+	if ( entity_name.get_is_valid( ) && entity_factory ) {
 		auto& ecs = game->GetECS( );
 		
 		entity_id = ecs.Create( entity_name );
@@ -69,7 +69,7 @@ tiny_uint TinySceneManager::Spawn(
 ) {
 	auto entity_id = TINY_UINT_MAX;
 
-	if ( entity_name.is_valid( ) && prefab_name.is_valid( ) ) {
+	if ( entity_name.get_is_valid( ) && prefab_name.get_is_valid( ) ) {
 		auto& assets  = game->GetAssets( );
 		auto* prefabs = assets.GetContainerAs<TinyPrefabManager>( TA_TYPE_PREFAB );
 

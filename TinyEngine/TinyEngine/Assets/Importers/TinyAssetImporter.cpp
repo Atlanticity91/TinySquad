@@ -113,7 +113,7 @@ bool TinyAssetImporter::Export(
 ) {
 	auto state = false;
 
-	if ( type < _types.size( ) && alias.is_valid( ) && builder ) {
+	if ( type < _types.size( ) && alias.get_is_valid( ) && builder ) {
 		auto converter_id = _types[ type ];
 		auto& filesystem  = game->GetFilesystem( );
 		auto& converter   = _converters[ converter_id ];

@@ -104,7 +104,7 @@ bool TinyGraphicBufferStaging::Map(
 	auto state = Map( context, offset, length );
 
 	if ( state ) {
-		Tiny::Memcpy( data, _access, tiny_cast( length, tiny_ulong ) );
+		Tiny::Memcpy( data, _access, length );
 
 		UnMap( context );
 	}

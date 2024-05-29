@@ -70,8 +70,8 @@ bool TinyScriptLua::Create( TinyLuaContext& context, tiny_pointer source ) {
 }
 
 void TinyScriptLua::Execute( TinyLuaContext& context, const TinyScriptExecution& execution ) {
-	auto* function_str = execution.Function.as_chars( );
-	auto* table_str	   = _table.as_chars( );
+	auto* function_str = execution.Function.get( );
+	auto* table_str	   = _table.get( );
 
 	TinyLua::Script::Convert( context, tiny_cast( execution.Component, TinyComponent* ) );
 
@@ -82,7 +82,7 @@ void TinyScriptLua::Execute( TinyLuaContext& context, const TinyScriptExecution&
 }
 
 void TinyScriptLua::Terminate( TinyGame* game ) {
-	auto* table_str = _table.as_chars( );
+	auto* table_str = _table.get( );
 	auto& scripts   = game->GetScripts( );
 	auto& context   = scripts.GetContext( );
 

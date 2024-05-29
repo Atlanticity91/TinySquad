@@ -77,4 +77,6 @@ namespace Tiny {
 
 	tm_dll tiny_ulong GetFileCursor( const tiny_file& file );
 
+	tm_dll tiny_ulong GetSize( const tiny_file& file );
+
 };

@@ -28,13 +28,14 @@ TinyAssetHeader::TinyAssetHeader( )
 { }
 
 TinyAssetHeader::TinyAssetHeader( tiny_uint type )
-	: Magic{ },
-	Version{ TINY_ENGINE_VERSION },
+	: Magic{ TINY_ASSET_MAGIC },
+	Version{ },
 	Type{ type },
+	Date{ },
 	Padding{ 0xffffffff } 
 {
-	Tiny::Memcpy( TinyAssetMagic, Magic, 4 );
-	Date = Tiny::GetDate( );
+	Version = TINY_ENGINE_VERSION;
+	Date    = Tiny::GetDate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

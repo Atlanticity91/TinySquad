@@ -52,18 +52,20 @@ public:
 	};
 
 	void Push( const Type& element ) {
-		auto* address = tiny_get_address_as( _storage, Type ) + _count++;
+		auto* src = tiny_rvalue( element );
+		auto* dst = tiny_get_address_as( _storage, Type ) + _count++;
 
-		Tiny::Memcpy( tiny_rvalue( element ), address );
+		Tiny::Memcpy( src, dst, tiny_sizeof( Type ) );
 	};
 
 	void Push( const tiny_list<Type>& list ) {
-		auto* address = tiny_get_address_as( _storage, Type ) + _count;
-		auto range    = list.size( );
+		auto* src  = list.data( );
+		auto* dst  = tiny_get_address_as( _storage, Type ) + _count;
+		auto range = list.size( );
 
 		_count += range;
 
-		Tiny::Memcpy( list.data( ), address, range );
+		Tiny::Memcpy( src, dst, range * tiny_sizeof( Type ) );
 	};
 
 	TinyRenderBatchFlush Flush( ) { 

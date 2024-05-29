@@ -35,7 +35,7 @@ struct TinyBackerArchive {
 
 	std::string Author{ };
 	tiny_uint Version = 0;
-	Tiny::Date Data{ };
+	tiny_date Data{ };
 	tiny_list<TinyBackerEntry> _entries;
 
 };

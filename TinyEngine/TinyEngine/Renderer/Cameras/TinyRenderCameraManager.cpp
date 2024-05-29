@@ -110,8 +110,8 @@ void TinyRenderCameraManager::Prepare(
 		auto* camera	 = GetCameraBuffer( );
 		auto* map		 = tiny_cast( staging.GetAccess( ), float* );
 
-		Tiny::Memcpy( projection, map,			tiny_sizeof( tiny_mat4 ) );
-		Tiny::Memcpy( camera,	  map + 16, 3 * tiny_sizeof( tiny_mat4 ) );
+		Tiny::Memcpy( projection, map	  ,		tiny_sizeof( tiny_mat4 ) );
+		Tiny::Memcpy( camera	, map + 16, 3 * tiny_sizeof( tiny_mat4 ) );
 
 		staging.UnMap( context );
 

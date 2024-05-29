@@ -35,7 +35,7 @@ void TinyToolTexture2D::Save( TinyGame* game ) {
 	auto builder	 = TinyTexture2DBuilder{ };
 	auto* address	 = tiny_cast( tiny_rvalue( builder ), native_pointer );
 
-	Tiny::Memcpy( tiny_rvalue( properties ), tiny_rvalue( builder.Properties ) );
+	Tiny::Memcpy( properties, builder.Properties );
 
 	builder.Columns = _texture->GetColumns( );
 	builder.Rows	= _texture->GetRows( );

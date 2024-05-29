@@ -112,7 +112,10 @@ public:
 
 		_components.insert( comp_id, { } );
 
-		Tiny::Memcpy( component.get( ), tiny_rvalue( _components[ comp_id ] ), tiny_sizeof( Component ) );
+		auto* src = component.get( );
+		auto* dst = tiny_rvalue( _components[ comp_id ] );
+
+		Tiny::Memcpy( src, dst, tiny_sizeof( Component ) );
 
 		return _components[ comp_id ].Create( game );
 	};
@@ -123,8 +126,12 @@ public:
 		auto state		 = GetIsValid( comp_id ) && 
 						   _components[ comp_id ].GetOwner( ) == entity_hash;
 
-		if ( state )
-			state = Tiny::Memcpy( component.get( ), tiny_rvalue( _components[ comp_id ] ), tiny_sizeof( Component ) );
+		if ( state ) {
+			auto* src = component.get( );
+			auto* dst = tiny_rvalue( _components[ comp_id ] );
+			
+			state = Tiny::Memcpy( src, dst, tiny_sizeof( Component ) );
+		}
 
 		return state;
 	};

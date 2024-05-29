@@ -33,65 +33,72 @@ tm_struct tiny_string_view {
 
 tm_class tiny_string final {
 
-	using under_layer	 = native_string;
 	using iterator		 = tiny_iterator<char>;
 	using regex_iterator = std::cregex_iterator;
 
 private:
-	under_layer _handle;
+	char* _handle;
 	tiny_uint	_length;
 
 public:
 	tiny_string( );
 
-	tiny_string( under_layer string );
-
-	explicit tiny_string( const std::string& string );
+	tiny_string( native_string string );
 
 	tiny_string( const tiny_string& other );
 
-	tiny_string( tiny_uint length, native_pointer address );
+	explicit tiny_string( const std::string& string );
+
+	tiny_string( const tiny_uint length, const native_pointer data );
 
 	~tiny_string( ) = default;
 
-	tiny_string& asign( under_layer string );
-
-	tiny_string& asign( const std::string& string );
+	tiny_string& asign( native_string string );
 
 	tiny_string& asign( const tiny_string& other );
 
+	tiny_string& asign( const std::string& string );
+
+	tiny_string& asign( const tiny_uint length, const native_pointer data );
+
 public:
-	bool is_valid( ) const;
+	bool get_is_valid( ) const;
 
-	under_layer get( ) const;
-
-	std::string as_string( ) const;
-
-	char* as_chars( ) const;
-
-	char& at( tiny_uint char_id );
-
-	const char at( tiny_uint char_id ) const;
-
-	std::string make_string( char start, char stop ) const;
+	bool get_is_empty( ) const;
 
 	tiny_uint length( ) const;
 
-	bool is_empty( ) const;
+	char* get( ) const;
 
-	under_layer sub_chars( const tiny_string& sequence, bool cut_after ) const;
+	char* last( ) const;
+
+	native_string as_string( ) const;
+
+	native_pointer as_native( );
+
+	const native_pointer as_native( ) const;
+
+	std::string to_string( ) const;
+
+	char& at( const tiny_uint char_id );
+
+	const char at( const tiny_uint char_id ) const;
+
+	std::string make_string( char start, char stop ) const;
+
+	native_string sub_chars( const tiny_string& sequence, bool cut_after ) const;
 
 	tiny_string sub_string( const tiny_string& sequence, bool cut_after ) const;
 
 	tiny_string sub_string( const tiny_uint offset ) const;
 
-	bool equal( under_layer string ) const;
+	bool equal( native_string string ) const;
 
 	bool equal( const tiny_string& other ) const;
 
 	bool equal( const std::string& other ) const;
 
-	bool not_equal( under_layer string ) const;
+	bool not_equal( native_string string ) const;
 
 	bool not_equal( const tiny_string& other ) const;
 
@@ -110,28 +117,28 @@ public:
 	regex_iterator end_regex( ) const;
 
 private:
-	bool is_valid( under_layer string ) const;
+	bool get_is_valid( native_string string ) const;
 
 public:
 	explicit operator bool ( ) const;
 
-	operator under_layer ( ) const;
+	operator native_string ( ) const;
 
 	operator std::string ( ) const;
 
-	tiny_string& operator=( under_layer string );
+	tiny_string& operator=( native_string string );
 
 	tiny_string& operator=( const std::string string );
 
 	tiny_string& operator=( const tiny_string& other );
 
-	bool operator==( under_layer string ) const;
+	bool operator==( native_string string ) const;
 
 	bool operator==( const tiny_string& other ) const;
 
 	bool operator==( const std::string& other ) const;
 
-	bool operator!=( under_layer string ) const;
+	bool operator!=( native_string string ) const;
 
 	bool operator!=( const tiny_string& other ) const;
 

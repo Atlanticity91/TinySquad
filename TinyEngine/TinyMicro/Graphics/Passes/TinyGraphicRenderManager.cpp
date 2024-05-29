@@ -114,8 +114,8 @@ void TinyGraphicRenderManager::Clear(
 
 		image.colorAttachment = attachement.Target;
 
-		Tiny::Memcpy( tiny_rvalue( target.Clear ), tiny_rvalue( image.clearValue ) );
-		Tiny::Memcpy( tiny_rvalue( attachement.Bounding ), tiny_rvalue( bounds[ count ] ) );
+		Tiny::Memcpy( tiny_rvalue( target.Clear )		 , tiny_rvalue( image.clearValue ), tiny_sizeof( VkClearValue ) );
+		Tiny::Memcpy( tiny_rvalue( attachement.Bounding ), tiny_rvalue( bounds[ count ] ) , tiny_sizeof( VkClearRect )  );
 	}
 
 	ClearAttachements( work_context, images, bounds );
@@ -144,8 +144,8 @@ void TinyGraphicRenderManager::Clear(
 
 		image.colorAttachment = attachement.Target;
 
-		Tiny::Memcpy( tiny_rvalue( attachement.Clear ), tiny_rvalue( image.clearValue ) );
-		Tiny::Memcpy( tiny_rvalue( attachement.Bounding ), tiny_rvalue( bounds[ count ] ) );
+		Tiny::Memcpy( tiny_rvalue( attachement.Clear )   , tiny_rvalue( image.clearValue ), tiny_sizeof( VkClearValue ) );
+		Tiny::Memcpy( tiny_rvalue( attachement.Bounding ), tiny_rvalue( bounds[ count ] ) , tiny_sizeof( VkClearRect )  );
 	}
 
 	ClearAttachements( work_context, images, bounds );

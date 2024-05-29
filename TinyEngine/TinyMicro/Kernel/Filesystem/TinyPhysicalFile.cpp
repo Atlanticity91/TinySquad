@@ -78,7 +78,7 @@ bool TinyPhysicalFile::ReadAll( const tiny_ulong length, native_pointer& storage
 bool TinyPhysicalFile::GetIsValid( ) const { return Tiny::GetFileIsValid( _handle ); }
 
 bool TinyPhysicalFile::GetCan( TinyFileAccesses access ) const {
-	return GetIsValid( ) && Tiny::GetFileCan( _handle, access );
+	return Tiny::GetFileCan( _handle, access );
 }
 
 TinyFileAccesses TinyPhysicalFile::GetAccess( ) const { return _handle.Access; }

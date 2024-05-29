@@ -48,7 +48,7 @@ void TinyNutWindow::RegisterIcon(
 	const tiny_ubyte* image,
 	const Icon_t::Callback_t& callback
 ) {
-	if ( !name.is_empty( ) && !_icons.find( name ) ) {
+	if ( !name.get_is_empty( ) && !_icons.find( name ) ) {
 		auto icon_ = TinyNutUI::CreateImage( nut_game, length, image );
 
 		_icons.emplace( name, { icon_, callback } );
@@ -235,7 +235,7 @@ void TinyNutWindow::DrawMenubar( TinyNut* nut_game, bool is_maximized ) {
 }
 
 void TinyNutWindow::DrawTitlebarText( const ImVec2& padding ) {
-	auto* name_str = _name.as_chars( );
+	auto* name_str = _name.get( );
 	auto cursor	   = ImGui::GetCursorPos( );
 	auto size	   = ImGui::CalcTextSize( name_str );
 
@@ -249,7 +249,7 @@ void TinyNutWindow::DrawTitlebarIcon(
 	const ImVec2& position,
 	const tiny_string& name
 ) {
-	auto* name_str = name.as_chars( );
+	auto* name_str = name.get( );
 	auto col_n	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text,  .9f );
 	auto col_h	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text, 1.2f );
 	auto col_p	   = TinyImGui::Theme::TextDarker;
@@ -312,7 +312,7 @@ bool TinyNutWindow::Prepare( TinyNut* nut_game, TinyWindow& window ) {
 		ImGuiWindowFlags
 	);
 	auto is_maximized = window.GetIsMaximized( );
-	auto* name_str	  = _name.as_chars( );
+	auto* name_str	  = _name.get( );
 	auto* viewport	  = ImGui::GetMainViewport( );
 
 	ImGui::SetNextWindowPos( viewport->Pos );

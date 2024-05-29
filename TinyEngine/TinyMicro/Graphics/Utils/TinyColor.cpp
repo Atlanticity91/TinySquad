@@ -71,13 +71,13 @@ tiny_color& tiny_color::Asign( const tiny_color& other ) {
 }
 
 tiny_color& tiny_color::Asign( const tiny_vec3& vector ) {
-	Tiny::Memcpy( &vector.x, Channels, 3 );
+	Tiny::Memcpy( tiny_rvalue( vector.x ), Channels, 3 * tiny_sizeof( float ) );
 
 	return tiny_self;
 }
 
 tiny_color& tiny_color::Asign( const tiny_vec4& vector ) {
-	Tiny::Memcpy( &vector.x, Channels, 4 );
+	Tiny::Memcpy( tiny_rvalue( vector.x ), Channels, 4 * tiny_sizeof( float ) );
 
 	return tiny_self;
 }
@@ -89,7 +89,7 @@ tiny_uint tiny_color::Convert( ) {
 	while ( channel-- > 0 ) {
 		auto value = GetChannelAsInt( tiny_cast( channel, TinyColorChannels ) );
 
-		converted |= ( value << ( channel * 8 ) );
+		converted |= TINY_LEFT_SHIFT( value, channel * 8 );
 	}
 
 	return converted;
@@ -128,20 +128,12 @@ float tiny_color::GetB( ) const { return Channels[ 2 ]; }
 
 float tiny_color::GetA( ) const { return Channels[ 3 ]; }
 
-tiny_vec4 tiny_color::ToVec4( ) const {
-	auto vector = tiny_vec4{ };
-
-	Tiny::Memcpy( Channels, &vector.x, 4 );
-
-	return vector;
+tiny_vec3 tiny_color::ToVec3( ) const {
+	return tiny_vec3{  Channels[ 0 ], Channels[ 1 ], Channels[ 2 ] };
 }
 
-tiny_vec3 tiny_color::ToVec3( ) const {
-	auto vector = tiny_vec4{ };
-
-	Tiny::Memcpy( Channels, &vector.x, 3 );
-
-	return vector;
+tiny_vec4 tiny_color::ToVec4( ) const {
+	return tiny_vec4{ Channels[ 0 ], Channels[ 1 ], Channels[ 2 ] , Channels[ 3 ] };
 }
 
 VkClearValue tiny_color::ToClear( ) const {

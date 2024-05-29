@@ -77,7 +77,7 @@ std::string TinyFilesystem::ConvertTo(
 	const tiny_string& extension
 ) const {
 
-	auto* ext_str = extension.as_chars( );
+	auto* ext_str = extension.get( );
 	auto new_path = std::string{ path };
 	auto length   = path.length( );
 	auto delim	  = length;
@@ -108,7 +108,7 @@ bool TinyFilesystem::OpenDialog(
 	std::string& path
 ) {
 	auto* _filters   = filters.c_str( );
-	auto* path_str   = _dialog_path.as_chars( );
+	auto path_str   = _dialog_path.as_chars( );
 	auto* dev_dir	 = _dev_dir.c_str( );
 	auto path_length = _dialog_path.length( );
 	auto state		 = Tiny::OpenDialog( type, dev_dir, _filters, path_length, path_str );
@@ -134,7 +134,7 @@ TinyPhysicalFile TinyFilesystem::OpenFile(
 ) {
 	auto file = TinyPhysicalFile{ };
 
-	if ( path.is_valid( ) ) {
+	if ( path.get_is_valid( ) ) {
 		auto handle = Tiny::FileOpen( path, access );
 
 		file = handle;
@@ -150,7 +150,7 @@ bool TinyFilesystem::RemoveFile( const std::string& path ) {
 }
 
 bool TinyFilesystem::RemoveFile( const tiny_string& path ) {
-	return path.is_valid( ) && Tiny::RemoveFile( path.get( ) );
+	return path.get_is_valid( ) && Tiny::RemoveFile( path.get( ) );
 }
 
 bool TinyFilesystem::Dump( const std::string& path, const std::string& text ) {
@@ -263,7 +263,7 @@ bool TinyFilesystem::GetIsFile(
 	const std::string& path, 
 	const tiny_string& extension 
 ) const {
-	auto state = extension.is_valid( );
+	auto state = extension.get_is_valid( );
 
 	if ( state ) {
 		auto file_ext = GetFileExtension( path );

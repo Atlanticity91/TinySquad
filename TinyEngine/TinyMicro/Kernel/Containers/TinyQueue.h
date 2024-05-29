@@ -10,32 +10,31 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 19/01/2024
- * @version  : 2024.1
+ * @creation : 29/05/2023
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
  *
  ******************************************************************************************/
 
-#include <TinyEngine/__tiny_engine_pch.h>
+#pragma once
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC ===
-////////////////////////////////////////////////////////////////////////////////////////////
-TinyToolCategory::TinyToolCategory( const tiny_string& name )
-    : _name{ name }
-{ }
+#include "TinyMap.h"
 
-bool TinyToolCategory::Tick( TinyGame* game, TinyToolbox& toolbox ) {
-    auto* name_str = _name.get( );
-    auto state     = ImGui::BeginTabItem( name_str );
-    
-    if ( state ) {
-        OnTick( game, toolbox );
+template<typename Type, tiny_uint Length>
+	requires ( Length > 0 )
+class tiny_queue { 
 
-        ImGui::EndTabItem( );
-    }
+private:
+	tiny_uint _head;
+	tiny_uint _tail;
+	tiny_uint _size;
+	Type Data[ Length ];
 
-    return state;
-}
+public:
+	tiny_queue( );
+
+	~tiny_queue( ) = default;
+
+};

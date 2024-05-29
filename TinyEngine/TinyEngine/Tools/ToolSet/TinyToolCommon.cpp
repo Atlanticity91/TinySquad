@@ -181,7 +181,7 @@ void TinyToolCommon::DrawHardware( TinyGraphicManager& graphics ) {
     TinyImGui::BeginVars( );
 
     ImGui::BeginDisabled( );
-    TinyImGui::TextVar( "Vendor", vendor.as_chars( ) );
+    TinyImGui::TextVar( "Vendor", vendor.get( ) );
     TinyImGui::TextVar( "Driver", driver );
     TinyImGui::TextVar( "Name", (char*)properties.deviceName );
     ImGui::EndDisabled( );

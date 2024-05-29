@@ -155,12 +155,14 @@ extern "C" {
 #define tiny_no_implementv( RET, ... ) __VA_ARGS__ { return RET; }
 #define tiny_virtual( ... ) tiny_no_implement( virtual __VA_ARGS__ ) 
 #define tiny_virtualv( RET, ... ) tiny_no_implementv( RET, virtual __VA_ARGS__ ) 
+#define tiny_is( TYPE, BASE ) std::is_same<TYPE, BASE>::value
 #define tiny_is_child_of( TYPE, BASE ) std::is_base_of<BASE, TYPE>::value
 #define tiny_has_contstuctor( TYPE, ARGS ) std::is_constructible<TYPE, ARGS...>::value
 #define tiny_is_int( TYPE ) std::is_integral<TYPE>::value
 #define tiny_is_float( TYPE ) std::is_floating_point<TYPE>::value
 #define tiny_is_literal( TYPE ) std::is_arithmetic<TYPE>::value
 #define tiny_is_pointer( TYPE ) std::is_pointer<TYPE>::value
+#define tiny_is_reference( TYPE ) std::is_lvalue_reference<TYPE>::value
 #define tiny_compile_if( ... ) if constexpr ( __VA_ARGS__ )
 #define tiny_compile_elif( ... ) else tiny_compile_if( __VA_ARGS__ )
 #define tiny_compile_else else
@@ -220,8 +222,8 @@ typedef tiny_pointer_base* tiny_pointer;
 #define tiny_signi( VAL ) ( ( 0 < VAL ) - ( VAL < 0 ) )
 #define tiny_signf( VAL ) ( ( .0f < VAL ) - ( VAL < .0f ) )
 
-#define TINY_LEFT_SHIFT( VALUE, OFFSET ) ( VALUE << OFFSET )
-#define TINY_RIGHT_SHIFT( VALUE, OFFSET ) ( VALUE >> OFFSET )
+#define TINY_LEFT_SHIFT( VALUE, OFFSET ) ( (VALUE) << (OFFSET) )
+#define TINY_RIGHT_SHIFT( VALUE, OFFSET ) ( (VALUE) >> (OFFSET) )
 
 #define TINY_STR_OP( NAME, ... ) constexpr tiny_ulong operator""_##NAME##( tiny_ulong size ) { __VA_ARGS__; }
 

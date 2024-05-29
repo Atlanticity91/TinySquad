@@ -86,7 +86,7 @@ public:
 	template<typename Type>
 	void SetGlobal( const tiny_string& name, Type* value ) { 
 		if ( value ) {
-			auto name_str = name.as_chars( );
+			auto name_str = name.get( );
 
 			lua_pushlightuserdata( _lua_state, value );
 			lua_setglobal( _lua_state, name_str );
@@ -99,7 +99,7 @@ public:
 public:
 	template<typename Type>
 	Type GetGlobal( const tiny_string& name ) {
-		auto* name_str = name.as_chars( );
+		auto* name_str = name.get( );
 		auto value	   = Type{ };
 
 		lua_getglobal( _lua_state, name_str );

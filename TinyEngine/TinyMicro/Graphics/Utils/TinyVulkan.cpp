@@ -30,7 +30,7 @@ VkDebugReportCallbackEXT vk_debug = VK_NULL_HANDLE;
 #	endif
 
 tiny_string vkGetResultString( VkResult result ) {
-    auto text = tiny_string{ "" };
+    auto text = tiny_string{ };
 
     switch ( result ) {
         case  VK_NOT_READY: text = "VK_NOT_READY A fence or query has not yet completed";
@@ -474,7 +474,10 @@ bool vk::GetPipelineCacheData( VkDevice logical, VkPipelineCache pipeline_cache,
 VkClearColorValue vk::CastColor( const tiny_color& color ) {
     auto color_value = VkClearColorValue{ };
 
-    Tiny::Memcpy( color.Channels, color_value.float32, 4 );
+    auto* src = color.Channels;
+    auto* dst = color_value.float32;
+
+    Tiny::Memcpy( src, dst, 4 * tiny_sizeof( float ) );
 
     return color_value;
 }

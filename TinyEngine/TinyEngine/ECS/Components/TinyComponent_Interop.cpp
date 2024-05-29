@@ -27,7 +27,7 @@ tiny_int TinyLua::Component::Create( lua_State* context, const tiny_string& name
 	auto* game = tli_get_game( tli_param_one );
 
 	if ( game && lua_istable( context, tli_param_two ) ) {
-		auto* name_str = name.as_chars( );
+		auto* name_str = name.get( );
 		auto hash	   = Component::GetHash( context, tli_param_two );
 
 		game->GetECS( ).Append( game, hash, name_str );
@@ -46,7 +46,7 @@ tiny_hash TinyLua::Component::GetHash( lua_State* context, tiny_int param_id ) {
 }
 
 tiny_int TinyLua::Component::ToString( lua_State* context, const tiny_string& name ) {
-	auto* name_str = name.as_chars( );
+	auto* name_str = name.get( );
 	auto* comp	   = Get<TinyComponent>( context, tli_self );
 	auto owner	   = tiny_cast( 0, tiny_uint );
 

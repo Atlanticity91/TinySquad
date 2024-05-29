@@ -32,10 +32,8 @@ struct tiny_map_node {
 	tiny_map_node( const std::string& alias, const Type& element ) 
 		: Hash{ alias },
 		Alias{ alias },
-		Data{ }
-	{ 
-		Tiny::Memcpy( tiny_rvalue( element ), tiny_rvalue( Data ) );
-	};
+		Data{ element }
+	{ };
 
 	operator Type& ( ) { return Data; };
 
@@ -87,7 +85,7 @@ public:
 	};
 
 	tiny_map& emplace( const tiny_string& alias, const Type& element ) {
-		auto alias_ = alias.as_string( );
+		auto alias_ = alias.to_string( );
 
 		return emplace( alias_, element );
 	};
@@ -120,13 +118,13 @@ public:
 	tiny_map& erase( const std::string& alias ) {
 		auto element_hash = tiny_hash{ alias };
 
-		return erase( alias );
+		return erase( element_hash );
 	};
 
 	tiny_map& erase( const tiny_string& alias ) { 
 		auto element_hash = tiny_hash{ alias };
 
-		return erase( alias );
+		return erase( element_hash );
 	};
 	
 	tiny_map& erase( const tiny_hash alias_hash ) {
