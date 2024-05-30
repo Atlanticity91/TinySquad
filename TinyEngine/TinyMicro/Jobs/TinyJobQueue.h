@@ -22,27 +22,29 @@
 
 #include "TinyJob.h"
 
-#define TINY_MAX_JOB 16
-
 tm_class TinyJobQueue final {
 
+	static const tiny_uint MaxJobs = 16;
+
+	using JobQueue = tiny_queue<TinyJob, MaxJobs>;
+
 private:
-	std::mutex						  _mutex;
-	tiny_uint						  _capacity;
-	tiny_uint						  _head;
-	tiny_uint						  _tail;
-	tiny_array<TinyJob, TINY_MAX_JOB> _jobs;
+	mutable std::mutex _mutex_guard;
+	std::condition_variable _condition_guard;
+	tiny_array<JobQueue, TJ_PRIORITY_COUNT> _queues;
 
 public:
 	TinyJobQueue( );
 
 	~TinyJobQueue( ) = default;
 
-	bool EnQueue( const TinyJob& job );
+	void EnQueue( const TinyJob& job );
+
+	void DeQueue( const TinyJobPriorities priority, TinyJob& job );
 
 public:
-	bool GetHasJob( ) const;
+	bool GetHasTask( ) const;
 
-	bool DeQueue( TinyJob& job );
+	bool GetHasJob( const TinyJobFilters filter, TinyJobPriorities& priority ) const;
 
 };

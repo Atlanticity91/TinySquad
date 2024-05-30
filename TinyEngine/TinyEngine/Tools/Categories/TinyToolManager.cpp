@@ -38,7 +38,6 @@ bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
 	_RegisterTool( TinyToolContent, TT_CATEGORY_CONTENT );
 	_RegisterTool( TinyToolScene, TT_CATEGORY_SCENE );
 	_RegisterTool( TinyToolWorld, TT_CATEGORY_WORLD );
-	_RegisterTool( TinyToolTerrain, TT_CATEGORY_TERRAIN );
 
 	return true; 
 }

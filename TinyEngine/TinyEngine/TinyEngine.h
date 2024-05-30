@@ -102,7 +102,9 @@ public:
 	 * @note : Signal the game to shutdown.
 	 **/
 	void Stop( );
-	
+
+	void Dispatch( const TinyJob& job );
+
 	void Switch( TinyGame* game, const tiny_uint state_id );
 
 	void Switch( TinyGame* game, const tiny_string& state_name );
@@ -168,11 +170,17 @@ private:
 
 private:
 	/**
-	 * JobRun static method
+	 * JobWorkerRun static method
 	 * @note : Child Thread execution loop.
+	 * @param filter : Current thread task type.
 	 * @param game : Pointer to current game class instance.
+	 * @param : Reference to current thread task queue.
 	 **/
-	static void JobRun( native_pointer game );
+	static void JobWorkerRun( 
+		const TinyJobFilters filter,
+		native_pointer game,
+		TinyJobQueue& queues 
+	);
 
 	/**
 	 * Resize static method

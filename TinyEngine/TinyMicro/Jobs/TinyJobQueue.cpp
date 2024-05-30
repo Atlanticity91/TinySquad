@@ -24,49 +24,70 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyJobQueue::TinyJobQueue( ) 
-    : _mutex{ },
-    _capacity{ 0 },
-	_head{ 0 },
-	_tail{ 0 },
-	_jobs{ }
+    : _mutex_guard{ },
+    _condition_guard{ },
+    _queues{ }
 { }
 
-bool TinyJobQueue::EnQueue( const TinyJob& job ) {
-    _mutex.lock( );
+void TinyJobQueue::EnQueue( const TinyJob& job ) {
+    _mutex_guard.lock( );
 
-    auto state = _capacity < TINY_MAX_JOB;
+    auto& queue = _queues[ job.Priority ];
+    
+    queue.enqueue( job );
 
-    if ( state ) {
-        _capacity += 1;
-        _tail = ( _tail + 1 ) % TINY_MAX_JOB;
+    _mutex_guard.unlock( );
+}
 
-        _jobs[ _tail ] = job;
-    }
+void TinyJobQueue::DeQueue( const TinyJobPriorities priority, TinyJob& job ) {
+    _mutex_guard.lock( );
 
-    _mutex.unlock( );
+    auto& queue = _queues[ priority ];
+    auto task   = queue.dequeue( );
+    auto task_job = task.value( );
 
-    return state;
+    Tiny::Memcpy( task_job, job );
+
+    _mutex_guard.unlock( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyJobQueue::GetHasJob( ) const { return _capacity > 0; }
+bool TinyJobQueue::GetHasTask( ) const {
+    auto task_count = tiny_cast( 0, tiny_uint );
 
-bool TinyJobQueue::DeQueue( TinyJob& job ) {
-    _mutex.lock( );
+    _mutex_guard.lock( );
 
-    auto state = _capacity > 0;
+    for ( auto& queue: _queues )
+        task_count += queue.size( );
 
-    if ( state ) {
-        _capacity -= 1;
+    _mutex_guard.unlock( );
 
-        job = _jobs[ _head ];
+    return task_count > 0;
+}
 
-        _head = ( _head + 1 ) % TINY_MAX_JOB;
+bool TinyJobQueue::GetHasJob( 
+    const TinyJobFilters filter, 
+    TinyJobPriorities& priority 
+) const { 
+    auto state = false;
+
+    _mutex_guard.lock( );
+
+    for ( auto& queue : _queues ) {
+        auto* task = queue.peek( );
+
+        state = task != nullptr && task->Filter == filter;
+
+        if ( state ) {
+            priority = task->Priority;
+
+            break;
+        }
     }
 
-    _mutex.unlock( );
+    _mutex_guard.unlock( );
 
     return state;
 }

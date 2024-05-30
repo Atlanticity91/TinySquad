@@ -121,14 +121,6 @@ void TinyToolCommon::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
         }
     );
 
-    TinyImGui::Collapsing(
-        "Config",
-        [ & ]( ) {
-            if ( TinyImGui::Button( "Set Game Icon", { -1.f, .0f } ) ) {
-            }
-        }
-    );
-
 #   ifdef DEBUG
     TinyImGui::Collapsing(
         "Convert To C-Array",

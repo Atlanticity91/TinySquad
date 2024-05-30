@@ -22,29 +22,44 @@
 
 #include <TinyMicro/Graphics/TinyGraphicManager.h>
 
+tiny_enum( TinyJobFilters ) {
+
+	TJ_FILTER_ASSET = 0,
+	TJ_FILTER_GRAPHICS,
+	TJ_FILTER_AUDIO,
+	TJ_FILTER_ECS,
+	TJ_FILTER_NONE,
+
+	TJ_FILTER_COUNT
+
+};
+
 tiny_enum( TinyJobPriorities ) {
 
 	TJ_PRIORITY_HIGH = 0,
 	TJ_PRIORITY_NORMAL,
-	TJ_PRIORITY_LOW
+	TJ_PRIORITY_LOW,
+
+	TJ_PRIORITY_COUNT
 
 };
 
 tm_struct TinyJobData {
 
-	tiny_uint Size  = 0;
-	native_pointer Value	= nullptr;
+	native_pointer Value = nullptr;
+	tiny_uint Size		 = 0;
 
 };
 
-tm_struct TinyJob{
+tm_struct TinyJob {
 
-	using JobExecutalbe = std::function<bool( TinyJobData&, native_pointer )>;
+	using JobTask = std::function<bool( TinyJobData&, native_pointer )>;
 	using JobCallback   = std::function<void( TinyJobData&, native_pointer )>;
 
+	TinyJobFilters Filter	   = TJ_FILTER_NONE;
 	TinyJobPriorities Priority = TJ_PRIORITY_NORMAL;
 	TinyJobData Data{ };
-	JobExecutalbe Execute{ };
+	JobTask Task{ };
 	JobCallback Success{ };
 	JobCallback Failure{ };
 

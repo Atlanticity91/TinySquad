@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyMicro/Kernel/Containers/TinyMap.h>
+#include <TinyMicro/Kernel/Containers/TinyQueue.h>
 
 tm_struct TinyMemoryBlock {
 

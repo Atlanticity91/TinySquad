@@ -20,20 +20,24 @@
 
 #pragma once
 
-#include "TinyJobQueueManager.h"
+#include "TinyJobQueue.h"
 
-typedef std::function<void( native_pointer )> TinyThreadRun;
+tm_class TinyJobManager final{
 
-tm_class TinyJobManager final {
+	using WorkerRun = std::function<void( const TinyJobFilters, native_pointer, TinyJobQueue& )>;
+
+private:
+	std::thread _workers[ TJ_FILTER_COUNT ];
+	TinyJobQueue _queues;
 
 public:
 	TinyJobManager( );
 
 	~TinyJobManager( ) = default;
 
-	bool Initialize( TinyThreadRun thread_run, native_pointer data );
+	bool Initialize( native_pointer game, WorkerRun worker_run );
 
-	bool Dispatch( const TinyJob& job );
+	void Dispatch( const TinyJob& job );
 
 	void Wait( );
 

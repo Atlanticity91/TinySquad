@@ -24,22 +24,37 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyJobManager::TinyJobManager( ) 
+	: _workers{ },
+	_queues{ }
 { }
 
-bool TinyJobManager::Initialize( TinyThreadRun thread_run, native_pointer data ) {
-	return Tiny::Initialize( );
+bool TinyJobManager::Initialize( native_pointer game, WorkerRun worker_run ) {
+	auto state = Tiny::Initialize( );
+	
+	if ( state ) {
+		printf( "THREAD COUNT : %u-%u\n", tiny_cast( std::thread::hardware_concurrency( ), tiny_uint ), TJ_FILTER_COUNT );
+
+		auto thread_type = tiny_cast( 0, tiny_uint );
+
+		for ( auto& worker : _workers )
+			worker = std::thread( worker_run, tiny_cast( thread_type++, TinyJobFilters), game, std::ref( _queues ) );
+	}
+
+	return state;
 }
 
-bool TinyJobManager::Dispatch( const TinyJob& job ) {
-	return false;
+void TinyJobManager::Dispatch( const TinyJob& job ) { 
+	if ( job.Task )
+		_queues.EnQueue( job ); 
 }
 
-void TinyJobManager::Wait( ) { }
+void TinyJobManager::Wait( ) { while ( _queues.GetHasTask( ) ); }
 
 void TinyJobManager::Terminate( ) {
+	for ( auto& worker : _workers ) {
+		if ( worker.joinable( ) )
+			worker.join( );
+	}
+
 	Tiny::Terminate( );
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//		===	PUBLIC GET ===
-////////////////////////////////////////////////////////////////////////////////////////////

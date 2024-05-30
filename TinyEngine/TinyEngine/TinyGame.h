@@ -92,6 +92,8 @@ public:
 	 **/
 	tiny_inline void Stop( );
 
+	tiny_inline void Dispatch( const TinyJob& job );
+
 	tiny_inline void SwitchGameState( TinyGame* game, const tiny_uint state_id );
 
 	tiny_inline void SwitchGameState( TinyGame* game, const tiny_string& state_name );
@@ -197,6 +199,13 @@ private:
 	void Load( );
 
 public:
+	/**
+	 * GetIsRunning const virtual function
+	 * @note : Get if current engine instance is running.
+	 * @return : True for success.
+	 **/
+	virtual bool GetIsRunning( ) const;
+
 	/**
 	 * GetEngine function
 	 * @note : Get current engine instance.
@@ -310,5 +319,8 @@ public:
 	 * @return : TinyToolbox
 	 **/
 	tiny_inline TinyToolbox& GetToolbox( );
+
+public:
+	operator bool( ) const;
 
 };

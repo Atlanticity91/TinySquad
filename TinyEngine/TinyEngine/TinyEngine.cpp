@@ -29,7 +29,7 @@ TinyEngine::TinyEngine(
 	TinyGameOrientations orientation, 
 	bool is_headless 
 )
-	: _is_running{ false },
+	: _is_running{ true },
 	_jobs{ },
 	_filesystem{ developer },
 	_assets{ },
@@ -80,6 +80,8 @@ void TinyEngine::Maximize( ) { _window.Maximize( ); }
 
 void TinyEngine::Stop( ) { _is_running = false; }
 
+void TinyEngine::Dispatch( const TinyJob& job ) { _jobs.Dispatch( job ); }
+
 void TinyEngine::Switch( TinyGame* game, const tiny_uint state_id ) {
 	_states.Switch( game, state_id );
 }
@@ -109,6 +111,7 @@ void TinyEngine::PostTick( TinyGame* game ) {
 	_ecs.PostTick( game );
 	_ux.Tick( game );
 	_audio.Tick( _inputs );
+	_jobs.Wait( );
 	_renderer.Compose( game );
 	_toolbox.Tick( game );
 	_graphics.Present( _window );
@@ -138,8 +141,8 @@ void TinyEngine::Terminate( TinyGame* game ) {
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
-	auto state = _jobs.Initialize( TinyEngine::JobRun, game ) &&
-				_filesystem.Initialize( _window )			  &&
+	auto state = _jobs.Initialize( game, TinyEngine::JobWorkerRun ) &&
+				_filesystem.Initialize( _window )					&&
 				_assets.Initialize( game, game_config );
 
 	if ( state ) {
@@ -177,24 +180,30 @@ bool TinyEngine::ProcessArgs( TinyGame* game, tiny_int argc, char** argv ) { ret
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE STATIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyEngine::JobRun( native_pointer game ) {
-	auto* _game  = tiny_cast( game, TinyGame* );
-	auto& engine = _game->GetEngine( );
+void TinyEngine::JobWorkerRun(
+	const TinyJobFilters filter,
+	native_pointer game,
+	TinyJobQueue& queues
+) {
+	auto thread_guard = std::mutex{ };
+	auto priority	  = TJ_PRIORITY_HIGH;
+	auto* game_		  = tiny_cast( game, TinyGame* );
+	auto job		  = TinyJob{ };
 
-	while ( engine.GetIsRunning( ) ) {
-		/*
-		TinyJob job;
-		
-		if ( engine.GetJobs( ).DeQueue( job ) ) {
-			auto result = std::invoke( job.Execute, job.Data, game );
+	while ( game_->GetIsRunning( ) ) {
+		auto lock = std::unique_lock{ thread_guard };
+
+		if ( queues.GetHasJob( filter, priority ) || queues.GetHasJob( TJ_FILTER_NONE, priority ) ) {
+			queues.DeQueue( priority, job );
+
+			auto result = std::invoke( job.Task, job.Data, game );
 
 			if ( result && job.Success )
 				std::invoke( job.Success, job.Data, game );
 			else if ( !result && job.Failure )
 				std::invoke( job.Failure, job.Data, game );
 		} else
-		*/
-			tiny_sleep_for( 100 );
+			tiny_sleep_for( 250 );
 	}
 }
 

@@ -67,6 +67,8 @@ void TinyGame::Maximize( ) { _engine.Maximize( ); }
 
 void TinyGame::Stop( ) { _engine.Stop( ); }
 
+void TinyGame::Dispatch( const TinyJob& job ) { _engine.Dispatch( job ); }
+
 void TinyGame::SwitchGameState( TinyGame* game, const tiny_uint state_id ) {
 	_engine.Switch( game, state_id );
 }
@@ -160,6 +162,8 @@ void TinyGame::Load( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyGame::GetIsRunning( ) const { return _engine.GetIsRunning( ); }
+
 TinyEngine& TinyGame::GetEngine( ) { return _engine; }
 
 TinyJobManager& TinyGame::GetJobs( ) { return _engine.GetJobs( ); }
@@ -193,3 +197,8 @@ TinyAddonManager& TinyGame::GetAddons( ) { return _engine.GetAddons( ); }
 TinyGameStateManager& TinyGame::GetGameStates( ) { return _engine.GetGameStates( ); }
 
 TinyToolbox& TinyGame::GetToolbox( ) { return _engine.GetToolbox( ); }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	OPERATOR ===
+////////////////////////////////////////////////////////////////////////////////////////////
+TinyGame::operator bool( ) const { return GetIsRunning( ); }

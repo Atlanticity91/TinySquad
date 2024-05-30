@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Tools/ToolSet/TinyToolTerrain.h>
+#include <TinyEngine/Tools/ToolSet/TinyToolWorld.h>
 
 te_class TinyToolWindow {
 
