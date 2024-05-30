@@ -32,7 +32,7 @@ bool TinyJobManager::Initialize( native_pointer game, WorkerRun worker_run ) {
 	auto state = Tiny::Initialize( );
 	
 	if ( state ) {
-		printf( "THREAD COUNT : %u-%u\n", tiny_cast( std::thread::hardware_concurrency( ), tiny_uint ), TJ_FILTER_COUNT );
+		//printf( "THREAD COUNT : %u-%u\n", tiny_cast( std::thread::hardware_concurrency( ), tiny_uint ), TJ_FILTER_COUNT );
 
 		auto thread_type = tiny_cast( 0, tiny_uint );
 

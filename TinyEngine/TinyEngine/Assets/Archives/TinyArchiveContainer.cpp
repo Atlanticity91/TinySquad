@@ -37,6 +37,18 @@ bool TinyArchiveContainer::Create(
 	auto state	   = false;
 
 	if ( builder_&& builder_->Entries.size( ) > 0 ) {
+		auto archive_hash  = tiny_hash{ alias };
+		auto archive_entry = TinyArchiveEntry{ archive_hash };
+
+		for ( auto& entry : builder_->Entries ) {
+			auto& entry_data = entry.Data;
+			
+			archive_entry.Type   = entry_data.Type;
+			archive_entry.Offset = entry_data.Offset;
+			archive_entry.Size   = entry_data.Size;
+
+			_entries.emplace( entry.Alias, archive_entry );
+		}
 	}
 
 	return state;
@@ -47,10 +59,24 @@ bool TinyArchiveContainer::Load(
 	const tiny_string& alias,
 	TinyFile& file
 ) {
-	auto builder = TinyArchiveBuilder{ };
+	auto entry_count = tiny_cast( 0, tiny_uint );
+	auto entry_data  = TinyArchiveEntryBuilder{ };
+	auto entry_name  = std::string{ };
+	auto builder	 = TinyArchiveBuilder{ };
 
 	file.Read( builder.Author );
-	file.Read( builder.Entries );
+	file.Read( entry_count );
+
+	while ( entry_count-- > 0 ) {
+		file.Read( entry_name );
+		file.Read( entry_data.Path );
+		file.Read( entry_data.Date );
+		file.Read( entry_data.Type );
+		file.Read( entry_data.Offset );
+		file.Read( entry_data.Size );
+
+		builder.Entries.emplace( entry_name, entry_data );
+	}
 
 	return Create( game, alias, tiny_rvalue( builder ) );
 }

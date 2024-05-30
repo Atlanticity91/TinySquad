@@ -22,38 +22,25 @@
 
 #include <TinyNut/TinyNut.h>
 
-struct TinyBackerEntry {
-
-	tiny_uint Type    = 0;
-	bool IsCompressed = false;
-	std::string Alias = "";
-	std::string Path  = "";
-
-};
-
 struct TinyBackerArchive { 
 
-	std::string Author{ };
-	tiny_uint Version = 0;
-	tiny_date Data{ };
-	tiny_list<TinyBackerEntry> _entries;
+	TinyAssetHeader Header{ };
+	TinyArchiveBuilder Archive{ };
 
 };
 
 class TinyBacker final : tiny_inherit( TinyNut ) {
 
 private:
-	tiny_int				   _history_id;
-	tiny_uint				   _delete_id;
-	std::string				   _import_path;
-	tiny_list<std::string>	   _history;
-	tiny_list<TinyBackerEntry> _entries;
 	TinyImGui::DropdownContext _dropdown;
+	TinyBackerArchive _archive;
 
 public:
 	TinyBacker( );
 
 	~TinyBacker( ) = default;
+
+	tiny_implement( void OnDragDrop( tiny_int path_count, native_string drop_paths[] ) );
 
 protected:
 	tiny_implement( void TickMenubar( ) );
@@ -65,7 +52,7 @@ private:
 
 	void ImportAsset( );
 
-	void DrawEntry( tiny_uint entry_id, TinyBackerEntry& entry );
+	void DrawEntry( tiny_uint entry_id, tiny_map_node<TinyArchiveEntryBuilder>& entry_node );
 
 	void DrawContent( );
 

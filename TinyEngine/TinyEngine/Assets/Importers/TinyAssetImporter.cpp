@@ -118,7 +118,7 @@ bool TinyAssetImporter::Export(
 		auto& filesystem  = game->GetFilesystem( );
 		auto& converter   = _converters[ converter_id ];
 		auto path		  = filesystem.CreatePath( TP_TYPE_DEV, alias, "tinyasset" );
-		auto file		  = filesystem.OpenFile( { path }, TF_ACCESS_BINARY_WRITE ); // TODO : TEXT & BINARY EXPORT
+		auto file		  = filesystem.OpenFile( { path }, TF_ACCESS_BINARY_WRITE );
 
 		state = tiny_cast( converter.Export, bool );
 

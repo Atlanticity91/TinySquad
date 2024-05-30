@@ -47,12 +47,28 @@ public:
 	bool Seek( TinyFileOrigin origin ) { return Seek( origin, tiny_sizeof( Type ) ); };
 
 	template<typename Type>
-		requires ( !tiny_is_pointer( Type ) )
+		requires ( !tiny_is_pointer( Type ) && !tiny_is( Type, tiny_string ) )
 	tiny_uint Read( Type& data ) {
 		auto* data_ = tiny_cast( tiny_rvalue( data ), native_pointer );
 		auto length = tiny_sizeof( Type );
 
 		return Read( length, data_ );
+	};
+
+	template<>
+	tiny_uint Read<std::string>( std::string& string ) { 
+		auto length = tiny_cast( 0, tiny_uint );
+
+		if ( Read( length ) > 0 && length > 0 ) {
+			string.resize( length );
+
+			auto* data = tiny_cast( string.c_str( ), const native_pointer );
+
+			length = Read( length, data );
+		}
+			
+		return length;
+
 	};
 
 	template<typename Type, tiny_uint Length>

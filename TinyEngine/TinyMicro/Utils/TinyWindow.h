@@ -30,7 +30,8 @@ tiny_enum( TinyWindowCallbacks ) {
 	TWC_KEY,
 	TWC_CURSOR,
 	TWC_MOUSE,
-	TWC_SCROLL
+	TWC_SCROLL,
+	TWC_DRAG_AND_DROP
 
 };
 

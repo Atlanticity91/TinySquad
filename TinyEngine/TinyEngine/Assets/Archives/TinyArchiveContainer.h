@@ -27,6 +27,7 @@ te_struct TinyArchiveEntry {
 	tiny_hash Archive{ };
 	tiny_uint Type    = 0;
 	tiny_ulong Offset = 0;
+	tiny_ulong Size   = 0;
 	
 };
 

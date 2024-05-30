@@ -37,6 +37,8 @@ public:
 
 	virtual ~TinyNut( ) = default;
 
+	tiny_virtual( void OnDragDrop( tiny_int path_count, native_string drop_paths[] ) );
+
 protected:
 	tiny_implement( bool Initialize( TinyEngine& engine ) );
 
@@ -55,6 +57,13 @@ protected:
 	tiny_implement( void Tick( ) );
 
 	tiny_implement( void Terminate( ) );
+
+private:
+	static void DragDropCallback( 
+		GLFWwindow* handle,
+		tiny_int path_count, 
+		native_string paths[] 
+	);
 
 public:
 	TinyNutContext& GetNutContext( );

@@ -25,13 +25,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyBacker::TinyBacker( )
     : TinyNut{ "Tiny Backer" },
-    _history_id{ 0 },
-    _delete_id{ TINY_UINT_MAX },
-    _import_path{ },
-    _history{ },
-    _entries{ }
-{
-    _entries.emplace_back( { 0, false, "t_texture", "Dev/t_texture.png" } );
+    _dropdown{ "..." },
+    _archive{ }
+{ }
+
+void TinyBacker::OnDragDrop( tiny_int path_count, native_string drop_paths[] ) {
+    while ( path_count-- > 0 )
+        printf( "%s\n", drop_paths[ path_count ] );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,12 +74,9 @@ void TinyBacker::TickUI( ) {
     //TinyImGui::Dropdown( "Pack", );
     TinyImGui::InputBegin( "Pack" );
 
-    auto list = tiny_list<native_string>{ };
-
     /*
-    for ( auto& history : _history )
-        list.emplace( history.c_str( ) );
-    */
+    auto list = tiny_list<native_string>{ };
+    
     TINY_IMGUI_SCOPE_ID(
         if ( ImGui::Combo( "", tiny_rvalue( _history_id ), list.data( ), (int)list.size( ) ) ) {
             if ( _history_id == 0 ) {
@@ -97,11 +94,21 @@ void TinyBacker::TickUI( ) {
             }
         }
     );
+    */
     TinyImGui::InputEnd( );
-
-    TinyImGui::TextVar( "Author", "%s", "Atlanticity91" );
-    TinyImGui::TextVar( "Version", "%d.%d.%d", 2024, 2, 7 );
-    TinyImGui::TextVar( "Date", "%d/%d/%d-%d:%d:%d", 18, 04, 2024, 0, 0, 0 );
+    
+    TinyImGui::TextVar( "Author", "%s", _archive.Archive.Author );
+    TinyImGui::TextVar( 
+        "Version", "%d.%d.%d", 
+        Tiny::GetVersionMajor( _archive.Header.Version ),
+        Tiny::GetVersionMinor( _archive.Header.Version ),
+        Tiny::GetVersionPatch( _archive.Header.Version )
+    );
+    TinyImGui::TextVar(
+        "Date", "%d/%d/%d-%d:%d:%d", 
+        _archive.Header.Date.Day , _archive.Header.Date.Month , _archive.Header.Date.Year, 
+        _archive.Header.Date.Hour, _archive.Header.Date.Minute, _archive.Header.Date.Second 
+    );
     TinyImGui::EndVars( );
 
     ImGui::SeparatorText( "Content" );
@@ -111,9 +118,6 @@ void TinyBacker::TickUI( ) {
 
     DrawContent( );
     DrawPopups( );
-
-    static bool b = true;
-    ImGui::ShowDemoWindow( &b );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,23 +134,27 @@ void TinyBacker::ImportAsset( ) {
         auto& importer = assets.GetImporter( );
         auto path_ = tiny_string{ path };
 
-        _import_path = path.c_str( );
+        //_import_path = path.c_str( );
 
         if ( !assets.Import( this, path_ ) )
             ImGui::OpenPopup( "Import Fail" );
     }
 }
 
-void TinyBacker::DrawEntry( tiny_uint entry_id, TinyBackerEntry& entry ) {
+void TinyBacker::DrawEntry(
+    tiny_uint entry_id, 
+    tiny_map_node<TinyArchiveEntryBuilder>& entry_node
+) {
+    auto& entry = entry_node.Data;
     auto* type_str  = TypeToStr( entry.Type );
-    auto* alias_str = entry.Alias.c_str( );
+    auto* alias_str = entry_node.Alias.c_str( );
     auto* path_str  = entry.Path.c_str( );
 
     ImGui::TableNextRow( );
     ImGui::TableNextColumn( );
 
-    if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) )
-        _delete_id = entry_id;
+    if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) ) {
+    }
 
     ImGui::SameLine( .0f, .0f );
 
@@ -158,9 +166,11 @@ void TinyBacker::DrawEntry( tiny_uint entry_id, TinyBackerEntry& entry ) {
 
     ImGui::TableNextColumn( );
 
+    /*
     TINY_IMGUI_SCOPE_ID(
         ImGui::Checkbox( "", tiny_rvalue( entry.IsCompressed ) );
     );
+    */
 
     {
         //TinyImGui::Theme::NotifYellow NotifOrange
@@ -179,11 +189,13 @@ void TinyBacker::DrawContent( ) {
     const auto flags     = ImGuiTableFlags_Borders | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTableFlags_RowBg;
     const auto char_size = ImGui::CalcTextSize( "#" ).x;
 
+    /*
     if ( _delete_id < _entries.size( ) ) {
         _entries.erase( _delete_id );
 
         _delete_id = TINY_UINT_MAX;
     }
+    */
 
     if ( ImGui::BeginTable( "Asset List", 5, flags ) ) {
         ImGui::TableSetupColumn( "##_Actions", ImGuiTableColumnFlags_WidthFixed, char_size * 9.f );
@@ -195,7 +207,7 @@ void TinyBacker::DrawContent( ) {
 
         auto entry_id = tiny_cast( 0, tiny_uint );
 
-        for ( auto& entry : _entries )
+        for ( auto& entry : _archive.Archive.Entries )
             DrawEntry( entry_id++, entry );
         
         ImGui::EndTable( );
@@ -214,7 +226,7 @@ void TinyBacker::DrawPopups( ) {
 
         ImGui::BeginGroup( );
         ImGui::Text( "Failed to import asset :" );
-        ImGui::Text( _import_path.c_str( ) );
+        //ImGui::Text( _import_path.c_str( ) );
         ImGui::EndGroup( );
 
         if ( ImGui::Button( "Close" ) ) 

@@ -41,7 +41,7 @@ namespace TinyImport {
 				auto& filesystem = game->GetFilesystem( );
 				auto builder	 = tiny_string{ tiny_cast( length, tiny_uint ), data };
 				auto path		 = filesystem.CreatePath( TP_TYPE_DEV, path_info.Name, TINY_ASSET_EXT );
-				auto file_		 = filesystem.OpenFile( path, TF_ACCESS_WRITE );
+				auto file_		 = filesystem.OpenFile( path, TF_ACCESS_BINARY_WRITE );
 
 				state = TinyImport::ExportScript( game, tiny_rvalue( file_ ), tiny_rvalue( builder ) );
 			}

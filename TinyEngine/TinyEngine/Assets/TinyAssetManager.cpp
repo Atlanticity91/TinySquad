@@ -42,7 +42,7 @@ bool TinyAssetManager::Import( TinyGame* game, const tiny_string& path ) {
 
 	if ( path.get_is_valid( ) && filesystem.GetFileExist( path ) ) {
 		auto path_info = filesystem.GetInformation( path );
-		auto file	   = filesystem.OpenFile( path, TF_ACCESS_BINARY_READ ); // TODO : ADD TEXT & BINARY IMPORT
+		auto file	   = filesystem.OpenFile( path, TF_ACCESS_READ );
 
 		state = _importer.Import( game, tiny_rvalue( file ), path_info );
 	}
@@ -125,6 +125,35 @@ void TinyAssetManager::Terminate( TinyGame* game ) {
 		if ( containter.GetIsValid( ) )
 			containter.As<ITinyAssetContainer>( )->Terminate( game );
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC STATIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyAssetManager::Export( TinyFile& file, const TinyArchiveBuilder& archive_builder ) {
+	auto state = file.GetIsValid( );
+
+	if ( state ) {
+		auto entry_count = archive_builder.Entries.size( );
+		auto header		 = TinyAssetHeader{ TA_TYPE_ARCHIVE };
+
+		file.Write( header );
+		file.Write( archive_builder.Author );
+		file.Write( entry_count );
+
+		for ( auto& entry : archive_builder.Entries ) {
+			auto& entry_data = entry.Data;
+
+			file.Write( entry.Alias );
+			file.Write( entry_data.Path );
+			file.Write( entry_data.Date );
+			file.Write( entry_data.Type );
+			file.Write( entry_data.Offset );
+			file.Write( entry_data.Size );
+		}
+	}
+
+	return state;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

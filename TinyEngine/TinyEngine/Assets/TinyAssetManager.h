@@ -84,6 +84,9 @@ public:
 		}
 	};
 
+public:
+	static bool Export( TinyFile& file, const TinyArchiveBuilder& archive_builder );
+
 private:
 	void RegisterTypes( );
 

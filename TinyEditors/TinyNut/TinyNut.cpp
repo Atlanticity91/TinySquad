@@ -39,8 +39,13 @@ TinyNut::TinyNut( const tiny_string& title, bool enable_dockspace )
 bool TinyNut::Initialize( TinyEngine& engine ) {
 	auto state = _context.Create( this );
 	
-	if ( state )
+	if ( state ) {
+		auto& game_window = engine.GetWindow( );
+
+		game_window.SetCallback( TWC_DRAG_AND_DROP, TinyNut::DragDropCallback );
+
 		_window.Create( this );
+	}
 
 	return state;
 }
@@ -54,6 +59,20 @@ void TinyNut::Tick( ) {
 void TinyNut::Terminate( ) {
 	_window.Terminate( this );
 	_context.Terminate( this );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// === PRIVATE STATIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyNut::DragDropCallback( 
+	GLFWwindow* handle,
+	tiny_int path_count,
+	native_string paths[]
+) {
+	auto* game = tiny_cast( glfwGetWindowUserPointer( handle ), TinyNut* );
+
+	if ( path_count > 0 )
+		game->OnDragDrop( path_count, paths );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
