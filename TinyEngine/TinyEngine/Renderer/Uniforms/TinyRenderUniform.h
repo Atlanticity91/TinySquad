@@ -33,9 +33,9 @@ public:
 
 	~TinyRenderUniform( ) = default;
 
-	bool Create( TinyGraphicContext& context, const TinyRenderUniformBuilder& builder );
+	bool Create( TinyGraphicWrapper& graphic, const TinyRenderUniformBuilder& builder );
 
-	void Terminate( TinyGraphicContext& context );
+	void Terminate( TinyGraphicWrapper& graphic );
 
 public:
 	tiny_uint GetSet( ) const;

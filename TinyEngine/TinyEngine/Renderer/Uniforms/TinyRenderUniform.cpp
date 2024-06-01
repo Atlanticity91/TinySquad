@@ -29,10 +29,10 @@ TinyRenderUniform::TinyRenderUniform( )
 { }
 
 bool TinyRenderUniform::Create(
-	TinyGraphicContext& context,
+	TinyGraphicWrapper& graphic,
 	const TinyRenderUniformBuilder& builder
 ) {
-	auto state = _buffer.Create( context, builder );
+	auto state = _buffer.Create( graphic, builder );
 
 	if ( state ) {
 		_bind_point.Type		= TGB_TYPE_BUFFER;
@@ -44,8 +44,8 @@ bool TinyRenderUniform::Create(
 	return state;
 }
 
-void TinyRenderUniform::Terminate( TinyGraphicContext& context ) {
-	_buffer.Terminate( context );
+void TinyRenderUniform::Terminate( TinyGraphicWrapper& graphic ) {
+	_buffer.Terminate( graphic );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

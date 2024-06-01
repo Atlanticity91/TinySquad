@@ -27,10 +27,10 @@ class TinyRenderer;
 te_class TinyRenderCamera final {
 
 private:
-	tiny_hash _projection;
-	tiny_mat4 _view;
-	tiny_mat4 _proj_view;
-	tiny_mat4 _inverse;
+	tiny_hash m_projection;
+	tiny_mat4 m_view;
+	tiny_mat4 m_proj_view;
+	tiny_mat4 m_inverse;
 
 public:
 	TinyRenderCamera( );

@@ -58,9 +58,9 @@ bool TinyGraphicBufferStaging::Map(
 	tiny_uint offset,
 	tiny_uint length 
 ) {
-	auto state = m_buffer.GetIsValid( );
+	auto state = false;
 
-	if ( state ) {
+	if ( m_buffer.GetIsValid( ) ) {
 		UnMap( graphic );
 
 		auto& properties = m_buffer.GetProperties( );
@@ -78,7 +78,7 @@ bool TinyGraphicBufferStaging::Map(
 }
 
 void TinyGraphicBufferStaging::UnMap( TinyGraphicWrapper& graphic ) {
-	if ( _access ) {
+	if ( m_access ) {
 		auto& memory = m_buffer.GetMemory( ).Memory;
 
 		vkUnmapMemory( graphic.Logical, memory );
@@ -104,7 +104,7 @@ bool TinyGraphicBufferStaging::Map(
 	auto state = Map( graphic, offset, length );
 
 	if ( state ) {
-		Tiny::Memcpy( data, _access, length );
+		Tiny::Memcpy( data, m_access, length );
 
 		UnMap( graphic );
 	}
@@ -123,7 +123,7 @@ void TinyGraphicBufferStaging::Terminate( TinyGraphicWrapper& graphic ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicBufferStaging::GetIsValid( ) const { return m_buffer.GetIsValid( ); }
 
-bool TinyGraphicBufferStaging::GetIsMapped( ) const { return _access != nullptr; }
+bool TinyGraphicBufferStaging::GetIsMapped( ) const { return m_access != nullptr; }
 
 tiny_uint TinyGraphicBufferStaging::GetSize( ) const { 
 	return m_buffer.GetProperties( ).Size; 
@@ -131,7 +131,7 @@ tiny_uint TinyGraphicBufferStaging::GetSize( ) const {
 
 const TinyGraphicBuffer& TinyGraphicBufferStaging::GetBuffer( ) const { return m_buffer; }
 
-native_pointer TinyGraphicBufferStaging::GetAccess( ) const { return _access; }
+native_pointer TinyGraphicBufferStaging::GetAccess( ) const { return m_access; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

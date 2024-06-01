@@ -66,8 +66,9 @@ void TinyGraphicPipelineManager::Terminate(
 	TinyFilesystem& filesystem, 
 	TinyGraphicLogical& logical
 ) {
-	if ( m_use_cache && vk::GetIsValid( m_cache ) ) {
-		WriteCache( filesystem, logical );
+	if ( vk::GetIsValid( m_cache ) ) {
+		if ( m_use_cache )
+			WriteCache( filesystem, logical );
 
 		vkDestroyPipelineCache( logical, m_cache, vk::GetAllocator( ) );
 	}

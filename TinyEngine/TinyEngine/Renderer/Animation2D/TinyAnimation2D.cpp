@@ -25,15 +25,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAnimation2D::TinyAnimation2D( )
 	: TinyAsset{ TA_TYPE_ANIMATION_2D },
-	_collection{ }
+	m_collection{ }
 { }
 
 TinyAnimation2D& TinyAnimation2D::Create(
 	const tiny_string& name,
 	tiny_init<TinyAnimation2DFrame> frames
 ) {
-	if ( !_collection.find( name ) )
-		_collection.emplace( name, frames );
+	if ( !m_collection.find( name ) )
+		m_collection.emplace( name, frames );
 
 	return tiny_self;
 }
@@ -42,10 +42,10 @@ TinyAnimation2D& TinyAnimation2D::Add(
 	const tiny_string& name,
 	const TinyAnimation2DFrame& frame
 ) {
-	if ( !_collection.find( name ) )
-		_collection.emplace( name, { } );
+	if ( !m_collection.find( name ) )
+		m_collection.emplace( name, { } );
 
-	_collection[ name ].emplace_back( frame );
+	m_collection[ name ].emplace_back( frame );
 
 	return tiny_self;
 }
@@ -68,8 +68,8 @@ TinyAnimation2D& TinyAnimation2D::Insert(
 ) {
 	auto animation_id = tiny_cast( 0, tiny_uint );
 
-	if ( _collection.find( name, animation_id ) ) {
-		auto& animation = _collection.at( animation_id );
+	if ( m_collection.find( name, animation_id ) ) {
+		auto& animation = m_collection.at( animation_id );
 
 		animation.insert( frame_id, frame );
 	}
@@ -90,7 +90,7 @@ TinyAnimation2D& TinyAnimation2D::Insert(
 }
 
 TinyAnimation2D& TinyAnimation2D::Remove( const tiny_string& name ) {
-	_collection.erase( name );
+	m_collection.erase( name );
 
 	return tiny_self;
 }
@@ -98,8 +98,8 @@ TinyAnimation2D& TinyAnimation2D::Remove( const tiny_string& name ) {
 TinyAnimation2D& TinyAnimation2D::Remove( const tiny_string& name, tiny_uint frame_id ) {
 	auto animation_id = tiny_cast( 0, tiny_uint );
 
-	if ( _collection.find( name, animation_id ) ) {
-		auto& animation = _collection.at( animation_id );
+	if ( m_collection.find( name, animation_id ) ) {
+		auto& animation = m_collection.at( animation_id );
 		
 		animation.erase( frame_id );
 	}
@@ -111,11 +111,11 @@ TinyAnimation2D& TinyAnimation2D::Remove( const tiny_string& name, tiny_uint fra
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_map<TinyAnimation2D::FrameCollection>& TinyAnimation2D::GetCollection( ) {
-	return _collection;
+	return m_collection;
 }
 
 void TinyAnimation2D::GetAnimations( tiny_list<tiny_string>& list ) const {
-	for ( auto& node : _collection ) {
+	for ( auto& node : m_collection ) {
 		auto node_str = tiny_string{ node.Alias };
 
 		list.emplace_back( node_str );
@@ -136,8 +136,8 @@ TinyAnimation2D::FrameCollection* TinyAnimation2D::Get(
 	auto animation_id = tiny_cast( 0, tiny_uint );
 	auto* animation   = tiny_cast( nullptr, FrameCollection* );
 
-	if ( _collection.find( animation_hash, animation_id ) )
-		animation = tiny_rvalue( _collection.at( animation_id ) );
+	if ( m_collection.find( animation_hash, animation_id ) )
+		animation = tiny_rvalue( m_collection.at( animation_id ) );
 
 	return animation;
 }
@@ -156,8 +156,8 @@ const TinyAnimation2D::FrameCollection* TinyAnimation2D::Get(
 	auto animation_id = tiny_cast( 0, tiny_uint );
 	auto* animation   = tiny_cast( nullptr, const FrameCollection* );
 
-	if ( _collection.find( animation_hash, animation_id ) )
-		animation = tiny_rvalue( _collection.at( animation_id ) );
+	if ( m_collection.find( animation_hash, animation_id ) )
+		animation = tiny_rvalue( m_collection.at( animation_id ) );
 
 	return animation;
 }

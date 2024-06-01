@@ -25,29 +25,29 @@
 te_class TinyEngine final {
 
 private:
-	bool			     _is_running;
+	bool m_is_running;
 
 	// === LOW LEVEL ===
-	TinyJobManager		 _jobs;
-	TinyFilesystem		 _filesystem;
-	TinyAssetManager	 _assets;
-	TinyWindow			 _window;
-	TinyInputManager	 _inputs;
-	TinyAudioManager	 _audio;
-	TinyGraphicManager	 _graphics;
-	TinyNativeRegister   _natives;
+	TinyJobManager m_jobs;
+	TinyFilesystem m_filesystem;
+	TinyAssetManager m_assets;
+	TinyWindow m_window;
+	TinyInputManager m_inputs;
+	TinyAudioManager m_audio;
+	TinyGraphicManager m_graphics;
+	TinyNativeRegister m_natives;
 
 	// === MID LEVEL ===
-	//TinyNetwork		 _network;
-	TinyRenderer		 _renderer;
-	TinyECS				 _ecs;
+	//TinyNetwork m_network;
+	TinyRenderer m_renderer;
+	TinyECS m_ecs;
 
 	// === HIGH LEVEL ===
-	TinyUXManager		 _ux;
-	TinyAddonManager	 _addons;
-	TinyProviderManager	 _provider;
-	TinyGameStateManager _states;
-	TinyToolbox			 _toolbox;
+	TinyUXManager m_ux;
+	TinyAddonManager m_addons;
+	TinyProviderManager m_provider;
+	TinyGameStateManager m_states;
+	TinyToolbox	m_toolbox;
 
 public:
 	/**
@@ -103,6 +103,18 @@ public:
 	 **/
 	void Stop( );
 
+	/**
+	 * DisableCache method
+	 * @note : Disable Graphic cache file loading and saving.
+	 **/
+	void DisableCache( );
+
+	/**
+	 * EnableCache method
+	 * @note : Enable Graphic cache file loading and saving.
+	 **/
+	void EnableCache( );
+
 	void Dispatch( const TinyJob& job );
 
 	void Switch( TinyGame* game, const tiny_uint state_id );
@@ -137,7 +149,7 @@ public:
 	template<typename GameState>
 		requires TinyIsGameState<GameState>
 	void Register( const tiny_string& name ) {
-		_states.Register<GameState>( name );
+		m_states.Register<GameState>( name );
 	};
 
 private:

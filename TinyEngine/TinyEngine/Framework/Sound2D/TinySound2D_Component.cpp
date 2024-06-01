@@ -29,9 +29,9 @@ TinySound2D::TinySound2D( )
 
 TinySound2D::TinySound2D( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash },
-	_cue{ TA_TYPE_CUE },
-	_handle{ TINY_UINT_MAX },
-	_volume{ 1.f }
+	m_cue{ TA_TYPE_CUE },
+	m_handle{ TINY_UINT_MAX },
+	m_volume{ 1.f }
 { }
 
 bool TinySound2D::Create( TinyGame* game ) {
@@ -41,7 +41,7 @@ bool TinySound2D::Create( TinyGame* game ) {
 void TinySound2D::Delete( TinyGame* game ) {
 	auto& audio = game->GetAudio( );
 
-	audio.Release( _handle );
+	audio.Release( m_handle );
 }
 
 bool TinySound2D::SetCue( TinyGame* game, const tiny_string& cue_name ) {
@@ -50,14 +50,14 @@ bool TinySound2D::SetCue( TinyGame* game, const tiny_string& cue_name ) {
 	auto hash    = tiny_hash{ cue_name };
 
 	if ( assets.GetExist( TA_TYPE_CUE, hash ) ) {
-		assets.Release( game, _cue );
+		assets.Release( game, m_cue );
 
-		_cue.Hash = hash;
+		m_cue.Hash = hash;
 
-		state = assets.Acquire( game, _cue );
+		state = assets.Acquire( game, m_cue );
 
 		if ( !state )
-			_cue.Hash.undefined( );
+			m_cue.Hash.undefined( );
 	}
 
 	return state;
@@ -69,16 +69,16 @@ bool TinySound2D::Play( TinyGame* game, bool imediate ) {
 	auto& assets = game->GetAssets( );
 	auto& audio  = game->GetAudio( );
 	auto state   = false;
-	auto* cue	 = assets.GetAssetAs<TinyCue>( _cue );
+	auto* cue	 = assets.GetAssetAs<TinyCue>( m_cue );
 
 	if ( cue ) {
-		if ( !audio.GetExist( _handle ) )
-			_handle = audio.Acquire( cue->GetFormat( ) );
+		if ( !audio.GetExist( m_handle ) )
+			m_handle = audio.Acquire( cue->GetFormat( ) );
 
-		state = audio.Submit( _handle, cue->GetBuffer( ) );
+		state = audio.Submit( m_handle, cue->GetBuffer( ) );
 
 		if ( state && imediate )
-			state = audio.Start( _handle );
+			state = audio.Start( m_handle );
 	}
 
 	return state;
@@ -87,8 +87,8 @@ bool TinySound2D::Play( TinyGame* game, bool imediate ) {
 void TinySound2D::Stop( TinyGame* game ) {
 	auto& audio = game->GetAudio( );
 
-	audio.Stop( _handle );
-	audio.Release( _handle );
+	audio.Stop( m_handle );
+	audio.Release( m_handle );
 }
 
 void TinySound2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
@@ -96,14 +96,14 @@ void TinySound2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 
 	TinyComponent::DisplayWidget( game, toolbox );
 
-	toolbox.DisplayAsset( game, "Cue", _cue );
+	toolbox.DisplayAsset( game, "Cue", m_cue );
 
-	if ( TinyImGui::InputSlider( "Volume", _volume, .0f, 224.f ) )
-		audio.SetVolume( _handle, _volume );
+	if ( TinyImGui::InputSlider( "Volume", m_volume, .0f, 224.f ) )
+		audio.SetVolume( m_handle, m_volume );
 
-	if ( _cue.GetIsValid( ) && ImGui::Button( "Play" ) ) {
+	if ( m_cue.GetIsValid( ) && ImGui::Button( "Play" ) ) {
 		
-		auto* c = game->GetAssets( ).GetAssetAs<TinyCue>( _cue );
+		auto* c = game->GetAssets( ).GetAssetAs<TinyCue>( m_cue );
 		auto v = audio.Acquire( c->GetFormat( ) );
 		
 		audio.Submit( v, c->GetBuffer( ) );
@@ -114,6 +114,6 @@ void TinySound2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAssetHandle& TinySound2D::GetCue( ) { return _cue; }
+TinyAssetHandle& TinySound2D::GetCue( ) { return m_cue; }
 
-float TinySound2D::GetVolume( ) const { return _volume; }
+float TinySound2D::GetVolume( ) const { return m_volume; }

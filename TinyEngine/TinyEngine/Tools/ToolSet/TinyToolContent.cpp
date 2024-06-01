@@ -25,11 +25,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolContent::TinyToolContent( ) 
 	: TinyToolCategory{ "Content" },
-    _has_changed{ false },
-    _type_count{ TinyAssetTypes::TA_TYPE_COUNT },
-    _type_to_string{ TinyToolContent::TypeToString },
-    _to_remove{ },
-    _import_path{ }
+    m_has_changed{ false },
+    m_type_count{ TinyAssetTypes::TA_TYPE_COUNT },
+    m_type_to_string{ TinyToolContent::TypeToString },
+    m_to_remove{ },
+    m_import_path{ }
 { }
 
 void TinyToolContent::Create( TinyGame* game, TinyToolbox& toolbox ) {
@@ -43,25 +43,25 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     auto& assets     = game->GetAssets( );
 
     if ( ImGui::Button( "Import", { -1.f, 0.f } ) ) {
-        auto* path_string = _import_path.as_chars( );
+        auto* path_string = m_import_path.as_chars( );
         auto file_dialog  = TinyFileDialog{ };
-        auto path_length  = _import_path.length( );
+        auto path_length  = m_import_path.length( );
 
         file_dialog.Name    = "Import Asset";
         file_dialog.Path    = filesystem.GetDevDirNative( );
         file_dialog.Filters = "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0";
 
         if ( Tiny::OpenDialog( file_dialog, path_length, path_string ) ) {
-            _has_changed = assets.Import( game, _import_path );
+            m_has_changed = assets.Import( game, m_import_path );
 
-            if ( !_has_changed )
+            if ( !m_has_changed )
                 ImGui::OpenPopup( "Import Failed" );
         }
     }
 
     if ( TinyImGui::BeginModal( "Import Failed" ) ) {
         ImGui::Text( "Asset importation failed for :" );
-        ImGui::Text( _import_path.as_chars( ) );
+        ImGui::Text( m_import_path.as_chars( ) );
 
         ImGui::Separator( );
 
@@ -93,8 +93,8 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
         auto spacing = ImGui::GetStyle( ).ItemSpacing.x;
         auto type    = tiny_cast( 1, tiny_uint );
 
-        while ( type < _type_count ) {
-            auto name = _type_to_string( type );
+        while ( type < m_type_count ) {
+            auto name = m_type_to_string( type );
             /*
             if ( strlen( name ) > 0 ) {
                 ImGui::TableNextRow( );
@@ -134,7 +134,7 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
 
                         ImGui::BeginDisabled( metadata->Data.Reference > 0 );
                         if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) ) {
-                            _has_changed = true;
+                            m_has_changed = true;
                             _action      = TTC_ACTION_REMOVE;
                             _metadata    = metadata;
                         }
@@ -151,10 +151,10 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
         ImGui::EndTable( );
     }
 
-    if ( _to_remove ) {
-        //assets.UnLoad( game, { 0, _to_remove } );
+    if ( m_to_remove ) {
+        //assets.UnLoad( game, { 0, m_to_remove } );
 
-        _to_remove.undefined( );
+        m_to_remove.undefined( );
     }
 }
 

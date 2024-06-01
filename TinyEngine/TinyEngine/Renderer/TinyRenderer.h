@@ -27,11 +27,11 @@ te_class TinyRenderer final {
 	using Callback_t = TinyRenderBatchManager::Callback_t;
 
 private:
-	TinyRenderCameraManager  _cameras;
-	TinyRenderUniformManager _uniforms;
-	TinyRenderBatchManager   _batchs;
-	TinyRenderDebugManager	 _debug;
-	TinyRenderPostProcessor  _post_process;
+	TinyRenderCameraManager m_cameras;
+	TinyRenderUniformManager m_uniforms;
+	TinyRenderBatchManager m_batchs;
+	TinyRenderDebugManager m_debug;
+	TinyRenderPostProcessor m_post_process;
 
 public:
 	TinyRenderer( );

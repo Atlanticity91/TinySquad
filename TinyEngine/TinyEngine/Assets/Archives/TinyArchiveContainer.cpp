@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyArchiveContainer::TinyArchiveContainer( )
 	: TinyAssetContainer{ },
-	_entries{ }
+	m_entries{ }
 { }
 
 bool TinyArchiveContainer::Create(
@@ -47,7 +47,7 @@ bool TinyArchiveContainer::Create(
 			archive_entry.Offset = entry_data.Offset;
 			archive_entry.Size   = entry_data.Size;
 
-			_entries.emplace( entry.Alias, archive_entry );
+			m_entries.emplace( entry.Alias, archive_entry );
 		}
 	}
 
@@ -86,8 +86,8 @@ bool TinyArchiveContainer::Load( TinyGame* game, const tiny_string& asset_name )
 	auto state    = false;
 	auto hash	  = tiny_hash{ asset_name };
 
-	if ( _entries.find( hash, entry_id ) ) {
-		auto& entry_node = _entries.node( entry_id );
+	if ( m_entries.find( hash, entry_id ) ) {
+		auto& entry_node = m_entries.node( entry_id );
 		auto& entry		 = entry_node.Data;
 		auto* archive	 = tiny_cast( GetAsset( entry.Archive ), TinyArchive* );
 		auto& assets	 = game->GetAssets( );
@@ -109,8 +109,8 @@ bool TinyArchiveContainer::Load( TinyGame* game, const TinyAssetHandle& asset_ha
 	auto entry_id = tiny_cast( 0, tiny_uint );
 	auto state	  = false;
 
-	if ( _entries.find( asset_handle, entry_id ) ) {
-		auto& entry_node = _entries.node( entry_id );
+	if ( m_entries.find( asset_handle, entry_id ) ) {
+		auto& entry_node = m_entries.node( entry_id );
 		auto& entry		 = entry_node.Data;
 
 		if ( entry.Type == asset_handle.Type ) {

@@ -24,8 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyEntityManager::TinyEntityManager( )
-	: _entities{ },
-	_removed{ }
+	: m_entities{ },
+	m_removed{ }
 { }
 
 tiny_uint TinyEntityManager::Create( const tiny_string& name, const tiny_uint parent_id ) {
@@ -33,14 +33,14 @@ tiny_uint TinyEntityManager::Create( const tiny_string& name, const tiny_uint pa
 	
 	static int i = 0;
 
-	if ( !_entities.find( name, entity_id ) ) {
+	if ( !m_entities.find( name, entity_id ) ) {
 		auto entity = TinyEntity{ };
 
 		entity.Flags |= TINY_LEFT_SHIFT( 1, TE_FLAG_ALIVE );
 		entity.Flags |= TINY_LEFT_SHIFT( 1, TE_FLAG_VISIBLE );
 
-		_entities.emplace( name, entity );
-		_entities.find( name, entity_id );
+		m_entities.emplace( name, entity );
+		m_entities.find( name, entity_id );
 		
 		if ( parent_id < TE_NO_PARENT )
 			Attach( entity_id, parent_id );
@@ -54,25 +54,25 @@ bool TinyEntityManager::Rename( const tiny_uint entity_id, const tiny_string& ne
 	auto state = !GetEntityID( new_name, other );
 
 	if ( state ) {
-		auto old_name = _entities.node( entity_id ).Alias;
+		auto old_name = m_entities.node( entity_id ).Alias;
 
-		_entities.remap( old_name, new_name );
+		m_entities.remap( old_name, new_name );
 	}
 
 	return state;
 }
 
 void TinyEntityManager::Kill( const tiny_uint entity_id ) {
-	auto& entity = _entities.node( entity_id );
+	auto& entity = m_entities.node( entity_id );
 	
 	entity.Data.Flags ^= TINY_LEFT_SHIFT( 1, TE_FLAG_ALIVE );
 
-	_removed.create_back( entity.Hash, entity_id, TINY_UINT_MAX );
+	m_removed.create_back( entity.Hash, entity_id, TINY_UINT_MAX );
 }
 
 void TinyEntityManager::Attach( const tiny_uint entity_id, const tiny_uint parent_id ) {
-	auto& entity = _entities.at( entity_id );
-	auto& parent = _entities.at( parent_id );
+	auto& entity = m_entities.at( entity_id );
+	auto& parent = m_entities.at( parent_id );
 
 	entity.Parent = parent_id;
 
@@ -83,30 +83,30 @@ void TinyEntityManager::Attach( const tiny_uint entity_id, const tiny_uint paren
 }
 
 void TinyEntityManager::Detach( const tiny_uint entity_id ) {
-	auto& entity   = _entities.at( entity_id );
+	auto& entity   = m_entities.at( entity_id );
 	auto parent_id = entity.Parent;
 
 	if ( parent_id != TE_NO_PARENT )
-		_entities.at( parent_id ).Next = entity.Next;
+		m_entities.at( parent_id ).Next = entity.Next;
 
 	entity.Parent = TE_NO_PARENT;
 	entity.Next   = TE_NO_CHILD;
 }
 
 void TinyEntityManager::AddFlag( const tiny_uint entity_id, tiny_uint flag_id ) {
-	_entities.at( entity_id ).Flags |= TINY_LEFT_SHIFT( 1, flag_id );
+	m_entities.at( entity_id ).Flags |= TINY_LEFT_SHIFT( 1, flag_id );
 }
 
 void TinyEntityManager::DeleteFlag( const tiny_uint entity_id, tiny_uint flag_id ) {
-	_entities.at( entity_id ).Flags ^= TINY_LEFT_SHIFT( 1, flag_id );
+	m_entities.at( entity_id ).Flags ^= TINY_LEFT_SHIFT( 1, flag_id );
 }
 
 void TinyEntityManager::AddFlags( const tiny_uint entity_id, tiny_uint flags ) {
-	_entities.at( entity_id ).Flags |= flags;
+	m_entities.at( entity_id ).Flags |= flags;
 }
 
 void TinyEntityManager::DeleteFlags( const tiny_uint entity_id, tiny_uint flags ) {
-	_entities.at( entity_id ).Flags ^= flags;
+	m_entities.at( entity_id ).Flags ^= flags;
 }
 
 bool TinyEntityManager::Append( 
@@ -114,10 +114,10 @@ bool TinyEntityManager::Append(
 	const tiny_uint component_id,
 	tiny_hash& entity_hash
 ) {
-	auto state = _entities.find_key( entity_id, entity_hash );
+	auto state = m_entities.find_key( entity_id, entity_hash );
 
 	if ( state ) {
-		auto& entity = _entities.at( entity_id );
+		auto& entity = m_entities.at( entity_id );
 
 		if ( !entity.GetHasComponent( component_id ) )
 			entity.Components |= TINY_LEFT_SHIFT( 1, component_id );
@@ -127,91 +127,91 @@ bool TinyEntityManager::Append(
 }
 
 void TinyEntityManager::Remove( const tiny_uint entity_id, const tiny_uint component_id ) {
-	_entities.at( entity_id ).Components ^= TINY_LEFT_SHIFT( 1, component_id );
-	_removed.create_back( _entities.node( entity_id ).Hash, entity_id, component_id );
+	m_entities.at( entity_id ).Components ^= TINY_LEFT_SHIFT( 1, component_id );
+	m_removed.create_back( m_entities.node( entity_id ).Hash, entity_id, component_id );
 }
 
 void TinyEntityManager::Clean( ) {
-	_removed.sort(
+	m_removed.sort(
 		[]( auto& a, auto& b ) { return a.EntityID > b.EntityID; }
 	);
 
-	for ( auto& entity : _removed ) {
+	for ( auto& entity : m_removed ) {
 		if ( entity.ComponentID < TINY_UINT_MAX )
 			continue;
 
-		_entities.erase( entity.EntityID );
+		m_entities.erase( entity.EntityID );
 	}
 
-	_removed.clear( );
+	m_removed.clear( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_map<TinyEntity>& TinyEntityManager::GetEntities( ) { return _entities; }
+tiny_map<TinyEntity>& TinyEntityManager::GetEntities( ) { return m_entities; }
 
-const tiny_map<TinyEntity>& TinyEntityManager::GetEntities( ) const { return _entities; }
+const tiny_map<TinyEntity>& TinyEntityManager::GetEntities( ) const { return m_entities; }
 
 const tiny_list<TinyEntityGhost>& TinyEntityManager::GetRemoved( ) const { 
-	return _removed; 
+	return m_removed; 
 }
 
-tiny_uint TinyEntityManager::GetCount( ) const { return _entities.size( ); }
+tiny_uint TinyEntityManager::GetCount( ) const { return m_entities.size( ); }
 
 bool TinyEntityManager::GetExist( const tiny_uint entity_id ) const {
-	return entity_id < _entities.size( ) && _entities[ entity_id ].GetIsAlive( );
+	return entity_id < m_entities.size( ) && m_entities[ entity_id ].GetIsAlive( );
 }
 
 bool TinyEntityManager::GetEntityID( const tiny_string& name, tiny_uint& entity_id ) const {
-	return !name.get_is_empty( ) && _entities.find( name, entity_id );
+	return !name.get_is_empty( ) && m_entities.find( name, entity_id );
 }
 
 bool TinyEntityManager::GetEntityID( const tiny_hash entity_hash, tiny_uint& entity_id ) const {
-	return _entities.find( entity_hash, entity_id );
+	return m_entities.find( entity_hash, entity_id );
 }
 
 bool TinyEntityManager::GetEntityHash( const tiny_uint entity_id, tiny_hash& hash ) const {
-	return _entities.find_key( entity_id, hash );
+	return m_entities.find_key( entity_id, hash );
 }
 
 TinyEntity* TinyEntityManager::GetEntity( const tiny_uint entity_id ) const {
 	auto* entity = tiny_cast( nullptr, TinyEntity* );
 
-	if ( entity_id < _entities.size( ) )
-		entity = tiny_cast( tiny_rvalue( _entities.at( entity_id ) ), TinyEntity* );
+	if ( entity_id < m_entities.size( ) )
+		entity = tiny_cast( tiny_rvalue( m_entities.at( entity_id ) ), TinyEntity* );
 
 	return entity;
 }
 
 bool TinyEntityManager::GetIsAlive( const tiny_uint entity_id ) const {
-	return entity_id < _entities.size( ) && _entities.at( entity_id ).GetIsAlive( );
+	return entity_id < m_entities.size( ) && m_entities.at( entity_id ).GetIsAlive( );
 }
 
 bool TinyEntityManager::GetHasParent( const tiny_uint entity_id ) const {
-	return entity_id < _entities.size( ) && _entities.at( entity_id ).GetHasParent( );
+	return entity_id < m_entities.size( ) && m_entities.at( entity_id ).GetHasParent( );
 }
 
 bool TinyEntityManager::GetHasFlag( const tiny_uint entity_id, tiny_uint flag_id ) const {
-	return entity_id < _entities.size( ) && _entities.at( entity_id ).GetHasFlag( flag_id );
+	return entity_id < m_entities.size( ) && m_entities.at( entity_id ).GetHasFlag( flag_id );
 }
 
 bool TinyEntityManager::GetHasFlags( const tiny_uint entity_id, tiny_uint flags ) const {
-	return entity_id < _entities.size( ) && _entities.at( entity_id ).GetHasFlags( flags );
+	return entity_id < m_entities.size( ) && m_entities.at( entity_id ).GetHasFlags( flags );
 }
 
 bool TinyEntityManager::GetHasComponent(
 	const tiny_uint entity_id, 
 	const tiny_uint component_id
 ) const {
-	return  entity_id < _entities.size( ) && 
-			_entities.at( entity_id ).GetHasComponent( component_id );
+	return  entity_id < m_entities.size( ) && 
+			m_entities.at( entity_id ).GetHasComponent( component_id );
 }
 
 bool TinyEntityManager::GetHasComponents(
 	const tiny_uint entity_id,
 	const tiny_uint components 
 ) const {
-	return  entity_id < _entities.size( ) &&
-			_entities.at( entity_id ).GetHasComponents( components );
+	return  entity_id < m_entities.size( ) &&
+			m_entities.at( entity_id ).GetHasComponents( components );
 }

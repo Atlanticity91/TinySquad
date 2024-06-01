@@ -48,13 +48,13 @@ bool TinyRenderUniformManager::Create(
 	TinyGraphicManager& graphics, 
 	const TinyRenderUniformBuilder& builder 
 ) {
-	auto state = !builder.Name.get_is_empty( ) && !_uniforms.find( builder.Name );
+	auto state = false;
 	
-	if ( state ) {
+	if ( !builder.Name.get_is_empty( ) && !_uniforms.find( builder.Name ) ) {
 		auto uniform = TinyRenderUniform{ };
-		auto context = graphics.GetContext( );
+		auto graphic = graphics.GetWrapper( );
 
-		state = uniform.Create( context, builder );
+		state = uniform.Create( graphic, builder );
 
 		if ( state )
 			_uniforms.emplace( builder.Name, uniform );
@@ -71,19 +71,19 @@ void TinyRenderUniformManager::Destroy(
 
 	if ( _uniforms.find( name, uniform_id ) ) {
 		auto& uniform = _uniforms.at( uniform_id );
-		auto context  = graphics.GetContext( );
+		auto graphic  = graphics.GetWrapper( );
 
-		uniform.Terminate( context );
+		uniform.Terminate( graphic );
 
 		_uniforms.erase( name );
 	}
 }
 
 void TinyRenderUniformManager::Terminate( TinyGraphicManager& graphics ) {
-	auto context = graphics.GetContext( );
+	auto graphic = graphics.GetWrapper( );
 
 	for ( auto& uniform : _uniforms )
-		uniform.Data.Terminate( context );
+		uniform.Data.Terminate( graphic );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,19 +107,19 @@ void TinyRenderUniformManager::GenerateIndexBuffer(
 	}
 
 	{
-		auto context = graphics.GetContext( );
+		auto graphic = graphics.GetWrapper( );
 		auto size	 = TINY_QUAD_INDEX_SIZE;
 
-		staging.Map( context, size );
+		staging.Map( graphic, size );
 
 		auto* src = indexes.data( );
 		auto* dst = staging.GetAccess( );
 
 		Tiny::Memcpy( src, dst, size );
 		
-		staging.UnMap( context );
+		staging.UnMap( graphic );
 
-		auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		auto burner = TinyGraphicBurner{ graphic, VK_QUEUE_TYPE_TRANSFER };
 		auto copie  = VkBufferCopy{ 0, 0, size };
 
 		burner.Upload( staging, _uniforms[ TinyQuadIndexBuffer ], copie );

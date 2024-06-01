@@ -33,9 +33,9 @@ tiny_enum( TinyRenderProjectionTypes ) {
 te_class TinyRenderProjection final {
 
 private:
-	TinyRenderProjectionTypes _type;
-	float					  _parameter;
-	tiny_mat4				  _matrix;
+	TinyRenderProjectionTypes m_type;
+	float m_parameter;
+	tiny_mat4 m_matrix;
 
 public:
 	TinyRenderProjection( );

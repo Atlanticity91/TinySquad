@@ -24,23 +24,23 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGameStateManager::TinyGameStateManager( ) 
-	: _current{ TINY_UINT_MAX },
-	_states{ }
+	: m_current{ TINY_UINT_MAX },
+	m_states{ }
 { }
 
 void TinyGameStateManager::Switch( TinyGame* game, const tiny_uint state_id ) {
-	if ( state_id < _states.size( ) ) {
-		if ( _current < _states.size( ) ) {
-			auto& storage = _states.at( _current );
+	if ( state_id < m_states.size( ) ) {
+		if ( m_current < m_states.size( ) ) {
+			auto& storage = m_states.at( m_current );
 
 			storage.As<TinyGameState>( )->OnQuit( game, state_id );
 		}
 
-		auto& storage = _states.at( state_id );
+		auto& storage = m_states.at( state_id );
 
-		storage.As<TinyGameState>( )->OnChange( game, _current );
+		storage.As<TinyGameState>( )->OnChange( game, m_current );
 
-		_current = state_id;
+		m_current = state_id;
 	}
 }
 
@@ -53,20 +53,20 @@ void TinyGameStateManager::Switch( TinyGame* game, const tiny_string& state_name
 void TinyGameStateManager::Switch( TinyGame* game, const tiny_hash state_hash ) {
 	auto state_id = tiny_cast( 0, tiny_uint );
 
-	if ( _states.find( state_hash, state_id ) )
+	if ( m_states.find( state_hash, state_id ) )
 		Switch( game, state_id );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_uint TinyGameStateManager::GetStateID( ) const { return _current; }
+tiny_uint TinyGameStateManager::GetStateID( ) const { return m_current; }
 
 tiny_string TinyGameStateManager::GetStateName( ) const {
 	auto state_name = "";
 
-	if ( _current < _states.size( ) ) {
-		auto& node = _states.node( _current );
+	if ( m_current < m_states.size( ) ) {
+		auto& node = m_states.node( m_current );
 
 		state_name = tiny_string{ node.Alias };
 	}
@@ -77,8 +77,8 @@ tiny_string TinyGameStateManager::GetStateName( ) const {
 TinyGameState* TinyGameStateManager::GetState( ) const {
 	auto* game_state = tiny_cast( nullptr, TinyGameState* );
 
-	if ( _current < _states.size( ) ) {
-		auto storage = _states.at( _current );
+	if ( m_current < m_states.size( ) ) {
+		auto storage = m_states.at( m_current );
 
 		game_state = storage.As<TinyGameState>( );
 	}
@@ -89,8 +89,8 @@ TinyGameState* TinyGameStateManager::GetState( ) const {
 TinyGameState* TinyGameStateManager::GetState( const tiny_uint state_id ) const {
 	auto* game_state = tiny_cast( nullptr, TinyGameState* );
 
-	if ( state_id < _states.size( ) ) {
-		auto storage = _states.at( state_id );
+	if ( state_id < m_states.size( ) ) {
+		auto storage = m_states.at( state_id );
 
 		game_state = storage.As<TinyGameState>( );
 	}
@@ -108,8 +108,8 @@ TinyGameState* TinyGameStateManager::GetState( const tiny_hash state_hash ) cons
 	auto* game_state = tiny_cast( nullptr, TinyGameState* );
 	auto state_id	 = tiny_cast( 0, tiny_uint );
 
-	if ( _states.find( state_hash, state_id ) ) {
-		auto storage = _states.at( state_id );
+	if ( m_states.find( state_hash, state_id ) ) {
+		auto storage = m_states.at( state_id );
 
 		game_state = storage.As<TinyGameState>( );
 	}

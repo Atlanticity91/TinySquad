@@ -38,7 +38,7 @@ bool TinyTexture3D::Create(
 
 void TinyTexture3D::Terminate( TinyGame* game ) {
 	auto& graphics = game->GetGraphics( );
-	auto context   = graphics.GetContext( );
+	auto graphic   = graphics.GetWrapper( );
 
-	TinyGraphicTexture::Terminate( context );
+	TinyGraphicTexture::Terminate( graphic );
 }

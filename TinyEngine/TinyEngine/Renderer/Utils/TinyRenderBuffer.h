@@ -25,9 +25,9 @@
 te_class TinyRenderBuffer final {
 
 private:
-	tiny_uint						  _chunk_size;
-	TinyGraphicBuffer				  _buffer;
-	tiny_list<VkDescriptorBufferInfo> _descriptors;
+	tiny_uint m_chunk_size;
+	TinyGraphicBuffer m_buffer;
+	tiny_list<VkDescriptorBufferInfo> m_descriptors;
 
 public:
 	TinyRenderBuffer( );

@@ -28,25 +28,25 @@ TinyAsset::TinyAsset( TinyAssetTypes type )
 { }
 
 TinyAsset::TinyAsset( tiny_uint type )
-	: _type{ type },
-	_reference{ }
+	: m_type{ type },
+	m_reference{ }
 { }
 
 bool TinyAsset::Acquire( TinyGame* game ) {
-	_reference += 1;
+	m_reference += 1;
 
 	return OnAcquire( game );
 }
 
 bool TinyAsset::Release( TinyGame* game ) {
-	_reference -= 1;
+	m_reference -= 1;
 
-	return _reference == 0 && OnRelease( game );
+	return m_reference == 0 && OnRelease( game );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_uint TinyAsset::GetType( ) const { return _type; }
+tiny_uint TinyAsset::GetType( ) const { return m_type; }
 
-tiny_uint TinyAsset::GetReference( ) const { return _reference; }
+tiny_uint TinyAsset::GetReference( ) const { return m_reference; }

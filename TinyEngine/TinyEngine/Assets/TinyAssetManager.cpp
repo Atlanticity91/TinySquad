@@ -24,12 +24,12 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAssetManager::TinyAssetManager( ) 
-	: _importer{ },
-	_containers{ TA_TYPE_COUNT }
+	: m_importer{ },
+	m_containers{ TA_TYPE_COUNT }
 { }
 
 bool TinyAssetManager::Initialize( TinyGame* game, TinyConfig*& game_config ) {
-	_importer.Initialize( );
+	m_importer.Initialize( );
 
 	RegisterTypes( );
 
@@ -44,7 +44,7 @@ bool TinyAssetManager::Import( TinyGame* game, const tiny_string& path ) {
 		auto path_info = filesystem.GetInformation( path );
 		auto file	   = filesystem.OpenFile( path, TF_ACCESS_READ );
 
-		state = _importer.Import( game, tiny_rvalue( file ), path_info );
+		state = m_importer.Import( game, tiny_rvalue( file ), path_info );
 	}
 
 	return state;
@@ -56,7 +56,7 @@ bool TinyAssetManager::Export(
 	const tiny_string& alias,
 	const native_pointer builder
 ) {
-	return _importer.Export( game, type, alias, builder );
+	return m_importer.Export( game, type, alias, builder );
 }
 
 bool TinyAssetManager::Load( TinyGame* game, const tiny_string& path ) { 
@@ -121,7 +121,7 @@ void TinyAssetManager::Release( TinyGame* game, TinyAssetHandle& handle ) {
 }
 
 void TinyAssetManager::Terminate( TinyGame* game ) {
-	for ( auto& containter : _containers ) {
+	for ( auto& containter : m_containers ) {
 		if ( containter.GetIsValid( ) )
 			containter.As<ITinyAssetContainer>( )->Terminate( game );
 	}
@@ -245,13 +245,13 @@ bool TinyAssetManager::LoadAssetFile(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAssetImporter& TinyAssetManager::GetImporter( ) { return _importer; }
+TinyAssetImportManager& TinyAssetManager::GetImporter( ) { return m_importer; }
 
 ITinyAssetContainer* TinyAssetManager::GetContainer( const tiny_uint asset_type ) {
 	auto container = tiny_cast( nullptr, ITinyAssetContainer* );
 
-	if ( asset_type < _containers.size( ) )
-		container = _containers[ asset_type ].As<ITinyAssetContainer>( );
+	if ( asset_type < m_containers.size( ) )
+		container = m_containers[ asset_type ].As<ITinyAssetContainer>( );
 
 	return container;
 }
@@ -261,8 +261,8 @@ const ITinyAssetContainer* TinyAssetManager::GetContainer(
 ) const {
 	auto container = tiny_cast( nullptr, const ITinyAssetContainer* );
 
-	if ( asset_type < _containers.size( ) )
-		container = _containers[ asset_type ].As<ITinyAssetContainer>( );
+	if ( asset_type < m_containers.size( ) )
+		container = m_containers[ asset_type ].As<ITinyAssetContainer>( );
 
 	return container;
 }

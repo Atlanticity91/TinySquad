@@ -27,7 +27,7 @@ class TinyToolbox;
 te_class TinyToolCategory {
 
 private:
-	tiny_string _name;
+	tiny_string m_name;
 
 public:
 	TinyToolCategory( const tiny_string& name );

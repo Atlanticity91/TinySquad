@@ -40,8 +40,8 @@ struct TinyScriptMetadata {
 TINY_FRAMEWORK_COMP( TinyScript ) {
 
 private:
-	TinyScriptMetadata _pre_tick;
-	TinyScriptMetadata _post_tick;
+	TinyScriptMetadata m_pre_tick;
+	TinyScriptMetadata m_post_tick;
 
 public:
 	TinyScript( );

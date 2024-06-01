@@ -51,7 +51,7 @@ void TinyScriptSystem::PreTick( TinyGame* game ) {
 	auto& natives = game->GetNatives( );
 	auto& lua	  = game->GetScripts( );
 
-	for ( auto& comp : _components ) {
+	for ( auto& comp : m_components ) {
 		if ( comp.GetHasPreTick( ) ) {
 			auto* pre_comp = tiny_rvalue( comp );
 			auto& pre_tick = comp.GetPreTick( );
@@ -70,7 +70,7 @@ void TinyScriptSystem::PostTick( TinyGame* game ) {
 	auto& natives = game->GetNatives( );
 	auto& lua	  = game->GetScripts( );
 
-	for ( auto& comp : _components ) {
+	for ( auto& comp : m_components ) {
 		if ( comp.GetHasPostTick( ) ) {
 			auto* post_comp = tiny_rvalue( comp );
 			auto& post_tick = comp.GetPostTick( );

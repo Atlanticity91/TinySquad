@@ -31,7 +31,7 @@ namespace TinyNutUI {
 		auto& renderer	   = nut_game->GetRenderer( );
 		auto& staging	   = renderer.GetStaging( );
 		auto channels	   = 0;
-		auto context	   = graphics.GetContext( );
+		auto graphic	   = graphics.GetWrapper( );
 		auto image_		   = Image{ };
 		auto* width		   = tiny_cast( tiny_rvalue( specification.Properties.Width  ), tiny_int* );
 		auto* height	   = tiny_cast( tiny_rvalue( specification.Properties.Height ), tiny_int* );
@@ -39,11 +39,11 @@ namespace TinyNutUI {
 		auto* pixels = stbi_load_from_memory( image, length, width, height, tiny_rvalue( channels ), 4 );
 		auto size    = tiny_lvalue( width ) * tiny_lvalue( height ) * 4;
 
-		staging.Map( context, size, pixels );
+		staging.Map( graphic, size, pixels );
 
 		stbi_image_free( pixels );
 
-		if ( image_.Texture.Create( context, specification, staging ) )
+		if ( image_.Texture.Create( graphic, specification, staging ) )
 			image_.Descriptor = TinyImGui::CreateTextureID( image_.Texture );
 
 		return image_;
@@ -51,11 +51,11 @@ namespace TinyNutUI {
 
 	void DeleteImage( TinyNut* nut_game, Image& image ) { 
 		auto& graphics = nut_game->GetGraphics( );
-		auto context   = graphics.GetContext( );
+		auto graphic   = graphics.GetWrapper( );
 
 		TinyImGui::DestroyTextureID( image.Descriptor );
 
-		image.Texture.Terminate( context );
+		image.Texture.Terminate( graphic );
 	}
 
 	ImRect GetItemRect( ) { return { ImGui::GetItemRectMin( ), ImGui::GetItemRectMax( ) }; }

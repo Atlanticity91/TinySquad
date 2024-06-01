@@ -26,29 +26,29 @@
 TinyMaterial::TinyMaterial( )
 	: TinyAsset{ TA_TYPE_MATERIAL }, 
 	TinyGraphicPipeline{ },
-	_shaders{ }
+	m_shaders{ }
 { }
 
 bool TinyMaterial::Create( 
 	TinyGame* game,
-	TinyGraphicManager& graphic, 
+	TinyGraphicManager& graphics, 
 	TinyMaterialBuilder& builder 
 ) { 
 	auto& assets   = game->GetAssets( );
 	auto shader_id = builder.ShaderStages.size( );
 	auto pass_name = tiny_string{ builder.PassName };
-	auto context   = graphic.GetContext( );
-	auto limits    = graphic.GetPipelineLimits( );
+	auto graphic   = graphics.GetWrapper( );
+	auto limits    = graphics.GetPipelineLimits( );
 	auto state     = true;
 
-	builder.Pass			= graphic.GetRenderPass( pass_name );
+	builder.Pass			= graphics.GetRenderPass( pass_name );
 	builder.Shaders			= shader_id;
-	builder.DescriptorCount = graphic.GetSwapchainCapacity( );
+	builder.DescriptorCount = graphics.GetSwapchainCapacity( );
 
-	_shaders = shader_id;
+	m_shaders = shader_id;
 
 	while ( state && shader_id-- > 0 ) {
-		auto& asset = _shaders[ shader_id ];
+		auto& asset = m_shaders[ shader_id ];
 
 		asset.Type = TA_TYPE_SHADER;
 		asset.Hash = tiny_hash{ builder.ShaderStages[ shader_id ] };
@@ -60,13 +60,13 @@ bool TinyMaterial::Create(
 		shader_id = builder.ShaderStages.size( );
 
 		while ( shader_id-- > 0 ) {
-			auto& shader = _shaders[ shader_id ];
+			auto& shader = m_shaders[ shader_id ];
 			auto* asset  = assets.GetAssetAs<TinyShader>( shader );
 
 			builder.Shaders[ shader_id ] = asset->Get( );
 		}
 
-		state = TinyGraphicPipeline::Create( context, limits, builder );
+		state = TinyGraphicPipeline::Create( graphic, limits, builder );
 	}
 
 	return state;
@@ -86,12 +86,12 @@ void TinyMaterial::Submit(
 void TinyMaterial::Terminate( TinyGame* game ) {
 	auto& graphics = game->GetGraphics( );
 	auto& assets   = game->GetAssets( );
-	auto context   = graphics.GetContext( );
+	auto graphic = graphics.GetWrapper( );
 
-	for ( auto& shader : _shaders )
+	for ( auto& shader : m_shaders )
 		assets.Release( game, shader );
 
-	TinyGraphicPipeline::Terminate( context );
+	TinyGraphicPipeline::Terminate( graphic );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

@@ -25,19 +25,19 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyConfig::TinyConfig( )
 	: TinyAsset{ TA_TYPE_CONFIG },
-	_application{ false, 1280, 720 },
-	_archives{ },
-	_start_scene{ }
+	m_application{ false, 1280, 720 },
+	m_archives{ },
+	m_start_scene{ }
 { }
 
 void TinyConfig::SetDimensions( const tiny_uint width, const tiny_uint height ) {
-	_application.Width  = width;
-	_application.Height = height;
+	m_application.Width  = width;
+	m_application.Height = height;
 }
 
 void TinyConfig::AddArchive( const std::string& archive ) {
 	if ( !archive.empty( ) )
-		_archives.emplace_back( archive );
+		m_archives.emplace_back( archive );
 }
 
 bool TinyConfig::Load( TinyFilesystem& filesystem, TinyFile& file ) {
@@ -45,28 +45,28 @@ bool TinyConfig::Load( TinyFilesystem& filesystem, TinyFile& file ) {
 
 	file.Read( header );
 
-	auto state = header.GetIsAsset( _type );
+	auto state = header.GetIsAsset( m_type );
 
 	if ( state ) {
 		auto developper = filesystem.GetDeveloper( );
 
 		file.Read( developper );
-		file.Read( _application.IsFullScreen );
-		file.Read( _application.Width );
-		file.Read( _application.Height );
-		file.Read( _application.Icon.Width );
-		file.Read( _application.Icon.Height );
+		file.Read( m_application.IsFullScreen );
+		file.Read( m_application.Width );
+		file.Read( m_application.Height );
+		file.Read( m_application.Icon.Width );
+		file.Read( m_application.Icon.Height );
 
-		auto length = _application.Icon.Width * _application.Icon.Height * 4;
+		auto length = m_application.Icon.Width * m_application.Icon.Height * 4;
 
 		if ( length > 0 ) {
-			tiny_allocate( _application.Icon.Pixels, length );
+			tiny_allocate( m_application.Icon.Pixels, length );
 
-			file.Read( length, _application.Icon.Pixels );
+			file.Read( length, m_application.Icon.Pixels );
 		}
 
-		file.Read( _archives );
-		file.Read( _start_scene );
+		file.Read( m_archives );
+		file.Read( m_start_scene );
 	}
 
 	return state;
@@ -74,35 +74,35 @@ bool TinyConfig::Load( TinyFilesystem& filesystem, TinyFile& file ) {
 
 void TinyConfig::Save( TinyFilesystem& filesystem, TinyFile& file ) {
 	auto developper = tiny_uint{ };
-	auto header		= TinyAssetHeader{ _type };
+	auto header		= TinyAssetHeader{ m_type };
 
 	file.Write( header );
 	file.Write( developper );
 	file.Seek( developper );
-	file.Write( _application.IsFullScreen );
-	file.Write( _application.Width );
-	file.Write( _application.Height );
-	file.Write( _application.Icon.Width );
-	file.Write( _application.Icon.Height );
+	file.Write( m_application.IsFullScreen );
+	file.Write( m_application.Width );
+	file.Write( m_application.Height );
+	file.Write( m_application.Icon.Width );
+	file.Write( m_application.Icon.Height );
 	
-	if ( _application.Icon.Pixels ) {
-		auto length = _application.Icon.Width* _application.Icon.Height * 4;
+	if ( m_application.Icon.Pixels ) {
+		auto length = m_application.Icon.Width* m_application.Icon.Height * 4;
 
-		file.Write( length, _application.Icon.Pixels );
+		file.Write( length, m_application.Icon.Pixels );
 	}
 
-	file.Write( _archives );
-	file.Write( _start_scene );
+	file.Write( m_archives );
+	file.Write( m_start_scene );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const TinyAppConfig& TinyConfig::GetAppConfig( ) const { return _application; }
+const TinyAppConfig& TinyConfig::GetAppConfig( ) const { return m_application; }
 
-const tiny_list<std::string>& TinyConfig::GetArchives( ) const { return _archives; }
+const tiny_list<std::string>& TinyConfig::GetArchives( ) const { return m_archives; }
 
-const tiny_string TinyConfig::GetStartScene( ) const { return tiny_string{ _start_scene }; }
+const tiny_string TinyConfig::GetStartScene( ) const { return tiny_string{ m_start_scene }; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

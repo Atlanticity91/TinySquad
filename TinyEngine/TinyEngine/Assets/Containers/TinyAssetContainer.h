@@ -30,11 +30,11 @@ template<typename Asset>
 class TinyAssetContainer : tiny_inherit( ITinyAssetContainer ) {
 
 protected:
-	tiny_map<Asset> _assets;
+	tiny_map<Asset> m_assets;
 
 public:
 	TinyAssetContainer( ) 
-		: _assets{ } 
+		: m_assets{ } 
 	{ };
 
 	virtual ~TinyAssetContainer( ) = default;
@@ -42,12 +42,12 @@ public:
 	tiny_implement( void UnLoad( TinyGame* game, const tiny_hash asset_hash ) ) { 
 		auto asset_id = tiny_cast( 0, tiny_uint );
 		
-		if ( _assets.find( asset_hash, asset_id ) ) {
-			auto& asset = _assets.at( asset_id );
+		if ( m_assets.find( asset_hash, asset_id ) ) {
+			auto& asset = m_assets.at( asset_id );
 
 			asset.Terminate( game );
 
-			_assets.erase( asset_id );
+			m_assets.erase( asset_id );
 		}
 	};
 
@@ -66,20 +66,20 @@ public:
 	};
 
 	tiny_implement( void Terminate( TinyGame* game ) ) { 
-		for ( auto& asset : _assets )
+		for ( auto& asset : m_assets )
 			asset.Data.Terminate( game );
 	};
 
 protected:
 	Asset& Emplace( const tiny_string& alias ) { 
-		_assets.emplace( alias, { } );
+		m_assets.emplace( alias, { } );
 
-		return _assets[ alias ];
+		return m_assets[ alias ];
 	};
 
 public:
 	tiny_implement( void GetAssetList( tiny_list<tiny_string>& list ) const ) { 
-		for ( auto& asset : _assets ) {
+		for ( auto& asset : m_assets ) {
 			auto asset_name = tiny_string{ asset.Alias };
 
 			list.emplace_back( asset_name );
@@ -87,15 +87,15 @@ public:
 	};
 
 	tiny_implement( bool Find( const tiny_hash asset_hash ) const ) { 
-		return _assets.find( asset_hash );
+		return m_assets.find( asset_hash );
 	};
 
 	tiny_implement( TinyAsset* GetAsset( const tiny_hash asset_hash ) ) {
 		auto asset_id = tiny_cast( 0, tiny_uint );
 		auto* asset   = tiny_cast( nullptr, TinyAsset* );
 
-		if ( _assets.find( asset_hash, asset_id ) )
-			asset = tiny_rvalue( _assets.at( asset_id ) );
+		if ( m_assets.find( asset_hash, asset_id ) )
+			asset = tiny_rvalue( m_assets.at( asset_id ) );
 
 		return asset;
 	};
@@ -104,8 +104,8 @@ public:
 		auto asset_id = tiny_cast( 0, tiny_uint );
 		auto* asset   = tiny_cast( nullptr, const TinyAsset* );
 		
-		if ( _assets.find( asset_hash, asset_id ) )
-			asset = tiny_rvalue( _assets.at( asset_id ) );
+		if ( m_assets.find( asset_hash, asset_id ) )
+			asset = tiny_rvalue( m_assets.at( asset_id ) );
 
 		return asset;
 	};

@@ -24,11 +24,11 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolCategory::TinyToolCategory( const tiny_string& name )
-    : _name{ name }
+    : m_name{ name }
 { }
 
 bool TinyToolCategory::Tick( TinyGame* game, TinyToolbox& toolbox ) {
-    auto* name_str = _name.get( );
+    auto* name_str = m_name.get( );
     auto state     = ImGui::BeginTabItem( name_str );
     
     if ( state ) {

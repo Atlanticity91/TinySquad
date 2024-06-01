@@ -29,22 +29,22 @@ TinyEngine::TinyEngine(
 	TinyGameOrientations orientation, 
 	bool is_headless 
 )
-	: _is_running{ true },
-	_jobs{ },
-	_filesystem{ developer },
-	_assets{ },
-	_window{ title, is_headless },
-	_inputs{ },
-	_audio{ },
-	_graphics{ orientation },
-	_natives{ },
-	_renderer{ },
-	_ecs{ },
-	_ux{ },
-	_addons{ },
-	_provider{ },
-	_states{ },
-	_toolbox{ }
+	: m_is_running{ true },
+	m_jobs{ },
+	m_filesystem{ developer },
+	m_assets{ },
+	m_window{ title, is_headless },
+	m_inputs{ },
+	m_audio{ },
+	m_graphics{ orientation },
+	m_natives{ },
+	m_renderer{ },
+	m_ecs{ },
+	m_ux{ },
+	m_addons{ },
+	m_provider{ },
+	m_states{ },
+	m_toolbox{ }
 { }
 
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
@@ -56,8 +56,8 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 		PostInit( game )						 && 
 		ProcessArgs( game, argc, argv )
 	) {
-		if ( !_window.GetIsHeadless( ) ) {
-			_inputs.Register(
+		if ( !m_window.GetIsHeadless( ) ) {
+			m_inputs.Register(
 				"Show Dev",
 				{
 					{ TinyInputKey( KEY_F1 ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
@@ -66,114 +66,118 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 			);
 		}
 
-		_is_running = true;
+		m_is_running = true;
 	}
 
-	return _is_running;
+	return m_is_running;
 }
 
-void TinyEngine::Minimize( ) { _window.Minimize( ); }
+void TinyEngine::Minimize( ) { m_window.Minimize( ); }
 
-void TinyEngine::Restore( ) { _window.Restore( ); }
+void TinyEngine::Restore( ) { m_window.Restore( ); }
 
-void TinyEngine::Maximize( ) { _window.Maximize( ); }
+void TinyEngine::Maximize( ) { m_window.Maximize( ); }
 
-void TinyEngine::Stop( ) { _is_running = false; }
+void TinyEngine::Stop( ) { m_is_running = false; }
 
-void TinyEngine::Dispatch( const TinyJob& job ) { _jobs.Dispatch( job ); }
+void TinyEngine::DisableCache( ) { m_graphics.DisableCache( ); }
+
+void TinyEngine::EnableCache( ) { m_graphics.EnableCache( ); }
+
+void TinyEngine::Dispatch( const TinyJob& job ) { m_jobs.Dispatch( job ); }
 
 void TinyEngine::Switch( TinyGame* game, const tiny_uint state_id ) {
-	_states.Switch( game, state_id );
+	m_states.Switch( game, state_id );
 }
 
 void TinyEngine::Switch( TinyGame* game, const tiny_string& state_name ) {
-	_states.Switch( game, state_name );
+	m_states.Switch( game, state_name );
 }
 
 void TinyEngine::Switch( TinyGame* game, const tiny_hash state_hash ) {
-	_states.Switch( game, state_hash );
+	m_states.Switch( game, state_hash );
 }
 
 bool TinyEngine::PreTick( TinyGame* game ) {
-	auto state = _window.Tick( );
+	auto state = m_window.Tick( );
 
 	if ( state ) {
-		_addons.PreTick( game );
-		_ecs.PreTick( game );
-		_graphics.Acquire( _window );
+		m_addons.PreTick( game );
+		m_ecs.PreTick( game );
+		m_graphics.Acquire( m_window );
 	}
 
 	return state;
 }
 
 void TinyEngine::PostTick( TinyGame* game ) {
-	_addons.PostTick( game );
-	_ecs.PostTick( game );
-	_ux.Tick( game );
-	_audio.Tick( _inputs );
-	_jobs.Wait( );
-	_renderer.Compose( game );
-	_toolbox.Tick( game );
-	_graphics.Present( _window );
-	_inputs.Tick( );
+	m_addons.PostTick( game );
+	m_ecs.PostTick( game );
+	m_ux.Tick( game );
+	m_audio.Tick( m_inputs );
+	m_jobs.Wait( );
+	m_renderer.Compose( game );
+	m_toolbox.Tick( game );
+	m_graphics.Present( m_window );
+	m_inputs.Tick( );
 }
 
 void TinyEngine::Terminate( TinyGame* game ) {
-	auto& scripts = _assets.GetScripts( );
+	auto& scripts = m_assets.GetScripts( );
 
-	_is_running = false;
-	_toolbox.Terminate( game );
-	_provider.Terminate( _filesystem );
-	_addons.Terminate( game );
+	m_is_running = false;
+	m_toolbox.Terminate( game );
+	m_provider.Terminate( m_filesystem );
+	m_addons.Terminate( game );
 	
 	scripts.Terminate( );
 	
-	_renderer.Terminate( _graphics );
-	_assets.Terminate( game );
-	_graphics.Terminate( _filesystem, _window );
-	_audio.Terminate( _filesystem, _window );
-	_inputs.Terminate( _filesystem, _window );
-	_window.Terminate( );
-	_filesystem.Terminate( );
-	_jobs.Terminate( );
+	m_renderer.Terminate( m_graphics );
+	m_assets.Terminate( game );
+	m_graphics.Terminate( m_filesystem, m_window );
+	m_audio.Terminate( m_filesystem, m_window );
+	m_inputs.Terminate( m_filesystem, m_window );
+	m_window.Terminate( );
+	m_filesystem.Terminate( );
+	m_jobs.Terminate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
-	auto state = _jobs.Initialize( game, TinyEngine::JobWorkerRun ) &&
-				_filesystem.Initialize( _window )					&&
-				_assets.Initialize( game, game_config );
+	auto state = m_jobs.Initialize( game, TinyEngine::JobWorkerRun ) &&
+				m_filesystem.Initialize( m_window )					 &&
+				m_assets.Initialize( game, game_config );
 
 	if ( state ) {
-		auto& scripts = _assets.GetScripts( );
+		auto& scripts = m_assets.GetScripts( );
 
 		state = scripts.Initialize( ) &&
-				_addons.Initialize( game );
+				m_addons.Initialize( game );
 	}
 
 	return state;
 }
 
 bool TinyEngine::Init( TinyGame* game, const TinyConfig& config ) {
-	return  _window.Initialize( config, tiny_cast( game, native_pointer ) ) &&
-			_inputs.Initialize( _filesystem, _window )						&&
-			_audio.Initialize( _filesystem, _window )						&&
-			_graphics.Initialize( _filesystem, _window );
+	return  m_window.Initialize( config, tiny_cast( game, native_pointer ) ) &&
+			m_inputs.Initialize( m_filesystem, m_window )					 &&
+			m_audio.Initialize( m_filesystem, m_window )					 &&
+			m_graphics.Initialize( m_filesystem, m_window );
 }
 
 bool TinyEngine::PostInit( TinyGame* game ) {
-	_window.SetCallback( TWC_WINDOW_SIZE , TinyEngine::Resize		 );
-	_window.SetCallback( TWC_WINDOW_CLOSE, TinyEngine::Close		 );
-	_window.SetCallback( TWC_KEY		 , TinyEngine::ProcessKey	 );
-	_window.SetCallback( TWC_CURSOR		 , TinyEngine::ProcessCursor );
-	_window.SetCallback( TWC_MOUSE		 , TinyEngine::ProcessMouse  );
-	_window.SetCallback( TWC_SCROLL		 , TinyEngine::ProcessScroll );
+	m_window.SetCallback( TWC_WINDOW_SIZE , TinyEngine::Resize		  );
+	m_window.SetCallback( TWC_WINDOW_CLOSE, TinyEngine::Close		  );
+	m_window.SetCallback( TWC_KEY		  , TinyEngine::ProcessKey	  );
+	m_window.SetCallback( TWC_CURSOR	  , TinyEngine::ProcessCursor );
+	m_window.SetCallback( TWC_MOUSE		  , TinyEngine::ProcessMouse  );
+	m_window.SetCallback( TWC_SCROLL	  , TinyEngine::ProcessScroll );
 
-	return  _renderer.Initialize( _graphics, _filesystem ) &&
-			_provider.Initialize( _filesystem )			   &&
-			_toolbox.Initialize( game );
+	return  m_renderer.Initialize( m_graphics, m_filesystem ) &&
+			m_provider.Initialize( m_filesystem )			  &&
+			m_toolbox.Initialize( game );
 }
 
 bool TinyEngine::ProcessArgs( TinyGame* game, tiny_int argc, char** argv ) { return true; }
@@ -309,40 +313,40 @@ void TinyEngine::ProcessScroll( GLFWwindow* handle, double offset_x, double offs
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyEngine::GetIsRunning( ) const { return _is_running; }
+bool TinyEngine::GetIsRunning( ) const { return m_is_running; }
 
 bool TinyEngine::GetShouldRun( ) const { 
-	return GetIsRunning( ) && _window.GetShouldRun( );
+	return GetIsRunning( ) && m_window.GetShouldRun( );
 }
 
-TinyJobManager& TinyEngine::GetJobs( ) { return _jobs; }
+TinyJobManager& TinyEngine::GetJobs( ) { return m_jobs; }
 
-TinyFilesystem& TinyEngine::GetFilesystem( ) { return _filesystem; }
+TinyFilesystem& TinyEngine::GetFilesystem( ) { return m_filesystem; }
 
-TinyAssetManager& TinyEngine::GetAssets( ) { return _assets; }
+TinyAssetManager& TinyEngine::GetAssets( ) { return m_assets; }
 
-TinyWindow& TinyEngine::GetWindow( ) { return _window; }
+TinyWindow& TinyEngine::GetWindow( ) { return m_window; }
 
-TinyInputManager& TinyEngine::GetInputs( ) { return _inputs; }
+TinyInputManager& TinyEngine::GetInputs( ) { return m_inputs; }
 
-TinyAudioManager& TinyEngine::GetAudio( ) { return _audio; }
+TinyAudioManager& TinyEngine::GetAudio( ) { return m_audio; }
 
-TinyGraphicManager& TinyEngine::GetGraphics( ) { return _graphics; }
+TinyGraphicManager& TinyEngine::GetGraphics( ) { return m_graphics; }
 
-TinyNativeRegister& TinyEngine::GetNatives( ) { return _natives; }
+TinyNativeRegister& TinyEngine::GetNatives( ) { return m_natives; }
 
-TinyScriptManager& TinyEngine::GetScripts( ) { return _assets.GetScripts( ); }
+TinyScriptManager& TinyEngine::GetScripts( ) { return m_assets.GetScripts( ); }
 
-TinyRenderer& TinyEngine::GetRenderer( ) { return _renderer; }
+TinyRenderer& TinyEngine::GetRenderer( ) { return m_renderer; }
 
-TinyECS& TinyEngine::GetECS( ) { return _ecs; }
+TinyECS& TinyEngine::GetECS( ) { return m_ecs; }
 
-TinySceneManager& TinyEngine::GetScenes( ) { return _assets.GetScenes( ); }
+TinySceneManager& TinyEngine::GetScenes( ) { return m_assets.GetScenes( ); }
 
-TinyUXManager& TinyEngine::GetUX( ) { return _ux; }
+TinyUXManager& TinyEngine::GetUX( ) { return m_ux; }
 
-TinyAddonManager& TinyEngine::GetAddons( ) { return _addons; }
+TinyAddonManager& TinyEngine::GetAddons( ) { return m_addons; }
 
-TinyGameStateManager& TinyEngine::GetGameStates( ) { return _states; }
+TinyGameStateManager& TinyEngine::GetGameStates( ) { return m_states; }
 
-TinyToolbox& TinyEngine::GetToolbox( ) { return _toolbox; }
+TinyToolbox& TinyEngine::GetToolbox( ) { return m_toolbox; }

@@ -33,9 +33,9 @@ public:
 	static const tiny_uint Size = Vertex_t::Size + Parameters_t::Size;
 
 private:
-	Texture_t	 _textures;
-	Vertex_t	 _vertex;
-	Parameters_t _parameters;
+	Texture_t m_textures;
+	Vertex_t m_vertex;
+	Parameters_t m_parameters;
 
 public:
 	TinyRenderBatchText( );

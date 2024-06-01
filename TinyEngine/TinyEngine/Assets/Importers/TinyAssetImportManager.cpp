@@ -23,78 +23,78 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyAssetImporter::TinyAssetImporter( )
-	: _extensions{ },
-	_types{ TA_TYPE_COUNT },
-	_converters{ }
+TinyAssetImportManager::TinyAssetImportManager( )
+	: m_extensions{ },
+	m_types{ TA_TYPE_COUNT },
+	m_converters{ }
 { }
 
-void TinyAssetImporter::Initialize( ) {
+void TinyAssetImportManager::Initialize( ) {
 	RegisterExtensions( );
 	RegisterTypes( );
 }
 
-void TinyAssetImporter::Register( const tiny_uint type, const tiny_uint converter_id ) {
-	if ( converter_id < _converters.size( ) ) {
-		if ( type < _types.size( ) )
-			_types[ type ] = converter_id;
-		else if ( type < _types.size( ) + 1 )
-			_types.emplace_back( converter_id );
+void TinyAssetImportManager::Register( const tiny_uint type, const tiny_uint converter_id ) {
+	if ( converter_id < m_converters.size( ) ) {
+		if ( type < m_types.size( ) )
+			m_types[ type ] = converter_id;
+		else if ( type < m_types.size( ) + 1 )
+			m_types.emplace_back( converter_id );
 	}
 }
 
-void TinyAssetImporter::Register(
+void TinyAssetImportManager::Register(
 	const tiny_uint type,
 	const TinyAssetConverter& converter
 ) {
 	if ( converter.Import && converter.Export ) {
-		auto converter_id = _converters.size( );
+		auto converter_id = m_converters.size( );
 
-		_converters.emplace_back( converter );
+		m_converters.emplace_back( converter );
 
-		if ( type < _types.size( ) )
-			_types[ type ] = converter_id;
-		else if ( type < _types.size( ) + 1 )
-			_types.emplace_back( converter_id );
+		if ( type < m_types.size( ) )
+			m_types[ type ] = converter_id;
+		else if ( type < m_types.size( ) + 1 )
+			m_types.emplace_back( converter_id );
 	}
 }
 
-void TinyAssetImporter::Register( 
+void TinyAssetImportManager::Register( 
 	tiny_init<tiny_string> extensions, 
 	const tiny_uint converter_id 
 ) { 
-	if ( converter_id < _converters.size( ) ) {
+	if ( converter_id < m_converters.size( ) ) {
 		for ( auto& extension : extensions ) {
-			if ( !_extensions.find( extension ) )
-				_extensions.emplace( extension, converter_id );
+			if ( !m_extensions.find( extension ) )
+				m_extensions.emplace( extension, converter_id );
 		}
 	}
 }
 
-void TinyAssetImporter::Register(
+void TinyAssetImportManager::Register(
 	tiny_init<tiny_string> extensions,
 	const TinyAssetConverter& converter
 ) { 
 	if ( converter.Import && converter.Export ) {
-		auto converter_id = _converters.size( );
+		auto converter_id = m_converters.size( );
 
-		_converters.emplace_back( converter );
+		m_converters.emplace_back( converter );
 
 		Register( extensions, converter_id );
 	}
 }
 
-bool TinyAssetImporter::Import( 
+bool TinyAssetImportManager::Import( 
 	TinyGame* game, 
 	TinyFile* file,
 	const TinyPathInformation& path_info 
 ) {
 	auto extension_id = tiny_cast( 0, tiny_uint );
-	auto state		  = _extensions.find( path_info.Extension, extension_id );
+	auto state		  = m_extensions.find( path_info.Extension, extension_id );
 
 	if ( state ) {
-		auto converter_id = _extensions.at( extension_id );
-		auto& converter   = _converters[ converter_id ];
+		auto converter_id = m_extensions.at( extension_id );
+		auto& converter   = m_converters[ converter_id ];
 
 		state = tiny_cast( converter.Import, bool );
 
@@ -105,7 +105,7 @@ bool TinyAssetImporter::Import(
 	return state;
 }
 
-bool TinyAssetImporter::Export(
+bool TinyAssetImportManager::Export(
 	TinyGame* game,
 	const tiny_uint type,
 	const tiny_string& alias,
@@ -113,10 +113,10 @@ bool TinyAssetImporter::Export(
 ) {
 	auto state = false;
 
-	if ( type < _types.size( ) && alias.get_is_valid( ) && builder ) {
-		auto converter_id = _types[ type ];
+	if ( type < m_types.size( ) && alias.get_is_valid( ) && builder ) {
+		auto converter_id = m_types[ type ];
 		auto& filesystem  = game->GetFilesystem( );
-		auto& converter   = _converters[ converter_id ];
+		auto& converter   = m_converters[ converter_id ];
 		auto path		  = filesystem.CreatePath( TP_TYPE_DEV, alias, "tinyasset" );
 		auto file		  = filesystem.OpenFile( { path }, TF_ACCESS_BINARY_WRITE );
 
@@ -132,7 +132,7 @@ bool TinyAssetImporter::Export(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyAssetImporter::RegisterExtensions( ) {
+void TinyAssetImportManager::RegisterExtensions( ) {
 	Register( 
 		{
 			"png",
@@ -165,7 +165,7 @@ void TinyAssetImporter::RegisterExtensions( ) {
 	Register( { "ttf"  }, { TinyImport::ImportFont		, TinyImport::ExportFont   } );
 }
 
-void TinyAssetImporter::RegisterTypes( ) {
+void TinyAssetImportManager::RegisterTypes( ) {
 	Register( TA_TYPE_TEXTURE_2D	 , 0								 );
 	Register( TA_TYPE_TEXTURE_CUBEMAP, { TinyImport::ExportCubemap	   } );
 	Register( TA_TYPE_TEXTURE_ATLAS	 , { TinyImport::ExportAtlas	   } );

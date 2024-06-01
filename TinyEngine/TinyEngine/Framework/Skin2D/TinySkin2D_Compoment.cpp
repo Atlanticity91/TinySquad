@@ -29,28 +29,28 @@ TinySkin2D::TinySkin2D( )
 
 TinySkin2D::TinySkin2D( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash },
-	_material{ TA_TYPE_MATERIAL },
-	_texture{ TA_TYPE_TEXTURE_2D },
-	_color{ },
-	_sprite{ 0, 0 }
+	m_material{ TA_TYPE_MATERIAL },
+	m_texture{ TA_TYPE_TEXTURE_2D },
+	m_color{ },
+	m_sprite{ 0, 0 }
 { }
 
 bool TinySkin2D::Create( TinyGame* game ) {
 	auto& ecs  = game->GetECS( );
-	auto state = ecs.GetHasComponent( _owner, "TinyTransform2D" );
+	auto state = ecs.GetHasComponent( m_owner, "TinyTransform2D" );
 
 	if ( !state )
-		state = ecs.Append( game, _owner, "TinyTransform2D" ) != nullptr;
+		state = ecs.Append( game, m_owner, "TinyTransform2D" ) != nullptr;
 
 	return state;
 }
 
 TinySkin2D& TinySkin2D::SetSpriteColumn( tiny_uint column ) {
-	return SetSprite( column, _sprite.y );
+	return SetSprite( column, m_sprite.y );
 }
 
 TinySkin2D& TinySkin2D::SetSpriteRow( tiny_uint row ) {
-	return SetSprite( _sprite.x, row );
+	return SetSprite( m_sprite.x, row );
 }
 
 TinySkin2D& TinySkin2D::SetSprite( const tiny_upoint& sprite ) {
@@ -58,8 +58,8 @@ TinySkin2D& TinySkin2D::SetSprite( const tiny_upoint& sprite ) {
 }
 
 TinySkin2D& TinySkin2D::SetSprite( tiny_uint column, tiny_uint row ) {
-	_sprite.x = column;
-	_sprite.y = row;
+	m_sprite.x = column;
+	m_sprite.y = row;
 
 	return tiny_self;
 }
@@ -67,17 +67,17 @@ TinySkin2D& TinySkin2D::SetSprite( tiny_uint column, tiny_uint row ) {
 void TinySkin2D::Delete( TinyGame* game ) { 
 	auto& ecs = game->GetECS( );
 
-	if ( ecs.GetHasComponent( _owner, "TinyAnim2D" ) )
-		ecs.Remove( game, _owner, "TinyAnim2D" );
+	if ( ecs.GetHasComponent( m_owner, "TinyAnim2D" ) )
+		ecs.Remove( game, m_owner, "TinyAnim2D" );
 }
 
 void TinySkin2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 	TinyComponent::DisplayWidget( game, toolbox );
 
-	toolbox.DisplayAsset( game, "Material", _material );
-	toolbox.DisplayAsset( game, "Texture", _texture );
+	toolbox.DisplayAsset( game, "Material", m_material );
+	toolbox.DisplayAsset( game, "Texture", m_texture );
 
-	TinyImGui::InputColor( "Color", _color );
+	TinyImGui::InputColor( "Color", m_color );
 	TinyImGui::EndVars( );
 
 	ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, { 3.5f, 3.5f } );
@@ -86,8 +86,8 @@ void TinySkin2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 		ImGui::Separator( );
 
 		TinyImGui::BeginVars( );
-		TinyImGui::InputScalar( "Column", _sprite.x );
-		TinyImGui::InputScalar( "Row", _sprite.y );
+		TinyImGui::InputScalar( "Column", m_sprite.x );
+		TinyImGui::InputScalar( "Row", m_sprite.y );
 
 		ImGui::TreePop( );
 	} else 
@@ -99,8 +99,8 @@ void TinySkin2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 void TinySkin2D::OnEnable( TinyGame* game ) {
 	auto& ecs = game->GetECS( );
 
-	if ( !ecs.GetHasComponent( _owner, "TinyTransform2D" ) )
-		_is_active = false;
+	if ( !ecs.GetHasComponent( m_owner, "TinyTransform2D" ) )
+		m_is_active = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,14 +108,14 @@ void TinySkin2D::OnEnable( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinySkin2D::GetIsActive( ) const { 
 	return  TinyComponent::GetIsActive( ) && 
-			_material.GetIsValid( )		  && 
-			_texture.GetIsValid( );
+			m_material.GetIsValid( )		  && 
+			m_texture.GetIsValid( );
 }
 
-TinyAssetHandle& TinySkin2D::GetMaterial( ) { return _material; }
+TinyAssetHandle& TinySkin2D::GetMaterial( ) { return m_material; }
 
-TinyAssetHandle& TinySkin2D::GetTexture( ) { return _texture; }
+TinyAssetHandle& TinySkin2D::GetTexture( ) { return m_texture; }
 
-tiny_color& TinySkin2D::GetColor( ) { return _color; }
+tiny_color& TinySkin2D::GetColor( ) { return m_color; }
 
-tiny_upoint& TinySkin2D::GetSprite( ) { return _sprite; }
+tiny_upoint& TinySkin2D::GetSprite( ) { return m_sprite; }

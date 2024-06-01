@@ -25,9 +25,9 @@
 te_class TinyCue final : tiny_inherit( TinyAsset ) {
 
 private:
-	TinyCueFormat  _format;
-	TinyCueContext _context;
-	tiny_storage   _storage;
+	TinyCueFormat m_format;
+	TinyCueContext m_context;
+	tiny_storage m_storage;
 
 public:
 	TinyCue( );

@@ -25,8 +25,8 @@
 te_abstract_class TinyAsset {
 
 protected:
-	tiny_uint _type;
-	tiny_uint _reference;
+	tiny_uint m_type;
+	tiny_uint m_reference;
 
 public:
 	TinyAsset( TinyAssetTypes type );

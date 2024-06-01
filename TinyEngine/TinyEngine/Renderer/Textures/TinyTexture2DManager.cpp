@@ -34,19 +34,19 @@ bool TinyTexture2DManager::Create(
 ) {
 	auto& graphics = game->GetGraphics( );
 	auto& builder_ = tiny_lvalue( tiny_cast( builder, const TinyTexture2DBuilder* ) );
-	auto context   = graphics.GetContext( );
+	auto graphic   = graphics.GetWrapper( );
 	auto staging   = TinyGraphicBufferStaging{ };
 	auto state	   = false;
 	auto size	   = builder_.Texels.size( );
 	auto* data	   = tiny_cast( builder_.Texels.data( ), const native_pointer );
 
-	if ( staging.CreateMap( context, size, data ) ) {
+	if ( staging.CreateMap( graphic, size, data ) ) {
 		auto& texture = Emplace( alias );
 
 		state = texture.Create( graphics, builder_, staging );
 	}
 
-	staging.Terminate( context );
+	staging.Terminate( graphic );
 
 	return state;
 }

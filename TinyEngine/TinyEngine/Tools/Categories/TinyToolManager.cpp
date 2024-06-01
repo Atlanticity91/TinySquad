@@ -27,8 +27,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolManager::TinyToolManager( ) 
-	: _current{ 0 },
-	_categories{ }
+	: m_current{ 0 },
+	m_categories{ }
 { }
 
 bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
@@ -42,19 +42,19 @@ bool TinyToolManager::Initialize( TinyGame* game, TinyToolbox& toolbox ) {
 	return true; 
 }
 
-void TinyToolManager::Clear( ) { _categories.clear( ); }
+void TinyToolManager::Clear( ) { m_categories.clear( ); }
 
 void TinyToolManager::Tick( TinyGame* game, TinyToolbox& toolbox ) {
-	if ( _categories.size( ) > 0 ) {
+	if ( m_categories.size( ) > 0 ) {
 		if ( ImGui::Begin( "Tiny Editor", nullptr, ImGuiWindowFlags_AlwaysVerticalScrollbar ) ) {
 			auto tab_id = tiny_cast( 0, tiny_uint );
 
 			if ( ImGui::BeginTabBar( "__tiny_editor_tabs__", ImGuiTabBarFlags_None ) ) {
-				for ( auto& category : _categories ) {
+				for ( auto& category : m_categories ) {
 					if ( !category->Tick( game, toolbox ) )
 						tab_id += 1;
 					else
-						_current = tab_id;
+						m_current = tab_id;
 				}
 
 				ImGui::EndTabBar( );
@@ -66,7 +66,7 @@ void TinyToolManager::Tick( TinyGame* game, TinyToolbox& toolbox ) {
 }
 
 void TinyToolManager::Terminate( TinyGame* game ) {
-	for ( auto& category : _categories ) {
+	for ( auto& category : m_categories ) {
 		category->Terminate( game );
 
 		delete category;
@@ -76,13 +76,13 @@ void TinyToolManager::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyToolCategory* TinyToolManager::GetCurrent( ) { return GetCategory( _current ); }
+TinyToolCategory* TinyToolManager::GetCurrent( ) { return GetCategory( m_current ); }
 
 TinyToolCategory* TinyToolManager::GetCategory( tiny_uint category ) {
 	auto* value = tiny_cast( nullptr, TinyToolCategory* );
 
-	if ( category < _categories.size( ) )
-		value = _categories[ category ];
+	if ( category < m_categories.size( ) )
+		value = m_categories[ category ];
 
 	return value;
 }

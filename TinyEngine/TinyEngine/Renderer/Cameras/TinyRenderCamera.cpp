@@ -24,23 +24,23 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderCamera::TinyRenderCamera( )
-	: _projection{ },
-	_view{ 1.f },
-	_proj_view{ 1.f },
-	_inverse{ 1.f }
+	: m_projection{ },
+	m_view{ 1.f },
+	m_proj_view{ 1.f },
+	m_inverse{ 1.f }
 { }
 
 TinyRenderCamera& TinyRenderCamera::SetProjection( const tiny_hash& projection ) {
-	_projection = projection;
+	m_projection = projection;
 
 	return tiny_self;
 }
 
 void TinyRenderCamera::Set( const TinyRenderCamera& other ) {
 	auto* src_buffer = other.GetBuffer( );
-	auto* dst_buffer = glm::value_ptr( _view );
+	auto* dst_buffer = glm::value_ptr( m_view );
 
-	_projection = other.GetProjection( );
+	m_projection = other.GetProjection( );
 
 	Tiny::Memcpy( src_buffer, dst_buffer, 3 * tiny_sizeof( tiny_mat4 ) );
 }
@@ -52,9 +52,9 @@ void TinyRenderCamera::SetTransform(
 ) {
 	auto radians = glm::radians( rotation );
 
-	_view  = glm::translate( tiny_vec3{ location.x, location.y, 0.f } );
-	_view *= glm::rotate( radians, tiny_vec3{ .0f, .0f, 1.f } );
-	_view *= glm::scale( tiny_vec3{ scale.x, scale.y, 1.f } );
+	m_view  = glm::translate( tiny_vec3{ location.x, location.y, 0.f } );
+	m_view *= glm::rotate( radians, tiny_vec3{ .0f, .0f, 1.f } );
+	m_view *= glm::scale( tiny_vec3{ scale.x, scale.y, 1.f } );
 }
 
 void TinyRenderCamera::SetTransform(
@@ -64,34 +64,34 @@ void TinyRenderCamera::SetTransform(
 ) {
 	auto half_scale = scale * .5f;
 	
-	_view = glm::translate( location + half_scale );
-	//_view *= glm::rotate( glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
-	_view *= glm::scale( scale );
+	m_view = glm::translate( location + half_scale );
+	//m_view *= glm::rotate( glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
+	m_view *= glm::scale( scale );
 }
 
 void TinyRenderCamera::ReCalculate( const tiny_map<TinyRenderProjection>& projections ) {
-	auto& projection = projections[ _projection ].Get( );
+	auto& projection = projections[ m_projection ].Get( );
 
-	_proj_view = projection * _view;
-	_inverse   = glm::inverse( _proj_view );
+	m_proj_view = projection * m_view;
+	m_inverse   = glm::inverse( m_proj_view );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const tiny_hash TinyRenderCamera::GetProjection( ) const { return _projection; }
+const tiny_hash TinyRenderCamera::GetProjection( ) const { return m_projection; }
 
 const tiny_mat4 TinyRenderCamera::GetProjection( TinyRenderer& renderer ) const {
-	return renderer.GetProjection( _projection );
+	return renderer.GetProjection( m_projection );
 }
 
-const tiny_mat4& TinyRenderCamera::Get( ) const { return _view; }
+const tiny_mat4& TinyRenderCamera::Get( ) const { return m_view; }
 
-const tiny_mat4& TinyRenderCamera::GetProjView( ) const { return _proj_view; }
+const tiny_mat4& TinyRenderCamera::GetProjView( ) const { return m_proj_view; }
 
-const tiny_mat4& TinyRenderCamera::GetInverse( ) const { return _inverse; }
+const tiny_mat4& TinyRenderCamera::GetInverse( ) const { return m_inverse; }
 
-const float* TinyRenderCamera::GetBuffer( ) const { return glm::value_ptr( _view ); }
+const float* TinyRenderCamera::GetBuffer( ) const { return glm::value_ptr( m_view ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

@@ -25,8 +25,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTrophy::TinyTrophy( ) 
 	: TinyAsset{ TA_TYPE_TROPHY },
-	_is_locked{ true },
-	_icon{ TA_TYPE_TEXTURE_2D }
+	m_is_locked{ true },
+	m_icon{ TA_TYPE_TEXTURE_2D }
 { }
 
 void TinyTrophy::Terminate( TinyGame* game ) { 
@@ -35,6 +35,6 @@ void TinyTrophy::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyTrophy::GetIsLocked( ) const { return _is_locked; }
+bool TinyTrophy::GetIsLocked( ) const { return m_is_locked; }
 
-const TinyAssetHandle& TinyTrophy::GetIcon( ) const { return _icon; }
+const TinyAssetHandle& TinyTrophy::GetIcon( ) const { return m_icon; }

@@ -34,7 +34,7 @@ te_struct TinyArchiveEntry {
 te_class TinyArchiveContainer final : tiny_inherit( TinyAssetContainer<TinyArchive> ) {
 
 private:
-	tiny_map<TinyArchiveEntry> _entries;
+	tiny_map<TinyArchiveEntry> m_entries;
 
 public:
 	TinyArchiveContainer( );

@@ -25,10 +25,10 @@
 te_class TinyFont final : tiny_inherit( TinyAsset ) {
 
 private:
-	tiny_vec2					_range;
-	tiny_vec2					_miter;
-	TinyGraphicTexture			_texture;
-	tiny_list<TinyCharGeometry> _geometry;
+	tiny_vec2 m_range;
+	tiny_vec2 m_miter;
+	TinyGraphicTexture m_texture;
+	tiny_list<TinyCharGeometry> m_geometry;
 
 public:
 	TinyFont( );

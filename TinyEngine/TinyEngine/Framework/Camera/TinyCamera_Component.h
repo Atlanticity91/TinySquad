@@ -25,10 +25,10 @@
 TINY_FRAMEWORK_COMP( TinyCamera ) {
 
 private:
-	bool	  _use_local;
-	tiny_vec3 _location;
-	tiny_vec3 _rotation;
-	tiny_vec3 _scale;
+	bool m_use_local;
+	tiny_vec3 m_location;
+	tiny_vec3 m_rotation;
+	tiny_vec3 m_scale;
 
 public:
 	TinyCamera( );

@@ -25,9 +25,9 @@
 te_class TinyTextureAtlas final : tiny_inherit( TinyAsset ) {
 
 private:
-	TinyAssetHandle _albedo;
-	TinyAssetHandle _normal;
-	TinyAssetHandle _specular;
+	TinyAssetHandle m_albedo;
+	TinyAssetHandle m_normal;
+	TinyAssetHandle m_specular;
 
 public:
 	TinyTextureAtlas( );

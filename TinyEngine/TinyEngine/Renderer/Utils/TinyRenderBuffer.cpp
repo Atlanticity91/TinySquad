@@ -24,9 +24,9 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderBuffer::TinyRenderBuffer( ) 
-	: _chunk_size{ 0 },
-	_buffer{ },
-	_descriptors{ }
+	: m_chunk_size{ 0 },
+	m_buffer{ },
+	m_descriptors{ }
 { }
 
 bool TinyRenderBuffer::Create(
@@ -34,24 +34,24 @@ bool TinyRenderBuffer::Create(
 	const TinyGraphicBufferSpecification& specification
 ) {
 	auto descriptor_count = graphics.GetSwapchainCapacity( );
-	auto _specification   = specification;
-	auto context		  = graphics.GetContext( );
+	auto specification_   = specification;
+	auto graphic		  = graphics.GetWrapper( );
 
-	_specification.Size *= descriptor_count;
+	specification_.Size *= descriptor_count;
 
-	auto state = _buffer.Create( context, _specification );
+	auto state = m_buffer.Create( graphic, specification_ );
 
 	if ( state ) {
-		auto buffer = _buffer.GetDescriptor( )->buffer;
+		auto buffer = m_buffer.GetDescriptor( )->buffer;
 
-		_chunk_size = _specification.Size;
+		m_chunk_size = specification_.Size;
 
 		while ( descriptor_count-- > 0 ) {
-			auto& descriptor = _descriptors[ descriptor_count ];
+			auto& descriptor = m_descriptors[ descriptor_count ];
 
 			descriptor.buffer = buffer;
-			descriptor.offset = tiny_cast( descriptor_count * _chunk_size, VkDeviceSize );
-			descriptor.range  = tiny_cast( _chunk_size, VkDeviceSize );
+			descriptor.offset = tiny_cast( descriptor_count * m_chunk_size, VkDeviceSize );
+			descriptor.range  = tiny_cast( m_chunk_size, VkDeviceSize );
 		}
 	}
 
@@ -59,24 +59,24 @@ bool TinyRenderBuffer::Create(
 }
 
 void TinyRenderBuffer::Terminate( TinyGraphicManager& graphics ) {
-	auto context = graphics.GetContext( );
+	auto graphic = graphics.GetWrapper( );
 	
-	_buffer.Terminate( context );
+	m_buffer.Terminate( graphic );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_uint TinyRenderBuffer::GetChunkSize( ) const { return _chunk_size; }
+tiny_uint TinyRenderBuffer::GetChunkSize( ) const { return m_chunk_size; }
 
-const TinyGraphicBuffer& TinyRenderBuffer::GetBuffer( ) const { return _buffer; }
+const TinyGraphicBuffer& TinyRenderBuffer::GetBuffer( ) const { return m_buffer; }
 
 VkDescriptorType TinyRenderBuffer::GetDescriptorType( ) const {
-	return _buffer.GetDescriptorType( );
+	return m_buffer.GetDescriptorType( );
 }
 
 VkDescriptorBufferInfo* TinyRenderBuffer::GetDescriptor( tiny_uint work_id ) {
-	return &_descriptors[ work_id ];
+	return tiny_rvalue( m_descriptors[ work_id ] );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

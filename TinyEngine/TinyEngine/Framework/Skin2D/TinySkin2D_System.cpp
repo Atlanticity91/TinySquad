@@ -61,7 +61,7 @@ void TinySkin2DSystem::PostTick( TinyGame* game ) {
 
 	renderer.Prepare( game, TRB_TYPE_SPRITES, TINY_OUTPASS_HASH, TinySkin2DSystem::Draw );
 	
-	for ( auto& component : _components ) {
+	for ( auto& component : m_components ) {
 		auto owner = component.GetOwner( );
 
 		if ( ecs.GetHasFlag( owner, TE_FLAG_VISIBLE ) && component.GetIsActive( ) ) {

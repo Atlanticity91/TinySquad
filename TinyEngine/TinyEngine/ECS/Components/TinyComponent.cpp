@@ -28,35 +28,35 @@ TinyComponent::TinyComponent( )
 { }
 
 TinyComponent::TinyComponent( const tiny_hash owner )
-	: _is_active{ true },
-	_owner{ owner } 
+	: m_is_active{ true },
+	m_owner{ owner } 
 { }
 
 void TinyComponent::Enable( TinyGame* game ) {
-	if ( !_is_active ) {
-		_is_active = true;
+	if ( !m_is_active ) {
+		m_is_active = true;
 
 		OnEnable( game );
 	}
 }
 
 void TinyComponent::Disable( TinyGame* game ) {
-	if ( _is_active ) {
-		_is_active = false;
+	if ( m_is_active ) {
+		m_is_active = false;
 
 		OnDisable( game );
 	}
 }
 
 void TinyComponent::Toggle( TinyGame* game ) {
-	if ( _is_active )
+	if ( m_is_active )
 		Disable( game );
 	else
 		Enable( game );
 }
 
 void TinyComponent::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
-	TinyImGui::Checkbox( "Is Active", _is_active );
+	TinyImGui::Checkbox( "Is Active", m_is_active );
 
 	ImGui::Separator( );
 }
@@ -64,6 +64,6 @@ void TinyComponent::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyComponent::GetIsActive( ) const { return _is_active; }
+bool TinyComponent::GetIsActive( ) const { return m_is_active; }
 
-tiny_hash TinyComponent::GetOwner( ) const { return _owner; }
+tiny_hash TinyComponent::GetOwner( ) const { return m_owner; }

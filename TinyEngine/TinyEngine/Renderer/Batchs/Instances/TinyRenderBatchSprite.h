@@ -35,9 +35,9 @@ public:
 	static const tiny_uint Size = Vertex_t::Size;
 
 private:
-	tiny_uint _max_texture_slots;
-	Texture_t _textures;
-	Vertex_t  _vertex;
+	tiny_uint m_max_texture_slots;
+	Texture_t m_textures;
+	Vertex_t m_vertex;
 
 public:
 	TinyRenderBatchSprite( );

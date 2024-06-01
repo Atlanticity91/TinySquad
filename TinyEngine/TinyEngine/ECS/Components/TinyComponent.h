@@ -37,8 +37,8 @@ class TinyECS;
 te_abstract_class TinyComponent { 
 
 protected:
-	bool	  _is_active;
-	tiny_hash _owner;
+	bool m_is_active;
+	tiny_hash m_owner;
 
 public:
 	TinyComponent( );

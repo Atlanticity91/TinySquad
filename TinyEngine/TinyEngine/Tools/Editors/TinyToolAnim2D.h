@@ -25,11 +25,11 @@
 te_class TinyToolAnim2D final : tiny_inherit( TinyToolAssetEditor ) {
 
 private:
-	TinyAnimation2D* _collection;
-	TinyTexture2D*	 _texture;
-	ImTextureID		 _image;
-	tiny_hash		 _animation;
-	tiny_uint		 _frame_id;
+	TinyAnimation2D* m_collection;
+	TinyTexture2D* m_texture;
+	ImTextureID m_image;
+	tiny_hash m_animation;
+	tiny_uint m_frame_id;
 
 public:
 	TinyToolAnim2D( );

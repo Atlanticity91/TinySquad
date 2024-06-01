@@ -24,49 +24,49 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinySystemManager::TinySystemManager( )
-	: _systems_ids{ },
-	_systems{ }
+	: m_systems_ids{ },
+	m_systems{ }
 { }
 
 bool TinySystemManager::Register( ITinySystem* system, tiny_uint target_id ) {
-	auto state = system && _systems_ids.size( ) < TINY_MAX_COMPONENT;
+	auto state = system && m_systems_ids.size( ) < TINY_MAX_COMPONENT;
 
 	if ( state ) {
 		if ( target_id > TINY_MAX_COMPONENT )
-			target_id = _systems.size( );
+			target_id = m_systems.size( );
 		
-		_systems_ids.emplace( system->GetName( ), { target_id } );
-		_systems.insert( target_id, system );
+		m_systems_ids.emplace( system->GetName( ), { target_id } );
+		m_systems.insert( target_id, system );
 	}
 
 	return state;
 }
 
 bool TinySystemManager::Remap( const tiny_string& component, tiny_uint target_id ) {
-	auto state = _systems_ids.find( component ) && target_id < TINY_MAX_COMPONENT;
+	auto state = m_systems_ids.find( component ) && target_id < TINY_MAX_COMPONENT;
 
 	if ( state ) {
-		_systems.swap( _systems_ids[ component ], target_id );
+		m_systems.swap( m_systems_ids[ component ], target_id );
 
-		_systems_ids[ component ] = target_id;
+		m_systems_ids[ component ] = target_id;
 	}
 
 	return state;
 }
 
 void TinySystemManager::Enable( TinyGame* game, const tiny_uint system_id ) {
-	_systems[ system_id ]->Enable( game );
+	m_systems[ system_id ]->Enable( game );
 }
 
 void TinySystemManager::Disable( TinyGame* game, const tiny_uint system_id ) {
-	_systems[ system_id ]->Disable( game );
+	m_systems[ system_id ]->Disable( game );
 }
 
 std::shared_ptr<TinyComponent> TinySystemManager::Create( 
 	const tiny_uint component_id,
 	const tiny_hash entity_hash
 ) {
-	return _systems[ component_id ]->Create( entity_hash );
+	return m_systems[ component_id ]->Create( entity_hash );
 }
 
 TinyComponent* TinySystemManager::Append(
@@ -74,7 +74,7 @@ TinyComponent* TinySystemManager::Append(
 	const tiny_hash entity_hash, 
 	const tiny_uint component_id 
 ) {
-	return _systems[ component_id ]->Append( game, entity_hash );
+	return m_systems[ component_id ]->Append( game, entity_hash );
 }
 
 bool TinySystemManager::Append(
@@ -82,7 +82,7 @@ bool TinySystemManager::Append(
 	const tiny_uint component_id,
 	std::shared_ptr<TinyComponent> component
 ) {
-	return _systems[ component_id ]->Append( game, component );
+	return m_systems[ component_id ]->Append( game, component );
 }
 
 bool TinySystemManager::Set(
@@ -90,7 +90,7 @@ bool TinySystemManager::Set(
 	const tiny_uint component_id,
 	std::shared_ptr<TinyComponent> component
 ) {
-	return _systems[ component_id ]->Set( game, component );
+	return m_systems[ component_id ]->Set( game, component );
 }
 
 void TinySystemManager::Remove( 
@@ -98,21 +98,21 @@ void TinySystemManager::Remove(
 	const tiny_hash entity_hash, 
 	const tiny_uint component_id
 ) {
-	_systems[ component_id ]->Remove( game, entity_hash );
+	m_systems[ component_id ]->Remove( game, entity_hash );
 }
 
 void TinySystemManager::Kill( TinyGame* game, const tiny_hash entity_hash ) {
-	for ( auto& system : _systems )
+	for ( auto& system : m_systems )
 		system->Remove( game, entity_hash );
 }
 
 void TinySystemManager::Clean( const tiny_list<TinyEntityGhost>& entities ) {
 	for ( auto& ghost : entities ) {
 		if ( ghost.ComponentID == TINY_UINT_MAX ) {
-			for ( auto* system : _systems ) 
+			for ( auto* system : m_systems ) 
 				system->Erase( ghost );
 		} else {
-			auto* system = _systems.at( ghost.ComponentID );
+			auto* system = m_systems.at( ghost.ComponentID );
 
 			system->Erase( ghost );
 		}
@@ -120,36 +120,36 @@ void TinySystemManager::Clean( const tiny_list<TinyEntityGhost>& entities ) {
 }
 
 void TinySystemManager::PreTick( TinyGame* game ) {
-	for ( auto& system : _systems ) {
+	for ( auto& system : m_systems ) {
 		if ( system->GetHasPreTick( ) )
 			system->PreTick( game );
 	}
 }
 
 void TinySystemManager::PostTick( TinyGame* game ) {
-	for ( auto& system : _systems ) {
+	for ( auto& system : m_systems ) {
 		if ( system->GetHasPostTick( ) )
 			system->PostTick( game );
 	}
 }
 
 void TinySystemManager::Terminate( ) {
-	for ( auto& system : _systems )
+	for ( auto& system : m_systems )
 		delete system;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_uint TinySystemManager::GetComponentCount( ) const { return _systems_ids.size( ); }
+tiny_uint TinySystemManager::GetComponentCount( ) const { return m_systems_ids.size( ); }
 
 const tiny_list<tiny_string> TinySystemManager::GetComponentList( ) const {
 	auto component_id = tiny_cast( 0, tiny_uint );
 	auto components   = tiny_list<tiny_string>{ };
 
-	components = _systems_ids.size( );
+	components = m_systems_ids.size( );
 
-	for ( auto& component : _systems_ids )
+	for ( auto& component : m_systems_ids )
 		components[ component_id++ ] = tiny_string{ component.Alias };
 
 	return components;
@@ -160,7 +160,7 @@ const tiny_list<tiny_string> TinySystemManager::GetComponentListFor(
 ) const {
 	auto components = tiny_list<tiny_string>{ };
 
-	for ( auto& component : _systems_ids ) {
+	for ( auto& component : m_systems_ids ) {
 		if ( !( component_mask & TINY_LEFT_SHIFT( 1, component.Data ) ) ) {
 			auto name = tiny_string{ component.Alias };
 
@@ -171,10 +171,10 @@ const tiny_list<tiny_string> TinySystemManager::GetComponentListFor(
 	return components;
 }
 
-const tiny_list<ITinySystem*> TinySystemManager::GetSystems( ) const { return _systems; }
+const tiny_list<ITinySystem*> TinySystemManager::GetSystems( ) const { return m_systems; }
 
 ITinySystem* TinySystemManager::GetSystem( tiny_uint component_id ) const {
-	return _systems[ component_id ];
+	return m_systems[ component_id ];
 }
 
 bool TinySystemManager::GetComponentID(
@@ -182,10 +182,10 @@ bool TinySystemManager::GetComponentID(
 	tiny_uint& component_id
 ) const {
 	auto system_id = tiny_cast( 0, tiny_uint );
-	auto state	   = _systems_ids.find( component, system_id );
+	auto state	   = m_systems_ids.find( component, system_id );
 
 	if ( state )
-		component_id = _systems_ids[ system_id ];
+		component_id = m_systems_ids[ system_id ];
 
 	return state;
 }
@@ -195,7 +195,7 @@ tiny_uint TinySystemManager::GetComponentMask( tiny_init<tiny_string> components
 	auto component_id   = tiny_cast( 0, tiny_uint );
 
 	for ( auto& component : components ) {
-		if ( _systems_ids.find( component, component_id ) )
+		if ( m_systems_ids.find( component, component_id ) )
 			component_mask |= TINY_LEFT_SHIFT( 1, component_id );
 	}
 
@@ -206,5 +206,5 @@ TinyComponent* TinySystemManager::GetComponent(
 	const tiny_hash entity_hash,
 	const tiny_uint component_id
 ) const {
-	return _systems[ component_id ]->GetComponent( entity_hash );
+	return m_systems[ component_id ]->GetComponent( entity_hash );
 }

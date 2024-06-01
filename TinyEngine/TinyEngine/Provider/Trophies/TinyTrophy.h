@@ -25,8 +25,8 @@
 te_class TinyTrophy final : tiny_inherit( TinyAsset ) { 
 
 private:
-	bool			_is_locked;
-	TinyAssetHandle _icon;
+	bool m_is_locked;
+	TinyAssetHandle m_icon;
 
 public:
 	TinyTrophy( );

@@ -25,10 +25,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyFont::TinyFont( )
 	: TinyAsset{ TA_TYPE_FONT },
-	_range{ 2.f },
-	_miter{ 1.f },
-	_texture{ },
-	_geometry{ }
+	m_range{ 2.f },
+	m_miter{ 1.f },
+	m_texture{ },
+	m_geometry{ }
 { }
 
 void TinyFont::Terminate( TinyGame* game ) {
@@ -37,14 +37,14 @@ void TinyFont::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const tiny_vec2& TinyFont::GetRange( ) const { return _range; }
+const tiny_vec2& TinyFont::GetRange( ) const { return m_range; }
 
-const tiny_vec2& TinyFont::GetMiter( ) const { return _miter; }
+const tiny_vec2& TinyFont::GetMiter( ) const { return m_miter; }
 
 const TinyCharGeometry& TinyFont::GetGeometry( char character ) const {
-	return _geometry[ 0 ]; 
+	return m_geometry[ 0 ]; 
 }
 
 const VkDescriptorImageInfo& TinyFont::GetTexure( ) const { 
-	return tiny_lvalue( _texture.GetDescriptor( ) );
+	return tiny_lvalue( m_texture.GetDescriptor( ) );
 }

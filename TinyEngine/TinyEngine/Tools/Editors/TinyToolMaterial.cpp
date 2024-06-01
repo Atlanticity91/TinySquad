@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolMaterial::TinyToolMaterial( )
 	: TinyToolAssetEditor{ "Material" },
-	_material{ nullptr }
+	m_material{ nullptr }
 { }
 
 void TinyToolMaterial::Save( TinyGame* game ) {
@@ -35,9 +35,9 @@ void TinyToolMaterial::Save( TinyGame* game ) {
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyToolMaterial::OnOpen( TinyGame* game, const tiny_string& name, native_pointer asset ) {
-	_material = tiny_cast( asset, TinyMaterial* );
+	m_material = tiny_cast( asset, TinyMaterial* );
 
-	return _material;
+	return m_material;
 }
 
 void TinyToolMaterial::OnTick( TinyGame* game, TinyAssetManager& assets ) {

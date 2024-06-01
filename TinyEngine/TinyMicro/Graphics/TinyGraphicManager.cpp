@@ -67,11 +67,9 @@ bool TinyGraphicManager::Initialize( TinyFilesystem& file_system, TinyWindow& wi
 			m_compiler.Initialize( );
 }
 
-void TinyGraphicManager::EnableCache( ) {
-}
+void TinyGraphicManager::EnableCache( ) { m_pipelines.EnableCache( ); }
 
-void TinyGraphicManager::DisableCache( ) {
-}
+void TinyGraphicManager::DisableCache( ) { m_pipelines.DisableCache( ); }
 
 void TinyGraphicManager::AddCompilerMacro(
 	const tiny_string& name,

@@ -25,7 +25,7 @@
 te_class TinyToolMaterial final : tiny_inherit( TinyToolAssetEditor ) {
 
 private:
-	TinyMaterial* _material;
+	TinyMaterial* m_material;
 
 public:
 	TinyToolMaterial( );

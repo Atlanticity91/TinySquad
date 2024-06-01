@@ -25,9 +25,9 @@
 te_class TinyConfig final : tiny_inherit( TinyAsset ) {
 
 private:
-	TinyAppConfig		   _application;
-	tiny_list<std::string> _archives;
-	std::string			   _start_scene;
+	TinyAppConfig m_application;
+	tiny_list<std::string> m_archives;
+	std::string	m_start_scene;
 
 public:
 	TinyConfig( );

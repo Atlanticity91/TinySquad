@@ -34,7 +34,7 @@ namespace TinyImGui {
 	te_class ScopeColors final {
 
 	private:
-		tiny_int _count;
+		tiny_int m_count;
 
 	public:
 		ScopeColors( );

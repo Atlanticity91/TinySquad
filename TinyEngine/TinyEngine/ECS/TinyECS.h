@@ -28,9 +28,9 @@
 te_class TinyECS final {
 
 private:
-	TinyEntityManager _entities;
-	TinySystemManager _systems;
-	TinyECSDispatch	  _dispatcher;
+	TinyEntityManager m_entities;
+	TinySystemManager m_systems;
+	TinyECSDispatch m_dispatcher;
 
 public:
 	TinyECS( );
@@ -196,10 +196,14 @@ public:
 		requires TinyIsSysten<System>
 	bool Register( TinyGame* game, tiny_uint target_id ) { 
 		auto* system = new System{ };
-		auto state   = system && _systems.Register( tiny_cast( system, ITinySystem* ), target_id );
+		auto state   = false;
 
-		if ( state )
-			system->RegisterInterop( game );
+		if ( system != nullptr ) {
+			state = m_systems.Register( tiny_cast( system, ITinySystem* ), target_id );
+
+			if ( state )
+				system->RegisterInterop( game );
+		}
 
 		return state;
 	};
@@ -210,8 +214,8 @@ public:
 		auto comp_name = Component::sGetName( );
 		auto comp_id   = tiny_cast( 0, tiny_uint );
 
-		if ( _systems.GetComponentID( comp_name, comp_id ) )
-			_systems.Enable( game, comp_id );
+		if ( m_systems.GetComponentID( comp_name, comp_id ) )
+			m_systems.Enable( game, comp_id );
 	};
 
 	template<typename Component>
@@ -220,8 +224,8 @@ public:
 		auto comp_name = Component::sGetName( );
 		auto comp_id   = tiny_cast( 0, tiny_uint );
 
-		if ( _systems.GetComponentID( comp_name, comp_id ) )
-			_systems.Disable( game, comp_id );
+		if ( m_systems.GetComponentID( comp_name, comp_id ) )
+			m_systems.Disable( game, comp_id );
 	};
 
 	template<typename Component>
@@ -413,7 +417,7 @@ public:
 	template<typename Event, typename... Args>
 		requires tiny_is_child_of( Event, TinyECSEvent )
 	void Raise( TinyGame* game, Args... args ) {
-		_dispatcher.Raise<Event, Args...>( game, args... );
+		m_dispatcher.Raise<Event, Args...>( game, args... );
 	};
 
 public:

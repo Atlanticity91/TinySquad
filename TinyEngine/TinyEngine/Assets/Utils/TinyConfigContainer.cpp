@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyConfigContainer::TinyConfigContainer( )
 	: ITinyAssetContainer{ },
-	_config{  }
+	m_config{  }
 { }
 
 bool TinyConfigContainer::Load( TinyFilesystem& filesystem, TinyConfig*& config ) {
@@ -35,14 +35,14 @@ bool TinyConfigContainer::Load( TinyFilesystem& filesystem, TinyConfig*& config 
 	if ( filesystem.GetFileExist( path ) ) {
 		auto file = filesystem.OpenFile( path, TF_ACCESS_BINARY_READ );
 
-		state = _config.Load( filesystem, file );
+		state = m_config.Load( filesystem, file );
 	} else {
 		auto file = filesystem.OpenFile( path, TF_ACCESS_BINARY_WRITE );
 
-		_config.Save( filesystem, file );
+		m_config.Save( filesystem, file );
 	}
 
-	config = tiny_rvalue( _config );
+	config = tiny_rvalue( m_config );
 
 	return state;
 }
@@ -51,9 +51,9 @@ bool TinyConfigContainer::Load( TinyFilesystem& filesystem, TinyConfig*& config 
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAsset* TinyConfigContainer::GetAsset( const tiny_hash asset_hash ) {
-	return tiny_rvalue( _config );
+	return tiny_rvalue( m_config );
 }
 
 const TinyAsset* TinyConfigContainer::GetAsset( const tiny_hash asset_hash ) const {
-	return tiny_rvalue( _config );
+	return tiny_rvalue( m_config );
 }

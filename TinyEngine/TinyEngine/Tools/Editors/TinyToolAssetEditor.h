@@ -25,11 +25,11 @@
 te_class TinyToolAssetEditor {
 
 protected:
-	bool			_in_use;
-	ImVec2			_min_size;
-	tiny_string		_name;
-	TinyAssetHandle	_asset;
-	tiny_string		_asset_name;
+	bool m_in_use;
+	ImVec2 m_min_size;
+	tiny_string m_name;
+	TinyAssetHandle	m_asset;
+	tiny_string m_asset_name;
 
 public:
 	TinyToolAssetEditor( const tiny_string& name );

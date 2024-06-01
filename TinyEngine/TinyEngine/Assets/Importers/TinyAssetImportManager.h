@@ -22,17 +22,17 @@
 
 #include "TinyAssetConverter.h"
 
-te_class TinyAssetImporter final {
+te_class TinyAssetImportManager final {
 
 private:
-	tiny_map<tiny_uint>			  _extensions;
-	tiny_list<tiny_uint>		  _types;
-	tiny_list<TinyAssetConverter> _converters;
+	tiny_map<tiny_uint> m_extensions;
+	tiny_list<tiny_uint> m_types;
+	tiny_list<TinyAssetConverter> m_converters;
 
 public:
-	TinyAssetImporter( );
+	TinyAssetImportManager( );
 
-	~TinyAssetImporter( ) = default;
+	~TinyAssetImportManager( ) = default;
 
 	void Initialize( );
 

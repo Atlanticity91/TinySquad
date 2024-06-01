@@ -37,9 +37,9 @@ public:
 	using Callback_t = TinyRenderBatchSprite::Callback_t;
 
 private:
-	TinyGraphicBufferStaging _staging;
-	TinyRenderBatchSprite    _sprites;
-	TinyRenderBatchText		 _text;
+	TinyGraphicBufferStaging m_staging;
+	TinyRenderBatchSprite m_sprites;
+	TinyRenderBatchText m_text;
 
 public:
 	TinyRenderBatchManager( );

@@ -27,7 +27,7 @@ class TinyECS;
 te_class TinyECSEvent {
 
 private:
-	tiny_uint _type;
+	tiny_uint m_type;
 
 public:
 	TinyECSEvent( tiny_uint type );

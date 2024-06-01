@@ -31,7 +31,7 @@ te_class TinyNativeRegister final {
 	using return_type = typename std::conditional<( !std::is_same<Type, void>::value ), std::optional<Type>, bool>::type;
 
 private:
-	tiny_map<native_pointer> _functions;
+	tiny_map<native_pointer> m_functions;
 
 public:
 	TinyNativeRegister( );
@@ -65,18 +65,18 @@ public:
 		auto function_id = tiny_cast( 0, tiny_uint );
 
 		tiny_compile_if( std::is_same<Return, void>::value ) {
-			auto state = _functions.find( function_hash, function_id );
+			auto state = m_functions.find( function_hash, function_id );
 
 			if ( state ) {
-				auto* function = tiny_cast( _functions.at( function_id ), Signature );
+				auto* function = tiny_cast( m_functions.at( function_id ), Signature );
 
 				std::invoke( function, game, args... );
 			}
 
 			return state;
 		} tiny_compile_else {
-			if ( _functions.find( function_hash, function_id ) ) {
-				auto* function = tiny_cast( _functions.at( function_id ), Signature );
+			if ( m_functions.find( function_hash, function_id ) ) {
+				auto* function = tiny_cast( m_functions.at( function_id ), Signature );
 
 				return std::invoke( function, game, args... );
 			}

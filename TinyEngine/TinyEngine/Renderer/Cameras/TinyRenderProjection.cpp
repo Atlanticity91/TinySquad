@@ -24,55 +24,55 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderProjection::TinyRenderProjection( )
-	: _type{ TRP_TYPE_ORTHOGRAPHIC },
-	_parameter{ 1.f },
-	_matrix{ 1.f }
+	: m_type{ TRP_TYPE_ORTHOGRAPHIC },
+	m_parameter{ 1.f },
+	m_matrix{ 1.f }
 { }
 
 TinyRenderProjection& TinyRenderProjection::SetType( TinyRenderProjectionTypes type ) {
-	_type = type;
+	m_type = type;
 
 	return tiny_self;
 }
 
 TinyRenderProjection& TinyRenderProjection::SetOrthographic( float zoom ) {
-	_type	   = TRP_TYPE_ORTHOGRAPHIC;
-	_parameter = zoom;
+	m_type	    = TRP_TYPE_ORTHOGRAPHIC;
+	m_parameter = zoom;
 
 	return tiny_self;
 }
 
 TinyRenderProjection& TinyRenderProjection::SetPerspective( float fov ) {
-	_type	   = TRP_TYPE_PERSPECTIVE;
-	_parameter = fov;
+	m_type	    = TRP_TYPE_PERSPECTIVE;
+	m_parameter = fov;
 
 	return tiny_self;
 }
 
 TinyRenderProjection& TinyRenderProjection::SetCustom( const tiny_mat4& projection ) {
-	_type   = TRP_TYPE_CUSTOM;
-	_matrix = projection;
+	m_type    = TRP_TYPE_CUSTOM;
+	m_matrix = projection;
 
 	return tiny_self;
 }
 
 void TinyRenderProjection::ReCalculate( TinyGraphicBoundaries& boundaries ) {
-	if ( _type < TRP_TYPE_CUSTOM ) {
+	if ( m_type < TRP_TYPE_CUSTOM ) {
 		auto aspect_ratio = boundaries.GetAspect( );
 		auto& viewport    = boundaries.GetViewport( );
 
-		switch ( _type ) {
+		switch ( m_type ) {
 			case TRP_TYPE_ORTHOGRAPHIC:
-				_matrix = glm::ortho(
-					.0f, viewport.width  * _parameter,
-					.0f, viewport.height * _parameter,
+				m_matrix = glm::ortho(
+					.0f, viewport.width  * m_parameter,
+					.0f, viewport.height * m_parameter,
 					viewport.minDepth, viewport.maxDepth
 				);
 				break;
 
 			case TRP_TYPE_PERSPECTIVE:
-				_matrix = glm::perspective(
-					glm::radians( _parameter ),
+				m_matrix = glm::perspective(
+					glm::radians( m_parameter ),
 					aspect_ratio.x,
 					viewport.minDepth, viewport.maxDepth
 				);
@@ -86,11 +86,11 @@ void TinyRenderProjection::ReCalculate( TinyGraphicBoundaries& boundaries ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyRenderProjectionTypes TinyRenderProjection::GetType( ) const { return _type; }
+TinyRenderProjectionTypes TinyRenderProjection::GetType( ) const { return m_type; }
 
-const tiny_mat4& TinyRenderProjection::Get( ) const { return _matrix; }
+const tiny_mat4& TinyRenderProjection::Get( ) const { return m_matrix; }
 
-const float* TinyRenderProjection::GetBuffer( ) const { return glm::value_ptr( _matrix ); }
+const float* TinyRenderProjection::GetBuffer( ) const { return glm::value_ptr( m_matrix ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

@@ -29,7 +29,9 @@ TinyBacker::TinyBacker( )
     m_archive{ },
     m_delete_entry{ },
     m_import_path{ }
-{ }
+{
+    DisableCache( );
+}
 
 void TinyBacker::OnDragDrop( tiny_int path_count, native_string drop_paths[] ) {
     while ( path_count-- > 0 ) {

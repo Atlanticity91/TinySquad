@@ -34,8 +34,8 @@ bool TinyTexture2D::Create(
 	const TinyTexture2DBuilder& builder,
 	const TinyGraphicBufferStaging& staging
 ) {
-	auto context = graphics.GetContext( );
-	auto state   = TinyGraphicTexture::Create( context, builder, staging );
+	auto graphic = graphics.GetWrapper( );
+	auto state   = TinyGraphicTexture::Create( graphic, builder, staging );
 
 	if ( state )
 		SetDimensions( builder.Columns, builder.Rows );
@@ -45,9 +45,9 @@ bool TinyTexture2D::Create(
 
 void TinyTexture2D::Terminate( TinyGame* game ) {
 	auto& graphics = game->GetGraphics( );
-	auto context   = graphics.GetContext( );
+	auto graphic   = graphics.GetWrapper( );
 
-	TinyGraphicTexture::Terminate( context );
+	TinyGraphicTexture::Terminate( graphic );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

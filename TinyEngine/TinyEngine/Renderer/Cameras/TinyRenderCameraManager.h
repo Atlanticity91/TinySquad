@@ -29,9 +29,9 @@ class TinyRenderUniformManager;
 te_class TinyRenderCameraManager final {
 
 private:
-	tiny_map<TinyRenderProjection> _projections;
-	tiny_map<TinyRenderCamera>	   _cameras;
-	tiny_hash					   _current_camera;
+	tiny_map<TinyRenderProjection> m_projections;
+	tiny_map<TinyRenderCamera> m_cameras;
+	tiny_hash m_current_camera;
 
 public:
 	TinyRenderCameraManager( );

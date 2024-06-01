@@ -27,11 +27,11 @@ te_class TinyToolContent final  : tiny_inherit( TinyToolCategory ) {
 	typedef native_string ( *AssetTypeToString )( tiny_uint );
 
 private:
-	bool _has_changed;
-	tiny_uint _type_count;
-	AssetTypeToString _type_to_string;
-	tiny_hash _to_remove;
-	tiny_buffer<256> _import_path;
+	bool m_has_changed;
+	tiny_uint m_type_count;
+	AssetTypeToString m_type_to_string;
+	tiny_hash m_to_remove;
+	tiny_buffer<256> m_import_path;
 
 public:
 	TinyToolContent( );

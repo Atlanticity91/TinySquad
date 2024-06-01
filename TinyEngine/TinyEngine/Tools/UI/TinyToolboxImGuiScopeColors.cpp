@@ -28,7 +28,7 @@
 namespace TinyImGui {
 
 	ScopeColors::ScopeColors( )
-		: _count{ 0 }
+		: m_count{ 0 }
 	{ }
 
 	ScopeColors::ScopeColors( const Color& color )
@@ -45,13 +45,13 @@ namespace TinyImGui {
 		: ScopeColors{ { label, value } }
 	{ }
 
-	ScopeColors::~ScopeColors( ) { Pop( _count ); }
+	ScopeColors::~ScopeColors( ) { Pop( m_count ); }
 
 	void ScopeColors::Push( const Color& color ) { Push( { color } ); }
 
 	void ScopeColors::Push( tiny_init<Color> colors ) {
 		if ( colors.size( ) > 0 ) {
-			_count += (tiny_int)colors.size( );
+			m_count += (tiny_int)colors.size( );
 
 			for ( auto& color : colors ) {
 				auto convert_color = ImGui::ColorConvertFloat4ToU32( color.Value );
@@ -68,12 +68,12 @@ namespace TinyImGui {
 	void ScopeColors::Pop( ) { Pop( 1 ); }
 
 	void ScopeColors::Pop( tiny_int count ) {
-		if ( _count > 0 ) {
-			auto claim = _count - count > -1 ? count : _count;
+		if ( m_count > 0 ) {
+			auto claim = m_count - count > -1 ? count : m_count;
 
 			ImGui::PopStyleColor( claim );
 
-			_count -= claim;
+			m_count -= claim;
 		}
 	}
 

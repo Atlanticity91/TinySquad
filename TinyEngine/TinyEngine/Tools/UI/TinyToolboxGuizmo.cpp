@@ -24,18 +24,18 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolboxGuizmo::TinyToolboxGuizmo( )
-    : _selection{ },
-    _is_orthographic{ false },
-    _use_snap{ false },
-    _mode{ TG_MODE_WORLD },
-    _tool{ TGT_TRANSLATE_2D },
-    _snap_translate{ 1.f },
-    _snap_rotate{ 1.f },
-    _snap_scale{ 1.f },
-    _modes{
+    : m_selection{ },
+    m_is_orthographic{ false },
+    m_use_snap{ false },
+    m_mode{ TG_MODE_WORLD },
+    m_tool{ TGT_TRANSLATE_2D },
+    m_snap_translate{ 1.f },
+    m_snap_rotate{ 1.f },
+    m_snap_scale{ 1.f },
+    m_modes{
         "Local", "World"
     },
-    _tools{
+    m_tools{
         2, 
         {
             "Translate X",
@@ -49,41 +49,41 @@ TinyToolboxGuizmo::TinyToolboxGuizmo( )
     }
 { }
 
-void TinyToolboxGuizmo::SetGuizmoMode( TinyGuizmoModes mode ) { _mode = mode; }
+void TinyToolboxGuizmo::SetGuizmoMode( TinyGuizmoModes mode ) { m_mode = mode; }
 
-void TinyToolboxGuizmo::SetGuizmoTool( TinyGuizmoTools tool ) { _tool = tool; }
+void TinyToolboxGuizmo::SetGuizmoTool( TinyGuizmoTools tool ) { m_tool = tool; }
 
 void TinyToolboxGuizmo::SetGuizmo( TinyGuizmoModes mode, TinyGuizmoTools tool ) {
-    _mode = mode;
-    _tool = tool;
+    m_mode = mode;
+    m_tool = tool;
 }
 
 void TinyToolboxGuizmo::Show( 
     const tiny_hash entity_hash,
     bool is_orthographic
 ) {
-    _selection       = entity_hash; 
-    _is_orthographic = is_orthographic;
+    m_selection       = entity_hash; 
+    m_is_orthographic = is_orthographic;
 }
 
-void TinyToolboxGuizmo::Hide( ) { _selection.undefined( ); }
+void TinyToolboxGuizmo::Hide( ) { m_selection.undefined( ); }
 
 void TinyToolboxGuizmo::DrawWidget( ) {
     TinyImGui::BeginVars( );
 
-    _modes.Index = _mode;
-    if ( TinyImGui::Dropdown( "Mode", _modes ) )
-        _mode = _modes.Index;
+    m_modes.Index = m_mode;
+    if ( TinyImGui::Dropdown( "Mode", m_modes ) )
+        m_mode = m_modes.Index;
 
-    if ( TinyImGui::Dropdown( "Tool", _tools ) )
-        _tool = PeekTool( _tools.Index );
+    if ( TinyImGui::Dropdown( "Tool", m_tools ) )
+        m_tool = PeekTool( m_tools.Index );
 
     TinyImGui::SeparatorText( "Snap Targets" );
-    TinyImGui::Checkbox( "Use Snap", _use_snap );
+    TinyImGui::Checkbox( "Use Snap", m_use_snap );
 
-    TinyImGui::InputVec3( "Translate", _snap_translate );
-    TinyImGui::InputVec3( "Rotate", _snap_rotate );
-    TinyImGui::InputVec3( "Scale", _snap_scale );
+    TinyImGui::InputVec3( "Translate", m_snap_translate );
+    TinyImGui::InputVec3( "Rotate", m_snap_rotate );
+    TinyImGui::InputVec3( "Scale", m_snap_scale );
 
     TinyImGui::EndVars( );
 }
@@ -91,18 +91,18 @@ void TinyToolboxGuizmo::DrawWidget( ) {
 void TinyToolboxGuizmo::DrawUI( TinyGame* game ) {
     auto& ecs = game->GetECS( );
 
-    if ( ecs.GetIsAlive( _selection ) ) {
+    if ( ecs.GetIsAlive( m_selection ) ) {
         auto* snap_target = PeekSnapTarget( );
         auto& io          = ImGui::GetIO( );
         auto& renderer    = game->GetRenderer( );
         auto& cameras     = renderer.GetCurrentCamera( );
-        auto* transform   = ecs.GetComponentAs<TinyTransform2D>( _selection );
+        auto* transform   = ecs.GetComponentAs<TinyTransform2D>( m_selection );
         auto& view        = cameras.Get( );
         auto proj         = tiny_mat4{ renderer.GetCurrentProjection( ) };
         auto matrix       = transform->GetTransform( );
 
         ImGuizmo::BeginFrame( );
-        ImGuizmo::SetOrthographic( _is_orthographic );
+        ImGuizmo::SetOrthographic( m_is_orthographic );
         ImGuizmo::SetRect( .0f, -io.DisplaySize.y, io.DisplaySize.x, io.DisplaySize.y );
 
         proj[ 1 ][ 1 ] *= -1.f;
@@ -111,8 +111,8 @@ void TinyToolboxGuizmo::DrawUI( TinyGame* game ) {
             ImGuizmo::Manipulate(
             glm::value_ptr( view ),
             glm::value_ptr( proj ),
-            tiny_cast( _tool, ImGuizmo::OPERATION ),
-            tiny_cast( _mode, ImGuizmo::MODE ),
+            tiny_cast( m_tool, ImGuizmo::OPERATION ),
+            tiny_cast( m_mode, ImGuizmo::MODE ),
             glm::value_ptr( matrix ),
             nullptr,
             snap_target,
@@ -121,7 +121,7 @@ void TinyToolboxGuizmo::DrawUI( TinyGame* game ) {
         )
             ApplyManipulation( transform, matrix );
     } else
-        _selection.undefined( );
+        m_selection.undefined( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ void TinyToolboxGuizmo::ApplyManipulation( TinyTransform2D* transform, tiny_mat4
     auto grab_result     = std::invoke( grab_signature, matrix );
     auto half_scale      = transform->GetHalfScale( );
 
-    switch ( _tool ) {
+    switch ( m_tool ) {
         case TGT_TRANSLATE_X  : transform->SetLocationX( grab_result.x - half_scale.x ); break;
         case TGT_TRANSLATE_Y  : transform->SetLocationY( grab_result.y - half_scale.y ); break;
         case TGT_TRANSLATE_2D : 
@@ -154,21 +154,21 @@ void TinyToolboxGuizmo::ApplyManipulation( TinyTransform2D* transform, tiny_mat4
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const tiny_hash TinyToolboxGuizmo::GetSelection( ) const { return _selection; }
+const tiny_hash TinyToolboxGuizmo::GetSelection( ) const { return m_selection; }
 
 TinyGuizmoModes TinyToolboxGuizmo::GetMode( ) const { 
-    return tiny_cast( _mode, TinyGuizmoModes ); 
+    return tiny_cast( m_mode, TinyGuizmoModes ); 
 }
 
 TinyGuizmoTools TinyToolboxGuizmo::GetTool( ) const { 
-    return tiny_cast( _tool, TinyGuizmoTools ); 
+    return tiny_cast( m_tool, TinyGuizmoTools ); 
 }
 
-tiny_vec3& TinyToolboxGuizmo::GetSnapTranslate( ) { return _snap_translate; }
+tiny_vec3& TinyToolboxGuizmo::GetSnapTranslate( ) { return m_snap_translate; }
 
-tiny_vec3& TinyToolboxGuizmo::GetSnapRotate( ) { return _snap_rotate; }
+tiny_vec3& TinyToolboxGuizmo::GetSnapRotate( ) { return m_snap_rotate; }
 
-tiny_vec3& TinyToolboxGuizmo::GetSnapScale( ) { return _snap_scale; }
+tiny_vec3& TinyToolboxGuizmo::GetSnapScale( ) { return m_snap_scale; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
@@ -194,16 +194,16 @@ tiny_uint TinyToolboxGuizmo::PeekTool( tiny_uint selection ) {
 float* TinyToolboxGuizmo::PeekSnapTarget( ) {
     auto* snap_target = tiny_cast( nullptr, float* );
 
-    switch ( _tool ) {
+    switch ( m_tool ) {
         case TGT_TRANSLATE_X  :
         case TGT_TRANSLATE_Y  :
-        case TGT_TRANSLATE_2D : snap_target = tiny_rvalue( _snap_translate.x ); break;
+        case TGT_TRANSLATE_2D : snap_target = tiny_rvalue( m_snap_translate.x ); break;
 
-        case TGT_ROTATE_2D : snap_target = tiny_rvalue( _snap_rotate.x ); break;
+        case TGT_ROTATE_2D : snap_target = tiny_rvalue( m_snap_rotate.x ); break;
 
         case TGT_SCALE_X  : 
         case TGT_SCALE_Y  :
-        case TGT_SCALE_2D : snap_target = tiny_rvalue( _snap_scale.x ); break;
+        case TGT_SCALE_2D : snap_target = tiny_rvalue( m_snap_scale.x ); break;
 
         default : break;
     }
@@ -214,7 +214,7 @@ float* TinyToolboxGuizmo::PeekSnapTarget( ) {
 TinyMath::GrabSignature TinyToolboxGuizmo::PeekGrabSignature( ) {
     auto grab_signature = tiny_cast( nullptr, TinyMath::GrabSignature );
 
-    switch ( _tool ) {
+    switch ( m_tool ) {
         case TGT_TRANSLATE_X  :
         case TGT_TRANSLATE_Y  :
         case TGT_TRANSLATE_2D : grab_signature = &TinyMath::GrabTransform; break;

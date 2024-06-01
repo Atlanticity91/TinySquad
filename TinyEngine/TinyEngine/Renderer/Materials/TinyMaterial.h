@@ -25,7 +25,7 @@
 te_class TinyMaterial : tiny_inherit( TinyAsset ), tiny_inherit( TinyGraphicPipeline ) {
 
 private:
-	tiny_list<TinyAssetHandle> _shaders;
+	tiny_list<TinyAssetHandle> m_shaders;
 
 public:
 	TinyMaterial( );

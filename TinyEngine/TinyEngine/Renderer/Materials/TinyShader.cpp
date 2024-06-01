@@ -30,7 +30,7 @@ TinyShader::TinyShader( )
 
 void TinyShader::Terminate( TinyGame* game ) {
 	auto& graphics = game->GetGraphics( );
-	auto context   = graphics.GetContext( );
+	auto graphic   = graphics.GetWrapper( );
 
-	TinyGraphicShader::Terminate( context );
+	TinyGraphicShader::Terminate( graphic );
 }

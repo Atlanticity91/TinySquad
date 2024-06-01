@@ -21,25 +21,25 @@
 #include <TinyEngine/__tiny_engine_pch.h>
 
 #define TextVertex "vb_text"
-#define ParamUniform "u_text_parameters"
+#define ParamUniform "u_textm_parameters"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderBatchText::TinyRenderBatchText( )
 	: TinyRenderBatchInstance{ },
-	_textures{ },
-	_vertex{ }, 
-	_parameters{ }
+	m_textures{ },
+	m_vertex{ }, 
+	m_parameters{ }
 { }
 
 bool TinyRenderBatchText::Create(
 	TinyGraphicManager& graphics,
 	TinyRenderUniformManager& uniforms
 ) {
-	return  _textures.Create( )																					  &&
-			_vertex.Create( )																					  &&
-			_parameters.Create( )																				  &&
+	return  m_textures.Create( )																				  &&
+			m_vertex.Create( )																					  &&
+			m_parameters.Create( )																				  &&
 			uniforms.Create( graphics, { TGB_TYPE_VERTEX , Vertex_t::Size	 , TextVertex					  } ) &&
 			uniforms.Create( graphics, { TGB_TYPE_UNIFORM, Parameters_t::Size, ParamUniform, TRS_ID_RENDER, 0 } );
 }
@@ -54,8 +54,8 @@ void TinyRenderBatchText::Draw(
 	auto& assets	= game->GetAssets( );
 
 	if ( 
-		_material == draw_context.Material && 
-		_vertex.GetHasSpace( char_count )
+		m_material == draw_context.Material && 
+		m_vertex.GetHasSpace( char_count )
 	) {
 		auto* font   = assets.GetAssetAs<TinyFont>( draw_context.Font );
 		auto font_id = PushTexture( font );
@@ -67,16 +67,16 @@ void TinyRenderBatchText::Draw(
 
 		Flush( assets, graphics, staging, uniforms );
 
-		_material = draw_context.Material;
+		m_material = draw_context.Material;
 
 		Draw( game, staging, uniforms, draw_context );
 	}
 }
 
 void TinyRenderBatchText::Terminate( ) { 
-	_textures.Terminate( );
-	_vertex.Terminate( ); 
-	_parameters.Terminate( );
+	m_textures.Terminate( );
+	m_vertex.Terminate( ); 
+	m_parameters.Terminate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,25 +87,25 @@ tiny_uint TinyRenderBatchText::UploadBuffers(
 	TinyGraphicBufferStaging& staging,
 	TinyRenderUniformManager& uniforms
 ) {
-	auto vertex		= _vertex.Flush( );
-	auto parameters = _parameters.Flush( );
+	auto vertex		= m_vertex.Flush( );
+	auto parameters = m_parameters.Flush( );
 
 	if ( vertex.Count > 0 ) {
-		auto context	= graphics.GetContext( );
+		auto graphic    = graphics.GetWrapper( );
 		auto param_size = parameters.Count * tiny_sizeof( TinyRenderTextParameters );
 		auto vert_size  = vertex.Count	   * tiny_sizeof( TinyRenderTextVertex );
 
-		staging.Map( context, vert_size + param_size );
+		staging.Map( graphic, vert_size + param_size );
 
 		auto* staging_addr = tiny_cast( staging.GetAccess( ), tiny_pointer );
 
 		Tiny::Memcpy( vertex.Values	   , staging_addr			 , vert_size  );
 		Tiny::Memcpy( parameters.Values, staging_addr + vert_size, param_size );
 
-		staging.UnMap( context );
+		staging.UnMap( graphic );
 
 		{
-			auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+			auto burner = TinyGraphicBurner{ graphic, VK_QUEUE_TYPE_TRANSFER };
 
 			VkBufferCopy copies[ 2 ] = {
 				{ 0		   , 0, vert_size  },
@@ -124,7 +124,7 @@ void TinyRenderBatchText::OnFlush(
 	TinyGraphicWorkContext& work_context,
 	TinyMaterial& material
 ) {
-	auto textures = _textures.Flush( );
+	auto textures = m_textures.Flush( );
 
 	material.Bind( work_context, TRS_ID_TEXTURE, 0, textures.Count, tiny_cast( textures.Values, VkDescriptorImageInfo* ) );
 }
@@ -133,8 +133,8 @@ void TinyRenderBatchText::OnFlush(
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_uint TinyRenderBatchText::PushTexture( TinyFont* font ) {
-	auto* textures = tiny_cast( _textures.GetData( ), VkDescriptorImageInfo* );
-	auto font_id   = _textures.GetCount( );
+	auto* textures = tiny_cast( m_textures.GetData( ), VkDescriptorImageInfo* );
+	auto font_id   = m_textures.GetCount( );
 	auto texture   = font->GetTexure( );
 
 	while ( font_id-- > 0 ) {
@@ -147,8 +147,8 @@ tiny_uint TinyRenderBatchText::PushTexture( TinyFont* font ) {
 		break;
 	}
 
-	if ( font_id > _textures.GetCount( ) )
-		_textures.Push( texture );
+	if ( font_id > m_textures.GetCount( ) )
+		m_textures.Push( texture );
 
 	return font_id;
 }
@@ -178,7 +178,7 @@ void TinyRenderBatchText::PushVertex(
 				vertex.Vertices[ vertex_id ].Parameters = font_id;
 			}
 
-			_vertex.Push( vertex );
+			m_vertex.Push( vertex );
 
 			location.x += geometry.Advance;
 		}
@@ -202,5 +202,5 @@ void TinyRenderBatchText::PushParameters(
 	parameters.Miter = font->GetMiter( );
 	parameters.Font  = font_id;
 
-	_parameters.Push( parameters );
+	m_parameters.Push( parameters );
 }

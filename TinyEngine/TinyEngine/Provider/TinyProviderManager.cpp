@@ -24,16 +24,16 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyProviderManager::TinyProviderManager( ) 
-#	ifdef TE_PROVIDER_IMP
-	: _provider{ }
+#	ifdef TEm_provider_IMP
+	: m_provider{ }
 #	endif
 { }
 
 bool TinyProviderManager::Initialize( TinyFilesystem& filesystem ) {
 	auto state = true;
 
-#	ifdef TE_PROVIDER_IMP
-	state = _provider.Initialize( filesystem );
+#	ifdef TEm_provider_IMP
+	state = m_provider.Initialize( filesystem );
 #	endif
 
 	return state;
@@ -50,16 +50,16 @@ bool TinyProviderManager::UnLock( const tiny_hash trophy_hash ) {
 }
 
 void TinyProviderManager::Terminate( TinyFilesystem& filesystem ) {
-#	if TE_PROVIDER_IMP
-	_provider.Terminate( filesystem );
+#	if TEm_provider_IMP
+	m_provider.Terminate( filesystem );
 #	endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef TE_PROVIDER_IMP
-##TE_PROVIDER_TYPE##& TinyProviderManager::GetProvider( ) { return _provider; }
+#ifdef TEm_provider_IMP
+##TEm_provider_TYPE##& TinyProviderManager::GetProvider( ) { return m_provider; }
 
-const ##TE_PROVIDER_TYPE##& TinyProviderManager::GetProvider( ) const { return _provider; }
+const ##TEm_provider_TYPE##& TinyProviderManager::GetProvider( ) const { return m_provider; }
 #endif

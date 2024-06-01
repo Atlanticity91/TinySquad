@@ -25,35 +25,35 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyCue::TinyCue( )
 	: TinyAsset{ TA_TYPE_CUE },
-    _format{ },
-    _context{ },
-	_storage{ } 
+    m_format{ },
+    m_context{ },
+	m_storage{ } 
 { }
 
 bool TinyCue::Create( const TinyCueBuilder& builder ) {
     return true;
 }
 
-void TinyCue::Terminate( TinyGame* game ) { tiny_deallocate( _storage ); }
+void TinyCue::Terminate( TinyGame* game ) { tiny_deallocate( m_storage ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const TinyCueFormat& TinyCue::GetFormat( ) const { return _format; }
+const TinyCueFormat& TinyCue::GetFormat( ) const { return m_format; }
 
-const TinyCueContext& TinyCue::GetContext( ) const { return _context; }
+const TinyCueContext& TinyCue::GetContext( ) const { return m_context; }
 
-const tiny_storage& TinyCue::GetStorage( ) const { return _storage; }
+const tiny_storage& TinyCue::GetStorage( ) const { return m_storage; }
 
 TinyCueBuffer TinyCue::GetBuffer( ) const {
-    auto* address = _storage.GetAddress( );
+    auto* audio_data = tiny_cast( m_storage.GetAddress( ), const BYTE* );
 
     return { 
         XAUDIO2_END_OF_STREAM,
-        tiny_cast( _storage.Capacity, tiny_uint ), tiny_cast( address, const BYTE* ),
+        tiny_cast( m_storage.Capacity, tiny_uint ), audio_data,
         0, 0,
         0, 0,
         1,
-        tiny_cast( tiny_rvalue( _context ), native_pointer )
+        tiny_cast( tiny_rvalue( m_context ), native_pointer )
     };
 }

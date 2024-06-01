@@ -36,8 +36,8 @@ tiny_enum( TinyToolCategories ) {
 te_class TinyToolManager final {
 
 private:
-	tiny_uint					 _current;
-	tiny_list<TinyToolCategory*> _categories;
+	tiny_uint m_current;
+	tiny_list<TinyToolCategory*> m_categories;
 
 public:
 	TinyToolManager( );
@@ -61,7 +61,7 @@ public:
 		if ( category ) {
 			category->Create( game, toolbox );
 			
-			_categories.insert( Alias, category );
+			m_categories.insert( Alias, category );
 		}
 	};
 

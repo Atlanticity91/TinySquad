@@ -37,10 +37,10 @@ bool TinyShaderManager::Create(
 	if ( builder ) {
 		auto* builder_ = tiny_cast( builder, TinyGraphicShaderSpecification* );
 		auto& graphics = game->GetGraphics( );
-		auto context   = graphics.GetContext( );
 		auto& shader   = Emplace( alias );
+		auto graphic   = graphics.GetWrapper( );
 
-		state = shader.Create( context, tiny_lvalue( builder_ ) );
+		state = shader.Create( graphic, tiny_lvalue( builder_ ) );
 	}
 
 	return state;

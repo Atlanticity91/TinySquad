@@ -29,58 +29,58 @@ TinyTransform2D::TinyTransform2D( )
 
 TinyTransform2D::TinyTransform2D( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash },
-	_location{ .0f },
-	_rotation{ .0f },
-	_layer{ .0f },
-	_scale{ 1.f },
-	_transform{ 1.f }
+	m_location{ .0f },
+	m_rotation{ .0f },
+	m_layer{ .0f },
+	m_scale{ 1.f },
+	m_transform{ 1.f }
 { }
 
 TinyTransform2D& TinyTransform2D::SetLocationX( float scalar ) {
-	_location.x = scalar;
+	m_location.x = scalar;
 
 	return tiny_self;
 }
 
 TinyTransform2D& TinyTransform2D::SetLocationY( float scalar ) {
-	_location.y = scalar;
+	m_location.y = scalar;
 
 	return tiny_self;
 }
 
 TinyTransform2D& TinyTransform2D::SetLocation( const tiny_vec2& location ) {
-	_location = location;
+	m_location = location;
 
 	return tiny_self;
 }
 
 TinyTransform2D& TinyTransform2D::SetLocation( float x, float y ) {
-	_location.x = x;
-	_location.y = y;
+	m_location.x = x;
+	m_location.y = y;
 
 	return tiny_self;
 }
 
 TinyTransform2D& TinyTransform2D::SetLayer( float layer ) {
-	_layer = layer;
+	m_layer = layer;
 
 	return tiny_self;
 }
 
 TinyTransform2D& TinyTransform2D::SetRotation( float rotation ) {
-	_rotation = rotation;
+	m_rotation = rotation;
 
 	return tiny_self;
 }
 
 TinyTransform2D& TinyTransform2D::SetScaleX( float scalar ) {
-	_scale.x = scalar;
+	m_scale.x = scalar;
 
 	return tiny_self;
 }
 
 TinyTransform2D& TinyTransform2D::SetScaleY( float scalar ) {
-	_scale.y = scalar;
+	m_scale.y = scalar;
 
 	return tiny_self;
 }
@@ -94,8 +94,8 @@ TinyTransform2D& TinyTransform2D::SetScale( const tiny_vec2& scale ) {
 }
 
 TinyTransform2D& TinyTransform2D::SetScale( float x, float y ) {
-	_scale.x = x;
-	_scale.y = y;
+	m_scale.x = x;
+	m_scale.y = y;
 
 	return tiny_self;
 }
@@ -105,9 +105,9 @@ void TinyTransform2D::Set(
 	float rotation, 
 	const tiny_vec2& scale 
 ) {
-	_location = location;
-	_rotation = rotation;
-	_scale	  = scale;
+	m_location = location;
+	m_rotation = rotation;
+	m_scale	  = scale;
 }
 
 void TinyTransform2D::Set(
@@ -115,9 +115,9 @@ void TinyTransform2D::Set(
 	const tiny_vec3& rotation,
 	const tiny_vec3& scale
 ) {
-	_location = location;
-	_rotation = glm::degrees( rotation.z );
-	_scale	  = scale;
+	m_location = location;
+	m_rotation = glm::degrees( rotation.z );
+	m_scale	  = scale;
 }
 
 TinyTransform2D& TinyTransform2D::Move( const tiny_vec2& offset ) {
@@ -125,14 +125,14 @@ TinyTransform2D& TinyTransform2D::Move( const tiny_vec2& offset ) {
 }
 
 TinyTransform2D& TinyTransform2D::Move( float x, float y ) {
-	_location.x += x;
-	_location.y += y;
+	m_location.x += x;
+	m_location.y += y;
 
 	return tiny_self;
 }
 
 TinyTransform2D& TinyTransform2D::Rotate( float offset ) {
-	_rotation += offset;
+	m_rotation += offset;
 
 	return tiny_self;
 }
@@ -146,25 +146,25 @@ TinyTransform2D& TinyTransform2D::Scale( const tiny_vec2& scale ) {
 }
 
 TinyTransform2D& TinyTransform2D::Scale( float x, float y ) {
-	_scale.x *= x;
-	_scale.y *= y;
+	m_scale.x *= x;
+	m_scale.y *= y;
 
 	return tiny_self;
 } 
 
 TinyTransform2D& TinyTransform2D::ReCalculate( ) {
-	auto half_scale = _scale * .5f;
+	auto half_scale = m_scale * .5f;
 
-	_transform  = glm::translate( tiny_vec3{ _location.x + half_scale.x, _location.y + half_scale.y, _layer } );
-	_transform *= glm::rotate( glm::radians( _rotation ), tiny_vec3{ .0f, .0f, 1.f } );
-	_transform *= glm::scale( tiny_vec3{ _scale.x, _scale.y, 1.f } );
+	m_transform  = glm::translate( tiny_vec3{ m_location.x + half_scale.x, m_location.y + half_scale.y, m_layer } );
+	m_transform *= glm::rotate( glm::radians( m_rotation ), tiny_vec3{ .0f, .0f, 1.f } );
+	m_transform *= glm::scale( tiny_vec3{ m_scale.x, m_scale.y, 1.f } );
 
 	return tiny_self;
 }
 
 void TinyTransform2D::Delete( TinyGame* game ) {
 	auto& ecs  = game->GetECS( );
-	auto* skin = ecs.GetComponentAs<TinySkin2D>( _owner );
+	auto* skin = ecs.GetComponentAs<TinySkin2D>( m_owner );
 
 	if ( skin )
 		skin->Disable( game );
@@ -173,31 +173,31 @@ void TinyTransform2D::Delete( TinyGame* game ) {
 void TinyTransform2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
 	TinyComponent::DisplayWidget( game, toolbox );
 
-	TinyImGui::InputVec2( "Location", _location );
-	TinyImGui::InputScalar( "Layer", _layer );
-	TinyImGui::InputScalar( "Rotation", _rotation );
-	TinyImGui::InputVec2( "Scale", _scale );
+	TinyImGui::InputVec2( "Location", m_location );
+	TinyImGui::InputScalar( "Layer", m_layer );
+	TinyImGui::InputScalar( "Rotation", m_rotation );
+	TinyImGui::InputVec2( "Scale", m_scale );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_vec2& TinyTransform2D::GetLocation( ) { return _location; }
+tiny_vec2& TinyTransform2D::GetLocation( ) { return m_location; }
 
-const tiny_vec2& TinyTransform2D::GetLocation( ) const { return _location; }
+const tiny_vec2& TinyTransform2D::GetLocation( ) const { return m_location; }
 
-float TinyTransform2D::GetLayer( ) const { return _layer; }
+float TinyTransform2D::GetLayer( ) const { return m_layer; }
 
-float TinyTransform2D::GetRotation( ) { return _rotation; }
+float TinyTransform2D::GetRotation( ) { return m_rotation; }
 
-tiny_vec2& TinyTransform2D::GetScale( ) { return _scale; }
+tiny_vec2& TinyTransform2D::GetScale( ) { return m_scale; }
 
-tiny_vec2 TinyTransform2D::GetHalfScale( ) const { return _scale * .5f; }
+tiny_vec2 TinyTransform2D::GetHalfScale( ) const { return m_scale * .5f; }
 
-const tiny_vec2& TinyTransform2D::GetScale( ) const { return _scale; }
+const tiny_vec2& TinyTransform2D::GetScale( ) const { return m_scale; }
 
 tiny_vec3 TinyTransform2D::GetRotator( ) const {
-	return { .0f,.0f, glm::radians( _rotation ) };
+	return { .0f,.0f, glm::radians( m_rotation ) };
 }
 
-const tiny_mat4& TinyTransform2D::GetTransform( ) const { return _transform; }
+const tiny_mat4& TinyTransform2D::GetTransform( ) const { return m_transform; }

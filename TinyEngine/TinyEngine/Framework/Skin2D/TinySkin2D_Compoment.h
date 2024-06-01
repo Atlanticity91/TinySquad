@@ -25,10 +25,10 @@
 TINY_FRAMEWORK_COMP( TinySkin2D ) {
 
 private:
-	TinyAssetHandle _material;
-	TinyAssetHandle _texture;
-	tiny_color		_color;
-	tiny_upoint		_sprite;
+	TinyAssetHandle m_material;
+	TinyAssetHandle m_texture;
+	tiny_color m_color;
+	tiny_upoint m_sprite;
 
 public:
 	TinySkin2D( );

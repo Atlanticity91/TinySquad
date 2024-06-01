@@ -24,23 +24,23 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderer::TinyRenderer( )
-	: _cameras{ },
-	_uniforms { },
-	_batchs{ },
-	_debug{ },
-	_post_process{ }
+	: m_cameras{ },
+	m_uniforms { },
+	m_batchs{ },
+	m_debug{ },
+	m_post_process{ }
 { }
 
 bool TinyRenderer::Initialize( TinyGraphicManager& graphics, TinyFilesystem filesystem ) {
-	auto& staging = _batchs.GetStaging( );
+	auto& staging = m_batchs.GetStaging( );
 
 	PushShaderMacros( graphics );
 
-	_cameras.Initialize( );
+	m_cameras.Initialize( );
 
-	return  _batchs.Initialize( graphics, _uniforms ) &&
-			_debug.Initialize( graphics, _uniforms )  &&
-			_uniforms.Create( graphics, staging );
+	return  m_batchs.Initialize( graphics, m_uniforms ) &&
+			m_debug.Initialize( graphics, m_uniforms )  &&
+			m_uniforms.Create( graphics, staging );
 }
 
 TinyMaterialBuilder TinyRenderer::CreateMaterial(
@@ -57,50 +57,50 @@ TinyMaterialBuilder TinyRenderer::CreateMaterial(
 }
 
 TinyRenderProjection& TinyRenderer::CreateProjection( const tiny_string& alias ) {
-	return _cameras.CreateProjection( alias );
+	return m_cameras.CreateProjection( alias );
 }
 
 void TinyRenderer::RemoveProjection( const tiny_string& alias ) {
-	_cameras.RemoveProjection( alias );
+	m_cameras.RemoveProjection( alias );
 }
 
 void TinyRenderer::RemoveProjection( const tiny_hash hash ) {
-	_cameras.RemoveProjection( hash );
+	m_cameras.RemoveProjection( hash );
 }
 
 TinyRenderCamera& TinyRenderer::CreateCamera( const tiny_string& entity_name ) {
-	return _cameras.CreateCamera( entity_name );
+	return m_cameras.CreateCamera( entity_name );
 }
 
 TinyRenderCamera& TinyRenderer::CreateCamera(
 	const tiny_string& entity_name,
 	const tiny_string& projection
 ) {
-	return _cameras.CreateCamera( entity_name, projection );
+	return m_cameras.CreateCamera( entity_name, projection );
 }
 
 void TinyRenderer::RemoveCamera( const tiny_string& entity_name ) {
-	_cameras.RemoveCamera( entity_name );
+	m_cameras.RemoveCamera( entity_name );
 }
 
 void TinyRenderer::RemoveCamera( const tiny_hash entity_hash ) {
-	_cameras.RemoveCamera( entity_hash );
+	m_cameras.RemoveCamera( entity_hash );
 }
 
-void TinyRenderer::ReCalculate( ) { _cameras.ReCalculate( ); }
+void TinyRenderer::ReCalculate( ) { m_cameras.ReCalculate( ); }
 
 void TinyRenderer::ReCalculate( const tiny_hash entity_hash ) { 
-	_cameras.ReCalculate( entity_hash ); 
+	m_cameras.ReCalculate( entity_hash ); 
 }
 
-void TinyRenderer::ReCalculateCurrent( ) { _cameras.ReCalculateCurrent( ); }
+void TinyRenderer::ReCalculateCurrent( ) { m_cameras.ReCalculateCurrent( ); }
 
-void TinyRenderer::SetDebugLineWidth( float width ) { _debug.SetLineWidth( width ); }
+void TinyRenderer::SetDebugLineWidth( float width ) { m_debug.SetLineWidth( width ); }
 
 void TinyRenderer::Prepare( TinyGraphicManager& graphics ) {
-	auto& staging = _batchs.GetStaging( );
+	auto& staging = m_batchs.GetStaging( );
 
-	_cameras.Prepare( graphics, staging, _uniforms );
+	m_cameras.Prepare( graphics, staging, m_uniforms );
 }
 
 void TinyRenderer::Prepare(
@@ -111,7 +111,7 @@ void TinyRenderer::Prepare(
 ) {
 	auto render_hash = tiny_hash{ render_pass };
 
-	_batchs.Prepare( game, type, render_hash, callback, _uniforms );
+	m_batchs.Prepare( game, type, render_hash, callback, m_uniforms );
 }
 
 void TinyRenderer::Prepare(
@@ -120,43 +120,43 @@ void TinyRenderer::Prepare(
 	const tiny_hash render_pass,
 	Callback_t callback
 ) {
-	_batchs.Prepare( game, type, render_pass, callback, _uniforms );
+	m_batchs.Prepare( game, type, render_pass, callback, m_uniforms );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderSpriteContext& draw_context ) {
-	_batchs.Draw( game, _uniforms, draw_context );
+	m_batchs.Draw( game, m_uniforms, draw_context );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderVertexContext& draw_context ) {
-	_batchs.Draw( game, _uniforms, draw_context );
+	m_batchs.Draw( game, m_uniforms, draw_context );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderLightContext& draw_context ) {
-	_batchs.Draw( game, _uniforms, draw_context );
+	m_batchs.Draw( game, m_uniforms, draw_context );
 }
 
 void TinyRenderer::Draw( TinyGame* game, const TinyRenderTextContext& draw_context ) {
-	_batchs.Draw( game, _uniforms, draw_context );
+	m_batchs.Draw( game, m_uniforms, draw_context );
 }
 
 void TinyRenderer::Flush( TinyGame* game, TinyRenderBatchTypes type ) {
-	_batchs.Flush( game, type, _uniforms ); 
+	m_batchs.Flush( game, type, m_uniforms ); 
 }
 
 void TinyRenderer::DrawDebug( const TinyRenderDebugPrimitive& primitive ) {
-	_debug.Draw( primitive );
+	m_debug.Draw( primitive );
 }
 
 void TinyRenderer::Compose( TinyGame* game ) {
-	_batchs.Flush( game, _uniforms );
-	_post_process.Compose( game, _uniforms, _batchs );
-	_debug.Flush( game, _uniforms, _batchs );
+	m_batchs.Flush( game, m_uniforms );
+	m_post_process.Compose( game, m_uniforms, m_batchs );
+	m_debug.Flush( game, m_uniforms, m_batchs );
 }
 
 void TinyRenderer::Terminate( TinyGraphicManager& graphics ) {
-	_debug.Terminate( graphics );
-	_batchs.Terminate( graphics );
-	_uniforms.Terminate( graphics );
+	m_debug.Terminate( graphics );
+	m_batchs.Terminate( graphics );
+	m_uniforms.Terminate( graphics );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,82 +231,82 @@ void TinyRenderer::PushShaderMacros( TinyGraphicManager& graphics ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyRenderCameraManager& TinyRenderer::GetCameras( ) { return _cameras; }
+TinyRenderCameraManager& TinyRenderer::GetCameras( ) { return m_cameras; }
 
-TinyRenderUniformManager& TinyRenderer::GetUniforms( ) { return _uniforms; }
+TinyRenderUniformManager& TinyRenderer::GetUniforms( ) { return m_uniforms; }
 
-TinyRenderBatchManager& TinyRenderer::GetBatchs( ) { return _batchs; }
+TinyRenderBatchManager& TinyRenderer::GetBatchs( ) { return m_batchs; }
 
-TinyRenderPostProcessor& TinyRenderer::GetPostProcess( ) { return _post_process; }
+TinyRenderPostProcessor& TinyRenderer::GetPostProcess( ) { return m_post_process; }
 
-TinyGraphicBufferStaging& TinyRenderer::GetStaging( ) { return _batchs.GetStaging( ); }
+TinyGraphicBufferStaging& TinyRenderer::GetStaging( ) { return m_batchs.GetStaging( ); }
 
 bool TinyRenderer::FindProjection( const tiny_string& alias ) const { 
-	return _cameras.FindProjection( alias );
+	return m_cameras.FindProjection( alias );
 }
 
 bool TinyRenderer::FindProjection( const tiny_hash hash ) const {
-	return _cameras.FindProjection( hash );
+	return m_cameras.FindProjection( hash );
 }
 
 bool TinyRenderer::FindCamera( const tiny_string& entity_name ) const {
-	return _cameras.FindCamera( entity_name );
+	return m_cameras.FindCamera( entity_name );
 }
 
 bool TinyRenderer::FindCamera( const tiny_hash entity_hash ) const {
-	return _cameras.FindCamera( entity_hash );
+	return m_cameras.FindCamera( entity_hash );
 }
 
 TinyRenderProjection& TinyRenderer::GetProjection( const tiny_string& alias ) {
-	return _cameras.GetProjection( alias );
+	return m_cameras.GetProjection( alias );
 }
 
 const TinyRenderProjection& TinyRenderer::GetProjection( const tiny_string& alias ) const {
-	return _cameras.GetProjection( alias );
+	return m_cameras.GetProjection( alias );
 }
 
 TinyRenderProjection& TinyRenderer::GetProjection( const tiny_hash hash ) {
-	return _cameras.GetProjection( hash );
+	return m_cameras.GetProjection( hash );
 }
 
 const TinyRenderProjection& TinyRenderer::GetProjection( const tiny_hash hash ) const {
-	return _cameras.GetProjection( hash );
+	return m_cameras.GetProjection( hash );
 }
 
 TinyRenderCamera& TinyRenderer::GetCamera( const tiny_string& entity_name ) {
-	return _cameras.GetCamera( entity_name );
+	return m_cameras.GetCamera( entity_name );
 }
 
 const TinyRenderCamera& TinyRenderer::GetCamera( const tiny_string& entity_name ) const {
-	return _cameras.GetCamera( entity_name );
+	return m_cameras.GetCamera( entity_name );
 }
 
 TinyRenderCamera& TinyRenderer::GetCamera( const tiny_hash entity_hash ) {
-	return _cameras.GetCamera( entity_hash );
+	return m_cameras.GetCamera( entity_hash );
 }
 
 const TinyRenderCamera& TinyRenderer::GetCamera( const tiny_hash entity_hash ) const {
-	return _cameras.GetCamera( entity_hash );
+	return m_cameras.GetCamera( entity_hash );
 }
 
 TinyRenderProjection& TinyRenderer::GetCurrentProjection( ) {
-	return _cameras.GetCurrentProjection( );
+	return m_cameras.GetCurrentProjection( );
 }
 
 const TinyRenderProjection& TinyRenderer::GetCurrentProjection( ) const {
-	return _cameras.GetCurrentProjection( );
+	return m_cameras.GetCurrentProjection( );
 }
 
 TinyRenderCamera& TinyRenderer::GetCurrentCamera( ) {
-	return _cameras.GetCurrentCamera( );
+	return m_cameras.GetCurrentCamera( );
 }
 
 const TinyRenderCamera& TinyRenderer::GetCurrentCamera( ) const {
-	return _cameras.GetCurrentCamera( ); 
+	return m_cameras.GetCurrentCamera( ); 
 }
 
 const tiny_mat4& TinyRenderer::GetCameraMatrix( ) const { 
-	return _cameras.GetCurrentMatrix( ); 
+	return m_cameras.GetCurrentMatrix( ); 
 }
 
-float TinyRenderer::GetDebugLineWidth( ) const { return _debug.GetLineWidth( ); }
+float TinyRenderer::GetDebugLineWidth( ) const { return m_debug.GetLineWidth( ); }

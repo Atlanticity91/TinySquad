@@ -33,13 +33,13 @@ tiny_enum( TinyAnimationFlags ) {
 TINY_FRAMEWORK_COMP( TinyAnim2D ) {
 
 private:
-	TinyAssetHandle	_collection;
-	tiny_string		_animation;
-	tiny_hash		_animation_hash;
-	tiny_uint		_flags;
-	tiny_uint		_frame_id;
-	float			_frame_time;
-	float			_frame_duration;
+	TinyAssetHandle	m_collection;
+	tiny_string m_animation;
+	tiny_hash m_animation_hash;
+	tiny_uint m_flags;
+	tiny_uint m_frame_id;
+	float m_frame_time;
+	float m_frame_duration;
 
 public:
 	TinyAnim2D( );

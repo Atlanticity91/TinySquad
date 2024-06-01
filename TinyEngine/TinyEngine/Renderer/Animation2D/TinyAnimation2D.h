@@ -36,7 +36,7 @@ public:
 	using FrameCollection = tiny_list<TinyAnimation2DFrame>;
 
 private:
-	tiny_map<FrameCollection> _collection;
+	tiny_map<FrameCollection> m_collection;
 
 public:
 	TinyAnimation2D( );

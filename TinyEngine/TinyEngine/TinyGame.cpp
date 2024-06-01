@@ -37,14 +37,14 @@ TinyGame::TinyGame(
 	TinyGameOrientations orientation,
 	bool is_headless
 )
-	: _engine{ developer, title, orientation, is_headless }
+	: m_engine{ developer, title, orientation, is_headless }
 { }
 
 bool TinyGame::Start( tiny_int argc, char** argv ) {
-	auto state = _engine.Initialize( this, argc, argv );
+	auto state = m_engine.Initialize( this, argc, argv );
 
 	if ( state ) {
-		auto& graphics = _engine.GetGraphics( );
+		auto& graphics = m_engine.GetGraphics( );
 
 		SetupBundles( graphics );
 
@@ -59,34 +59,38 @@ bool TinyGame::Start( tiny_int argc, char** argv ) {
 	return state;
 }
 
-void TinyGame::Minimize( ) { _engine.Minimize( ); }
+void TinyGame::Minimize( ) { m_engine.Minimize( ); }
 
-void TinyGame::Restore( ) { _engine.Restore( ); }
+void TinyGame::Restore( ) { m_engine.Restore( ); }
 
-void TinyGame::Maximize( ) { _engine.Maximize( ); }
+void TinyGame::Maximize( ) { m_engine.Maximize( ); }
 
-void TinyGame::Stop( ) { _engine.Stop( ); }
+void TinyGame::Stop( ) { m_engine.Stop( ); }
 
-void TinyGame::Dispatch( const TinyJob& job ) { _engine.Dispatch( job ); }
+void TinyGame::DisableCache( ) { m_engine.DisableCache( ); }
+
+void TinyGame::EnableCache( ) { m_engine.EnableCache( ); }
+
+void TinyGame::Dispatch( const TinyJob& job ) { m_engine.Dispatch( job ); }
 
 void TinyGame::SwitchGameState( TinyGame* game, const tiny_uint state_id ) {
-	_engine.Switch( game, state_id );
+	m_engine.Switch( game, state_id );
 }
 
 void TinyGame::SwitchGameState( TinyGame* game, const tiny_string& state_name ) {
-	_engine.Switch( game, state_name );
+	m_engine.Switch( game, state_name );
 }
 
 void TinyGame::SwitchGameState( TinyGame* game, const tiny_hash state_hash ) {
-	_engine.Switch( game, state_hash );
+	m_engine.Switch( game, state_hash );
 }
 
 void TinyGame::Run( ) {
-	while ( _engine.GetShouldRun( ) ) {
-		if ( _engine.PreTick( this ) ) {
+	while ( m_engine.GetShouldRun( ) ) {
+		if ( m_engine.PreTick( this ) ) {
 			Tick( );
 
-			_engine.PostTick( this );
+			m_engine.PostTick( this );
 		} else 
 			tiny_sleep_for( 15 );
 	}
@@ -95,7 +99,7 @@ void TinyGame::Run( ) {
 void TinyGame::Close( ) {
 	Terminate( );
 
-	_engine.Terminate( this );
+	m_engine.Terminate( this );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,10 +153,10 @@ void TinyGame::LoadDefault2D( TinyECS& ecs ) {
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyGame::Load( ) {
-	auto& scripts = _engine.GetScripts( );
+	auto& scripts = m_engine.GetScripts( );
 	auto& context = scripts.GetContext( );
-	auto& assets  = _engine.GetAssets( );
-	auto& ecs	  = _engine.GetECS( );
+	auto& assets  = m_engine.GetAssets( );
+	auto& ecs	  = m_engine.GetECS( );
 
 	LoadInterop( context );
 	LoadContent( assets );
@@ -162,41 +166,41 @@ void TinyGame::Load( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyGame::GetIsRunning( ) const { return _engine.GetIsRunning( ); }
+bool TinyGame::GetIsRunning( ) const { return m_engine.GetIsRunning( ); }
 
-TinyEngine& TinyGame::GetEngine( ) { return _engine; }
+TinyEngine& TinyGame::GetEngine( ) { return m_engine; }
 
-TinyJobManager& TinyGame::GetJobs( ) { return _engine.GetJobs( ); }
+TinyJobManager& TinyGame::GetJobs( ) { return m_engine.GetJobs( ); }
 
-TinyFilesystem& TinyGame::GetFilesystem( ) { return _engine.GetFilesystem( ); }
+TinyFilesystem& TinyGame::GetFilesystem( ) { return m_engine.GetFilesystem( ); }
 
-TinyAssetManager& TinyGame::GetAssets( ) { return _engine.GetAssets( ); }
+TinyAssetManager& TinyGame::GetAssets( ) { return m_engine.GetAssets( ); }
 
-TinyWindow& TinyGame::GetWindow( ) { return _engine.GetWindow( ); }
+TinyWindow& TinyGame::GetWindow( ) { return m_engine.GetWindow( ); }
 
-TinyInputManager& TinyGame::GetInputs( ) { return _engine.GetInputs( ); }
+TinyInputManager& TinyGame::GetInputs( ) { return m_engine.GetInputs( ); }
 
-TinyAudioManager& TinyGame::GetAudio( ) { return _engine.GetAudio( ); }
+TinyAudioManager& TinyGame::GetAudio( ) { return m_engine.GetAudio( ); }
 
-TinyGraphicManager& TinyGame::GetGraphics( ) { return _engine.GetGraphics( ); }
+TinyGraphicManager& TinyGame::GetGraphics( ) { return m_engine.GetGraphics( ); }
 
-TinyNativeRegister& TinyGame::GetNatives( ) { return _engine.GetNatives( ); }
+TinyNativeRegister& TinyGame::GetNatives( ) { return m_engine.GetNatives( ); }
 
-TinyScriptManager& TinyGame::GetScripts( ) { return _engine.GetScripts( ); }
+TinyScriptManager& TinyGame::GetScripts( ) { return m_engine.GetScripts( ); }
 
-TinyRenderer& TinyGame::GetRenderer( ) { return _engine.GetRenderer( ); }
+TinyRenderer& TinyGame::GetRenderer( ) { return m_engine.GetRenderer( ); }
 
-TinyECS& TinyGame::GetECS( ) { return _engine.GetECS( ); }
+TinyECS& TinyGame::GetECS( ) { return m_engine.GetECS( ); }
 
-TinySceneManager& TinyGame::GetScenes( ) { return _engine.GetScenes( ); }
+TinySceneManager& TinyGame::GetScenes( ) { return m_engine.GetScenes( ); }
 
-TinyUXManager& TinyGame::GetUX( ) { return _engine.GetUX( ); }
+TinyUXManager& TinyGame::GetUX( ) { return m_engine.GetUX( ); }
 
-TinyAddonManager& TinyGame::GetAddons( ) { return _engine.GetAddons( ); }
+TinyAddonManager& TinyGame::GetAddons( ) { return m_engine.GetAddons( ); }
 
-TinyGameStateManager& TinyGame::GetGameStates( ) { return _engine.GetGameStates( ); }
+TinyGameStateManager& TinyGame::GetGameStates( ) { return m_engine.GetGameStates( ); }
 
-TinyToolbox& TinyGame::GetToolbox( ) { return _engine.GetToolbox( ); }
+TinyToolbox& TinyGame::GetToolbox( ) { return m_engine.GetToolbox( ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

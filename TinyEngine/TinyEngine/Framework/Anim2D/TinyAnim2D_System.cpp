@@ -59,7 +59,7 @@ void TinyAnim2DSystem::PostTick( TinyGame* game ) {
 	auto* animations = assets.GetContainerAs<TinyAnimation2DManager>( TA_TYPE_ANIMATION_2D );
 	auto& ecs		 = game->GetECS( );
 
-	for ( auto& comp : _components ) {
+	for ( auto& comp : m_components ) {
 		if ( comp.GetIsActive( ) )
 			comp.Tick( animations, inputs, ecs );
 	}

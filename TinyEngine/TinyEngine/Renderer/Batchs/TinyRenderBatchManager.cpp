@@ -24,23 +24,23 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderBatchManager::TinyRenderBatchManager( ) 
-	: _staging{ },
-	_sprites{ },
-	_text{ }
+	: m_staging{ },
+	m_sprites{ },
+	m_text{ }
 { }
 
 bool TinyRenderBatchManager::Initialize( 
 	TinyGraphicManager& graphics,
 	TinyRenderUniformManager& uniforms 
 ) {
-	auto context = graphics.GetContext( );
+	auto graphic = graphics.GetWrapper( );
 	auto size_2d = TinyRenderBatchSprite::Size + TINY_QUAD_INDEX_SIZE;
 	//constexpr auto size_3d = BatchIndex_t::Size + BatchVertex_t::Size;
 	//constexpr auto size    = size_2d < size_3d ? size_3d : size_2d;
 	
-	return  _staging.Create( context, size_2d )   &&
-			_sprites.Create( graphics, uniforms ) &&
-			_text.Create( graphics, uniforms );
+	return  m_staging.Create( graphic, size_2d )   &&
+			m_sprites.Create( graphics, uniforms ) &&
+			m_text.Create( graphics, uniforms );
 }
 
 void TinyRenderBatchManager::Prepare(
@@ -55,10 +55,10 @@ void TinyRenderBatchManager::Prepare(
 	Flush( game, type, uniforms );
 
 	switch ( type ) {
-		case TRB_TYPE_SPRITES : _sprites.Prepare( graphics, render_pass, callback ); break;
+		case TRB_TYPE_SPRITES : m_sprites.Prepare( graphics, render_pass, callback ); break;
 		case TRB_TYPE_VERTEX  : break;
 		case TRB_TYPE_LIGHT	  : break;
-		case TRB_TYPE_TEXT	  : _text.Prepare( graphics, render_pass, callback ); break;
+		case TRB_TYPE_TEXT	  : m_text.Prepare( graphics, render_pass, callback ); break;
 
 		default : break;
 	}
@@ -69,7 +69,7 @@ void TinyRenderBatchManager::Draw(
 	TinyRenderUniformManager& uniforms,
 	const TinyRenderSpriteContext& draw_context 
 ) {
-	_sprites.Draw( game, _staging, uniforms, draw_context );
+	m_sprites.Draw( game, m_staging, uniforms, draw_context );
 }
 
 void TinyRenderBatchManager::Draw(
@@ -91,7 +91,7 @@ void TinyRenderBatchManager::Draw(
 	TinyRenderUniformManager& uniforms,
 	const TinyRenderTextContext& draw_context 
 ) {
-	_text.Draw( game, _staging, uniforms, draw_context );
+	m_text.Draw( game, m_staging, uniforms, draw_context );
 }
 
 void TinyRenderBatchManager::Flush( 
@@ -104,10 +104,10 @@ void TinyRenderBatchManager::Flush(
 
 	switch ( type ) {
 
-		case TRB_TYPE_SPRITES : _sprites.Flush( assets, graphics, _staging, uniforms ); break;
+		case TRB_TYPE_SPRITES : m_sprites.Flush( assets, graphics, m_staging, uniforms ); break;
 		case TRB_TYPE_VERTEX  : break;
 		case TRB_TYPE_LIGHT   : break;
-		case TRB_TYPE_TEXT	  : _text.Flush( assets, graphics, _staging, uniforms ); break;
+		case TRB_TYPE_TEXT	  : m_text.Flush( assets, graphics, m_staging, uniforms ); break;
 
 		default: break;
 	}
@@ -117,20 +117,20 @@ void TinyRenderBatchManager::Flush( TinyGame* game, TinyRenderUniformManager& un
 	auto& graphics = game->GetGraphics( );
 	auto& assets   = game->GetAssets( );
 
-	_sprites.Flush( assets, graphics, _staging, uniforms );
+	m_sprites.Flush( assets, graphics, m_staging, uniforms );
 }
 
 void TinyRenderBatchManager::Terminate( TinyGraphicManager& graphics ) {
-	auto context = graphics.GetContext( );
+	auto graphic = graphics.GetWrapper( );
 
-	_staging.Terminate( context );
-	_sprites.Terminate( ); 
-	_text.Terminate( );
+	m_staging.Terminate( graphic );
+	m_sprites.Terminate( ); 
+	m_text.Terminate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicBufferStaging& TinyRenderBatchManager::GetStaging( ) { return _staging; }
+TinyGraphicBufferStaging& TinyRenderBatchManager::GetStaging( ) { return m_staging; }
 
-TinyRenderBatchSprite& TinyRenderBatchManager::GetSprites( ) { return _sprites; }
+TinyRenderBatchSprite& TinyRenderBatchManager::GetSprites( ) { return m_sprites; }

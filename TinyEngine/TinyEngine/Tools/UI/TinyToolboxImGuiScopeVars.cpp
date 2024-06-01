@@ -28,7 +28,7 @@
 namespace TinyImGui {
 
 	ScopeVars::ScopeVars( )
-		: _count{ 0 }
+		: m_count{ 0 }
 	{ }
 
 	ScopeVars::ScopeVars( const Var& var )
@@ -45,13 +45,13 @@ namespace TinyImGui {
 		: ScopeVars{ { label, value } }
 	{ }
 
-	ScopeVars::~ScopeVars( ) { Pop( _count ); };
+	ScopeVars::~ScopeVars( ) { Pop( m_count ); };
 
 	void ScopeVars::Push( const Var& var ) { Push( { var } ); }
 
 	void ScopeVars::Push( tiny_init<Var> vars ) {
 		if ( vars.size( ) > 0 ) {
-			_count += (tiny_int)vars.size( );
+			m_count += (tiny_int)vars.size( );
 
 			for ( auto& var : vars )
 				ImGui::PushStyleVar( var.Label, var.Value );
@@ -65,12 +65,12 @@ namespace TinyImGui {
 	void ScopeVars::Pop( ) { Pop( 1 ); }
 
 	void ScopeVars::Pop( tiny_int count ) {
-		if ( _count > 0 ) {
-			auto claim = _count - count > -1 ? count : _count;
+		if ( m_count > 0 ) {
+			auto claim = m_count - count > -1 ? count : m_count;
 
 			ImGui::PopStyleVar( claim );
 
-			_count -= claim;
+			m_count -= claim;
 		}
 	}
 

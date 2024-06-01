@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyECSDispatch::TinyECSDispatch( ) 
-	: _callbacks{ }
+	: m_callbacks{ }
 { }
 
 void TinyECSDispatch::Register( tiny_uint type, native_pointer callback ) {
@@ -32,8 +32,8 @@ void TinyECSDispatch::Register( tiny_uint type, native_pointer callback ) {
 }
 
 void TinyECSDispatch::Register( tiny_uint type, tiny_init<native_pointer> callbacks ) {
-	if ( type >= _callbacks.size( ) )
-		_callbacks.create( type );
+	if ( type >= m_callbacks.size( ) )
+		m_callbacks.create( type );
 
-	_callbacks[ type ].emplace_back( callbacks );
+	m_callbacks[ type ].emplace_back( callbacks );
 }

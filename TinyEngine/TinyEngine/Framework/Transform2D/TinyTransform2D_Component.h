@@ -25,11 +25,11 @@
 TINY_FRAMEWORK_COMP( TinyTransform2D ) {
 
 private:
-	tiny_vec2 _location;
-	float	  _layer;
-	float	  _rotation;
-	tiny_vec2 _scale;
-	tiny_mat4 _transform;
+	tiny_vec2 m_location;
+	float m_layer;
+	float m_rotation;
+	tiny_vec2 m_scale;
+	tiny_mat4 m_transform;
 
 public:
 	TinyTransform2D( );

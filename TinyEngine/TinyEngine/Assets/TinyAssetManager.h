@@ -28,8 +28,8 @@ class TinySceneManager;
 te_class TinyAssetManager final {
 
 private:
-	TinyAssetImporter		_importer;
-	tiny_list<tiny_storage> _containers;
+	TinyAssetImportManager m_importer;
+	tiny_list<tiny_storage> m_containers;
 
 public:
 	TinyAssetManager( );
@@ -68,16 +68,16 @@ public:
 		auto container = tiny_storage{ };
 
 		if ( tiny_make_storage( container, Container ) ) {
-			if ( asset_type < _containers.size( ) ) {
-				if ( !_containers[ asset_type ].GetIsValid( ) )
-					_containers[ asset_type ] = container;
+			if ( asset_type < m_containers.size( ) ) {
+				if ( !m_containers[ asset_type ].GetIsValid( ) )
+					m_containers[ asset_type ] = container;
 				else
 					tiny_deallocate( container );
 			} else {
-				auto container_count = _containers.size( );
+				auto container_count = m_containers.size( );
 
 				if ( asset_type < container_count + 1 )
-					_containers.emplace_back( container );
+					m_containers.emplace_back( container );
 				else
 					tiny_deallocate( container );
 			}
@@ -97,7 +97,7 @@ private:
 	bool LoadAssetFile( TinyGame* game, const tiny_string& alias, const tiny_string& path );
 
 public:
-	TinyAssetImporter& GetImporter( );
+	TinyAssetImportManager& GetImporter( );
 
 	ITinyAssetContainer* GetContainer( const tiny_uint asset_type );
 

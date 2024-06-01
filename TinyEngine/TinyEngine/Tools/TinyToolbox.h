@@ -25,15 +25,15 @@
 te_class TinyToolbox final {
 
 private:
-	bool				  _is_in_use;
-	bool				  _has_dir;
-	bool				  _show_exemples;
-	ImGuiContext*		  _imgui;
-	VkDescriptorPool	  _local_pools;
-	tiny_map<ImFont*>	  _fonts;
-	TinyToolManager		  _tools;
-	TinyToolWindowManager _windows;
-	TinyToolboxGuizmo	  _guizmo;
+	bool m_is_in_use;
+	bool m_has_dir;
+	bool m_show_exemples;
+	ImGuiContext* m_imgui;
+	VkDescriptorPool m_local_pools;
+	tiny_map<ImFont*> m_fonts;
+	TinyToolManager m_tools;
+	TinyToolWindowManager m_windows;
+	TinyToolboxGuizmo m_guizmo;
 
 public:
 	TinyToolbox( );
@@ -103,7 +103,7 @@ public:
 	template<typename Window>
 		requires tiny_is_child_of( Window, TinyToolWindow )
 	void Create( TinyGame* game ) {
-		_windows.Create<Window>( game, tiny_self );
+		m_windows.Create<Window>( game, tiny_self );
 	};
 
 private:
@@ -148,7 +148,7 @@ public:
 	template<typename Window>
 		requires tiny_is_child_of( Window, TinyToolWindow )
 	TinyToolWindow* GetWindowAs( const tiny_string& name ) {
-		auto* window = _windows.Get( name );
+		auto* window = m_windows.Get( name );
 
 		return tiny_cast( window, Window );
 	};

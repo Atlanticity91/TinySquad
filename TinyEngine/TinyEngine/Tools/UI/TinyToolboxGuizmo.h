@@ -46,16 +46,16 @@ tiny_enum( TinyGuizmoTools ) {
 te_class TinyToolboxGuizmo final { 
 
 private:
-	tiny_hash				   _selection;
-	bool					   _is_orthographic;
-	bool					   _use_snap;
-	tiny_uint				   _mode;
-	tiny_uint				   _tool;
-	tiny_vec3				   _snap_translate;
-	tiny_vec3				   _snap_rotate;
-	tiny_vec3				   _snap_scale;
-	TinyImGui::DropdownContext _modes;
-	TinyImGui::DropdownContext _tools;
+	tiny_hash m_selection;
+	bool m_is_orthographic;
+	bool m_use_snap;
+	tiny_uint m_mode;
+	tiny_uint m_tool;
+	tiny_vec3 m_snap_translate;
+	tiny_vec3 m_snap_rotate;
+	tiny_vec3 m_snap_scale;
+	TinyImGui::DropdownContext m_modes;
+	TinyImGui::DropdownContext m_tools;
 
 public:
 	TinyToolboxGuizmo( );

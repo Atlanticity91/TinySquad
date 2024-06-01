@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Assets/Importers/TinyAssetImporter.h>
+#include <TinyEngine/Assets/Importers/TinyAssetImportManager.h>
 
 tiny_enum( TinyAssetTypes ) {
 

@@ -29,15 +29,15 @@ TinyScript::TinyScript( )
 
 TinyScript::TinyScript( const tiny_hash entity_hash )
 	: TinyComponent{ entity_hash },
-	_pre_tick{ },
-	_post_tick{ }
+	m_pre_tick{ },
+	m_post_tick{ }
 { }
 
 TinyScript& TinyScript::SetPreTick(
 	TinyScriptManager& scripts,
 	const tiny_string& function
 ) {
-	_pre_tick.Type = TS_TYPE_LUA;
+	m_pre_tick.Type = TS_TYPE_LUA;
 
 	return tiny_self;
 }
@@ -47,14 +47,14 @@ TinyScript& TinyScript::SetPreTick(
 	const tiny_string& script,
 	const tiny_string& function
 ) {
-	_pre_tick.Type = TS_TYPE_LUA;
+	m_pre_tick.Type = TS_TYPE_LUA;
 
 	return tiny_self;
 }
 
 TinyScript& TinyScript::SetPreTick( const tiny_string& function ) {
-	_pre_tick.Type	   = TS_TYPE_NATIVE;
-	_pre_tick.Function = function;
+	m_pre_tick.Type	   = TS_TYPE_NATIVE;
+	m_pre_tick.Function = function;
 
 	return tiny_self;
 }
@@ -63,7 +63,7 @@ TinyScript& TinyScript::SetPostTick(
 	TinyScriptManager& scripts,
 	const tiny_string& function
 ) {
-	_post_tick.Type = TS_TYPE_LUA;
+	m_post_tick.Type = TS_TYPE_LUA;
 
 	return tiny_self;
 }
@@ -73,14 +73,14 @@ TinyScript& TinyScript::SetPostTick(
 	const tiny_string& script,
 	const tiny_string& function
 ) {
-	_post_tick.Type = TS_TYPE_LUA;
+	m_post_tick.Type = TS_TYPE_LUA;
 
 	return tiny_self;
 }
 
 TinyScript& TinyScript::SetPostTick( const tiny_string& function ) {
-	_post_tick.Type     = TS_TYPE_NATIVE;
-	_post_tick.Function = function;
+	m_post_tick.Type     = TS_TYPE_NATIVE;
+	m_post_tick.Function = function;
 
 	return tiny_self;
 }
@@ -90,8 +90,8 @@ void TinyScript::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 
 	TinyImGui::EndVars( );
 
-	DisplayMeta( game, "Pre Tick", _pre_tick );
-	DisplayMeta( game, "Post Tick", _post_tick );
+	DisplayMeta( game, "Pre Tick", m_pre_tick );
+	DisplayMeta( game, "Post Tick", m_post_tick );
 
 	TinyImGui::BeginVars( );
 }
@@ -123,7 +123,7 @@ void TinyScript::DisplayMeta(
 			if ( TinyImGui::Dropdown( "Function", functions ) ) {
 				metadata.Function = functions.Values[ functions.Index ];
 
-				_is_active = _is_active && functions.Index > 0;
+				m_is_active = m_is_active && functions.Index > 0;
 			}
 		} else {
 			auto& toolbox = game->GetToolbox( );
@@ -143,7 +143,7 @@ void TinyScript::DisplayMeta(
 				if ( TinyImGui::Dropdown( "Function", functions ) ) {
 					metadata.Function = functions.Values[ functions.Index ];
 
-					_is_active = _is_active && functions.Index > 0;
+					m_is_active = m_is_active && functions.Index > 0;
 				}
 			} else {
 				auto functions = TinyImGui::DropdownContext{ };
@@ -164,13 +164,13 @@ void TinyScript::DisplayMeta(
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyScript::GetHasPreTick( ) const { 
-	return GetIsActive( ) && _pre_tick.Function.get_is_valid( ); 
+	return GetIsActive( ) && m_pre_tick.Function.get_is_valid( ); 
 }
 
 bool TinyScript::GetHasPostTick( ) const { 
-	return GetIsActive( ) && _post_tick.Function.get_is_valid( );
+	return GetIsActive( ) && m_post_tick.Function.get_is_valid( );
 }
 
-TinyScriptMetadata& TinyScript::GetPreTick( ) { return _pre_tick; }
+TinyScriptMetadata& TinyScript::GetPreTick( ) { return m_pre_tick; }
 
-TinyScriptMetadata& TinyScript::GetPostTick( ) { return _post_tick; }
+TinyScriptMetadata& TinyScript::GetPostTick( ) { return m_post_tick; }

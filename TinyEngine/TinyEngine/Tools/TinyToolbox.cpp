@@ -24,15 +24,15 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolbox::TinyToolbox( )
-    : _is_in_use{ true },
-    _has_dir{ false },
-    _show_exemples{ true },
-    _imgui{ nullptr },
-    _local_pools{ nullptr },
-    _fonts{ },
-    _tools{ },
-    _windows{ },
-    _guizmo{ }
+    : m_is_in_use{ true },
+    m_has_dir{ false },
+    m_show_exemples{ true },
+    m_imgui{ nullptr },
+    m_local_pools{ nullptr },
+    m_fonts{ },
+    m_tools{ },
+    m_windows{ },
+    m_guizmo{ }
 { }
 
 bool TinyToolbox::Initialize( TinyGame* game ) {
@@ -48,15 +48,15 @@ bool TinyToolbox::Initialize( TinyGame* game ) {
         state = CreateImGuiFont( );
         
         if ( state && !window.GetIsHeadless( ) )
-            state = _tools.Initialize( game, tiny_self );
+            state = m_tools.Initialize( game, tiny_self );
         else
-            _is_in_use = false;
+            m_is_in_use = false;
     }
     
     return state;
 }
 
-void TinyToolbox::Clear( ) { _tools.Clear( ); }
+void TinyToolbox::Clear( ) { m_tools.Clear( ); }
 
 bool TinyToolbox::LoadFont(
     TinyFilesystem& filesystem,
@@ -71,7 +71,7 @@ bool TinyToolbox::LoadFont(
         auto* _font = io.Fonts->AddFontFromFileTTF( path, font.Size );
 
         if ( _font ) {
-            _fonts.emplace( font.Alias, _font );
+            m_fonts.emplace( font.Alias, _font );
 
             state = io.Fonts->Build( );
         }
@@ -108,7 +108,7 @@ bool TinyToolbox::AddFont(
     auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, native_pointer ), length, size );
 
     if ( font )
-        _fonts.emplace( alias, font );
+        m_fonts.emplace( alias, font );
 
     return io.Fonts->Build( );
 }
@@ -135,14 +135,14 @@ bool TinyToolbox::CreateFont(
         state = io.Fonts->Build( );
 
         if ( state )
-            _fonts.emplace( name, ImGui::GetFont( ) );
+            m_fonts.emplace( name, ImGui::GetFont( ) );
     }
 
     return state;
 }
 
 void TinyToolbox::SetFont( const tiny_string& name ) {
-    auto* font = _fonts.get( name );
+    auto* font = m_fonts.get( name );
 
     if ( font )
         ImGui::SetCurrentFont( font );
@@ -162,27 +162,27 @@ void TinyToolbox::DisableNavigation( ) {
     io.ConfigFlags ^= ImGuiConfigFlags_NavEnableGamepad;
 }
 
-void TinyToolbox::Show( ) { _is_in_use = true; }
+void TinyToolbox::Show( ) { m_is_in_use = true; }
 
-void TinyToolbox::Hide( ) { _is_in_use = false; }
+void TinyToolbox::Hide( ) { m_is_in_use = false; }
 
-void TinyToolbox::Toggle( ) { _is_in_use = !_is_in_use; }
+void TinyToolbox::Toggle( ) { m_is_in_use = !m_is_in_use; }
 
-void TinyToolbox::ShowExemples( ) { _show_exemples = true; }
+void TinyToolbox::ShowExemples( ) { m_show_exemples = true; }
 
-void TinyToolbox::ShowWindow( const tiny_string& name ) { _windows.Show( name ); }
+void TinyToolbox::ShowWindow( const tiny_string& name ) { m_windows.Show( name ); }
 
-void TinyToolbox::HideWindow( const tiny_string& name ) { _windows.Hide( name ); }
+void TinyToolbox::HideWindow( const tiny_string& name ) { m_windows.Hide( name ); }
 
 void TinyToolbox::ShowGuizmo2D( const tiny_hash entity_hash ) {
-    _guizmo.Show( entity_hash, true );
+    m_guizmo.Show( entity_hash, true );
 }
 
 void TinyToolbox::ShowGuizmo3D( const tiny_hash entity_hash ) {
-    _guizmo.Show( entity_hash, false );
+    m_guizmo.Show( entity_hash, false );
 }
 
-void TinyToolbox::HideGuizmo( ) { _guizmo.Hide( ); }
+void TinyToolbox::HideGuizmo( ) { m_guizmo.Hide( ); }
 
 void TinyToolbox::DisplayAsset(
     TinyGame* game,
@@ -210,37 +210,37 @@ void TinyToolbox::Tick( TinyGame* game ) {
     auto& inputs = game->GetInputs( );
 
     if ( inputs.Evaluate( "Show Dev", true ) )
-        _is_in_use = !_is_in_use;
+        m_is_in_use = !m_is_in_use;
 
-    if ( _is_in_use ) {
-        if ( !_has_dir )
+    if ( m_is_in_use ) {
+        if ( !m_has_dir )
             CreateDevDir( game );
 
         Prepare( );
 
-        _windows.Tick( game, tiny_self );
-        _guizmo.DrawUI( game );
-        _tools.Tick( game, tiny_self );
+        m_windows.Tick( game, tiny_self );
+        m_guizmo.DrawUI( game );
+        m_tools.Tick( game, tiny_self );
 
         Render( game );
     }
 }
 
 void TinyToolbox::Terminate( TinyGame* game ) {
-    if ( _imgui ) {
-        _tools.Terminate( game );
+    if ( m_imgui ) {
+        m_tools.Terminate( game );
 
-        ImGui::SetCurrentContext( _imgui );
+        ImGui::SetCurrentContext( m_imgui );
 
         ImGui_ImplVulkan_Shutdown( );
         ImGui_ImplGlfw_Shutdown( );
         ImGui::DestroyContext( );
 
-        if ( _local_pools ) {
+        if ( m_local_pools ) {
             auto& graphics = game->GetGraphics( );
             auto& logical  = graphics.GetLogical( );
 
-            vkDestroyDescriptorPool( logical, _local_pools, vk::GetAllocator( ) );
+            vkDestroyDescriptorPool( logical, m_local_pools, vk::GetAllocator( ) );
         }
     }
 }
@@ -251,13 +251,13 @@ void TinyToolbox::Terminate( TinyGame* game ) {
 bool TinyToolbox::CreateImGui( ) {
     IMGUI_CHECKVERSION( );
 
-    _imgui = ImGui::CreateContext( );
+    m_imgui = ImGui::CreateContext( );
 
     auto& io = ImGui::GetIO( );
 
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-    return _imgui != nullptr;
+    return m_imgui != nullptr;
 }
 
 bool TinyToolbox::CreateImGuiPools( TinyGraphicManager& graphics ) {
@@ -284,7 +284,7 @@ bool TinyToolbox::CreateImGuiPools( TinyGraphicManager& graphics ) {
     pool_info.poolSizeCount = size;
     pool_info.pPoolSizes    = pool_sizes;
 
-    return vk::Check( vkCreateDescriptorPool( graphics.GetLogical( ), tiny_rvalue( pool_info ), vk::GetAllocator( ), tiny_rvalue( _local_pools ) ) );
+    return vk::Check( vkCreateDescriptorPool( graphics.GetLogical( ), tiny_rvalue( pool_info ), vk::GetAllocator( ), tiny_rvalue( m_local_pools ) ) );
 }
 
 bool TinyToolbox::CreateImGuiContext( TinyWindow& window, TinyGraphicManager& graphics ) {
@@ -299,7 +299,7 @@ bool TinyToolbox::CreateImGuiContext( TinyWindow& window, TinyGraphicManager& gr
     init_info.Device          = graphics.GetLogical( );
     init_info.QueueFamily     = queue_family;
     init_info.Queue           = queue->Queue;
-    init_info.DescriptorPool  = _local_pools;
+    init_info.DescriptorPool  = m_local_pools;
     init_info.RenderPass      = graphics.GetRenderPass( TINY_OUTPASS_NAME );
     init_info.MinImageCount   = graphics.GetMinImageCount( );
     init_info.ImageCount      = graphics.GetImageCount( );
@@ -491,17 +491,17 @@ void TinyToolbox::CreateDevDir( TinyGame* game ) {
     CreateSpriteShaders( game, filesystem, dev_dir );
     CreateTextShaders( game, filesystem, dev_dir );
 
-    _has_dir = true;
+    m_has_dir = true;
 }
 
 void TinyToolbox::Prepare( ) {
-    ImGui::SetCurrentContext( _imgui );
+    ImGui::SetCurrentContext( m_imgui );
 
     ImGui_ImplVulkan_NewFrame( );
     ImGui_ImplGlfw_NewFrame( );
 
     ImGui::NewFrame( );
-    ImGui::ShowDemoWindow( tiny_rvalue( _show_exemples ) );
+    ImGui::ShowDemoWindow( tiny_rvalue( m_show_exemples ) );
 }
 
 void TinyToolbox::Render( TinyGame* game ) {
@@ -521,9 +521,9 @@ void TinyToolbox::Render( TinyGame* game ) {
 ImGuiContext* TinyToolbox::GetContext( ) const { return ImGui::GetCurrentContext( ); }
 
 TinyToolWindow* TinyToolbox::GetWindow( const tiny_string& name ) const { 
-    return _windows.Get( name ); 
+    return m_windows.Get( name ); 
 }
 
-TinyToolboxGuizmo& TinyToolbox::GetGuizmo( ) { return _guizmo; }
+TinyToolboxGuizmo& TinyToolbox::GetGuizmo( ) { return m_guizmo; }
 
-const tiny_hash TinyToolbox::GetGuizmoSelection( ) const { return _guizmo.GetSelection( ); }
+const tiny_hash TinyToolbox::GetGuizmoSelection( ) const { return m_guizmo.GetSelection( ); }

@@ -24,12 +24,12 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyNativeRegister::TinyNativeRegister( )
-	: _functions{ }
+	: m_functions{ }
 { }
 
 void TinyNativeRegister::Register( const tiny_string& alias, const native_pointer function ) {
-	if ( !_functions.find( alias ) && function )
-		_functions.emplace( alias, function );
+	if ( !m_functions.find( alias ) && function )
+		m_functions.emplace( alias, function );
 }
 
 void TinyNativeRegister::Remove( const tiny_string& function_alias ) {
@@ -39,8 +39,8 @@ void TinyNativeRegister::Remove( const tiny_string& function_alias ) {
 }
 
 void TinyNativeRegister::Remove( const tiny_hash function_hash ) {
-	if ( _functions.find( function_hash ) )
-		_functions.erase( function_hash );
+	if ( m_functions.find( function_hash ) )
+		m_functions.erase( function_hash );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,11 +53,11 @@ bool TinyNativeRegister::GetExist( const tiny_string& function_alias ) const {
 }
 
 bool TinyNativeRegister::GetExist( const tiny_hash function_hash ) const {
-	return _functions.find( function_hash );
+	return m_functions.find( function_hash );
 }
 
 tiny_list<native_string> TinyNativeRegister::GetList( ) const {
-	auto count = _functions.size( );
+	auto count = m_functions.size( );
 	auto list  = tiny_list<native_string>{ };
 
 	list = count + 1;
@@ -65,7 +65,7 @@ tiny_list<native_string> TinyNativeRegister::GetList( ) const {
 	list[ 0 ] = "Undefined";
 
 	while ( count-- > 0) {
-		auto& name = _functions.node( count ).Alias;
+		auto& name = m_functions.node( count ).Alias;
 
 		list[ count + 1 ] = name.c_str( );
 	}
@@ -73,6 +73,6 @@ tiny_list<native_string> TinyNativeRegister::GetList( ) const {
 	return list;
 }
 
-tiny_map<native_pointer>& TinyNativeRegister::GetNatives( ) { return _functions; }
+tiny_map<native_pointer>& TinyNativeRegister::GetNatives( ) { return m_functions; }
 
-const tiny_map<native_pointer>& TinyNativeRegister::GetNatives( ) const { return _functions; }
+const tiny_map<native_pointer>& TinyNativeRegister::GetNatives( ) const { return m_functions; }

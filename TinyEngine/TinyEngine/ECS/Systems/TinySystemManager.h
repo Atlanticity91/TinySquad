@@ -25,8 +25,8 @@
 te_class TinySystemManager final {
 
 private:
-	tiny_map<tiny_uint>		_systems_ids;
-	tiny_list<ITinySystem*> _systems;
+	tiny_map<tiny_uint> m_systems_ids;
+	tiny_list<ITinySystem*> m_systems;
 
 public:
 	TinySystemManager( );

@@ -29,67 +29,67 @@ public:
 	static const tiny_uint Size = Capacity * tiny_sizeof( Type );
 
 private:
-	tiny_uint	 _count;
-	tiny_uint	 _capacity;
-	tiny_storage _storage;
+	tiny_uint m_count;
+	tiny_uint m_capacity;
+	tiny_storage m_storage;
 
 public:
 	TinyRenderBatch( ) 
-		: _count{ 0 },
-		_capacity{ Capacity },
-		_storage{ }
+		: m_count{ 0 },
+		m_capacity{ Capacity },
+		m_storage{ }
 	{ };
 
 	~TinyRenderBatch( ) = default;
 
 	bool Create( ) {
-		return tiny_allocate( _storage, Capacity * tiny_sizeof( Type ) );
+		return tiny_allocate( m_storage, Capacity * tiny_sizeof( Type ) );
 	};
 
 	void SetCapacity( tiny_uint value ) { 
 		if ( value < Capacity )
-			_capacity = value; 
+			m_capacity = value; 
 	};
 
 	void Push( const Type& element ) {
 		auto* src = tiny_rvalue( element );
-		auto* dst = tiny_get_address_as( _storage, Type ) + _count++;
+		auto* dst = tiny_get_address_as( m_storage, Type ) + m_count++;
 
 		Tiny::Memcpy( src, dst, tiny_sizeof( Type ) );
 	};
 
 	void Push( const tiny_list<Type>& list ) {
 		auto* src  = list.data( );
-		auto* dst  = tiny_get_address_as( _storage, Type ) + _count;
+		auto* dst  = tiny_get_address_as( m_storage, Type ) + m_count;
 		auto range = list.size( );
 
-		_count += range;
+		m_count += range;
 
 		Tiny::Memcpy( src, dst, range * tiny_sizeof( Type ) );
 	};
 
 	TinyRenderBatchFlush Flush( ) { 
 		auto values = tiny_cast( GetData( ), tiny_pointer );
-		auto result = TinyRenderBatchFlush{ _count, values };
+		auto result = TinyRenderBatchFlush{ m_count, values };
 
-		_count = 0; 
+		m_count = 0; 
 
 		return result;
 	};
 
-	void Terminate( ) { tiny_deallocate( _storage ); };
+	void Terminate( ) { tiny_deallocate( m_storage ); };
 
 public:
-	bool GetHasSpace( ) const { return _count < Capacity; };
+	bool GetHasSpace( ) const { return m_count < Capacity; };
 
-	bool GetHasSpace( tiny_uint offset ) const { return _count + offset < Capacity; };
+	bool GetHasSpace( tiny_uint offset ) const { return m_count + offset < Capacity; };
 
 	tiny_uint GetCapacity( ) const { return Capacity; };
 
-	tiny_uint GetCount( ) const { return _count; };
+	tiny_uint GetCount( ) const { return m_count; };
 
-	tiny_uint GetSize( ) const { return _count * tiny_sizeof( Type ); };
+	tiny_uint GetSize( ) const { return m_count * tiny_sizeof( Type ); };
 
-	native_pointer GetData( ) const { return tiny_get_address( _storage ); };
+	native_pointer GetData( ) const { return tiny_get_address( m_storage ); };
 
 };

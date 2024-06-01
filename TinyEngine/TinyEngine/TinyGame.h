@@ -25,7 +25,7 @@
 te_abstract_class TinyGame {
 
 protected:
-	TinyEngine _engine;
+	TinyEngine m_engine;
 
 public:
 	/**
@@ -92,6 +92,23 @@ public:
 	 **/
 	tiny_inline void Stop( );
 
+	/**
+	 * DisableCache method
+	 * @note : Disable Graphic cache file loading and saving.
+	 **/
+	tiny_inline void DisableCache( );
+
+	/**
+	 * EnableCache method
+	 * @note : Enable Graphic cache file loading and saving.
+	 **/
+	tiny_inline void EnableCache( );
+
+	/**
+	 * Dispatch method
+	 * @note : Disaptch job to current job manager.
+	 * @param job : Job instance to disaptch.
+	 **/
 	tiny_inline void Dispatch( const TinyJob& job );
 
 	tiny_inline void SwitchGameState( TinyGame* game, const tiny_uint state_id );
@@ -113,10 +130,17 @@ public:
 	void Close( );
 
 public:
+	/**
+	 * RegisterGameState template method
+	 * @note : Register new game state class to current game state manager.
+	 * @template GameState : Game State class only child of TinyGameState.
+	 * @param name : Name of the new game state, name is not part of the class
+	 *				 so multiple state can use class if needed.
+	 **/
 	template<typename GameState>
 		requires TinyIsGameState<GameState>
 	void RegisterGameState( const tiny_string& name ) {
-		_engine.Register<GameState>( name );
+		m_engine.Register<GameState>( name );
 	};
 
 protected:
@@ -320,6 +344,11 @@ public:
 	tiny_inline TinyToolbox& GetToolbox( );
 
 public:
+	/**
+	 * cast operator
+	 * @note : Equivalent of calling GetIsRunning( ), return if the game is still running.
+	 * @return : bool
+	 **/
 	operator bool( ) const;
 
 };

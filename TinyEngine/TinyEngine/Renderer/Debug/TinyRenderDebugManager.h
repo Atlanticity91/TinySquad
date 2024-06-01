@@ -33,11 +33,11 @@ te_class TinyRenderDebugManager final {
 	using Circle_t = tiny_stack<TinyRenderDebugCircle, TINY_MAX_DEBUG_COUNT>;
 
 private:
-	float							_line_width;
-	TinyGraphicPipeline				_pipelines[ PIPELINE_COUNT ];
-	Line_t							_lines;
-	Circle_t						_circles;
-	VkPipelineShaderStageCreateInfo	_shaders[ SHADER_COUNT ];
+	float m_line_width;
+	TinyGraphicPipeline m_pipelines[ PIPELINE_COUNT ];
+	Line_t m_lines;
+	Circle_t m_circles;
+	VkPipelineShaderStageCreateInfo	m_shaders[ SHADER_COUNT ];
 
 public:
 	TinyRenderDebugManager( );

@@ -25,8 +25,8 @@
 te_class TinyGeometry final : tiny_inherit( TinyAsset ) {
 
 private:
-	TinyGraphicBuffer _index;
-	TinyGraphicBuffer _vertex;
+	TinyGraphicBuffer m_index;
+	TinyGraphicBuffer m_vertex;
 
 public:
 	TinyGeometry( );

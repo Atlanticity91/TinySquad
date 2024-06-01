@@ -25,15 +25,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyArchive::TinyArchive( ) 
 	: TinyAsset{ TA_TYPE_ARCHIVE },
-	_begin{ 0 },
-	_path{ }
+	m_begin{ 0 },
+	m_path{ }
 { }
 
 TinyPhysicalFile TinyArchive::Access( TinyGame* game, tiny_ulong offset ) {
 	auto& filesystem = game->GetFilesystem( );
-	auto file		 = filesystem.OpenFile( _path, TF_ACCESS_BINARY_READ );
+	auto file		 = filesystem.OpenFile( m_path, TF_ACCESS_BINARY_READ );
 
-	file.Seek( TF_ORIGIN_BEGIN, _begin + offset );
+	file.Seek( TF_ORIGIN_BEGIN, m_begin + offset );
 
 	return file;
 }

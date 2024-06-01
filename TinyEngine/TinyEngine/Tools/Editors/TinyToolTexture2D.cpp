@@ -25,32 +25,32 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolTexture2D::TinyToolTexture2D( )
 	: TinyToolAssetEditor{ "Texture2D", { 908.f, 512.f } },
-	_texture{ nullptr },
-	_image{ nullptr }
+	m_texture{ nullptr },
+	m_image{ nullptr }
 { }
 
 void TinyToolTexture2D::Save( TinyGame* game ) {
-	auto& properties = _texture->GetProperties( );
+	auto& properties = m_texture->GetProperties( );
 	auto& assets	 = game->GetAssets( );
 	auto builder	 = TinyTexture2DBuilder{ };
 	auto* address	 = tiny_cast( tiny_rvalue( builder ), native_pointer );
 
 	Tiny::Memcpy( properties, builder.Properties );
 
-	builder.Columns = _texture->GetColumns( );
-	builder.Rows	= _texture->GetRows( );
+	builder.Columns = m_texture->GetColumns( );
+	builder.Rows	= m_texture->GetRows( );
 
-	assets.Export( game, TA_TYPE_TEXTURE_2D, _asset_name, address );
+	assets.Export( game, TA_TYPE_TEXTURE_2D, m_asset_name, address );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyToolTexture2D::OnOpen( TinyGame* game, const tiny_string& name, native_pointer asset ) {
-	_texture = tiny_cast( asset, TinyTexture2D* );
-	_image   = TinyImGui::CreateTextureID( _texture );
+	m_texture = tiny_cast( asset, TinyTexture2D* );
+	m_image   = TinyImGui::CreateTextureID( m_texture );
 
-	return _image;
+	return m_image;
 }
 
 void TinyToolTexture2D::OnTick( TinyGame* game, TinyAssetManager& assets ) {
@@ -76,7 +76,7 @@ void TinyToolTexture2D::OnTick( TinyGame* game, TinyAssetManager& assets ) {
 void TinyToolTexture2D::OnClose( TinyGame* game, TinyAssetManager& assets ) {
 	TinyToolAssetEditor::OnClose( game, assets );
 
-	TinyImGui::DestroyTextureID( _image );
+	TinyImGui::DestroyTextureID( m_image );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,17 +89,17 @@ void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& asse
 			TinyImGui::BeginVars( );
 
 			if (
-				TinyImGui::InputScalar( "Columns", _texture->GetEditColumns( ) ) ||
-				TinyImGui::InputScalar( "Rows", _texture->GetEditRows( ) )
+				TinyImGui::InputScalar( "Columns", m_texture->GetEditColumns( ) ) ||
+				TinyImGui::InputScalar( "Rows", m_texture->GetEditRows( ) )
 			)
-				_texture->ReCalculate( );
+				m_texture->ReCalculate( );
 
-			TinyImGui::InputVec2( "UV", _texture->GetUV( ) );
+			TinyImGui::InputVec2( "UV", m_texture->GetUV( ) );
 			TinyImGui::EndVars( );
 		}
 	);
 
-	auto& properties = _texture->GetEditProperties( );
+	auto& properties = m_texture->GetEditProperties( );
 
 	TinyImGui::Collapsing(
 		"Properties",
@@ -160,9 +160,9 @@ void TinyToolTexture2D::RenderProperties( TinyGame* game, TinyAssetManager& asse
 }
 
 void TinyToolTexture2D::RenderImage( ) {
-	auto& properties = _texture->GetProperties( );
-	auto columns	 = _texture->GetColumns( );
-	auto rows		 = _texture->GetRows( );
+	auto& properties = m_texture->GetProperties( );
+	auto columns	 = m_texture->GetColumns( );
+	auto rows		 = m_texture->GetRows( );
 	auto height		 = ImGui::GetWindowHeight( );
 	auto aspect		 = tiny_min( 512.f / properties.Width, height / properties.Height );
 	auto available   = ImVec2{ 512.f, height };
@@ -176,6 +176,6 @@ void TinyToolTexture2D::RenderImage( ) {
 
 	ImGui::SetCursorScreenPos( cursor );
 
-	TinyImGui::Image( _image, _texture, size );
+	TinyImGui::Image( m_image, m_texture, size );
 	TinyImGui::Grid( cursor, size, { columns, rows } );
 }

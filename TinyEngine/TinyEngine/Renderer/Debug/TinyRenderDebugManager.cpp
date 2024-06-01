@@ -28,11 +28,11 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyRenderDebugManager::TinyRenderDebugManager( )
-	: _line_width{ 1.f },
-	_pipelines{ },
-	_lines{ },
-	_circles{ },
-	_shaders{ }
+	: m_line_width{ 1.f },
+	m_pipelines{ },
+	m_lines{ },
+	m_circles{ },
+	m_shaders{ }
 { }
 
 bool TinyRenderDebugManager::Initialize( 
@@ -47,7 +47,7 @@ bool TinyRenderDebugManager::Initialize(
 
 void TinyRenderDebugManager::SetLineWidth( float width ) {
 	if ( width > 0.f )
-		_line_width = width; 
+		m_line_width = width; 
 }
 
 void TinyRenderDebugManager::Draw( const TinyRenderDebugPrimitive& primitive ) {
@@ -75,31 +75,31 @@ void TinyRenderDebugManager::Flush(
 	auto& graphics	   = game->GetGraphics( );
 	auto& work_context = graphics.GetWorkdContext( );
 
-	if ( _lines.size( ) > 0 ) {
+	if ( m_lines.size( ) > 0 ) {
 		DrawLines( graphics, work_context, uniforms, batchs );
 
-		_lines.clear( );
+		m_lines.clear( );
 	}
 
-	if ( _circles.size( ) > 0 ) {
+	if ( m_circles.size( ) > 0 ) {
 		DrawCircles( graphics, work_context, uniforms, batchs );
 
-		_circles.clear( );
+		m_circles.clear( );
 	}
 }
 
 void TinyRenderDebugManager::Terminate( TinyGraphicManager& graphics ) {
-	auto context = graphics.GetContext( );
+	auto graphic = graphics.GetWrapper( );
 	auto idx	 = PIPELINE_COUNT;
 
 	while ( idx-- > 0 )
-		_pipelines[ idx ].Terminate( context );
+		m_pipelines[ idx ].Terminate( graphic );
 
 	idx = SHADER_COUNT;
 
 	while ( idx-- > 0 ) {
-		if ( vk::GetIsValid( _shaders[ idx ].module ) )
-			vkDestroyShaderModule( context.Logical, _shaders[ idx ].module, vk::GetAllocator( ) );
+		if ( vk::GetIsValid( m_shaders[ idx ].module ) )
+			vkDestroyShaderModule( graphic.Logical, m_shaders[ idx ].module, vk::GetAllocator( ) );
 	}
 }
 
@@ -122,7 +122,7 @@ bool TinyRenderDebugManager::CompileShader(
 		shader_info.codeSize = shader_properties.Code.size( );
 		shader_info.pCode	 = shader_properties.Code.data( );
 
-		state = vk::Check( vkCreateShaderModule( logical, tiny_rvalue( shader_info ), vk::GetAllocator( ), tiny_rvalue( _shaders[ shader.ShaderID ].module ) ) );
+		state = vk::Check( vkCreateShaderModule( logical, tiny_rvalue( shader_info ), vk::GetAllocator( ), tiny_rvalue( m_shaders[ shader.ShaderID ].module ) ) );
 	}
 
 	return state;
@@ -132,7 +132,7 @@ bool TinyRenderDebugManager::BuildShader(
 	TinyGraphicManager& graphics, 
 	const TinyRenderDebugShader& shader
 ) {
-	auto& _shader = _shaders[ shader.ShaderID ];
+	auto& _shader = m_shaders[ shader.ShaderID ];
 
 	_shader.sType			    = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	_shader.pNext			    = VK_NULL_HANDLE;
@@ -154,13 +154,13 @@ bool TinyRenderDebugManager::BuildShaders( TinyGraphicManager& graphics ) {
 
 bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 	auto builder = graphics.CreatePipeline( TGP_TYPE_NONE, TINY_OUTPASS_NAME, 1 );
-	auto context = graphics.GetContext( );
+	auto graphic = graphics.GetWrapper( );
 	auto limits  = graphics.GetPipelineLimits( );
 
 	builder.Topology		 = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
 	builder.Shaders		 = 2;
-	builder.Shaders[ 0 ]  = _shaders[ 0 ];
-	builder.Shaders[ 1 ]  = _shaders[ 1 ];
+	builder.Shaders[ 0 ]  = m_shaders[ 0 ];
+	builder.Shaders[ 1 ]  = m_shaders[ 1 ];
 
 	TinyGraphicPipeline::CreateBinding( builder, { 0, tiny_sizeof( TinyRenderDebugLineVertice ) } );
 	TinyGraphicPipeline::CreateAttribute( 
@@ -176,12 +176,12 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 	builder.StencilEnable = false;
 	builder.Dynamics.emplace_back( VK_DYNAMIC_STATE_LINE_WIDTH );
 
-	auto state = _pipelines[ 0 ].Create( context, limits, builder );
+	auto state = m_pipelines[ 0 ].Create( graphic, limits, builder );
 
 	if ( state ) {
-		builder.Topology		= VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		builder.Shaders[ 0 ] = _shaders[ 2 ];
-		builder.Shaders[ 1 ] = _shaders[ 3 ];
+		builder.Topology	 = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		builder.Shaders[ 0 ] = m_shaders[ 2 ];
+		builder.Shaders[ 1 ] = m_shaders[ 3 ];
 
 		builder.InputBinding.clear( );
 		builder.InputAttributes.clear( );
@@ -198,7 +198,7 @@ bool TinyRenderDebugManager::BuildPipeline( TinyGraphicManager& graphics ) {
 
 		builder.Dynamics.pop_back( );
 
-		state = _pipelines[ 1 ].Create( context, limits, builder );
+		state = m_pipelines[ 1 ].Create( graphic, limits, builder );
 	}
 
 	return state;
@@ -217,7 +217,7 @@ void TinyRenderDebugManager::PushLine(
 	vertex.Vertice[ 1 ].Position = tiny_vec4{ stop.x, stop.y, .0f, 1.f };
 	vertex.Vertice[ 1 ].Color	 = color;
 
-	_lines.push( vertex );
+	m_lines.push( vertex );
 }
 
 void TinyRenderDebugManager::PushCircle(
@@ -247,7 +247,7 @@ void TinyRenderDebugManager::PushCircle(
 	_circle.Vertice[ 3 ].Circle   = tiny_vec4{ -1.f,  1.f , circle.x, circle.y };
 	_circle.Vertice[ 3 ].Color	  = color;
 
-	_circles.push( _circle );
+	m_circles.push( _circle );
 }
 
 void TinyRenderDebugManager::DrawLines(
@@ -256,35 +256,35 @@ void TinyRenderDebugManager::DrawLines(
 	TinyRenderUniformManager& uniforms,
 	TinyRenderBatchManager& batchs 
 ) {
-	auto& pipeline = _pipelines[ 0 ];
+	auto& pipeline = m_pipelines[ 0 ];
 	auto& staging  = batchs.GetStaging( );
 	auto& vertex   = uniforms[ TinyRenderLine  ];
 	auto& core	   = uniforms[ TinyCoreUniform ];
 
 	{
-		auto vert_size = _lines.size( ) * tiny_sizeof( TinyRenderDebugLine );
-		auto context   = graphics.GetContext( );
+		auto vert_size = m_lines.size( ) * tiny_sizeof( TinyRenderDebugLine );
+		auto graphic = graphics.GetWrapper( );
 
-		staging.Map( context, vert_size );
+		staging.Map( graphic, vert_size );
 		
-		auto* src = _lines.data( );
+		auto* src = m_lines.data( );
 		auto* dst = staging.GetAccess( );
 
 		Tiny::Memcpy( src, dst, vert_size );
 
-		staging.UnMap( context );
+		staging.UnMap( graphic );
 
-		auto burner = TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		auto burner = TinyGraphicBurner{ graphic, VK_QUEUE_TYPE_TRANSFER };
 		auto copie  = VkBufferCopy{ 0, 0, vert_size };
 
 		burner.Upload( staging, vertex, copie );
 	}
 
 	pipeline.Mount( work_context );
-	pipeline.SetLineWidth( work_context, _line_width );
+	pipeline.SetLineWidth( work_context, m_line_width );
 	pipeline.BindVertex( work_context, vertex );
 	pipeline.Bind( work_context, core );
-	pipeline.Draw( work_context, { TGD_MODE_DIRECT, 2 * _lines.size( ) } );
+	pipeline.Draw( work_context, { TGD_MODE_DIRECT, 2 * m_lines.size( ) } );
 }
 
 void TinyRenderDebugManager::DrawCircles(
@@ -293,27 +293,27 @@ void TinyRenderDebugManager::DrawCircles(
 	TinyRenderUniformManager& uniforms,
 	TinyRenderBatchManager& batchs
 ) {
-	auto& pipeline = _pipelines[ 1 ];
+	auto& pipeline = m_pipelines[ 1 ];
 	auto& staging  = batchs.GetStaging( );
 	auto& indexes  = uniforms[ TinyQuadIndexBuffer ];
 	auto& vertex   = uniforms[ TinyRenderCircleBuffer ];
 	auto& core	   = uniforms[ TinyCoreUniform ];
-	auto instance  = _circles.size( );
+	auto instance  = m_circles.size( );
 
 	{
-		auto context = graphics.GetContext( );
+		auto graphic = graphics.GetWrapper( );
 		auto size	 = instance * tiny_sizeof( TinyRenderDebugCircle );
 		
-		staging.Map( context, size );
+		staging.Map( graphic, size );
 
 		auto* staging_addr = staging.GetAccess( );
-		auto* vertex_addr  = _circles.data( );
+		auto* vertex_addr  = m_circles.data( );
 
 		Tiny::Memcpy( vertex_addr, staging_addr, size );
 
-		staging.UnMap( context );
+		staging.UnMap( graphic );
 
-		auto burner	= TinyGraphicBurner{ context, VK_QUEUE_TYPE_TRANSFER };
+		auto burner	= TinyGraphicBurner{ graphic, VK_QUEUE_TYPE_TRANSFER };
 		auto copie  = VkBufferCopy{ 0, 0, size };
 
 		burner.Upload( staging, vertex , copie );
@@ -328,4 +328,4 @@ void TinyRenderDebugManager::DrawCircles(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-float TinyRenderDebugManager::GetLineWidth( ) const { return _line_width; }
+float TinyRenderDebugManager::GetLineWidth( ) const { return m_line_width; }

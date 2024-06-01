@@ -34,15 +34,15 @@ public:
 	)>;
 
 protected:
-	tiny_hash		_render_pass;
-	TinyAssetHandle _material;
-	Callback_t		_callback;
+	tiny_hash m_render_pass;
+	TinyAssetHandle m_material;
+	Callback_t m_callback;
 
 public:
 	TinyRenderBatchInstance( )
-		: _render_pass{ },
-		_material{ TA_TYPE_MATERIAL },
-		_callback{ }
+		: m_render_pass{ },
+		m_material{ TA_TYPE_MATERIAL },
+		m_callback{ }
 	{ };
 
 	~TinyRenderBatchInstance( ) = default;
@@ -57,14 +57,14 @@ public:
 		const tiny_hash render_pass,
 		Callback_t callback
 	) {
-		auto state = _render_pass == render_pass;
+		auto state = m_render_pass == render_pass;
 
 		if ( !state )
 			state = graphics.BeginPass( render_pass );
 
 		if ( state ) {
-			_render_pass = render_pass;
-			_callback	 = callback;
+			m_render_pass = render_pass;
+			m_callback	 = callback;
 		}
 
 		return state;
@@ -83,9 +83,9 @@ public:
 		TinyGraphicBufferStaging& staging,
 		TinyRenderUniformManager& uniforms
 	) {
-		auto* material = assets.GetAssetAs<TinyMaterial>( _material );
+		auto* material = assets.GetAssetAs<TinyMaterial>( m_material );
 		
-		if ( material && _callback ) {
+		if ( material && m_callback ) {
 			auto instance_count = UploadBuffers( graphics, staging, uniforms );
 
 			if ( instance_count > 0 ) {
@@ -95,11 +95,11 @@ public:
 
 				OnFlush( work_context, tiny_lvalue( material ) );
 
-				std::invoke( _callback, work_context, tiny_lvalue( material ), uniforms, instance_count );
+				std::invoke( m_callback, work_context, tiny_lvalue( material ), uniforms, instance_count );
 			}
 		}
 
-		_render_pass.undefined( );
+		m_render_pass.undefined( );
 	};
 
 	tiny_abstract( void Terminate( ) );

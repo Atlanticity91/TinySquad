@@ -28,8 +28,8 @@ concept TinyIsGameState = tiny_is_child_of( GameState, TinyGameState );
 te_class TinyGameStateManager final {
 
 private:
-	tiny_uint			   _current;
-	tiny_map<tiny_storage> _states;
+	tiny_uint m_current;
+	tiny_map<tiny_storage> m_states;
 
 public:
 	TinyGameStateManager( );
@@ -46,11 +46,11 @@ public:
 	template<typename GameState>
 		requires TinyIsGameState<GameState>
 	void Register( const tiny_string& name ) { 
-		if ( name.get_is_valid( ) && !_states.find( name ) ) {
+		if ( name.get_is_valid( ) && !m_states.find( name ) ) {
 			auto storage = tiny_storage{ TS_TYPE_STATIC };
 
 			if ( tiny_make_storage( storage, GameState ) )
-				_states.emplace( name, storage );
+				m_states.emplace( name, storage );
 		}
 	};
 

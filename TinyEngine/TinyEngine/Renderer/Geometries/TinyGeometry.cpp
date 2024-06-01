@@ -25,16 +25,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGeometry::TinyGeometry( )
 	: TinyAsset{ TA_TYPE_GEOMETRY },
-	_index{ },
-	_vertex{ }
+	m_index{ },
+	m_vertex{ }
 { }
 
 bool TinyGeometry::Create( 
 	TinyGraphicWrapper& wrapper,
 	const TinyGeometryBuilder& builder
 ) {
-	auto state = _index.Create( wrapper, { TGB_TYPE_INDEX, 0 } ) &&
-				 _vertex.Create( wrapper, { TGB_TYPE_VERTEX, 0 } );
+	auto state = m_index.Create( wrapper, { TGB_TYPE_INDEX, 0 } ) &&
+				 m_vertex.Create( wrapper, { TGB_TYPE_VERTEX, 0 } );
 
 	return state;
 }
@@ -43,21 +43,21 @@ void TinyGeometry::Bind(
 	TinyGraphicWorkContext& work_context,
 	TinyGraphicPipeline& pipeline 
 ) {
-	pipeline.BindVertex( work_context, _vertex );
-	pipeline.BindIndex( work_context, _index );
+	pipeline.BindVertex( work_context, m_vertex );
+	pipeline.BindIndex( work_context, m_index );
 }
 
 void TinyGeometry::Terminate( TinyGame* game ) {
 	auto& graphics = game->GetGraphics( );
-	auto context   = graphics.GetContext( );
+	auto graphic   = graphics.GetWrapper( );
 
-	_index.Terminate( context );
-	_vertex.Terminate( context );
+	m_index.Terminate( graphic );
+	m_vertex.Terminate( graphic );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicBuffer& TinyGeometry::GetIndex( ) { return _index; }
+TinyGraphicBuffer& TinyGeometry::GetIndex( ) { return m_index; }
 
-TinyGraphicBuffer& TinyGeometry::GetVertex( ) { return _vertex; }
+TinyGraphicBuffer& TinyGeometry::GetVertex( ) { return m_vertex; }

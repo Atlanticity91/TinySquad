@@ -25,8 +25,8 @@
 te_class TinyToolTexture2D : tiny_inherit( TinyToolAssetEditor ) {
 
 private:
-	TinyTexture2D* _texture;
-	ImTextureID	   _image;
+	TinyTexture2D* m_texture;
+	ImTextureID	m_image;
 
 public:
 	TinyToolTexture2D( );

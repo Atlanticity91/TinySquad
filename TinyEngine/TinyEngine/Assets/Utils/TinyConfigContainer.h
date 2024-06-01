@@ -25,7 +25,7 @@
 te_class TinyConfigContainer final : tiny_inherit( ITinyAssetContainer ) {
 
 private:
-	TinyConfig _config;
+	TinyConfig m_config;
 
 public:
 	TinyConfigContainer( );

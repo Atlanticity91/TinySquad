@@ -25,8 +25,8 @@
 te_class TinyEntityManager final { 
 
 private:
-	tiny_map<TinyEntity>	   _entities;
-	tiny_list<TinyEntityGhost> _removed;
+	tiny_map<TinyEntity> m_entities;
+	tiny_list<TinyEntityGhost> m_removed;
 
 public:
 	TinyEntityManager( );

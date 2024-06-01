@@ -25,8 +25,8 @@
 te_class TinyArchive final : tiny_inherit( TinyAsset ) {
 
 private:
-	tiny_ulong  _begin;
-	std::string _path;
+	tiny_ulong m_begin;
+	std::string m_path;
 
 public:
 	TinyArchive( );

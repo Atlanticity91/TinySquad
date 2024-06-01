@@ -25,9 +25,9 @@
 te_class TinyTextureSpriteSheet {
 
 protected:
-	tiny_uint _columns;
-	tiny_uint _rows;
-	tiny_vec2 _uv;
+	tiny_uint m_columns;
+	tiny_uint m_rows;
+	tiny_vec2 m_uv;
 
 public:
 	TinyTextureSpriteSheet( );

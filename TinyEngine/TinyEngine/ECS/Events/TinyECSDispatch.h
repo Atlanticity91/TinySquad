@@ -27,7 +27,7 @@ te_class TinyECSDispatch final {
 	using CallbackList = tiny_list<native_pointer>;
 
 private:
-	tiny_list<CallbackList> _callbacks;
+	tiny_list<CallbackList> m_callbacks;
 
 public:
 	TinyECSDispatch( );
@@ -46,8 +46,8 @@ public:
 
 		auto _event = Event{ args... };
 
-		if ( _event.GetType( ) < _callbacks.size( ) ) {
-			for ( auto& callback : _callbacks )
+		if ( _event.GetType( ) < m_callbacks.size( ) ) {
+			for ( auto& callback : m_callbacks )
 				std::invoke( tiny_cast( callback, Signature ), game, tiny_rvalue( _event ) );
 		}
 	};

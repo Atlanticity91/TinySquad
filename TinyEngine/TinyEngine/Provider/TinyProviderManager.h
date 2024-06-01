@@ -33,7 +33,7 @@
 te_class TinyProviderManager final : tiny_inherit( TinyProvider ) {
 
 #	ifdef TE_PROVIDER_IMP
-	TE_PROVIDER_TYPE _provider;
+	TE_PROVIDER_TYPE m_provider;
 #	endif
 
 public:
