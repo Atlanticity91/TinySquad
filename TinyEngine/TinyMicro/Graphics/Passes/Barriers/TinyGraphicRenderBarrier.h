@@ -52,7 +52,7 @@ tm_struct TinyGraphicRenderBarrierData {
 tm_class TinyGraphicRenderBarrier final {
 
 private:
-	tiny_list<TinyGraphicRenderBarrierData> _barriers;
+	tiny_list<TinyGraphicRenderBarrierData> m_barriers;
 
 public:
 	TinyGraphicRenderBarrier( );

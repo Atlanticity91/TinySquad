@@ -25,7 +25,7 @@
 tm_class TinyInputMap final {
 
 private:
-	tiny_map<TinyInputQueries> _queries;
+	tiny_map<TinyInputQueries> m_queries;
 
 public:
 	TinyInputMap( );

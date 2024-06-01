@@ -31,41 +31,41 @@ static std::uniform_int_distribution<uint64_t> RandomDistribution;
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_uuid::tiny_uuid( )
-	: _uuid{ RandomDistribution( RandomEngine ) }
+	: m_uuid{ RandomDistribution( RandomEngine ) }
 { }
 
 tiny_uuid::tiny_uuid( const tiny_ulong uuid ) 
-	: _uuid{ uuid } 
+	: m_uuid{ uuid }
 { }
 
 tiny_uuid::tiny_uuid( const tiny_uuid& other )
-	: _uuid{ other._uuid } 
+	: m_uuid{ other.m_uuid }
 { }
 
 tiny_uuid& tiny_uuid::asign( const tiny_ulong uuid ) {
-	_uuid = uuid;
+	m_uuid = uuid;
 
 	return tiny_self;
 }
 
 tiny_uuid& tiny_uuid::asign( const tiny_uuid& other ) {
-	return asign( other._uuid );
+	return asign( other.m_uuid );
 }
 
-bool tiny_uuid::equal( const tiny_ulong uuid ) const { return _uuid == uuid; }
+bool tiny_uuid::equal( const tiny_ulong uuid ) const { return m_uuid == uuid; }
 
-bool tiny_uuid::equal( const tiny_uuid& other ) const { return equal( other._uuid ); }
+bool tiny_uuid::equal( const tiny_uuid& other ) const { return equal( other.m_uuid ); }
 
-bool tiny_uuid::not_equal( const tiny_ulong uuid ) const { return _uuid != uuid; }
+bool tiny_uuid::not_equal( const tiny_ulong uuid ) const { return m_uuid != uuid; }
 
 bool tiny_uuid::not_equal( const tiny_uuid& other ) const { 
-	return not_equal( other._uuid); 
+	return not_equal( other.m_uuid );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_uuid::operator tiny_ulong ( ) const { return _uuid; }
+tiny_uuid::operator tiny_ulong ( ) const { return m_uuid; }
 
 tiny_uuid& tiny_uuid::operator=( const tiny_ulong uuid ) { return asign( uuid ); }
 

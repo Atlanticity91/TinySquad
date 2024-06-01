@@ -23,7 +23,7 @@
 tm_class TinyGraphicRenderFrameManager final {
 
 private:
-	tiny_list<TinyGraphicRenderFrame> _frames;
+	tiny_list<TinyGraphicRenderFrame> m_frames;
 
 public:
 	TinyGraphicRenderFrameManager( );

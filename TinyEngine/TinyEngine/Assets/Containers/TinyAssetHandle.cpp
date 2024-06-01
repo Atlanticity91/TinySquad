@@ -45,7 +45,7 @@ TinyAssetHandle::TinyAssetHandle( tiny_uint type, const tiny_string& asset )
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyAssetHandle::GetIsValid( ) const { 
-	return Type < TA_TYPE_UNDEFINED && Hash.is_valid( ); 
+	return Type < TA_TYPE_UNDEFINED && Hash.get_is_valid( ); 
 }
 
 bool TinyAssetHandle::GetEqual( const TinyAssetHandle& other ) const {

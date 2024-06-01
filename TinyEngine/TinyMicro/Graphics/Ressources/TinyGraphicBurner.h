@@ -25,13 +25,13 @@
 tm_class TinyGraphicBurner final {
 
 private:
-	VkQueueTypes		_queue_type;
-	VkLogicalQueue*		_queue;
-	VkFence				_fence;
-	TinyGraphicLogical& _logical;
+	VkQueueTypes m_queue_type;
+	VkLogicalQueue* m_queue;
+	VkFence m_fence;
+	TinyGraphicLogical& m_logical;
 
 public:
-	TinyGraphicBurner( TinyGraphicContext& graphic, VkQueueTypes queue_type );
+	TinyGraphicBurner( TinyGraphicWrapper& graphic, VkQueueTypes queue_type );
 
 	~TinyGraphicBurner( );
 

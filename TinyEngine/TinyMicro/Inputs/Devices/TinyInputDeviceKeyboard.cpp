@@ -28,7 +28,7 @@ TinyInputDeviceKeyboard::TinyInputDeviceKeyboard( )
 { }
 
 void TinyInputDeviceKeyboard::Notify( const TinyInputNotification& notification ) {
-	auto& input = _news[ notification.Descriptor.Key ];
+	auto& input = m_news[ notification.Descriptor.Key ];
 
 	input.Modifier = notification.Modifiers;
 	input.IsDown   = notification.Value.AsButton == TI_STATE_DOWN;
@@ -38,8 +38,8 @@ bool TinyInputDeviceKeyboard::Evaluate( const TinyInputQuery& query ) {
 	auto state = query.Descriptor.Type == TI_TYPE_BUTTON;
 
 	if ( state ) {
-		auto new_button = _news[ query.Descriptor.Key ];
-		auto old_button	= _olds[ query.Descriptor.Key ];
+		auto new_button = m_news[ query.Descriptor.Key ];
+		auto old_button	= m_olds[ query.Descriptor.Key ];
 	
 		state = ( query.Modifier == TI_MODIFIER_UNDEFINED || new_button.Modifier == query.Modifier ) && 
 				query.State == ProcessButton( old_button.IsDown, new_button.IsDown );
@@ -58,7 +58,7 @@ TinyInputValue TinyInputDeviceKeyboard::GetValue( const TinyInputDescriptor& des
 TinyInputValue TinyInputDeviceKeyboard::GetValue( TinyInputKeys key ) const {
 	auto value = TinyInputValue{ };
 
-	value.AsButton = ProcessButton( _olds[ key ].IsDown, _news[ key ].IsDown );
+	value.AsButton = ProcessButton( m_olds[ key ].IsDown, m_news[ key ].IsDown );
 
 	return value;
 }

@@ -26,7 +26,7 @@
 TinyFile::TinyFile( ) 
 { }
 
-bool TinyFile::Seek( tiny_ulong offset ) { return Seek( TF_ORIGIN_CURSOR, offset ); }
+bool TinyFile::Seek( const tiny_ulong offset ) { return Seek( TF_ORIGIN_CURSOR, offset ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

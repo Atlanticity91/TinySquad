@@ -25,7 +25,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolContent::TinyToolContent( ) 
 	: TinyToolCategory{ "Content" },
-    TinyToolDialog{ "Tiny Registry (*.tinyregistry)\0*.tinyregistry\0" },
     _has_changed{ false },
     _type_count{ TinyAssetTypes::TA_TYPE_COUNT },
     _type_to_string{ TinyToolContent::TypeToString },
@@ -42,31 +41,17 @@ void TinyToolContent::Create( TinyGame* game, TinyToolbox& toolbox ) {
 void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     auto& filesystem = game->GetFilesystem( );
     auto& assets     = game->GetAssets( );
-    //auto& registry   = assets.GetRegistry( );
-    auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
-
-    if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
-        if ( OpenDialog( filesystem ) ) {
-            //registry.Load( filesystem, _dialog_path );
-
-            _has_changed = false;
-        }
-    }
-
-    ImGui::SameLine( );
-
-    ImGui::BeginDisabled( !_has_changed );
-    if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-        if ( SaveDialog( filesystem ) ) {
-            //registry.Save( filesystem, _dialog_path );
-
-            _has_changed = false;
-        }
-    }
-    ImGui::EndDisabled( );
 
     if ( ImGui::Button( "Import", { -1.f, 0.f } ) ) {
-        if ( filesystem.OpenDialog( TD_TYPE_OPEM_FILE, "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0", _import_path ) ) {
+        auto* path_string = _import_path.as_chars( );
+        auto file_dialog  = TinyFileDialog{ };
+        auto path_length  = _import_path.length( );
+
+        file_dialog.Name    = "Import Asset";
+        file_dialog.Path    = filesystem.GetDevDirNative( );
+        file_dialog.Filters = "All Files (*.*)\0*.*\0Texture (*.png)\0*.png\0";
+
+        if ( Tiny::OpenDialog( file_dialog, path_length, path_string ) ) {
             _has_changed = assets.Import( game, _import_path );
 
             if ( !_has_changed )
@@ -169,7 +154,7 @@ void TinyToolContent::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     if ( _to_remove ) {
         //assets.UnLoad( game, { 0, _to_remove } );
 
-        _to_remove.empty( );
+        _to_remove.undefined( );
     }
 }
 

@@ -25,9 +25,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolWorld::TinyToolWorld( ) 
 	: TinyToolCategory{ "World" },
-	_new_entity{ "New Entity" },
-	_new_entity_id{ 0 },
-	_delete_hash{ }
+	m_new_entity{ "New Entity" },
+	m_new_entity_id{ 0 },
+	m_delete_hash{ }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,13 +43,13 @@ void TinyToolWorld::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
 	for ( auto& entity : ecs.GetEntities( ) )
 		DrawEntity( game, ecs, entity );
 
-	if ( _delete_hash ) {
-		ecs.Kill( game, _delete_hash );
+	if ( m_delete_hash ) {
+		ecs.Kill( game, m_delete_hash );
 
-		if ( toolbox.GetGuizmoSelection( ) == _delete_hash )
+		if ( toolbox.GetGuizmoSelection( ) == m_delete_hash )
 			toolbox.HideGuizmo( );
 
-		_delete_hash.empty( );
+		m_delete_hash.undefined( );
 	}
 }
 
@@ -86,7 +86,7 @@ void TinyToolWorld::DrawEntity(
 		ImGui::SameLine( region.x - line_height * .8f );
 
 		if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
-			_delete_hash = entity.Hash;
+			m_delete_hash = entity.Hash;
 
 		if ( open ) {
 			auto add_components = ecs.GetComponentListFor( entity.Hash );
@@ -158,15 +158,15 @@ void TinyToolWorld::DrawEntity(
 }
 
 void TinyToolWorld::DrawNewEntity( TinyECS& ecs ) {
-	TinyImGui::InputText( _new_entity );
+	TinyImGui::InputText( m_new_entity );
 
 	ImGui::SameLine( );
 
 	if ( ImGui::Button( TF_ICON_SHARE_SQUARE ) ) {
-		auto entity_name = _new_entity.as_string( );
+		auto entity_name = m_new_entity.as_string( );
 
 		if ( ecs.FindEntity( entity_name ) )
-			Tiny::Sprintf( _new_entity, "New Entity %u", _new_entity_id++ );
+			Tiny::Sprintf( m_new_entity, "New Entity %u", m_new_entity_id++ );
 
 		ecs.Create( entity_name );
 	}

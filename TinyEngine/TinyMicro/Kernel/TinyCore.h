@@ -92,6 +92,10 @@ extern "C" {
 #		define TINY_ASSERT( ... ) 
 #	endif
 
+#	include <Windows.h>
+#	include <corecrt_io.h>
+#	include <fcntl.h>
+#	include <shlobj.h>
 #   include <TinyThirdparty/XAudio2/XAudio2.h>
 #   include <TinyThirdparty/GLFW/Glfw_win32.h>
 
@@ -115,6 +119,8 @@ extern "C" {
 #		define TINY_ASSERT( ... ) 
 #   endif
 
+#   include <sys/types.h>
+#   include <sys/stat.h>
 #   include <TinyThirdparty/GLFW/Glfw_linux.h>
 
 #elif __APPLE__

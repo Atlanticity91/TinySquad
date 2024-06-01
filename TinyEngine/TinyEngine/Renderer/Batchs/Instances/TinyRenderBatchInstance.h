@@ -99,7 +99,7 @@ public:
 			}
 		}
 
-		_render_pass.empty( );
+		_render_pass.undefined( );
 	};
 
 	tiny_abstract( void Terminate( ) );

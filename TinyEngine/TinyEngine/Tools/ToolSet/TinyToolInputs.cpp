@@ -25,21 +25,20 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolInputs::TinyToolInputs( )
     : TinyToolCategory{ "Inputs" },
-    TinyToolDialog{ "Tiny Inputs (*.tinyinputs)\0*.tinyinputs\0" },
-    _new_input{ "New Input" },
-    _new_query{ },
-    _input_remove{ },
-    _input_query{ TINY_UINT_MAX },
-    _input_devices{ },
-    _input_states{ },
-    _input_modifier{ }
+    m_new_input{ "New Input" },
+    m_new_query{ },
+    m_input_remove{ },
+    m_input_query{ TINY_UINT_MAX },
+    m_input_devices{ },
+    m_input_states{ },
+    m_input_modifier{ }
 { 
-    _input_devices.emplace_back( TF_ICON_KEYBOARD );
-    _input_devices.emplace_back( TF_ICON_MOUSE );
-    _input_devices.emplace_back( TF_ICON_GAMEPAD );
+    m_input_devices.emplace_back( TF_ICON_KEYBOARD );
+    m_input_devices.emplace_back( TF_ICON_MOUSE );
+    m_input_devices.emplace_back( TF_ICON_GAMEPAD );
 
-    _input_states   = TinyInputs::GetInputStateList( );
-    _input_modifier = TinyInputs::GetInputModifierList( );
+    m_input_states   = TinyInputs::GetInputStateList( );
+    m_input_modifier = TinyInputs::GetInputModifierList( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,14 +55,14 @@ void TinyToolInputs::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     DrawNewInput( inputs );
     DrawInputMap( input_map );
 
-    if ( _input_remove ) {
-        if ( _input_query == TINY_UINT_MAX )
-            input_map.erase( _input_remove );
+    if ( m_input_remove ) {
+        if ( m_input_query == TINY_UINT_MAX )
+            input_map.erase( m_input_remove );
         else
-            input_map[ _input_remove ].Values.erase( _input_query );
+            input_map[ m_input_remove ].Values.erase( m_input_query );
 
-        _input_remove.empty( );
-        _input_query = TINY_UINT_MAX;
+        m_input_remove.undefined( );
+        m_input_query = TINY_UINT_MAX;
     }
 }
 
@@ -74,16 +73,28 @@ void TinyToolInputs::DrawControls( TinyGame* game, TinyInputManager& inputs ) {
     auto& filesystem = game->GetFilesystem( );
     auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
 
+    auto file_dialog = TinyFileDialog{ };
+    auto file_buffer = tiny_buffer<256>{ };
+    auto* file_str   = file_buffer.as_chars( );
+    auto file_length = file_buffer.length( );
+
+    file_dialog.Name    = "Load Inputs";
+    file_dialog.Path    = filesystem.GetDevDirNative( );
+    file_dialog.Filters = "Tiny Inputs (*.tinyinputs)\0*.tinyinputs\0";
+
     if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
-        if ( OpenDialog( filesystem ) ) {
+        if ( Tiny::OpenDialog( file_dialog, file_length, file_str ) ) {
         }
     }
 
     ImGui::SameLine( );
 
+    file_dialog.Type = TD_TYPE_SAVE_FILE;
+    file_dialog.Name = "Save Inputs";
+
     ImGui::BeginDisabled( true );
     if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-        if ( SaveDialog( filesystem ) ) {
+        if ( Tiny::OpenDialog( file_dialog, file_length, file_str ) ) {
         }
     }
 
@@ -94,19 +105,19 @@ void TinyToolInputs::DrawControls( TinyGame* game, TinyInputManager& inputs ) {
 }
 
 void TinyToolInputs::DrawNewInput( TinyInputManager& inputs ) {
-    TinyImGui::InputText( _new_input );
+    TinyImGui::InputText( m_new_input );
 
     ImGui::SameLine( );
 
     if ( ImGui::Button( TF_ICON_SHARE_SQUARE ) ) {
-        inputs.Register( _new_input, { { TinyInputKey( KEY_A ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED } } );
+        inputs.Register( m_new_input, { { TinyInputKey( KEY_A ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED } } );
 
-        _new_input = "New Input";
+        m_new_input = "New Input";
     }
 }
 
 void TinyToolInputs::DrawInputQwery( TinyInputQuery& query ) {
-    TinyImGui::Combo( tiny_cast( query.Descriptor.Device, tiny_uint& ), _input_devices, 52.f );
+    TinyImGui::Combo( tiny_cast( query.Descriptor.Device, tiny_uint& ), m_input_devices, 52.f );
 
     ImGui::SameLine( );
 
@@ -125,7 +136,7 @@ void TinyToolInputs::DrawInputQwery( TinyInputQuery& query ) {
 
     ImGui::SameLine( );
 
-    TinyImGui::Combo( tiny_cast( query.State, tiny_uint& ), _input_states, 96.f );
+    TinyImGui::Combo( tiny_cast( query.State, tiny_uint& ), m_input_states, 96.f );
 
     ImGui::SameLine( );
 
@@ -140,7 +151,7 @@ void TinyToolInputs::DrawInputQwery( TinyInputQuery& query ) {
         default: break;
     }
 
-    TinyImGui::Combo( modifier, _input_modifier, 70.f );
+    TinyImGui::Combo( modifier, m_input_modifier, 70.f );
 
     switch ( modifier ) {
         case 0 : query.Modifier = TI_MODIFIER_UNDEFINED; break;
@@ -172,7 +183,7 @@ void TinyToolInputs::DrawInputMap( tiny_map<TinyInputQueries>& inputs ) {
         ImGui::SameLine( region.x - line_height * .8f );
 
         if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) )
-            _input_remove = input.Hash;
+            m_input_remove = input.Hash;
 
         if ( is_open ) {
             auto query_id = tiny_cast( 0, tiny_uint );
@@ -188,22 +199,22 @@ void TinyToolInputs::DrawInputMap( tiny_map<TinyInputQueries>& inputs ) {
 
             ImGui::Separator( );
 
-            DrawInputQwery( _new_query );
+            DrawInputQwery( m_new_query );
 
             ImGui::SameLine( );
 
             if ( ImGui::Button( TF_ICON_SHARE_SQUARE ) ) {
-                input.Data.Values.emplace_back( _new_query );
+                input.Data.Values.emplace_back( m_new_query );
 
-                _new_query = TinyInputQuery{ };
+                m_new_query = TinyInputQuery{ };
             }
 
             ImGui::Separator( );
 
             for ( auto& query : input.Data.Values ) {
                 if ( TinyImGui::Button( TF_ICON_TRASH_ALT, { line_height, line_height } ) ) {
-                    _input_remove = input.Hash;
-                    _input_query = query_id;
+                    m_input_remove = input.Hash;
+                    m_input_query = query_id;
                 }
 
                 ImGui::SameLine( );

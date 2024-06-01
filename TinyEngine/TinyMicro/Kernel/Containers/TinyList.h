@@ -28,21 +28,21 @@ class tiny_list {
 	using under_layer = std::vector<Type>;
 
 private:
-	under_layer _data;
+	under_layer m_data;
 
 public:
 	tiny_list( )
-		: _data{ } 
+		: m_data{ }
 	{ };
 
 	tiny_list( const tiny_uint capacity )
-		: _data{ }
+		: m_data{ }
 	{ 
-		_data.resize( capacity > 0 ? capacity : 1 );
+		m_data.resize( capacity > 0 ? capacity : 1 );
 	};
 
 	tiny_list( tiny_init<Type> elements )
-		: _data{ elements } 
+		: m_data{ elements }
 	{ };
 
 	tiny_list( const Type& element )
@@ -52,20 +52,20 @@ public:
 	};
 
 	tiny_list( const tiny_uint capacity, const Type& def_value )
-		: _data{ } 
+		: m_data{ }
 	{
-		_data.resize( capacity > 0 ? capacity : 1 );
+		m_data.resize( capacity > 0 ? capacity : 1 );
 
-		for ( auto& element : _data )
+		for ( auto& element : m_data )
 			element = def_value;
 	};
 
 	tiny_list( const tiny_uint size, const native_pointer data ) 
-		: _data{ }
+		: m_data{ }
 	{ 
-		_data.resize( size / tiny_sizeof( Type ) );
+		m_data.resize( size / tiny_sizeof( Type ) );
 
-		auto* dst = tiny_cast( _data.data( ), native_pointer );
+		auto* dst = tiny_cast( m_data.data( ), native_pointer );
 
 		if ( data != nullptr && dst != nullptr )
 			Tiny::Memcpy( data, dst, size );
@@ -74,19 +74,21 @@ public:
 	~tiny_list( ) = default;
 
 	tiny_list& clear( ) { 
-		_data.clear( );
+		m_data.clear( );
 
 		return tiny_self;
 	};
 
 	tiny_list& resize( const tiny_uint capacity ) {
-		_data.resize( capacity );
+		m_data.resize( capacity );
 
 		return tiny_self;
 	};
 
 	tiny_list& insert( const tiny_uint element_id, const Type& element ) {
-		_data.insert( _data.begin( ) + element_id, element );
+		auto list_begin = m_data.begin( );
+
+		m_data.insert( list_begin + element_id, element );
 
 		return tiny_self;
 	};
@@ -102,20 +104,24 @@ public:
 	};
 
 	tiny_list& emplace_back( tiny_init<Type> elements ) {
-		_data.insert( _data.end( ), elements.begin( ), elements.end( ) );
+		auto list_end = m_data.end( );
+
+		m_data.insert( list_end, elements.begin( ), elements.end( ) );
 
 		return tiny_self;
 	};
 
 	tiny_list& emplace_back( const tiny_list<Type>& elements ) {
-		_data.insert( _data.end( ), elements.begin( ), elements.end( ) );
+		auto list_end = m_data.end( );
+
+		m_data.insert( list_end, elements.begin( ), elements.end( ) );
 
 		return tiny_self;
 	};
 
 	tiny_list& duplicate( const tiny_uint element_id ) {
 		if ( element_id < size( ) )
-			emplace_back( _data[ element_id ] );
+			emplace_back( m_data[ element_id ] );
 
 		return tiny_self;
 	};
@@ -124,10 +130,10 @@ public:
 	
 	tiny_list& swap( const tiny_uint src_id, const tiny_uint dst_id ) {
 		if ( src_id != dst_id && src_id < size( ) && dst_id < size( ) ) {
-			auto element = _data[ src_id ];
+			auto element = m_data[ src_id ];
 
-			_data[ src_id ] = _data[ dst_id ];
-			_data[ dst_id ] = element;
+			m_data[ src_id ] = m_data[ dst_id ];
+			m_data[ dst_id ] = element;
 		}
 
 		return tiny_self;
@@ -135,9 +141,10 @@ public:
 
 	std::optional<Type> erase( const tiny_uint element_id ) {
 		if ( exist( element_id ) ) {
-			auto element = _data[ element_id ];
+			auto list_begin = m_data.begin( );
+			auto element    = m_data[ element_id ];
 
-			_data.erase( _data.begin( ) + element_id );
+			m_data.erase( list_begin + element_id );
 
 			return element;
 		}
@@ -149,7 +156,7 @@ public:
 		auto capacity = size( );
 
 		while ( capacity-- > 0 ) {
-			if ( !eraser( _data[ capacity ] ) )
+			if ( !eraser( m_data[ capacity ] ) )
 				continue;
 			
 			erase( capacity );
@@ -170,7 +177,7 @@ public:
 			while ( capacity-- > 1 ) {
 				capacity_n = capacity + 1;
 
-				if ( !linear_eraser( claim, capacity, _data[ capacity ], capacity_n, _data[ capacity_n ] ) )
+				if ( !linear_eraser( claim, capacity, m_data[ capacity ], capacity_n, m_data[ capacity_n ] ) )
 					continue;
 
 				erase( claim );
@@ -185,13 +192,16 @@ public:
 	std::optional<Type> pop_back( ) { return erase( size( ) - 1 ); };
 
 	tiny_list& asign( const tiny_list& other ) { 
-		_data = other._data;
+		m_data = other.m_data;
 
 		return tiny_self;
 	};
 
 	tiny_list& sort( std::function<bool( Type&, Type& )> compare ) {
-		std::sort( _data.begin( ), _data.end( ), compare );
+		auto list_begin = m_data.begin( );
+		auto list_end   = m_data.end( );
+
+		std::sort( list_begin, list_end, compare );
 
 		return tiny_self;
 	};
@@ -219,24 +229,24 @@ public:
 	};
 
 public:
-	under_layer& get_internal( ) { return _data; };
+	under_layer& get_internal( ) { return m_data; };
 
-	tiny_uint size( ) const { return tiny_cast( _data.size( ), tiny_uint ); };
+	tiny_uint size( ) const { return tiny_cast( m_data.size( ), tiny_uint ); };
 
-	tiny_uint capacity( ) const { return tiny_cast( _data.capacity( ), tiny_uint ); };
+	tiny_uint capacity( ) const { return tiny_cast( m_data.capacity( ), tiny_uint ); };
 
-	native_pointer as_pointer( ) { return tiny_cast( _data.data( ), native_pointer ); }
+	native_pointer as_pointer( ) { return tiny_cast( m_data.data( ), native_pointer ); }
 
-	Type* data( ) { return _data.data( ); };
+	Type* data( ) { return m_data.data( ); };
 
-	const Type* data( ) const { return _data.data( ); };
+	const Type* data( ) const { return m_data.data( ); };
 
 	bool exist( tiny_uint element_id ) const { return element_id < size( ); };
 
 	tiny_uint find( std::function<bool( const Type& )> search ) const { 
 		auto element_id = tiny_cast( 0, tiny_uint );
 
-		for ( const auto& element : _data ) {
+		for ( const auto& element : m_data ) {
 			if ( !search( element ) )
 				element_id += 1;
 			else
@@ -252,7 +262,7 @@ public:
 		previous = previous < capacity ? previous + 1 : 0;
 
 		while ( previous < capacity ) {
-			if ( !search( _data[ previous ] ) )
+			if ( !search( m_data[ previous ] ) )
 				previous += 1;
 			else
 				break;
@@ -277,8 +287,8 @@ public:
 		auto element_ids = tiny_list<tiny_uint>{ };
 		auto element_id  = tiny_cast( 0, tiny_uint );
 
-		for ( const auto& element : _data ) {
-			if ( search( _data[ element_id ] ) )
+		for ( const auto& element : m_data ) {
+			if ( search( m_data[ element_id ] ) )
 				element_ids.emplace_back( element_id );
 
 			element_id += 1;
@@ -287,27 +297,35 @@ public:
 		return element_ids;
 	};
 
-	auto begin( ) noexcept { return _data.begin( ); };
+	auto begin( ) noexcept { return m_data.begin( ); };
 
-	auto end( ) noexcept { return _data.end( ); };
+	auto end( ) noexcept { return m_data.end( ); };
 
-	const auto begin( ) const noexcept { return _data.cbegin( ); };
+	const auto begin( ) const noexcept { return m_data.cbegin( ); };
 
-	const auto end( ) const noexcept { return _data.cend( ); };
+	const auto end( ) const noexcept { return m_data.cend( ); };
 
-	Type& first( ) { return _data[ 0 ]; };
+	Type& first( ) { return m_data[ 0 ]; };
 
-	const Type& first( ) const { return _data[ 0 ]; };
+	const Type& first( ) const { return m_data[ 0 ]; };
 
-	Type& last( ) { return _data[ _data.size( ) - 1 ]; };
+	Type& last( ) { 
+		auto last_id = m_data.size( ) - 1;
 
-	const Type& last( ) const { return _data[ _data.size( ) - 1 ]; };
+		return m_data[ last_id ];
+	};
+
+	const Type& last( ) const {
+		auto last_id = m_data.size( ) - 1;
+
+		return m_data[ last_id ];
+	};
 
 	Type* get( tiny_uint element_id ) { 
 		auto* result = tiny_cast( nullptr, Type* );
 
 		if ( exist( element_id ) )
-			result = tiny_rvalue( _data[ element_id ] );
+			result = tiny_rvalue( m_data[ element_id ] );
 
 		return result;
 	};
@@ -316,14 +334,14 @@ public:
 		auto* result = tiny_cast( nullptr, const Type* );
 
 		if ( exist( element_id ) )
-			result = tiny_rvalue( _data[ element_id ] );
+			result = tiny_rvalue( m_data[ element_id ] );
 
 		return result;
 	};
 
-	Type& at( tiny_uint element_id ) { return _data[ element_id ]; };
+	Type& at( tiny_uint element_id ) { return m_data[ element_id ]; };
 
-	const Type& at( tiny_uint element_id ) const { return _data[ element_id ]; };
+	const Type& at( tiny_uint element_id ) const { return m_data[ element_id ]; };
 
 public:
 	operator under_layer& ( ) { return get_internal( ); };

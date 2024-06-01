@@ -24,51 +24,51 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicBoundaries::TinyGraphicBoundaries( TinyGameOrientations orientation )
-	: _orientation{ orientation },
-	_aspect( ),
-	_depth{ 0.f, 1.f },
-	_viewport{ },
-	_scissor{ },
-	_swap_viewport{ },
-	_swap_scissor{ }
+	: m_orientation{ orientation },
+	m_aspect( ),
+	m_depth{ 0.f, 1.f },
+	m_viewport{ },
+	m_scissor{ },
+	m_swap_viewport{ },
+	m_swap_scissor{ }
 { }
 
 void TinyGraphicBoundaries::ReCreate( const TinyWindow& window ) {
-	_aspect = CaculateAspect( );
+	m_aspect = CaculateAspect( );
 
 	auto dimensions = window.GetDimensions_v( );
-	auto optimal_x  = dimensions.y * _aspect.x;
-	auto optimal_y  = dimensions.x * _aspect.y;
+	auto optimal_x  = dimensions.y * m_aspect.x;
+	auto optimal_y  = dimensions.x * m_aspect.y;
 
 	if ( optimal_x > dimensions.x ) {
 		auto offset = .5f * ( dimensions.y - optimal_y );
 
-		_viewport = { 0.f, offset, dimensions.x, optimal_y, _depth.x, _depth.y };
+		m_viewport = { 0.f, offset, dimensions.x, optimal_y, m_depth.x, m_depth.y };
 	} else {
 		auto offset = .5f * ( dimensions.x - optimal_x );
 
-		_viewport = { offset, 0.f, optimal_x, dimensions.y, _depth.x, _depth.y };
+		m_viewport = { offset, 0.f, optimal_x, dimensions.y, m_depth.x, m_depth.y };
 	}
 
-	_scissor = { 
+	m_scissor = { 
 		{ 0, 0 }, 
 		{ 
-			tiny_cast( tiny_cast( _viewport.width, tiny_int ), tiny_uint ),
-			tiny_cast( tiny_cast( _viewport.height , tiny_int ), tiny_uint )
+			tiny_cast( tiny_cast( m_viewport.width, tiny_int ), tiny_uint ),
+			tiny_cast( tiny_cast( m_viewport.height , tiny_int ), tiny_uint )
 		} 
 	};
-	_swap_viewport = { 0.f, 0.f, dimensions.x, dimensions.y, _depth.x, _depth.y };
-	_swap_scissor  = {
+	m_swap_viewport = { 0.f, 0.f, dimensions.x, dimensions.y, m_depth.x, m_depth.y };
+	m_swap_scissor  = {
 		{ 0, 0 },
 		{
-			tiny_cast( tiny_cast( _swap_viewport.width , tiny_int ), tiny_uint ),
-			tiny_cast( tiny_cast( _swap_viewport.height , tiny_int ), tiny_uint )
+			tiny_cast( tiny_cast( m_swap_viewport.width , tiny_int ), tiny_uint ),
+			tiny_cast( tiny_cast( m_swap_viewport.height , tiny_int ), tiny_uint )
 		}
 	};
 }
 
 void TinyGraphicBoundaries::SetOrientation( const TinyWindow& window, TinyGameOrientations orientation ) {
-	_orientation = orientation;
+	m_orientation = orientation;
 
 	ReCreate( window );
 }
@@ -79,7 +79,7 @@ void TinyGraphicBoundaries::SetOrientation( const TinyWindow& window, TinyGameOr
 tiny_vec2 TinyGraphicBoundaries::CaculateAspect( ) {
 	auto aspect = tiny_vec2{ };
 
-	switch ( _orientation ) {
+	switch ( m_orientation ) {
 		case TGO_PAYSAGE_16x9  : aspect = { 16.f /  9.f,  9.f / 16.f }; break;
 		case TGO_PAYSAGE_4x3   : aspect = {  4.f /  3.f,  3.f /  4.f }; break;
 		case TGO_PORTRAIT_9x16 : aspect = {  9.f / 16.f, 16.f /  9.f }; break;
@@ -94,14 +94,14 @@ tiny_vec2 TinyGraphicBoundaries::CaculateAspect( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGameOrientations TinyGraphicBoundaries::GetOrientation( ) const { return _orientation; }
+TinyGameOrientations TinyGraphicBoundaries::GetOrientation( ) const { return m_orientation; }
 
-const tiny_vec2& TinyGraphicBoundaries::GetAspect( ) const { return _aspect; };
+const tiny_vec2& TinyGraphicBoundaries::GetAspect( ) const { return m_aspect; };
 
-const VkViewport& TinyGraphicBoundaries::GetViewport( ) const { return _viewport; }
+const VkViewport& TinyGraphicBoundaries::GetViewport( ) const { return m_viewport; }
 
-const VkScissor& TinyGraphicBoundaries::GetScissor( ) const { return _scissor; }
+const VkScissor& TinyGraphicBoundaries::GetScissor( ) const { return m_scissor; }
 
-const VkViewport& TinyGraphicBoundaries::GetSwapViewport( ) const { return _swap_viewport; }
+const VkViewport& TinyGraphicBoundaries::GetSwapViewport( ) const { return m_swap_viewport; }
 
-const VkScissor& TinyGraphicBoundaries::GetSwapScissor( ) const { return _swap_scissor; }
+const VkScissor& TinyGraphicBoundaries::GetSwapScissor( ) const { return m_swap_scissor; }

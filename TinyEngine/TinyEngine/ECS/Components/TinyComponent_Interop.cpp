@@ -38,11 +38,14 @@ tiny_int TinyLua::Component::Create( lua_State* context, const tiny_string& name
 }
 
 tiny_hash TinyLua::Component::GetHash( lua_State* context, tiny_int param_id ) {
-	auto hash = lua_Integer{ };
+	auto component_hash = tiny_hash{ };
+	auto lua_hash		= lua_Integer{ };
 
-	tli_get_field( param_id, "hash", hash );
+	tli_get_field( param_id, "hash", lua_hash );
 
-	return tiny_hash{ tiny_cast( hash, tiny_uint ) };
+	component_hash = tiny_cast( lua_hash, tiny_uint );
+
+	return component_hash;
 }
 
 tiny_int TinyLua::Component::ToString( lua_State* context, const tiny_string& name ) {

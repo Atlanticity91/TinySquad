@@ -32,11 +32,11 @@ tm_class TinyGraphicRenderManager final {
 	using BundleNode = BundleMap::under_node;
 
 private:
-	BundleMap _bundles;
-	TinyGraphicRenderTargetManager	   _targets;
-	TinyGraphicRenderBarrierManager	   _barriers;
-	TinyGraphicRenderpassManager	   _passes;
-	TinyGraphicRenderFrameManager	   _frames;
+	BundleMap m_bundles;
+	TinyGraphicRenderTargetManager m_targets;
+	TinyGraphicRenderBarrierManager m_barriers;
+	TinyGraphicRenderpassManager m_passes;
+	TinyGraphicRenderFrameManager m_frames;
 
 public:
 	TinyGraphicRenderManager( );
@@ -45,9 +45,9 @@ public:
 
 	void AddBundle( const tiny_string& name, const TinyGraphicRenderBundle& bundle );
 
-	bool Create( TinyGraphicContext& graphic );
+	bool Create( TinyGraphicWrapper& graphic );
 
-	void ReCreate( TinyGraphicContext& graphic );
+	void ReCreate( TinyGraphicWrapper& graphic );
 
 	bool Begin( const tiny_hash pass_name, TinyGraphicWorkContext& work_context );
 
@@ -67,7 +67,7 @@ public:
 		tiny_init<TinyGraphicClearAttachement> attachements
 	);
 
-	void Terminate( TinyGraphicContext& graphic );
+	void Terminate( TinyGraphicWrapper& graphic );
 
 private:
 	void CreateOutPass( );
@@ -79,7 +79,7 @@ private:
 	);
 
 	bool CreateTargets( 
-		TinyGraphicContext& graphic,
+		TinyGraphicWrapper& graphic,
 		const VkScissor& scissor,
 		const tiny_list<TinyGraphicRenderTargetDescriptor>& targets
 	);
@@ -115,19 +115,19 @@ private:
 	);
 
 	bool CreatePasse( 
-		TinyGraphicContext& graphic,
+		TinyGraphicWrapper& graphic,
 		const VkViewport& viewport,
 		const VkScissor& scissor,
 		const BundleNode& bundle
 	);
 
 	bool CreateFrame( 
-		TinyGraphicContext& graphic,
+		TinyGraphicWrapper& graphic,
 		const VkScissor& scissor,
 		const BundleNode& bundle
 	);
 
-	bool InternalCreate( TinyGraphicContext& graphic );
+	bool InternalCreate( TinyGraphicWrapper& graphic );
 
 	void ClearAttachements(
 		TinyGraphicWorkContext& work_context,
@@ -135,7 +135,7 @@ private:
 		const tiny_list<VkClearRect>& bounds
 	);
 
-	void InternalTerminate( TinyGraphicContext& graphic );
+	void InternalTerminate( TinyGraphicWrapper& graphic );
 
 public:
 	const BundleMap& GetBundles( ) const;

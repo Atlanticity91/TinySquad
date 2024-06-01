@@ -66,7 +66,7 @@ void TinyToolboxGuizmo::Show(
     _is_orthographic = is_orthographic;
 }
 
-void TinyToolboxGuizmo::Hide( ) { _selection.empty( ); }
+void TinyToolboxGuizmo::Hide( ) { _selection.undefined( ); }
 
 void TinyToolboxGuizmo::DrawWidget( ) {
     TinyImGui::BeginVars( );
@@ -121,7 +121,7 @@ void TinyToolboxGuizmo::DrawUI( TinyGame* game ) {
         )
             ApplyManipulation( transform, matrix );
     } else
-        _selection.empty( );
+        _selection.undefined( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

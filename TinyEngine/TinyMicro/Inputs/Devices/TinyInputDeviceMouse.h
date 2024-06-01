@@ -25,8 +25,8 @@
 tm_class TinyInputDeviceMouse final : tiny_inherit( TinyInputDevice<TinyInputButtonMeta, TIK_MOUSE_COUNT> ) {
 
 private:
-	tiny_vec2 _cursor;
-	tiny_vec2 _scroll;
+	tiny_vec2 m_cursor;
+	tiny_vec2 m_scroll;
 
 public:
 	TinyInputDeviceMouse( );

@@ -25,33 +25,33 @@
 tm_class TinyGraphicMemoryManager final {
 
 private:
-	VkPhysicalDeviceMemoryProperties _properties;
+	VkPhysicalDeviceMemoryProperties m_properties;
 
 public:
 	TinyGraphicMemoryManager( );
 
 	~TinyGraphicMemoryManager( ) = default;
 
-	bool Create( const TinyGraphicContext& graphic );
+	bool Create( const TinyGraphicWrapper& graphic );
 
-	bool Allocate( TinyGraphicContext& graphic, TinyGraphicMemory& memory, VkImage& image );
+	bool Allocate( TinyGraphicWrapper& graphic, TinyGraphicMemory& memory, VkImage& image );
 
-	bool Allocate( TinyGraphicContext& graphic, TinyGraphicMemory& memory, VkBuffer& buffer );
+	bool Allocate( TinyGraphicWrapper& graphic, TinyGraphicMemory& memory, VkBuffer& buffer );
 
-	void DeAllocate( TinyGraphicContext& graphic, TinyGraphicMemory& memory );
+	void DeAllocate( TinyGraphicWrapper& graphic, TinyGraphicMemory& memory );
 
-	void Terminate( const TinyGraphicContext& graphic );
+	void Terminate( const TinyGraphicWrapper& graphic );
 
 private:
 	bool Allocate( 
-		TinyGraphicContext& graphic,
+		TinyGraphicWrapper& graphic,
 		TinyGraphicMemory& memory, 
 		VkMemoryRequirements& requirements 
 	);
 
 private:
 	tiny_uint GetMemoryFamily( 
-		TinyGraphicContext& graphic, 
+		TinyGraphicWrapper& graphic,
 		TinyGraphicMemoryUsages usage, 
 		VkMemoryRequirements& requirements 
 	);

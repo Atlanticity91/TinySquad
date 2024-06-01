@@ -25,9 +25,9 @@
 tm_class TinyInputDeviceManager final {
 
 private:
-	TinyInputDeviceKeyboard _keyboard;
-	TinyInputDeviceMouse	_mouse;
-	TinyInputDeviceJoystick _joystick;
+	TinyInputDeviceKeyboard m_keyboard;
+	TinyInputDeviceMouse m_mouse;
+	TinyInputDeviceJoystick m_joystick;
 
 public:
 	TinyInputDeviceManager( );

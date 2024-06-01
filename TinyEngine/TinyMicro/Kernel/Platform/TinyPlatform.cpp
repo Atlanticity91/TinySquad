@@ -31,11 +31,6 @@
 #		include <crtdbg.h>
 #	endif
 
-#	include <corecrt_io.h>
-#	include <fcntl.h>
-#	include <shlobj.h>
-#	include <Windows.h>
-
 #else
 #endif
 
@@ -69,9 +64,7 @@ namespace Tiny {
 	}
 
 	bool OpenDialog(
-		TinyDialogTypes type, 
-		const tiny_string& path,
-		const tiny_string& filters,
+		const TinyFileDialog& file_dialog,
 		tiny_uint length, 
 		char* data 
 	) {
@@ -82,21 +75,21 @@ namespace Tiny {
 
 		ZeroMemory( tiny_rvalue( context ), sizeof( OPENFILENAMEA ) );
 
-		context.lStructSize  = sizeof( OPENFILENAMEA );
-		context.hwndOwner    = GetActiveWindow( );
-		context.lpstrFile    = data;
-		context.nMaxFile	 = length;
-		context.lpstrFilter  = filters.get( );
-		context.nFilterIndex = 1;
-		context.Flags		 = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+		context.lStructSize		= sizeof( OPENFILENAMEA );
+		context.hwndOwner		= GetActiveWindow( );
+		context.lpstrFile		= tiny_cast( data, LPSTR );
+		context.nMaxFile		= length;
+		context.lpstrFilter		= tiny_cast( file_dialog.Filters, LPCSTR );
+		context.nFilterIndex	= 1;
+		context.Flags			= OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+		context.lpstrInitialDir = tiny_cast( file_dialog.Path, LPCSTR );
+		context.lpstrTitle		= tiny_cast( file_dialog.Name, LPCSTR );
 
-		if ( path )
-			context.lpstrInitialDir = path.get( );
-
-		if ( type == TD_TYPE_OPEM_FILE )
+		if ( file_dialog.Type == TD_TYPE_OPEM_FILE )
 			state = GetOpenFileNameA( tiny_rvalue( context ) ) == TRUE;
-		else if ( type == TD_TYPE_SAVE_FILE )
+		else if ( file_dialog.Type == TD_TYPE_SAVE_FILE )
 			state = GetSaveFileNameA( tiny_rvalue( context ) ) == TRUE;
+	#	else
 	#	endif
 
 		return state;

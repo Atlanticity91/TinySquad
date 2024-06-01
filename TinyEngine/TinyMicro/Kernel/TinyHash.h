@@ -25,12 +25,10 @@
 tm_class tiny_hash final {
 
 private:
-	tiny_uint _data;
+	tiny_uint m_data;
 
 public:
 	tiny_hash( );
-
-	explicit tiny_hash( tiny_uint value );
 
 	tiny_hash( const tiny_hash& other );
 
@@ -38,13 +36,11 @@ public:
 
 	explicit tiny_hash( const tiny_string& string );
 
-	tiny_hash( const tiny_string& string, tiny_uint offset, tiny_uint length );
+	tiny_hash( const tiny_string& string, const tiny_uint offset, const tiny_uint length );
 
 	tiny_hash( const std::string& string );
 
 	~tiny_hash( ) = default;
-
-	tiny_hash& asign( const tiny_string& string );
 
 	tiny_inline tiny_hash& asign( tiny_uint other );
 
@@ -52,11 +48,17 @@ public:
 
 	tiny_inline tiny_hash& asign( native_string other );
 
+	tiny_hash& asign( const tiny_string& string );
+
 	tiny_inline tiny_hash& asign( const std::string& other );
 
-	tiny_hash& asign( const tiny_string& string, tiny_uint offset, tiny_uint length );
+	tiny_hash& asign( 
+		const tiny_string& string, 
+		const tiny_uint offset, 
+		const tiny_uint length 
+	);
 
-	void empty( );
+	void undefined( );
 
 private:
 	tiny_inline tiny_uint generate( tiny_string string ) const;
@@ -66,52 +68,66 @@ private:
 public:
 	tiny_uint get( ) const;
 
-	bool is_valid( ) const;
+	bool get_is_valid( ) const;
 
-	bool equal( tiny_string string ) const;
+	bool get_is_inferior( const tiny_uint other ) const;
 
-	bool equal( tiny_uint other ) const;
+	bool get_is_inferior( const tiny_hash& other ) const;
+
+	bool get_is_superior( const tiny_uint other ) const;
+
+	bool get_is_superior( const tiny_hash& other ) const;
+
+	bool equal( const tiny_uint other ) const;
 
 	bool equal( const tiny_hash& other ) const;
 
+	bool equal( const tiny_string& string ) const;
+
 	bool equal( const std::string& other ) const;
 
-	bool not_equal( tiny_string string ) const;
-
-	bool not_equal( tiny_uint other ) const;
+	bool not_equal( const tiny_uint other ) const;
 
 	bool not_equal( const tiny_hash& other ) const;
+
+	bool not_equal( const tiny_string& string ) const;
 
 	bool not_equal( const std::string& other ) const;
 
 public:
 	operator bool ( ) const;
 
-	tiny_hash& operator=( tiny_string string );
-
-	tiny_hash& operator=( tiny_uint other );
+	tiny_hash& operator=( const tiny_uint other );
 
 	tiny_hash& operator=( const tiny_hash& other );
 
+	tiny_hash& operator=( native_string string );
+
+	tiny_hash& operator=( const tiny_string& string );
+
 	tiny_hash& operator=( const std::string& other );
 
-	bool operator<( const tiny_hash other ) const;
+	bool operator<( const tiny_uint other ) const;
 
-	bool operator>( const tiny_hash other ) const;
+	bool operator<( const tiny_hash& other ) const;
 
-	bool operator==( tiny_string string ) const;
+	bool operator>( const tiny_uint other ) const;
 
-	bool operator==( tiny_uint other ) const;
+	bool operator>( const tiny_hash& other ) const;
+
+	bool operator==( const tiny_uint other ) const;
 
 	bool operator==( const tiny_hash& other ) const;
 
+	bool operator==( const tiny_string& string ) const;
+
 	bool operator==( const std::string& other ) const;
 
-	bool operator!=( tiny_string string ) const;
-
-	bool operator!=( tiny_uint other ) const;
+	bool operator!=( const tiny_uint other ) const;
 
 	bool operator!=( const tiny_hash& other ) const;
+
+	bool operator!=( const tiny_string& string ) const;
 
 	bool operator!=( const std::string& other ) const;
 

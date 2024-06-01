@@ -27,10 +27,10 @@ tm_class TinyGraphicTexture {
 	friend class TinyGraphicBurner;
 
 private:
-	VkImage						 _image;
-	VkDescriptorImageInfo		 _descriptor;
-	TinyGraphicMemory			 _memory;
-	TinyGraphicTextureProperties _properties;
+	VkImage m_image;
+	VkDescriptorImageInfo m_descriptor;
+	TinyGraphicMemory m_memory;
+	TinyGraphicTextureProperties m_properties;
 
 public:
 	TinyGraphicTexture( );
@@ -38,19 +38,19 @@ public:
 	~TinyGraphicTexture( ) = default;
 
 	bool Create( 
-		TinyGraphicContext& context, 
+		TinyGraphicWrapper& context,
 		const TinyGraphicTextureProperties& properties 
 	);
 
 	bool Create( 
-		TinyGraphicContext& context,
+		TinyGraphicWrapper& context,
 		const TinyGraphicTextureSpecification& specification,
 		const TinyGraphicBufferStaging& stagging
 	);
 
-	bool Fill( TinyGraphicContext& context, const TinyGraphicBufferStaging& stagging );
+	bool Fill( TinyGraphicWrapper& context, const TinyGraphicBufferStaging& stagging );
 
-	void Terminate( TinyGraphicContext& context );
+	void Terminate( TinyGraphicWrapper& context );
 
 private:
 	bool CreateImageCopy( );

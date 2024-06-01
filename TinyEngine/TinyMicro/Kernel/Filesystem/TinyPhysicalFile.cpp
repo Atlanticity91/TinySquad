@@ -25,49 +25,49 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyPhysicalFile::TinyPhysicalFile( ) 
 	: TinyFile{ },
-	_handle{ }
+	m_handle{ }
 { }
 
 TinyPhysicalFile::~TinyPhysicalFile( ) {
-	if ( Tiny::GetFileIsValid( _handle ) )
-		Tiny::FileClose( _handle );
+	if ( Tiny::GetFileIsValid( m_handle ) )
+		Tiny::FileClose( m_handle );
 }
 
-bool TinyPhysicalFile::Seek( TinyFileOrigin origin, tiny_ulong offset ) {
-	return Tiny::FileSeek( _handle, origin, offset );
+bool TinyPhysicalFile::Seek( const TinyFileOrigin origin, const tiny_ulong offset ) {
+	return Tiny::FileSeek( m_handle, origin, offset );
 }
 
-tiny_uint TinyPhysicalFile::Read( tiny_uint length, native_pointer data ) {
+tiny_uint TinyPhysicalFile::Read( const tiny_uint length, native_pointer data ) {
 	TINY_ASSERT( length > 0, "You can't read 0 bytes from file" );
 	TINY_ASSERT( data != nullptr, "You can't read bytes to an undefined data buffer" );
 
 	auto count = tiny_cast( 0, tiny_uint );
 
 	if ( GetCan( TF_ACCESS_READ ) )
-		count = Tiny::FileRead( _handle, length, data );
+		count = Tiny::FileRead( m_handle, length, data );
 
 	return count;
 }
 
-tiny_uint TinyPhysicalFile::Write( tiny_uint length, const native_pointer data ) {
+tiny_uint TinyPhysicalFile::Write( const tiny_uint length, const native_pointer data ) {
 	TINY_ASSERT( length > 0, "You can't write 0 bytes from file" );
 	TINY_ASSERT( data != nullptr, "You can't write bytes from an undefined data buffer" );
 
 	auto count = tiny_cast( 0, tiny_uint );
 
 	if ( GetCan( TF_ACCESS_WRITE ) )
-		count = Tiny::FileWrite( _handle, length, data );
+		count = Tiny::FileWrite( m_handle, length, data );
 
 	return count;
 }
 
 bool TinyPhysicalFile::ReadAll( const tiny_ulong length, native_pointer& storage ) {
-	TINY_ASSERT( _handle.Size <= length, "You can't read all file bytes to a 0 length buffer" );
+	TINY_ASSERT( m_handle.Size <= length, "You can't read all file bytes to a 0 length buffer" );
 
 	auto state = false;
 
 	if ( GetCan( TF_ACCESS_READ ) )
-		state = Tiny::FileRead( _handle, length, storage ) > 0;
+		state = Tiny::FileRead( m_handle, length, storage ) > 0;
 
 	return state;
 }
@@ -75,25 +75,25 @@ bool TinyPhysicalFile::ReadAll( const tiny_ulong length, native_pointer& storage
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyPhysicalFile::GetIsValid( ) const { return Tiny::GetFileIsValid( _handle ); }
+bool TinyPhysicalFile::GetIsValid( ) const { return Tiny::GetFileIsValid( m_handle ); }
 
 bool TinyPhysicalFile::GetCan( TinyFileAccesses access ) const {
-	return Tiny::GetFileCan( _handle, access );
+	return Tiny::GetFileCan( m_handle, access );
 }
 
-TinyFileAccesses TinyPhysicalFile::GetAccess( ) const { return _handle.Access; }
+TinyFileAccesses TinyPhysicalFile::GetAccess( ) const { return m_handle.Access; }
 
-tiny_ulong TinyPhysicalFile::GetSize( ) const { return _handle.Size; }
+tiny_ulong TinyPhysicalFile::GetSize( ) const { return m_handle.Size; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyPhysicalFile& TinyPhysicalFile::operator=( const tiny_file& file ) {
 	if ( Tiny::GetFileIsValid( file ) ) {
-		if ( Tiny::GetFileIsValid( _handle ) )
-			Tiny::FileClose( _handle );
+		if ( Tiny::GetFileIsValid( m_handle ) )
+			Tiny::FileClose( m_handle );
 
-		_handle = file;
+		m_handle = file;
 	}
 
 	return tiny_self;

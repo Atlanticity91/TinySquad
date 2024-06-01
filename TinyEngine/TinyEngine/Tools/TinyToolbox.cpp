@@ -200,9 +200,9 @@ void TinyToolbox::DisplayAsset(
             asset.Hash = tiny_hash{ context.Values[ context.Index ] };
 
             if ( !assets.Acquire( game, asset ) )
-                asset.Hash = 0;
+                asset.Hash.undefined( );
         } else
-            asset.Hash = 0;
+            asset.Hash.undefined( );
     }
 }
 

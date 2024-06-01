@@ -116,7 +116,7 @@ void TinyToolCommon::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
             if ( to_remove ) {
                 natives.Remove( to_remove );
 
-                to_remove.empty( );
+                to_remove.undefined( );
             }
         }
     );
@@ -125,23 +125,31 @@ void TinyToolCommon::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
     TinyImGui::Collapsing(
         "Convert To C-Array",
         [ & ]( ) {
-            auto ttf_filters    = "TTF Fonts (*.ttf)\0*.ttf\0";
-            auto shader_filters = "GLSL (*.glsl)\0*.glsl\0Vertex (*.vert)\0*.vert\0Fragment (*.frag)\0*.frag\0";
+            auto file_dialog  = TinyFileDialog{ };
+            auto file_path    = tiny_buffer<256>{ };
+            auto* file_string = file_path.as_chars( );
+            auto file_length  = file_path.length( );
 
-            tiny_buffer<256> buffer;
+            file_dialog.Name    = "Open Font File";
+            file_dialog.Path    = filesystem.GetDevDirNative( );
+            file_dialog.Filters = "TTF Fonts (*.ttf)\0*.ttf\0";
 
             if ( ImGui::Button( "Convert TTF", { -1.f, 0.f } ) ) {
-                if ( Tiny::OpenDialog( TD_TYPE_OPEM_FILE, "", ttf_filters, buffer.length( ), buffer.as_chars( ) ) ) {
-                    auto info = filesystem.GetInformation( buffer.as_chars( ) );
-                    auto path = info.Path + "\\" + info.Name + "_to_array.cpp";
+                if ( Tiny::OpenDialog( file_dialog, file_length, file_string ) ) {
+                    auto info      = filesystem.GetInformation( file_string );
+                    auto path      = info.Path + "\\" + info.Name + "_to_array.cpp";
+                    auto* path_str = path.c_str( );
 
-                    ImGui::CompressTTF( buffer.as_chars( ), path.c_str( ), false, true, true );
+                    ImGui::CompressTTF( file_string, path_str, false, true, true );
                 }
             }
 
+            file_dialog.Name    = "Open Font File";
+            file_dialog.Filters = "GLSL (*.glsl)\0*.glsl\0Vertex (*.vert)\0*.vert\0Fragment (*.frag)\0*.frag\0";
+
             if ( ImGui::Button( "Convert Shader", { -1.f, .0f } ) ) {
-                if ( Tiny::OpenDialog( TD_TYPE_OPEM_FILE, "", shader_filters, buffer.length( ), buffer.as_chars( ) ) ) {
-                    auto info = filesystem.GetInformation( buffer.as_chars( ) );
+                if ( Tiny::OpenDialog( file_dialog, file_length, file_string ) ) {
+                    auto info = filesystem.GetInformation( file_string );
                     auto path = info.Path + "\\" + info.Name + "_to_array.cpp";
 
                     ConvertShader( game, info, path );

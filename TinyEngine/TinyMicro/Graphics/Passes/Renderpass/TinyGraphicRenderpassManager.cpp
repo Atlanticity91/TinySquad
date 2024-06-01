@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicRenderpassManager::TinyGraphicRenderpassManager( )
-	: _passes{ }
+	: m_passes{ }
 { }
 
 bool TinyGraphicRenderpassManager::Create( 
@@ -36,7 +36,7 @@ bool TinyGraphicRenderpassManager::Create(
 	auto state = pass.Create( logical, bundle );
 
 	if ( state )
-		_passes.emplace( name, pass );
+		m_passes.emplace( name, pass );
 
 	return state;
 }
@@ -45,22 +45,23 @@ TinyGraphicRenderpass& TinyGraphicRenderpassManager::Begin(
 	TinyGraphicWorkContext& work_context,
 	const TinyGraphicRenderFrameManager& frames
 ) {
-	return _passes[ work_context.WorkRender ].Begin( work_context, frames );
+	return m_passes[ work_context.WorkRender ].Begin( work_context, frames );
 }
 
 void TinyGraphicRenderpassManager::Terminate( const TinyGraphicLogical& logical ) {
-	for ( auto& pass : _passes )
+	for ( auto& pass : m_passes )
 		pass.Data.Terminate( logical );
-	_passes.clear( );
+
+	m_passes.clear( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicRenderpassManager::GetExist( tiny_hash pass_name ) { 
-	return _passes.find( pass_name );
+	return m_passes.find( pass_name );
 }
 
 TinyGraphicRenderpass& TinyGraphicRenderpassManager::GetPass( tiny_hash pass_name ) {
-	return _passes[ pass_name ];
+	return m_passes[ pass_name ];
 }

@@ -32,6 +32,22 @@ template<tiny_uint Length>
 	requires ( Length > 0 ) 
 struct tiny_buffer;
 
+tiny_enum( TinyDialogTypes ) {
+
+	TD_TYPE_OPEM_FILE = 0,
+	TD_TYPE_SAVE_FILE
+
+};
+
+tm_struct TinyFileDialog {
+
+	TinyDialogTypes Type = TD_TYPE_OPEM_FILE;
+	native_string Name	  = nullptr;
+	native_string Path	  = nullptr;
+	native_string Filters = nullptr;
+
+};
+
 tm_struct tiny_date {
 
 	tiny_ushort Year   = 0x00;
@@ -41,13 +57,6 @@ tm_struct tiny_date {
 	tiny_ubyte Minute  = 0x00;
 	tiny_ubyte Second  = 0x00;
 	tiny_ubyte Padding = 0xff;
-
-};
-
-tiny_enum( TinyDialogTypes ) {
-
-	TD_TYPE_OPEM_FILE = 0,
-	TD_TYPE_SAVE_FILE
 
 };
 
@@ -101,9 +110,7 @@ namespace Tiny {
 	};
 
 	tm_dll bool OpenDialog( 
-		TinyDialogTypes type,
-		const tiny_string& path,
-		const tiny_string& filters,
+		const TinyFileDialog& file_dialog,
 		tiny_uint length,
 		char* data 
 	);

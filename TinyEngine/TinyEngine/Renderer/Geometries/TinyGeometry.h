@@ -34,7 +34,7 @@ public:
 	~TinyGeometry( ) = default;
 
 	bool Create( 
-		TinyGraphicContext& context, 
+		TinyGraphicWrapper& wrapper,
 		const TinyGeometryBuilder& bundle
 	);
 

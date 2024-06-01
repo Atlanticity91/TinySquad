@@ -24,16 +24,16 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyTimestep::TinyTimestep( )
-	: _game_start{ },
-	_game_tick{ }
+	: m_game_start{ },
+	m_game_tick{ }
 { }
 
 void TinyTimestep::Initialize( ) {
-	_game_start = Now( );
-	_game_tick  = _game_start;
+	m_game_start = Now( );
+	m_game_tick  = m_game_start;
 }
 
-void TinyTimestep::Tick( ) { _game_tick = Now( ); }
+void TinyTimestep::Tick( ) { m_game_tick = Now( ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
@@ -45,14 +45,14 @@ TinyTimestep::time_point TinyTimestep::Now( ) const { return time_clock::now( );
 ////////////////////////////////////////////////////////////////////////////////////////////
 float TinyTimestep::GetElapsed( ) const { 
 	auto now	  = Now( );
-	auto duration = time_duration{ now - _game_tick };
+	auto duration = time_duration{ now - m_game_tick };
 
 	return duration.count( );
 }
 
 float TinyTimestep::GetTotal( ) const { 
 	auto now	  = Now( );
-	auto duration = time_duration{ now - _game_start };
+	auto duration = time_duration{ now - m_game_start };
 
 	return duration.count( );
 }

@@ -24,15 +24,15 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyInputDeviceManager::TinyInputDeviceManager( ) 
-	: _keyboard{ },
-	_mouse{ },
-	_joystick{ }
+	: m_keyboard{ },
+	m_mouse{ },
+	m_joystick{ }
 { }
 
 void TinyInputDeviceManager::Notify( const TinyInputNotification& notification ) {
 	switch ( notification.Descriptor.Device ) {
-		case TI_DEVICE_KEYBOARD : _keyboard.Notify( notification ); break;
-		case TI_DEVICE_MOUSE	: _mouse.Notify( notification );	break;
+		case TI_DEVICE_KEYBOARD : m_keyboard.Notify( notification ); break;
+		case TI_DEVICE_MOUSE	: m_mouse.Notify( notification );	break;
 
 		default : break;
 	}
@@ -42,9 +42,9 @@ bool TinyInputDeviceManager::Evaluate( const TinyInputQuery& query ) {
 	auto state = false;
 
 	switch ( query.Descriptor.Device ) { 
-		case TI_DEVICE_KEYBOARD : state = _keyboard.Evaluate( query ); break;
-		case TI_DEVICE_MOUSE	: state = _mouse.Evaluate( query );	   break;
-		case TI_DEVICE_GAMEPAD  : state = _joystick.Evaluate( query ); break;
+		case TI_DEVICE_KEYBOARD : state = m_keyboard.Evaluate( query ); break;
+		case TI_DEVICE_MOUSE	: state = m_mouse.Evaluate( query );	   break;
+		case TI_DEVICE_GAMEPAD  : state = m_joystick.Evaluate( query ); break;
 
 		default : break;
 	}
@@ -53,29 +53,29 @@ bool TinyInputDeviceManager::Evaluate( const TinyInputQuery& query ) {
 }
 
 void TinyInputDeviceManager::Tick( ) {
-	_keyboard.Tick( );
-	_mouse.Tick( );
-	_joystick.Tick( );
+	m_keyboard.Tick( );
+	m_mouse.Tick( );
+	m_joystick.Tick( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_vec2 TinyInputDeviceManager::GetCursor( ) const { return _mouse.GetCursor( ); }
+tiny_vec2 TinyInputDeviceManager::GetCursor( ) const { return m_mouse.GetCursor( ); }
 
-tiny_vec2 TinyInputDeviceManager::GetScroll( ) const { return _mouse.GetScroll( ); }
+tiny_vec2 TinyInputDeviceManager::GetScroll( ) const { return m_mouse.GetScroll( ); }
 
 std::optional<TinyInputJoystick> TinyInputDeviceManager::GetJoystick( ) const {
-	return _joystick.Get( );
+	return m_joystick.Get( );
 }
 
 TinyInputValue TinyInputDeviceManager::GetValue( const TinyInputDescriptor& descriptor ) const {
 	auto value = TinyInputValue{ };
 
 	switch ( descriptor.Device ) {
-		case TI_DEVICE_KEYBOARD : value = _keyboard.GetValue( descriptor ); break;
-		case TI_DEVICE_MOUSE	: value = _mouse.GetValue( descriptor );	break;
-		case TI_DEVICE_GAMEPAD  : value = _joystick.GetValue( descriptor ); break;
+		case TI_DEVICE_KEYBOARD : value = m_keyboard.GetValue( descriptor ); break;
+		case TI_DEVICE_MOUSE	: value = m_mouse.GetValue( descriptor );	break;
+		case TI_DEVICE_GAMEPAD  : value = m_joystick.GetValue( descriptor ); break;
 
 		default: break;
 	}
@@ -87,9 +87,9 @@ TinyInputValue TinyInputDeviceManager::GetValue( TinyInputDevices device, TinyIn
 	auto value = TinyInputValue{ };
 
 	switch ( device ) {
-		case TI_DEVICE_KEYBOARD : value = _keyboard.GetValue( key ); break;
-		case TI_DEVICE_MOUSE	: value = _mouse.GetValue( key );	 break;
-		case TI_DEVICE_GAMEPAD  : value = _joystick.GetValue( key ); break;
+		case TI_DEVICE_KEYBOARD : value = m_keyboard.GetValue( key ); break;
+		case TI_DEVICE_MOUSE	: value = m_mouse.GetValue( key );	 break;
+		case TI_DEVICE_GAMEPAD  : value = m_joystick.GetValue( key ); break;
 
 		default: break;
 	}

@@ -40,7 +40,7 @@ void TinyConfig::AddArchive( const std::string& archive ) {
 		_archives.emplace_back( archive );
 }
 
-bool TinyConfig::Load( TinyFile& file ) {
+bool TinyConfig::Load( TinyFilesystem& filesystem, TinyFile& file ) {
 	auto header = TinyAssetHeader{ };
 
 	file.Read( header );
@@ -48,6 +48,9 @@ bool TinyConfig::Load( TinyFile& file ) {
 	auto state = header.GetIsAsset( _type );
 
 	if ( state ) {
+		auto developper = filesystem.GetDeveloper( );
+
+		file.Read( developper );
 		file.Read( _application.IsFullScreen );
 		file.Read( _application.Width );
 		file.Read( _application.Height );
@@ -69,10 +72,13 @@ bool TinyConfig::Load( TinyFile& file ) {
 	return state;
 }
 
-void TinyConfig::Save( TinyFile& file ) {
-	auto header = TinyAssetHeader{ _type };
+void TinyConfig::Save( TinyFilesystem& filesystem, TinyFile& file ) {
+	auto developper = tiny_uint{ };
+	auto header		= TinyAssetHeader{ _type };
 
 	file.Write( header );
+	file.Write( developper );
+	file.Seek( developper );
 	file.Write( _application.IsFullScreen );
 	file.Write( _application.Width );
 	file.Write( _application.Height );

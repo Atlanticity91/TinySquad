@@ -28,7 +28,7 @@ typedef XAUDIO2_BUFFER TinyCueBuffer;
 tm_class TinyAudioVoice final {
 
 private:
-	IXAudio2SourceVoice* _voice;
+	IXAudio2SourceVoice* m_voice;
 
 public:
 	TinyAudioVoice( );

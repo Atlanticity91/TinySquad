@@ -24,11 +24,6 @@
 //		===	INTERNAL ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 #ifdef TINY_WIN
-
-#	include <fcntl.h>
-#	include <shlobj.h>
-#	include <Windows.h>
-
 WIN32_FIND_DATAA intern_tp_find_data{ };
 HANDLE			 intern_tp_file_handle = INVALID_HANDLE_VALUE;
 
@@ -64,9 +59,17 @@ namespace Tiny {
 	bool CreateDir( native_string path ) {
 		auto state = false;
 
-		#	ifdef TINY_WIN
-		state = CreateDirectoryA( path, NULL ) == TRUE;
-		#	endif
+	#	ifdef TINY_WIN
+		state = ( CreateDirectoryA( path, NULL ) == TRUE );
+	#	else
+		auto stat = Stat{ };
+
+		if ( stat( path, tiny_rvalue( stat ) ) != 0 ) {
+			auto status = mkdir( path, 0777 );
+
+			state = ( status == 0 || status == EEXIST );
+		}
+	#	endif
 
 		return state;
 	}
@@ -74,9 +77,11 @@ namespace Tiny {
 	bool RemoveDir( native_string path ) {
 		auto state = false;
 
-		#	ifdef TINY_WIN
-		state = RemoveDirectoryA( path ) == TRUE;
-		#	endif
+	#	ifdef TINY_WIN
+		state = ( RemoveDirectoryA( path ) == TRUE );
+	#	else
+		state = ( rmdir( path ) == 0 );
+	#	endif
 
 		return state;
 	}
@@ -87,6 +92,8 @@ namespace Tiny {
 		if ( path && strlen( path ) > 0 ) {
 	#		ifdef TINY_WIN
 			state = DeleteFileA( path ) == TRUE;
+	#		else
+			state = ( remove( path ) == 0 );
 	#		endif
 		}
 
@@ -96,14 +103,15 @@ namespace Tiny {
 	bool GetIsDir( native_string path ) {
 		auto state = false;
 
-		#	ifdef TINY_WIN
+	#	ifdef TINY_WIN
 		auto attribute_data = WIN32_FILE_ATTRIBUTE_DATA{ };
 
 		state = GetFileAttributesExA( path, GetFileExInfoStandard, tiny_rvalue( attribute_data ) ) == TRUE;
 
 		if ( state )
 			state = attribute_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
-		#	endif
+	#	else
+	#	endif
 
 		return state;
 	}
@@ -111,14 +119,15 @@ namespace Tiny {
 	bool GetIsFile( native_string path ) {
 		auto state = false;
 
-		#	ifdef TINY_WIN
+	#	ifdef TINY_WIN
 		auto attribute_data = WIN32_FILE_ATTRIBUTE_DATA{ };
 
 		state = GetFileAttributesExA( path, GetFileExInfoStandard, tiny_rvalue( attribute_data ) ) == TRUE;
 
 		if ( state )
 			state = ( attribute_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) == 0;
-		#	endif
+	#	else
+	#	endif
 
 		return state;
 	}
@@ -134,6 +143,7 @@ namespace Tiny {
 			path = dir_path;
 			path += '\\';
 		}
+	#	else
 	#	endif
 
 		return path;

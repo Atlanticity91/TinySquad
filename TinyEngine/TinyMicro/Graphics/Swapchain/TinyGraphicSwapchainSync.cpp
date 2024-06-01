@@ -24,26 +24,26 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicSwapchainSync::TinyGraphicSwapchainSync( )
-	: _acquire{ VK_NULL_HANDLE },
-	_present{ VK_NULL_HANDLE },
-	_fence{ VK_NULL_HANDLE }
+	: m_acquire{ VK_NULL_HANDLE },
+	m_present{ VK_NULL_HANDLE },
+	m_fence{ VK_NULL_HANDLE }
 { }
 
 bool TinyGraphicSwapchainSync::Create( const TinyGraphicLogical& logical ) {
-	return  CreateSwapchainSemaphore( logical, _acquire ) &&
-			CreateSwapchainSemaphore( logical, _present ) &&
+	return  CreateSwapchainSemaphore( logical, m_acquire ) &&
+			CreateSwapchainSemaphore( logical, m_present ) &&
 			CreateSwapchainFence( logical );
 }
 
 void TinyGraphicSwapchainSync::Terminate( const TinyGraphicLogical& logical ) {
-	if ( vk::GetIsValid( _acquire ) )
-		vkDestroySemaphore( logical, _acquire, vk::GetAllocator( ) );
+	if ( vk::GetIsValid( m_acquire ) )
+		vkDestroySemaphore( logical, m_acquire, vk::GetAllocator( ) );
 
-	if ( vk::GetIsValid( _present ) )
-		vkDestroySemaphore( logical, _present, vk::GetAllocator( ) );
+	if ( vk::GetIsValid( m_present ) )
+		vkDestroySemaphore( logical, m_present, vk::GetAllocator( ) );
 
-	if ( vk::GetIsValid( _fence ) )
-		vkDestroyFence( logical, _fence, vk::GetAllocator( ) );
+	if ( vk::GetIsValid( m_fence ) )
+		vkDestroyFence( logical, m_fence, vk::GetAllocator( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,20 +67,20 @@ bool TinyGraphicSwapchainSync::CreateSwapchainFence( const TinyGraphicLogical& l
 	fence_info.pNext = VK_NULL_HANDLE;
 	fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-	return vk::Check( vkCreateFence( logical, tiny_rvalue( fence_info ), vk::GetAllocator( ), tiny_rvalue( _fence ) ) );
+	return vk::Check( vkCreateFence( logical, tiny_rvalue( fence_info ), vk::GetAllocator( ), tiny_rvalue( m_fence ) ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 const VkSemaphore* TinyGraphicSwapchainSync::GetAcquire( ) const { 
-	return tiny_rvalue( _acquire ); 
+	return tiny_rvalue( m_acquire ); 
 }
 
 const VkSemaphore* TinyGraphicSwapchainSync::GetPresent( ) const { 
-	return tiny_rvalue( _present ); 
+	return tiny_rvalue( m_present ); 
 }
 
 const VkFence* TinyGraphicSwapchainSync::GetFence( ) const { 
-	return tiny_rvalue( _fence ); 
+	return tiny_rvalue( m_fence ); 
 }

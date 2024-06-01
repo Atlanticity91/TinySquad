@@ -27,13 +27,13 @@ template<tiny_uint Length>
 class tiny_buffer {
 
 private:
-	tiny_uint  _cursor;
-	tiny_ubyte _values[ Length ];
+	tiny_uint m_cursor;
+	tiny_ubyte m_values[ Length ];
 
 public:
 	tiny_buffer( ) 
-		: _cursor{ 0 },
-		_values{ }
+		: m_cursor{ 0 },
+		m_values{ }
 	{ };
 
 	tiny_buffer( const tiny_string& string ) 
@@ -45,7 +45,7 @@ public:
 	~tiny_buffer( ) = default;
 
 	tiny_buffer& clear( ) { 
-		_cursor = 0;
+		m_cursor = 0;
 
 		return tiny_self;
 	};
@@ -53,7 +53,7 @@ public:
 	tiny_buffer& set_cursor( const tiny_uint cursor ) {
 		TINY_ASSERT_FORMAT( cursor < Length, "You can't asign a cursor value outside buffer range {0:%u}", Length );
 
-		_cursor = cursor;
+		m_cursor = cursor;
 
 		return tiny_self;
 	}
@@ -63,23 +63,23 @@ public:
 		TINY_ASSERT_FORMAT( length <= Length, "You can't asign data to buffer with an array with a lenth superior to the buffer length %u", Length );
 		TINY_ASSERT( data != nullptr, "You can't asign data to buffer with a null array" );
 
-		auto* dst = tiny_cast( _values, native_pointer );
+		auto* dst = tiny_cast( m_values, native_pointer );
 
 		if ( Tiny::Memcpy( data, dst, tiny_cast( length, tiny_ulong ) ) )
-			_cursor = length;
+			m_cursor = length;
 
 		return tiny_self;
 	};
 
 	tiny_buffer& store( const tiny_uint length, const native_pointer data ) {
 		TINY_ASSERT( length > 0, "You can't store data to buffer with a 0 length array" );
-		TINY_ASSERT_FORMAT( _cursor + length <= Length, "You can't store data to buffer with an array that dosen't fit inside buffer available space %u", Length - _cursor );
+		TINY_ASSERT_FORMAT( m_cursor + length <= Length, "You can't store data to buffer with an array that dosen't fit inside buffer available space %u", Length - m_cursor );
 		TINY_ASSERT( data != nullptr, "You can't store data to buffer with a null array" );
 
-		auto* dst = tiny_cast( _values + _cursor, native_pointer );
+		auto* dst = tiny_cast( m_values + m_cursor, native_pointer );
 
 		if ( Tiny::Memcpy( data, dst, tiny_cast( length, tiny_ulong ) ) )
-			_cursor += length;
+			m_cursor += length;
 
 		return tiny_self;
 	};
@@ -90,11 +90,11 @@ public:
 		const native_pointer data 
 	) {
 		TINY_ASSERT( length > 0, "You can't store data to buffer with a 0 length array" );
-		TINY_ASSERT_FORMAT( offset < _cursor, "You can't store data to buffer with an offset that is not inside buffer limits {0:%u}", _cursor );
-		TINY_ASSERT_FORMAT( offset + length < _cursor, "You can't store data to buffer with an array that dosen't fit inside buffer available space %u", _cursor - offset );
+		TINY_ASSERT_FORMAT( offset < m_cursor, "You can't store data to buffer with an offset that is not inside buffer limits {0:%u}", m_cursor );
+		TINY_ASSERT_FORMAT( offset + length < m_cursor, "You can't store data to buffer with an array that dosen't fit inside buffer available space %u", m_cursor - offset );
 		TINY_ASSERT( data != nullptr, "You can't store data to buffer with a null array" );
 
-		auto* dst = tiny_cast( _values + _cursor, native_pointer );
+		auto* dst = tiny_cast( m_values + m_cursor, native_pointer );
 
 		Tiny::Memcpy( data, dst, tiny_cast( length, tiny_ulong ) );
 
@@ -177,49 +177,49 @@ public:
 public:
 	tiny_uint length( ) const { return Length; };
 
-	tiny_uint size( ) const { return _cursor; };
+	tiny_uint size( ) const { return m_cursor; };
 
-	tiny_uint remain( ) const { return Length - _cursor; };
+	tiny_uint remain( ) const { return Length - m_cursor; };
 
-	tiny_pointer data( ) { return _values; };
+	tiny_pointer data( ) { return m_values; };
 
-	const tiny_pointer data( ) const { return _values; };
+	const tiny_pointer data( ) const { return m_values; };
 
-	bool get_has_space( ) const { return _cursor < Length; };
+	bool get_has_space( ) const { return m_cursor < Length; };
 
 	bool get_has_space( const tiny_uint size ) const { 
-		return ( _cursor + size ) <= Length;
+		return ( m_cursor + size ) <= Length;
 	};
 
-	native_pointer as_native( ) { return tiny_cast( _values, native_pointer ); };
+	native_pointer as_native( ) { return tiny_cast( m_values, native_pointer ); };
 
 	const native_pointer as_native( ) const {
-		return tiny_cast( _values, const native_pointer );
+		return tiny_cast( m_values, const native_pointer );
 	};
 
-	char* as_chars( ) const { return tiny_cast( _values, char* ); };
+	char* as_chars( ) const { return tiny_cast( m_values, char* ); };
 
 	tiny_string as_string( ) const {
-		auto* string = as_native( );
+		auto* string = as_chars( );
 
-		return tiny_string{ _cursor, string };
+		return tiny_string{ string };
 	};
 
 	std::string to_string( ) const {
-		auto* string = as_native( );
+		auto* string = as_chars( );
 
-		return std::string{ _cursor, string };
+		return std::string{ string };
 	};
 
 	tiny_buffer& extract( const tiny_uint length, native_pointer& data ) { 
-		TINY_ASSERT( _cursor > 0, "You can't extract buffer data from an empty buffer" );
+		TINY_ASSERT( m_cursor > 0, "You can't extract buffer data from an empty buffer" );
 		TINY_ASSERT( length > 0, "You can't extract buffer data to a 0 length array" );
-		TINY_ASSERT_FORMAT( length <= _cursor, "You can't extract buffer data where query data as a superior size from available data %u", _cursor );
+		TINY_ASSERT_FORMAT( length <= m_cursor, "You can't extract buffer data where query data as a superior size from available data %u", m_cursor );
 		TINY_ASSERT( data != nullptr, "You can't extract buffer data to a null array" );
 
-		_cursor -= length;
+		m_cursor -= length;
 
-		auto* src = tiny_cast( _values + _cursor, const native_pointer );
+		auto* src = tiny_cast( m_values + m_cursor, const native_pointer );
 
 		Tiny::Memcpy( nullptr, tiny_rvalue( data ), tiny_cast( length, tiny_ulong ) );
 
@@ -231,14 +231,14 @@ public:
 		const tiny_uint length,
 		native_pointer& data
 	) {
-		TINY_ASSERT( _cursor > 0, "You can't extract buffer data from an empty buffer" );
+		TINY_ASSERT( m_cursor > 0, "You can't extract buffer data from an empty buffer" );
 		TINY_ASSERT( length > 0, "You can't extract buffer data to a 0 length array" );
-		TINY_ASSERT_FORMAT( offset + length <= _cursor, "You can't extract buffer data where query data as a superior size from available data %u", _cursor );
+		TINY_ASSERT_FORMAT( offset + length <= m_cursor, "You can't extract buffer data where query data as a superior size from available data %u", m_cursor );
 		TINY_ASSERT( data != nullptr, "You can't extract buffer data to a null array" );
 
-		_cursor -= length;
+		m_cursor -= length;
 
-		auto* src = tiny_cast( _values + offset, const native_pointer );
+		auto* src = tiny_cast( m_values + offset, const native_pointer );
 
 		Tiny::Memcpy( nullptr, tiny_rvalue( data ), tiny_cast( length, tiny_ulong ) );
 

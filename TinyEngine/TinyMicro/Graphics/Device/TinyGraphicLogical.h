@@ -25,7 +25,7 @@
 tm_class TinyGraphicLogical final {
 
 private:
-	VkDevice _handle;
+	VkDevice m_handle;
 
 public:
 	TinyGraphicLogical( );

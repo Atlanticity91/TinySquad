@@ -25,13 +25,19 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyBacker::TinyBacker( )
     : TinyNut{ "Tiny Backer" },
-    _dropdown{ "..." },
-    _archive{ }
+    m_dropdown{ "..." },
+    m_archive{ },
+    m_delete_entry{ },
+    m_import_path{ }
 { }
 
 void TinyBacker::OnDragDrop( tiny_int path_count, native_string drop_paths[] ) {
-    while ( path_count-- > 0 )
-        printf( "%s\n", drop_paths[ path_count ] );
+    while ( path_count-- > 0 ) {
+        m_import_path = drop_paths[ path_count ];
+
+        if ( !ImportAsset( m_import_path ) )
+            return;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +76,9 @@ void TinyBacker::TickMenubar( ) {
 void TinyBacker::TickUI( ) {
     TinyImGui::BeginVars( );
     
+    auto& fs = GetFilesystem( );
+    fs.SetExecutable( "", "" );
+
 
     //TinyImGui::Dropdown( "Pack", );
     TinyImGui::InputBegin( "Pack" );
@@ -97,17 +106,17 @@ void TinyBacker::TickUI( ) {
     */
     TinyImGui::InputEnd( );
     
-    TinyImGui::TextVar( "Author", "%s", _archive.Archive.Author );
+    TinyImGui::TextVar( "Author", "%s", m_archive.Archive.Author );
     TinyImGui::TextVar( 
         "Version", "%d.%d.%d", 
-        Tiny::GetVersionMajor( _archive.Header.Version ),
-        Tiny::GetVersionMinor( _archive.Header.Version ),
-        Tiny::GetVersionPatch( _archive.Header.Version )
+        Tiny::GetVersionMajor( m_archive.Header.Version ),
+        Tiny::GetVersionMinor( m_archive.Header.Version ),
+        Tiny::GetVersionPatch( m_archive.Header.Version )
     );
     TinyImGui::TextVar(
         "Date", "%d/%d/%d-%d:%d:%d", 
-        _archive.Header.Date.Day , _archive.Header.Date.Month , _archive.Header.Date.Year, 
-        _archive.Header.Date.Hour, _archive.Header.Date.Minute, _archive.Header.Date.Second 
+        m_archive.Header.Date.Day , m_archive.Header.Date.Month , m_archive.Header.Date.Year,
+        m_archive.Header.Date.Hour, m_archive.Header.Date.Minute, m_archive.Header.Date.Second
     );
     TinyImGui::EndVars( );
 
@@ -126,19 +135,36 @@ void TinyBacker::TickUI( ) {
 void TinyBacker::LoadContent( ) { }
 
 void TinyBacker::ImportAsset( ) {
-    auto& filesystem = GetFilesystem( );
-    auto path        = filesystem.GetDevDir( );
+    auto& filesystem  = GetFilesystem( );
+    auto file_dialog  = TinyFileDialog{ };
+    auto file_buffer  = tiny_buffer<256>{ };
+    auto* file_string = file_buffer.as_chars( );
+    auto file_length  = file_buffer.length( );
+    
+    file_dialog.Name    = "Load Asset";
+    file_dialog.Path    = filesystem.GetDevDirNative( );
+    file_dialog.Filters = "All Files (*.*)\0*.*\0";
 
-    if ( filesystem.OpenDialog( TD_TYPE_OPEM_FILE, "All Files (*.*)\0*.*\0", path ) ) {
-        auto& assets   = GetAssets( );
-        auto& importer = assets.GetImporter( );
-        auto path_ = tiny_string{ path };
+    if ( Tiny::OpenDialog( file_dialog, file_length, file_string ) ) {
+        auto asset_path = file_buffer.as_string( );
 
-        //_import_path = path.c_str( );
+        if ( ImportAsset( asset_path ) ) {
 
-        if ( !assets.Import( this, path_ ) )
-            ImGui::OpenPopup( "Import Fail" );
+
+            //_archive.Archive.Entries.emplace( "", { } );
+        }
     }
+}
+
+bool TinyBacker::ImportAsset( const std::string& path ) {
+    auto& assets = GetAssets( );
+    auto path_   = tiny_string{ path };
+    auto state   = assets.Import( this, path_ );
+
+    if ( !state )
+        ImGui::OpenPopup( "Import Fail" );
+
+    return state;
 }
 
 void TinyBacker::DrawEntry(
@@ -153,8 +179,8 @@ void TinyBacker::DrawEntry(
     ImGui::TableNextRow( );
     ImGui::TableNextColumn( );
 
-    if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) ) {
-    }
+    if ( TinyImGui::Button( TF_ICON_TRASH_ALT ) )
+        m_delete_entry = entry_node.Alias;
 
     ImGui::SameLine( .0f, .0f );
 
@@ -173,9 +199,6 @@ void TinyBacker::DrawEntry(
     */
 
     {
-        //TinyImGui::Theme::NotifYellow NotifOrange
-        auto c = TinyImGui::ScopeColors{ ImGuiCol_Text, TinyImGui::Theme::NotifOrange };
-
         ImGui::TableNextColumn( );
         ImGui::Text( "%s", type_str );
         ImGui::TableNextColumn( );
@@ -189,13 +212,11 @@ void TinyBacker::DrawContent( ) {
     const auto flags     = ImGuiTableFlags_Borders | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTableFlags_RowBg;
     const auto char_size = ImGui::CalcTextSize( "#" ).x;
 
-    /*
-    if ( _delete_id < _entries.size( ) ) {
-        _entries.erase( _delete_id );
+    if ( m_delete_entry.get_is_valid( ) ) {
+        m_archive.Archive.Entries.erase( m_delete_entry );
 
-        _delete_id = TINY_UINT_MAX;
+        m_delete_entry.undefined( );
     }
-    */
 
     if ( ImGui::BeginTable( "Asset List", 5, flags ) ) {
         ImGui::TableSetupColumn( "##_Actions", ImGuiTableColumnFlags_WidthFixed, char_size * 9.f );
@@ -207,7 +228,7 @@ void TinyBacker::DrawContent( ) {
 
         auto entry_id = tiny_cast( 0, tiny_uint );
 
-        for ( auto& entry : _archive.Archive.Entries )
+        for ( auto& entry : m_archive.Archive.Entries )
             DrawEntry( entry_id++, entry );
         
         ImGui::EndTable( );
@@ -218,6 +239,7 @@ void TinyBacker::DrawPopups( ) {
     if ( ImGui::BeginPopupModal( "Import Fail", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) ) {
         auto& window = GetNutWindow( );
         auto* icon   = window.GetIcon( "Logo" );
+        auto* path   = m_import_path.c_str( );
 
         ImGui::Image( icon->Icon.Descriptor, { 48.f, 48.f } );
 
@@ -226,7 +248,7 @@ void TinyBacker::DrawPopups( ) {
 
         ImGui::BeginGroup( );
         ImGui::Text( "Failed to import asset :" );
-        //ImGui::Text( _import_path.c_str( ) );
+        ImGui::Text( path );
         ImGui::EndGroup( );
 
         if ( ImGui::Button( "Close" ) ) 

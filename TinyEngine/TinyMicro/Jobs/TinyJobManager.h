@@ -27,8 +27,8 @@ tm_class TinyJobManager final{
 	using WorkerRun = std::function<void( const TinyJobFilters, native_pointer, TinyJobQueue& )>;
 
 private:
-	std::thread _workers[ TJ_FILTER_COUNT ];
-	TinyJobQueue _queues;
+	std::thread m_workers[ TJ_FILTER_COUNT ];
+	TinyJobQueue m_queues;
 
 public:
 	TinyJobManager( );

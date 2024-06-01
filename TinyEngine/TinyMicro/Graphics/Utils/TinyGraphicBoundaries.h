@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyGraphicContext.h"
+#include "TinyGraphicWrapper.h"
 
 tiny_enum( TinyGameOrientations ) {
 
@@ -34,13 +34,13 @@ tiny_enum( TinyGameOrientations ) {
 tm_class TinyGraphicBoundaries final { 
 
 private:
-	TinyGameOrientations _orientation;
-	tiny_vec2			 _aspect;
-	tiny_vec2			 _depth;
-	VkViewport			 _viewport;
-	VkScissor			 _scissor;
-	VkViewport			 _swap_viewport;
-	VkScissor			 _swap_scissor;
+	TinyGameOrientations m_orientation;
+	tiny_vec2 m_aspect;
+	tiny_vec2 m_depth;
+	VkViewport m_viewport;
+	VkScissor m_scissor;
+	VkViewport m_swap_viewport;
+	VkScissor m_swap_scissor;
 
 public:
 	TinyGraphicBoundaries( TinyGameOrientations orientation );

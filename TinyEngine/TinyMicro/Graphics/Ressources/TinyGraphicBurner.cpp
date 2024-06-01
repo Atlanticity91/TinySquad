@@ -24,28 +24,28 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicBurner::TinyGraphicBurner(
-    TinyGraphicContext& graphic,
+    TinyGraphicWrapper& graphic,
     VkQueueTypes queue_type 
-) : _queue_type{ queue_type },
-    _queue{ nullptr },
-    _fence{ VK_NULL_HANDLE },
-    _logical{ graphic.Logical }
+) : m_queue_type{ queue_type },
+    m_queue{ nullptr },
+    m_fence{ VK_NULL_HANDLE },
+    m_logical{ graphic.Logical }
 {
-    _queue = graphic.Queues.Acquire( queue_type );
+    m_queue = graphic.Queues.Acquire( queue_type );
 
-    if ( _queue ) {
-        vk::BeginCommandBuffer( _queue->CommandBuffer );
+    if ( m_queue ) {
+        vk::BeginCommandBuffer( m_queue->CommandBuffer );
 
         auto fence_info = VkFenceCreateInfo{ VK_STRUCTURE_TYPE_FENCE_CREATE_INFO };
 
         fence_info.pNext = VK_NULL_HANDLE;
         fence_info.flags = VK_NULL_FLAGS;
 
-        if ( !vk::Check( vkCreateFence( graphic.Logical, tiny_rvalue( fence_info ), vk::GetAllocator( ), tiny_rvalue( _fence ) ) ) ) {
-            vk::EndCommandBuffer( _queue->CommandBuffer );
+        if ( !vk::Check( vkCreateFence( graphic.Logical, tiny_rvalue( fence_info ), vk::GetAllocator( ), tiny_rvalue( m_fence ) ) ) ) {
+            vk::EndCommandBuffer( m_queue->CommandBuffer );
 
-            _queue->InUse = VK_FALSE;
-            _queue        = nullptr;
+            m_queue->InUse = VK_FALSE;
+            m_queue        = nullptr;
         }
     }
 }
@@ -54,9 +54,9 @@ TinyGraphicBurner::~TinyGraphicBurner( ) {
     if ( GetIsValid( ) ) {
         Execute( );
 
-        vkDestroyFence( _logical, _fence, vk::GetAllocator( ) );
+        vkDestroyFence( m_logical, m_fence, vk::GetAllocator( ) );
 
-        _queue->InUse = VK_FALSE;
+        m_queue->InUse = VK_FALSE;
     }
 }
 
@@ -96,7 +96,7 @@ void TinyGraphicBurner::Transit(
             return;
 
         vkCmdPipelineBarrier(
-            _queue->CommandBuffer,
+            m_queue->CommandBuffer,
             src_stage, dst_stage,
             VK_NULL_FLAGS,
             0, VK_NULL_HANDLE,
@@ -130,7 +130,7 @@ void TinyGraphicBurner::Upload(
             properties.Depth
         };
 
-        vkCmdCopyBufferToImage( _queue->CommandBuffer, buffer, texture, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, tiny_rvalue( region ) );
+        vkCmdCopyBufferToImage( m_queue->CommandBuffer, buffer, texture, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, tiny_rvalue( region ) );
     }
 }
 
@@ -145,11 +145,11 @@ void TinyGraphicBurner::Upload(
         buffer.GetIsValid( )  && 
         region.size > 0 
     )
-        vkCmdCopyBuffer( _queue->CommandBuffer, staging.GetBuffer( ), buffer, 1, tiny_rvalue( region ) );
+        vkCmdCopyBuffer( m_queue->CommandBuffer, staging.GetBuffer( ), buffer, 1, tiny_rvalue( region ) );
 }
 
 bool TinyGraphicBurner::Execute( ) {
-    auto state = vk::EndCommandBuffer( _queue->CommandBuffer );
+    auto state = vk::EndCommandBuffer( m_queue->CommandBuffer );
 
     if ( state ) {
         auto submit_info = VkSubmitInfo{ VK_STRUCTURE_TYPE_SUBMIT_INFO };
@@ -159,14 +159,14 @@ bool TinyGraphicBurner::Execute( ) {
         submit_info.pWaitSemaphores      = VK_NULL_HANDLE;
         submit_info.pWaitDstStageMask    = VK_NULL_HANDLE;
         submit_info.commandBufferCount   = 1;
-        submit_info.pCommandBuffers      = tiny_rvalue( _queue->CommandBuffer.Buffer );
+        submit_info.pCommandBuffers      = tiny_rvalue( m_queue->CommandBuffer.Buffer );
         submit_info.signalSemaphoreCount = 0;
         submit_info.pSignalSemaphores    = VK_NULL_HANDLE;
 
-        vk::Check( vkQueueSubmit( _queue->Queue, 1, tiny_rvalue( submit_info ), _fence ) );
+        vk::Check( vkQueueSubmit( m_queue->Queue, 1, tiny_rvalue( submit_info ), m_fence ) );
 
-        state = vk::Check( vkWaitForFences( _logical, 1, tiny_rvalue( _fence ), VK_TRUE, UINT_MAX ) ) &&
-                vk::ResetCommandBuffer( _queue->CommandBuffer );
+        state = vk::Check( vkWaitForFences( m_logical, 1, tiny_rvalue( m_fence ), VK_TRUE, UINT_MAX ) ) &&
+                vk::ResetCommandBuffer( m_queue->CommandBuffer );
     }
 
     return state;
@@ -175,10 +175,10 @@ bool TinyGraphicBurner::Execute( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyGraphicBurner::GetIsValid( ) const { return _queue != nullptr; }
+bool TinyGraphicBurner::GetIsValid( ) const { return m_queue != nullptr; }
 
 VkLogicalCommandBuffer& TinyGraphicBurner::GetCommandBuffer( ) { 
-	return _queue->CommandBuffer;
+	return m_queue->CommandBuffer;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 31/01/2024
- * @version  : 2024.1.2
+ * @creation : 17/10/2023
+ * @version  : 2024.1
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,26 +20,19 @@
 
 #pragma once
 
-#include "TinyToolCategory.h"
+#include "TinyVulkan.h"
 
-te_class TinyToolDialog {
+tm_struct TinyGraphicWrapper {
 
-protected:
-	std::string _dialog_filters;
-	std::string _dialog_path;
-
-public:
-	TinyToolDialog( const std::string& filters );
-
-	virtual ~TinyToolDialog( ) = default;
-
-	bool OpenDialog( TinyFilesystem& filesystem );
-
-	bool SaveDialog( TinyFilesystem& filesystem );
-
-public:
-	const std::string& GetFilters( ) const;
-
-	const std::string& GetPath( ) const;
+	class TinyGraphicBoundaries& Boundaries;
+	class TinyGraphicInstance& Instance;
+	class TinyGraphicSurface& Surface;
+	class TinyGraphicPhysical& Physical;
+	class TinyGraphicLogical& Logical;
+	class TinyGraphicQueueManager& Queues;
+	class TinyGraphicMemoryManager& Memory;
+	class TinyGraphicSwapchainManager& Swapchain;
+	class TinyGraphicRenderManager& Passes;
+	class TinyGraphicPipelineManager& Pipelines;
 
 };

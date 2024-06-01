@@ -25,8 +25,8 @@
 class TinyGraphicSwapchainTarget final { 
 
 private:
-	VkImage		_image;
-	VkImageView _view;
+	VkImage m_image;
+	VkImageView m_view;
 
 public:
 	TinyGraphicSwapchainTarget( );

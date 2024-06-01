@@ -30,28 +30,28 @@ TinyVirtualFile::TinyVirtualFile( )
 TinyVirtualFile::TinyVirtualFile( TinyFileAccesses access, const tiny_storage& storage )
 	: TinyVirtualFile{ access, storage.Capacity } 
 {
-	_memory = tiny_cast( storage.GetAddress( ), tiny_pointer );
+	m_memory = tiny_cast( storage.GetAddress( ), tiny_pointer );
 }
 
-bool TinyVirtualFile::Seek( TinyFileOrigin origin, tiny_ulong offset ) {
+bool TinyVirtualFile::Seek( const TinyFileOrigin origin, const tiny_ulong offset ) {
 	auto state = GetIsValid( ) && offset > 0;
 
 	if ( state ) {
 		if ( origin == TF_ORIGIN_BEGIN )
-			_offset = offset;
+			m_offset = offset;
 		else if ( origin == TF_ORIGIN_CURSOR ) {
-			if ( _size - offset >= _offset )
-				_offset += offset;
+			if ( m_size - offset >= m_offset )
+				m_offset += offset;
 
-			_offset = _size;
+			m_offset = m_size;
 		} else
-			_offset = _size - offset;
+			m_offset = m_size - offset;
 	}
 
 	return state;
 }
 
-tiny_uint TinyVirtualFile::Read( tiny_uint length, native_pointer data ) {
+tiny_uint TinyVirtualFile::Read( const tiny_uint length, native_pointer data ) {
 	TINY_ASSERT( length > 0, "You can't read 0 bytes from file" );
 	TINY_ASSERT( data != nullptr, "You can't read bytes to an undefined data buffer" );
 
@@ -62,7 +62,7 @@ tiny_uint TinyVirtualFile::Read( tiny_uint length, native_pointer data ) {
 	return size;
 }
 
-tiny_uint TinyVirtualFile::Write( tiny_uint length, const native_pointer data ) {
+tiny_uint TinyVirtualFile::Write( const tiny_uint length, const native_pointer data ) {
 	TINY_ASSERT( length > 0, "You can't write 0 bytes from file" );
 	TINY_ASSERT( data != nullptr, "You can't write bytes from an undefined data buffer" );
 
@@ -72,12 +72,12 @@ tiny_uint TinyVirtualFile::Write( tiny_uint length, const native_pointer data ) 
 }
 
 bool TinyVirtualFile::ReadAll( const tiny_ulong length, native_pointer& storage ) {
-	TINY_ASSERT( _size <= length, "You can't read all file bytes to a 0 length buffer" );
+	TINY_ASSERT( m_size <= length, "You can't read all file bytes to a 0 length buffer" );
 
 	auto state = false;
 
 	if ( GetCan( TF_ACCESS_READ ) ) {
-		auto* address = tiny_cast( _memory, const native_pointer );
+		auto* address = tiny_cast( m_memory, const native_pointer );
 
 		state = Tiny::Memcpy( address, storage, length );
 	}
@@ -89,23 +89,23 @@ bool TinyVirtualFile::ReadAll( const tiny_ulong length, native_pointer& storage 
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyVirtualFile::TinyVirtualFile( TinyFileAccesses access, const tiny_ulong size )
-	: _access{ access },
-	_memory{ nullptr },
-	_offset{ 0 },
-	_size{ size }
+	: m_access{ access },
+	m_memory{ nullptr },
+	m_offset{ 0 },
+	m_size{ size }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyVirtualFile::GetIsValid( ) const { return _memory != nullptr && _size > 0; }
+bool TinyVirtualFile::GetIsValid( ) const { return m_memory != nullptr && m_size > 0; }
 
-TinyFileAccesses TinyVirtualFile::GetAccess( ) const { return _access; }
+TinyFileAccesses TinyVirtualFile::GetAccess( ) const { return m_access; }
 
 bool TinyVirtualFile::GetCan( TinyFileAccesses access ) const {
 	return  GetIsValid( ) &&
-			_offset < _size &&
-			_access == tiny_cast( access ^ TF_ACCESS_BINARY, TinyFileAccesses );
+			m_offset < m_size &&
+			m_access == tiny_cast( access ^ TF_ACCESS_BINARY, TinyFileAccesses );
 }
 
-tiny_ulong TinyVirtualFile::GetSize( ) const { return _size; }
+tiny_ulong TinyVirtualFile::GetSize( ) const { return m_size; }

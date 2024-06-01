@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyToolDialog.h"
+#include "TinyToolCategory.h"
 
 tiny_enum( TinyToolCategories ) {
 

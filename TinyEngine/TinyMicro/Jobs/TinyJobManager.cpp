@@ -24,8 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyJobManager::TinyJobManager( ) 
-	: _workers{ },
-	_queues{ }
+	: m_workers{ },
+	m_queues{ }
 { }
 
 bool TinyJobManager::Initialize( native_pointer game, WorkerRun worker_run ) {
@@ -36,8 +36,8 @@ bool TinyJobManager::Initialize( native_pointer game, WorkerRun worker_run ) {
 
 		auto thread_type = tiny_cast( 0, tiny_uint );
 
-		for ( auto& worker : _workers )
-			worker = std::thread( worker_run, tiny_cast( thread_type++, TinyJobFilters), game, std::ref( _queues ) );
+		for ( auto& worker : m_workers )
+			worker = std::thread( worker_run, tiny_cast( thread_type++, TinyJobFilters), game, std::ref( m_queues ) );
 	}
 
 	return state;
@@ -45,13 +45,13 @@ bool TinyJobManager::Initialize( native_pointer game, WorkerRun worker_run ) {
 
 void TinyJobManager::Dispatch( const TinyJob& job ) { 
 	if ( job.Task )
-		_queues.EnQueue( job ); 
+		m_queues.EnQueue( job ); 
 }
 
-void TinyJobManager::Wait( ) { while ( _queues.GetHasTask( ) ); }
+void TinyJobManager::Wait( ) { while ( m_queues.GetHasTask( ) ); }
 
 void TinyJobManager::Terminate( ) {
-	for ( auto& worker : _workers ) {
+	for ( auto& worker : m_workers ) {
 		if ( worker.joinable( ) )
 			worker.join( );
 	}

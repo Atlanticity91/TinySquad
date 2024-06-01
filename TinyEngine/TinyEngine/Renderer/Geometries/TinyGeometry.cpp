@@ -30,11 +30,11 @@ TinyGeometry::TinyGeometry( )
 { }
 
 bool TinyGeometry::Create( 
-	TinyGraphicContext& context, 
+	TinyGraphicWrapper& wrapper,
 	const TinyGeometryBuilder& builder
 ) {
-	auto state = _index.Create( context, { TGB_TYPE_INDEX, 0 } ) && 
-				 _vertex.Create( context, { TGB_TYPE_VERTEX, 0 } );
+	auto state = _index.Create( wrapper, { TGB_TYPE_INDEX, 0 } ) &&
+				 _vertex.Create( wrapper, { TGB_TYPE_VERTEX, 0 } );
 
 	return state;
 }

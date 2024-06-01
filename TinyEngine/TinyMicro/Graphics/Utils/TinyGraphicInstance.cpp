@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicInstance::TinyGraphicInstance( )
-	: _instance{ VK_NULL_HANDLE }
+	: m_instance{ VK_NULL_HANDLE }
 { }
 
 bool TinyGraphicInstance::Create( tiny_string title ) {
@@ -49,15 +49,15 @@ bool TinyGraphicInstance::Create( tiny_string title ) {
     instance_info.enabledLayerCount       = tiny_size_array( vk::LAYERS );
     instance_info.ppEnabledLayerNames     = vk::LAYERS;
 
-    return  vk::Check( vkCreateInstance( tiny_rvalue( instance_info ), vk::GetAllocator( ), tiny_rvalue( _instance ) ) ) &&
-            vk::CreateDebugReport( _instance );
+    return  vk::Check( vkCreateInstance( tiny_rvalue( instance_info ), vk::GetAllocator( ), tiny_rvalue( m_instance ) ) ) &&
+            vk::CreateDebugReport( m_instance );
 }
 
 void TinyGraphicInstance::Terminate( ) {
-    vk::DestroyDebugReport( _instance );
+    vk::DestroyDebugReport( m_instance );
 
-	if ( _instance )
-		vkDestroyInstance( _instance, vk::GetAllocator( ) );
+	if ( m_instance )
+		vkDestroyInstance( m_instance, vk::GetAllocator( ) );
 }
 
 tiny_list<native_string> TinyGraphicInstance::GetExtensions( ) const {
@@ -88,4 +88,4 @@ tiny_list<native_string> TinyGraphicInstance::GetExtensions( ) const {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicInstance::operator VkInstance ( ) const { return _instance; }
+TinyGraphicInstance::operator VkInstance ( ) const { return m_instance; }

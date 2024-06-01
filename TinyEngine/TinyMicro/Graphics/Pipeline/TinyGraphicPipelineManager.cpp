@@ -24,8 +24,9 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicPipelineManager::TinyGraphicPipelineManager( )
-	: _cache{ VK_NULL_HANDLE },
-	_limits{ }
+	: m_use_cache{ true },
+	m_cache{ VK_NULL_HANDLE },
+	m_limits{ }
 { }
 
 bool TinyGraphicPipelineManager::Initialize( 
@@ -40,8 +41,13 @@ bool TinyGraphicPipelineManager::Initialize(
 	return state;
 }
 
+
+void TinyGraphicPipelineManager::EnableCache( ) { m_use_cache = true; }
+
+void TinyGraphicPipelineManager::DisableCache( ) { m_use_cache = false; }
+
 TinyGraphicPipelineSpecification TinyGraphicPipelineManager::Create(
-	TinyGraphicPipelineTypes type 
+	const TinyGraphicPipelineTypes type 
 ) {
 	auto pipeline = TinyGraphicPipelineSpecification{ };
 
@@ -60,10 +66,10 @@ void TinyGraphicPipelineManager::Terminate(
 	TinyFilesystem& filesystem, 
 	TinyGraphicLogical& logical
 ) {
-	if ( vk::GetIsValid( _cache ) ) {
+	if ( m_use_cache && vk::GetIsValid( m_cache ) ) {
 		WriteCache( filesystem, logical );
 
-		vkDestroyPipelineCache( logical, _cache, vk::GetAllocator( ) );
+		vkDestroyPipelineCache( logical, m_cache, vk::GetAllocator( ) );
 	}
 }
 
@@ -74,7 +80,7 @@ tiny_list<tiny_ubyte> TinyGraphicPipelineManager::LoadCache( TinyFilesystem& fil
 	auto cache_data = tiny_list<tiny_ubyte>{ };
 	auto cache_path = filesystem.GetCachePath( );
 
-	if ( filesystem.GetFileExist( cache_path ) ) {
+	if ( m_use_cache && filesystem.GetFileExist( cache_path ) ) {
 		auto file = filesystem.OpenFile( cache_path, TF_ACCESS_BINARY_READ );
 		auto length = tiny_cast( file.GetSize( ), tiny_uint );
 
@@ -95,7 +101,7 @@ void TinyGraphicPipelineManager::WriteCache(
 	auto cache_data = tiny_list<tiny_ubyte>{ };
 	auto cache_path = filesystem.GetCachePath( );
 
-	if ( vk::GetPipelineCache( logical, _cache, cache_data ) ) {
+	if ( vk::GetPipelineCache( logical, m_cache, cache_data ) ) {
 		auto* data  = tiny_cast( cache_data.data( ), const native_pointer );
 		auto length = tiny_cast( cache_data.size( ), tiny_uint );
 
@@ -115,18 +121,18 @@ bool TinyGraphicPipelineManager::CreateCache(
 	cache_info.initialDataSize = cache_data.size( );
 	cache_info.pInitialData	   = cache_data.data( );
 
-	return vk::Check( vkCreatePipelineCache( logical, tiny_rvalue( cache_info ), vk::GetAllocator( ), tiny_rvalue( _cache ) ) );
+	return vk::Check( vkCreatePipelineCache( logical, tiny_rvalue( cache_info ), vk::GetAllocator( ), tiny_rvalue( m_cache ) ) );
 }
 
 void TinyGraphicPipelineManager::CreateDescriptorLimits( ) {
 	const tiny_uint MAX_DESCRIPTOR = 128;
 
-	_limits.create( VK_DESCRIPTOR_TYPE_SAMPLER,				   MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,		   MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,		   MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,		   MAX_DESCRIPTOR );
-	_limits.create( VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,	   MAX_DESCRIPTOR );
+	m_limits.create( VK_DESCRIPTOR_TYPE_SAMPLER,				MAX_DESCRIPTOR );
+	m_limits.create( VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, MAX_DESCRIPTOR );
+	m_limits.create( VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,		    MAX_DESCRIPTOR );
+	m_limits.create( VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,		    MAX_DESCRIPTOR );
+	m_limits.create( VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,		    MAX_DESCRIPTOR );
+	m_limits.create( VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,	    MAX_DESCRIPTOR );
 }
 
 TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipeline2D( ) {
@@ -182,6 +188,8 @@ TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipelineCompu
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const VkPipelineCache& TinyGraphicPipelineManager::GetCache( ) const { return _cache; }
+bool TinyGraphicPipelineManager::GetUseCache( ) const { return m_use_cache; }
 
-const TinyLimitsStack& TinyGraphicPipelineManager::GetLimits( ) const { return _limits; }
+const VkPipelineCache& TinyGraphicPipelineManager::GetCache( ) const { return m_cache; }
+
+const TinyLimitsStack& TinyGraphicPipelineManager::GetLimits( ) const { return m_limits; }

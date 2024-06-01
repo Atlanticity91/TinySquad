@@ -24,15 +24,15 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicShaderCompiler::TinyGraphicShaderCompiler( ) 
-	: _compiler{ },
-	_options{ },
-	_includer{ }
+	: m_compiler{ },
+	m_options{ },
+	m_includer{ }
 { }
 
 bool TinyGraphicShaderCompiler::Initialize( ) {
 	//_options.SetIncluder( std::make_unique<TinyGraphicShaderIncluder>( &_includer ) );
-	_options.SetTargetEnvironment( shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_3 );
-	_options.SetTargetSpirv( shaderc_spirv_version_1_6 );
+	m_options.SetTargetEnvironment( shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_3 );
+	m_options.SetTargetSpirv( shaderc_spirv_version_1_6 );
 
 	return true;
 }
@@ -47,7 +47,7 @@ void TinyGraphicShaderCompiler::AddMacro(
 		auto* value_str = value.get( );
 		auto value_len  = value.length( );
 
-		_options.AddMacroDefinition( name_str, name_len, value_str, value_len );
+		m_options.AddMacroDefinition( name_str, name_len, value_str, value_len );
 	}
 }
 
@@ -72,17 +72,17 @@ bool TinyGraphicShaderCompiler::CompileGLSL(
 ) {
 	auto optimization = GrabOptimization( context.Optimization );
 
-	_options.SetSourceLanguage( shaderc_source_language_glsl );
-	_options.SetOptimizationLevel( shaderc_optimization_level_performance );
+	m_options.SetSourceLanguage( shaderc_source_language_glsl );
+	m_options.SetOptimizationLevel( shaderc_optimization_level_performance );
 
 	auto* source_str = context.Source.get( );
 	auto source_len  = context.Source.length( );
 	auto* name_str   = context.Name.get( );
-	auto preprocess  = _compiler.PreprocessGlsl( source_str, source_len, shaderc_glsl_infer_from_source, name_str, _options );
+	auto preprocess  = m_compiler.PreprocessGlsl( source_str, source_len, shaderc_glsl_infer_from_source, name_str, m_options );
 	auto status		 = preprocess.GetCompilationStatus( );
 	
 	if ( status == shaderc_compilation_status_success ) {
-		auto spirv = _compiler.CompileGlslToSpv( preprocess.begin( ), shaderc_glsl_infer_from_source, name_str, _options );
+		auto spirv = m_compiler.CompileGlslToSpv( preprocess.begin( ), shaderc_glsl_infer_from_source, name_str, m_options );
 
 		status = spirv.GetCompilationStatus( );
 		
@@ -116,7 +116,7 @@ bool TinyGraphicShaderCompiler::CompileHLSL(
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 const shaderc::CompileOptions& TinyGraphicShaderCompiler::GetCompilerOptions( ) const {
-	return _options;
+	return m_options;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

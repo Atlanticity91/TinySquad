@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicRenderFrameManager::TinyGraphicRenderFrameManager( )
-	: _frames{ }
+	: m_frames{ }
 { }
 
 bool TinyGraphicRenderFrameManager::Create( 
@@ -35,25 +35,25 @@ bool TinyGraphicRenderFrameManager::Create(
 	auto state = new_frame.Create( logical, frame );
 
 	if ( state )
-		_frames.emplace_back( new_frame );
+		m_frames.emplace_back( new_frame );
 
 	return state;
 }
 
 void TinyGraphicRenderFrameManager::Terminate( const TinyGraphicLogical& logical ) {
-	for ( auto& frame : _frames )
+	for ( auto& frame : m_frames )
 		frame.Terminate( logical );
-	_frames.clear( );
+	m_frames.clear( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_uint TinyGraphicRenderFrameManager::GetCount( ) const { return _frames.size( ); }
+tiny_uint TinyGraphicRenderFrameManager::GetCount( ) const { return m_frames.size( ); }
 
 const VkFramebuffer TinyGraphicRenderFrameManager::GetFramebuffer(
 	TinyGraphicWorkContext& work_context,
 	tiny_uint frame 
 ) const {
-	return _frames[ frame ].Get( work_context.WorkID );
+	return m_frames[ frame ].Get( work_context.WorkID );
 }

@@ -24,8 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_string::tiny_string( )
-	: _handle( nullptr ),
-	_length{ 0 }
+	: m_handle( nullptr ),
+	m_length{ 0 }
 { }
 
 tiny_string::tiny_string( native_string string )
@@ -76,8 +76,8 @@ tiny_string& tiny_string::asign( const tiny_uint length, const native_pointer da
 	TINY_ASSERT( length > 0, "You can't extract buffer data to a 0 length array" );
 	TINY_ASSERT( data != nullptr, "You can't extract buffer data to a null array" );
 
-	_handle = tiny_cast( data, char* );
-	_length = length;
+	m_handle = tiny_cast( data, char* );
+	m_length = length;
 
 	return tiny_self;
 }
@@ -85,40 +85,40 @@ tiny_string& tiny_string::asign( const tiny_uint length, const native_pointer da
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool tiny_string::get_is_valid( ) const { return _handle != nullptr && _length > 0; }
+bool tiny_string::get_is_valid( ) const { return m_handle != nullptr && m_length > 0; }
 
 bool tiny_string::get_is_empty( ) const { return length( ) == 0; }
 
-tiny_uint tiny_string::length( ) const { return _length; }
+tiny_uint tiny_string::length( ) const { return m_length; }
 
-char* tiny_string::get( ) const { return _handle; }
+char* tiny_string::get( ) const { return m_handle; }
 
-char* tiny_string::last( ) const { return _handle + _length; }
+char* tiny_string::last( ) const { return m_handle + m_length; }
 
-native_string tiny_string::as_string( ) const { return _handle; }
+native_string tiny_string::as_string( ) const { return m_handle; }
 
-native_pointer tiny_string::as_native( ) { return tiny_cast( _handle, native_pointer ); }
+native_pointer tiny_string::as_native( ) { return tiny_cast( m_handle, native_pointer ); }
 
 const native_pointer tiny_string::as_native( ) const { 
-	return tiny_cast( _handle, const native_pointer ); 
+	return tiny_cast( m_handle, const native_pointer );
 }
 
-std::string tiny_string::to_string( ) const { return std::string{ _handle, _length }; }
+std::string tiny_string::to_string( ) const { return std::string{ m_handle, m_length }; }
 
 char& tiny_string::at( const tiny_uint char_id ) {
-	TINY_ASSERT_FORMAT( char_id < _length, "You can't access character outside the string limits {0:%u}", _length );
+	TINY_ASSERT_FORMAT( char_id < m_length, "You can't access character outside the string limits {0:%u}", m_length );
 
-	return tiny_lvalue( _handle + char_id );
+	return tiny_lvalue( m_handle + char_id );
 }
 
 const char tiny_string::at( const tiny_uint char_id ) const {
-	TINY_ASSERT_FORMAT( char_id < _length, "You can't access character outside the string limits {0:%u}", _length );
+	TINY_ASSERT_FORMAT( char_id < m_length, "You can't access character outside the string limits {0:%u}", m_length );
 	
-	return _handle[ char_id ];
+	return m_handle[ char_id ];
 }
 
 std::string tiny_string::make_string( char start, char stop ) const {
-	auto string	   = std::string{ _handle };
+	auto string	   = std::string{ m_handle };
 	auto str_start = string.find_last_of( start )+1;
 	auto str_stop  = string.find_last_of( stop );
 
@@ -133,7 +133,7 @@ native_string tiny_string::sub_chars(
 
 	if ( get_is_valid( ) && sequence.get_is_valid( ) ) {
 		auto* sequence_ = sequence.as_string( );
-		sub_string		= strstr( _handle, sequence_ );
+		sub_string		= strstr( m_handle, sequence_ );
 
 		if ( sub_string && cut_after )
 			sub_string += sequence.length( );
@@ -147,7 +147,7 @@ tiny_string tiny_string::sub_string( const tiny_string& sequence, bool cut_after
 
 	if ( get_is_valid( ) && sequence.get_is_valid( ) ) {
 		auto* sequence_ = sequence.as_string( );
-		auto* tmp		= strstr( _handle, sequence_ );
+		auto* tmp		= strstr( m_handle, sequence_ );
 
 		if ( tmp && cut_after )
 			tmp += sequence.length( );
@@ -161,8 +161,8 @@ tiny_string tiny_string::sub_string( const tiny_string& sequence, bool cut_after
 tiny_string tiny_string::sub_string( const tiny_uint offset ) const {
 	auto sub = tiny_string{ };
 
-	if ( offset < _length )
-		sub.asign( _handle + offset );
+	if ( offset < m_length )
+		sub.asign( m_handle + offset );
 
 	return sub;
 }
@@ -171,7 +171,7 @@ bool tiny_string::equal( native_string string ) const {
 	auto state = false;
 
 	if ( get_is_valid( string ) && length( ) > 0 )
-		state = strcmp( string, _handle ) == 0;
+		state = strcmp( string, m_handle ) == 0;
 
 	return state;
 }
@@ -213,7 +213,7 @@ tiny_string::regex_iterator tiny_string::begin_regex( const tiny_string& regex )
 	auto length		= regex.length( );
 	auto expression = std::regex{ string, length };
 
-	return regex_iterator{ _handle, _handle + ( _length + 1 ), expression };
+	return regex_iterator{ m_handle, m_handle + ( m_length + 1 ), expression };
 }
 
 tiny_string::regex_iterator tiny_string::end_regex( ) const { return regex_iterator{ }; }
@@ -236,9 +236,9 @@ tiny_string::operator std::string ( ) const { return to_string( ); }
 
 tiny_string& tiny_string::operator=( native_string string ) { return asign( string ); }
 
-tiny_string& tiny_string::operator=( const std::string string ) { return asign( string ); }
-
 tiny_string& tiny_string::operator=( const tiny_string& other ) { return asign( other ); }
+
+tiny_string& tiny_string::operator=( const std::string& string ) { return asign( string ); }
 
 bool tiny_string::operator==( native_string string ) const { return equal( string ); }
 

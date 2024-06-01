@@ -27,61 +27,61 @@ template<typename Type, tiny_uint Length>
 class tiny_queue {
 
 private:
-	tiny_uint _head;
-	tiny_uint _tail;
-	tiny_uint _size;
-	Type _data[ Length ];
+	tiny_uint m_head;
+	tiny_uint m_tail;
+	tiny_uint m_size;
+	Type m_data[ Length ];
 
 public:
 	tiny_queue( )
-		: _head{ 0 },
-		_tail{ 0 },
-		_size{ 0 },
-		_data{ }
+		: m_head{ 0 },
+		m_tail{ 0 },
+		m_size{ 0 },
+		m_data{ }
 	{ };
 
 	~tiny_queue( ) = default;
 
 	tiny_queue& enqueue( const Type& element ) {
-		if ( _size < Length ) {
-			_size += 1;
+		if ( m_size < Length ) {
+			m_size += 1;
 			
-			_data[ _tail ] = std::move( element );
-
-			 _tail = ( _tail + 1 ) % Length;
+			m_data[ m_tail ] = std::move( element );
+			
+			m_tail = ( m_tail + 1 ) % Length;
 		}
 
 		return tiny_self;
 	};
 
 	std::optional<Type> dequeue( ) {
-		if ( _size > 0 ) {
-			_size -= 1;
+		if ( m_size > 0 ) {
+			m_size -= 1;
 
-			auto old_head = _head;
+			auto old_head = m_head;
 
-			_head = ( _head + 1 ) % Length;
+			m_head = ( m_head + 1 ) % Length;
 
-			return std::move( _data[ old_head ] );
+			return std::move( m_data[ old_head ] );
 		}
 
 		return { };
 	};
 
 public:
-	bool get_is_empty( ) const { return _size == 0; }
+	bool get_is_empty( ) const { return m_size == 0; }
 
-	bool get_is_full( ) const { return _size == Length; };
+	bool get_is_full( ) const { return m_size == Length; };
 
 	tiny_uint length( ) const { return Length; };
 
-	tiny_uint size( ) const { return _size; };
+	tiny_uint size( ) const { return m_size; };
 
 	const Type* peek( ) const {
 		auto* element = tiny_cast( nullptr, const Type* );
 
-		if ( _size > 0 )
-			element = _data + _head;
+		if ( m_size > 0 )
+			element = m_data + m_head;
 
 		return element;
 	};

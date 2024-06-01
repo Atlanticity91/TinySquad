@@ -24,19 +24,18 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyWindow::TinyWindow( tiny_string title, bool is_headless )
-	: _title{ title },
-	_handle{ },
-	_is_minimized{ false },
-	_is_headless{ is_headless },
-	_is_full_screen{ false }
+	: m_title{ title },
+	m_handle{ },
+	m_flags{ is_headless * TW_FLAG_HEADLESS }
 { }
 
 bool TinyWindow::Initialize( const TinyAppConfig& config, native_pointer user_data ) {
-	auto* title = _title.get( );
-	auto state  = glfwCreateWindow( _handle, title, config.Width, config.Height, _is_headless, config.IsFullScreen );
+	auto* title = m_title.get( );
+	auto state  = glfwCreateWindow( m_handle, title, config.Width, config.Height, m_flags & TW_FLAG_HEADLESS, config.IsFullScreen );
 
 	if ( state ) {
-		_is_full_screen = config.IsFullScreen;
+		if ( config.IsFullScreen )
+			m_flags |= TW_FLAG_FULL_SCREEN;
 
 		if ( config.Icon.Pixels ) {
 			auto icon = GLFWimage{ };
@@ -45,10 +44,10 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, native_pointer user_da
 			icon.height = tiny_cast( config.Icon.Height, tiny_int );
 			icon.pixels = tiny_cast( config.Icon.Pixels.GetAddress( ), tiny_ubyte* );
 
-			glfwSetWindowIcon( _handle, 1, tiny_rvalue( icon ) );
+			glfwSetWindowIcon( m_handle, 1, tiny_rvalue( icon ) );
 		}
 
-		glfwSetWindowUserPointer( _handle, user_data );
+		glfwSetWindowUserPointer( m_handle, user_data );
 	}
 
 	return state;
@@ -56,14 +55,14 @@ bool TinyWindow::Initialize( const TinyAppConfig& config, native_pointer user_da
 
 void TinyWindow::SetCallback( TinyWindowCallbacks query, native_pointer callback ) {
 	switch ( query ) {
-		case TWC_WINDOW_SIZE   : glfwSetWindowSizeCallback( _handle, tiny_cast( callback, GLFWwindowsizefun ) );   break;
-		case TWC_WINDOW_CLOSE  : glfwSetWindowCloseCallback( _handle, tiny_cast( callback, GLFWwindowclosefun ) ); break;
-		case TWC_WINDOW_HIT	   : glfwSetTitlebarHitCallback( tiny_cast( callback, glfwTitlebarHitCallback ) );	   break;
-		case TWC_KEY		   : glfwSetKeyCallback( _handle, tiny_cast( callback, GLFWkeyfun ) );				   break;
-		case TWC_CURSOR		   : glfwSetCursorPosCallback( _handle, tiny_cast( callback, GLFWcursorposfun ) );	   break;
-		case TWC_MOUSE		   : glfwSetMouseButtonCallback( _handle, tiny_cast( callback, GLFWmousebuttonfun ) ); break;
-		case TWC_SCROLL		   : glfwSetScrollCallback( _handle, tiny_cast( callback, GLFWscrollfun ) );		   break;
-		case TWC_DRAG_AND_DROP : glfwSetDropCallback( _handle, tiny_cast( callback, GLFWdropfun ) );			   break;
+		case TWC_WINDOW_SIZE   : glfwSetWindowSizeCallback( m_handle, tiny_cast( callback, GLFWwindowsizefun ) );   break;
+		case TWC_WINDOW_CLOSE  : glfwSetWindowCloseCallback( m_handle, tiny_cast( callback, GLFWwindowclosefun ) ); break;
+		case TWC_WINDOW_HIT	   : glfwSetTitlebarHitCallback( tiny_cast( callback, glfwTitlebarHitCallback ) );	    break;
+		case TWC_KEY		   : glfwSetKeyCallback( m_handle, tiny_cast( callback, GLFWkeyfun ) );				    break;
+		case TWC_CURSOR		   : glfwSetCursorPosCallback( m_handle, tiny_cast( callback, GLFWcursorposfun ) );	    break;
+		case TWC_MOUSE		   : glfwSetMouseButtonCallback( m_handle, tiny_cast( callback, GLFWmousebuttonfun ) ); break;
+		case TWC_SCROLL		   : glfwSetScrollCallback( m_handle, tiny_cast( callback, GLFWscrollfun ) );		    break;
+		case TWC_DRAG_AND_DROP : glfwSetDropCallback( m_handle, tiny_cast( callback, GLFWdropfun ) );			    break;
 
 		default : break;
 	}
@@ -73,43 +72,48 @@ void TinyWindow::SetCallback( TinyWindowCallbacks query, native_pointer callback
 void TinyWindow::SetIcon( tiny_int width, tiny_int height, tiny_pointer pixels ) {
 	auto icon = GLFWimage{ width, height, pixels };
 
-	glfwSetWindowIcon( _handle, 1, tiny_rvalue( icon ) );
+	glfwSetWindowIcon( m_handle, 1, tiny_rvalue( icon ) );
 }
 
-void TinyWindow::ToggleMinimized( bool is_minimized ) { _is_minimized = is_minimized; }
+void TinyWindow::ToggleMinimized( bool is_minimized ) {
+	if ( is_minimized )
+		m_flags |= TW_FLAG_MINIMIZED; 
+	else
+		m_flags ^= TW_FLAG_MINIMIZED;
+}
 
 void TinyWindow::Minimize( ) { 
-	glfwIconifyWindow( _handle ); 
+	glfwIconifyWindow( m_handle );
 
-	_is_minimized = true;
+	m_flags |= TW_FLAG_MINIMIZED;
 }
 
-void TinyWindow::Restore( ) { glfwRestoreWindow( _handle ); }
+void TinyWindow::Restore( ) { glfwRestoreWindow( m_handle ); }
 
-void TinyWindow::Maximize( ) { glfwMaximizeWindow( _handle ); }
+void TinyWindow::Maximize( ) { glfwMaximizeWindow( m_handle ); }
 
 bool TinyWindow::Tick( ) { 
 	glfwPollEvents( ); 
 
-	return !_is_minimized;
+	return !( m_flags & TW_FLAG_MINIMIZED );
 }
 
-void TinyWindow::Terminate( ) { glfwDestroyWindow( _handle ); }
+void TinyWindow::Terminate( ) { glfwDestroyWindow( m_handle ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_string TinyWindow::GetTitle( ) const { return _title; }
+tiny_string TinyWindow::GetTitle( ) const { return m_title; }
 
-bool TinyWindow::GetIsHeadless( ) const { return _is_headless; }
+bool TinyWindow::GetIsHeadless( ) const { return ( m_flags & TW_FLAG_HEADLESS ); }
 
-bool TinyWindow::GetIsFullScreen( ) const { return _is_full_screen; }
+bool TinyWindow::GetIsFullScreen( ) const { return ( m_flags & TW_FLAG_FULL_SCREEN ); }
 
-const GlfwWindow& TinyWindow::GetHandle( ) const { return _handle; }
+const GlfwWindow& TinyWindow::GetHandle( ) const { return m_handle; }
 
-HWND TinyWindow::GetWin32Handle( ) const { return glfwGetWin32Window( _handle ); }
+HWND TinyWindow::GetWin32Handle( ) const { return glfwGetWin32Window( m_handle ); }
 
-bool TinyWindow::GetShouldRun( ) const { return !glfwWindowShouldClose( _handle ); }
+bool TinyWindow::GetShouldRun( ) const { return !glfwWindowShouldClose( m_handle ); }
 
 tiny_vec2 TinyWindow::GetDimensions_v( ) const {
 	auto _point = GetDimensions_p( );
@@ -120,15 +124,15 @@ tiny_vec2 TinyWindow::GetDimensions_v( ) const {
 tiny_point TinyWindow::GetDimensions_p( ) const {
 	auto dimensions = tiny_point{ };
 
-	glfwGetWindowSize( _handle, tiny_rvalue( dimensions.x ), tiny_rvalue( dimensions.y ) );
+	glfwGetWindowSize( m_handle, tiny_rvalue( dimensions.x ), tiny_rvalue( dimensions.y ) );
 
 	return dimensions;
 }
 
-bool TinyWindow::GetIsMinimized( ) const { return _is_minimized; }
+bool TinyWindow::GetIsMinimized( ) const { return ( m_flags & TW_FLAG_MINIMIZED ); }
 
 bool TinyWindow::GetIsMaximized( ) const {
-	return tiny_cast( glfwGetWindowAttrib( _handle, GLFW_MAXIMIZED ), bool );
+	return tiny_cast( glfwGetWindowAttrib( m_handle, GLFW_MAXIMIZED ), bool );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

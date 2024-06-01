@@ -29,36 +29,75 @@ TinyNut::TinyNut( const tiny_string& title )
 
 TinyNut::TinyNut( const tiny_string& title, bool enable_dockspace )
 	: TinyGame{ "TinySquadStudio", title, TGO_PAYSAGE_16x9, true },
-	_context{ },
-	_window{ title, enable_dockspace }
+	m_context{ },
+	m_window{ title, enable_dockspace }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyNut::Initialize( TinyEngine& engine ) {
-	auto state = _context.Create( this );
+bool TinyNut::Initialize( ) {
+	auto state = false;
 	
-	if ( state ) {
-		auto& game_window = engine.GetWindow( );
+	if ( m_context.Create( this ) ) {
+		auto& game_window = GetWindow( );
+		auto& filesystem  = GetFilesystem( );
+		auto file_dialog  = TinyFileDialog{ };
+		auto file_buffer  = tiny_buffer<256>{ };
+		auto* file_string = file_buffer.as_chars( );
+		auto file_length  = file_buffer.length( );
 
 		game_window.SetCallback( TWC_DRAG_AND_DROP, TinyNut::DragDropCallback );
 
-		_window.Create( this );
+		file_dialog.Name	= "Load Game";
+		file_dialog.Path	= filesystem.GetDevDirNative( );
+		file_dialog.Filters = "Tiny Game File (*.tinygame)\0*.tinygame\0";
+
+		if ( Tiny::OpenDialog( file_dialog, file_length, file_string ) ) {
+			auto game_path = file_buffer.as_string( );
+			auto game_file = filesystem.OpenFile( game_path, TF_ACCESS_READ );
+
+			state = ImportGame( filesystem, file_string, game_file );
+
+			if ( state )
+				m_window.Create( this );
+		}
+	}
+
+	return state;
+}
+
+bool TinyNut::ImportGame(
+	TinyFilesystem& filesystem, 
+	const std::string& game_path,
+	TinyFile& game_file 
+) {
+	auto header = TinyAssetHeader{ };
+	auto state  = false;
+
+	game_file.Read( header );
+
+	if ( header.GetIsAsset( TA_TYPE_CONFIG ) ) {
+		auto game_path_info = filesystem.GetInformation( game_path );
+		auto game_developper = std::string{ };
+
+		game_file.Read( game_developper );
+
+		state = filesystem.SetExecutable( game_developper, game_path_info.Name );
 	}
 
 	return state;
 }
 
 void TinyNut::Tick( ) {
-	_context.Prepare( this );
-	_window.Tick( this );
-	_context.Flush( this );
+	m_context.Prepare( this );
+	m_window.Tick( this );
+	m_context.Flush( this );
 }
 
 void TinyNut::Terminate( ) {
-	_window.Terminate( this );
-	_context.Terminate( this );
+	m_window.Terminate( this );
+	m_context.Terminate( this );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +117,6 @@ void TinyNut::DragDropCallback(
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyNutContext& TinyNut::GetNutContext( ) { return _context; }
+TinyNutContext& TinyNut::GetNutContext( ) { return m_context; }
 
-TinyNutWindow& TinyNut::GetNutWindow( ) { return _window; }
+TinyNutWindow& TinyNut::GetNutWindow( ) { return m_window; }

@@ -24,17 +24,17 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicMemoryManager::TinyGraphicMemoryManager( )
-	: _properties{ }
+	: m_properties{ }
 { }
 
-bool TinyGraphicMemoryManager::Create( const TinyGraphicContext& graphic ) {
-	vkGetPhysicalDeviceMemoryProperties( graphic.Physical, tiny_rvalue( _properties ) );
+bool TinyGraphicMemoryManager::Create( const TinyGraphicWrapper& graphic ) {
+	vkGetPhysicalDeviceMemoryProperties( graphic.Physical, tiny_rvalue( m_properties ) );
 
 	return true;
 }
 
 bool TinyGraphicMemoryManager::Allocate(
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	TinyGraphicMemory& memory, 
 	VkImage& image 
 ) {
@@ -49,7 +49,7 @@ bool TinyGraphicMemoryManager::Allocate(
 }
 
 bool TinyGraphicMemoryManager::Allocate(
-	TinyGraphicContext& graphic, 
+	TinyGraphicWrapper& graphic,
 	TinyGraphicMemory& memory,
 	VkBuffer& buffer 
 ) {
@@ -64,7 +64,7 @@ bool TinyGraphicMemoryManager::Allocate(
 }
 
 void TinyGraphicMemoryManager::DeAllocate(
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	TinyGraphicMemory& memory 
 ) {
 	if ( vk::GetIsValid( memory.Memory ) ) {
@@ -74,14 +74,14 @@ void TinyGraphicMemoryManager::DeAllocate(
 	}
 }
 
-void TinyGraphicMemoryManager::Terminate( const TinyGraphicContext& graphic ) {
+void TinyGraphicMemoryManager::Terminate( const TinyGraphicWrapper& graphic ) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicMemoryManager::Allocate( 
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	TinyGraphicMemory& memory, 
 	VkMemoryRequirements& requirements 
 ) {
@@ -98,16 +98,16 @@ bool TinyGraphicMemoryManager::Allocate(
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 tiny_uint TinyGraphicMemoryManager::GetMemoryFamily( 
-	TinyGraphicContext& graphic, 
+	TinyGraphicWrapper& graphic,
 	TinyGraphicMemoryUsages usage, 
 	VkMemoryRequirements& requirements 
 ) {
 	auto memory_family = tiny_cast( 0, tiny_uint );
 	
-	while ( memory_family < _properties.memoryTypeCount ) {
+	while ( memory_family < m_properties.memoryTypeCount ) {
 		if ( 
 			( requirements.memoryTypeBits & TINY_LEFT_SHIFT( 1, memory_family ) ) &&
-			( _properties.memoryTypes[ memory_family ].propertyFlags & usage ) == usage 
+			( m_properties.memoryTypes[ memory_family ].propertyFlags & usage ) == usage
 		)
 			break;
 

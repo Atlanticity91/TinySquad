@@ -25,37 +25,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolScene::TinyToolScene( )
 	: TinyToolCategory{ "Scene" },
-    TinyToolDialog{ "Tiny Scene (*.tinyscene)\0*.tinyscene\0" },
-    _has_changed{ false }
+    //TinyToolDialog{ "Tiny Scene (*.tinyscene)\0*.tinyscene\0" },
+	m_has_changed{ false }
 { }
 
-void TinyToolScene::MarkUnSaved( ) { _has_changed = true; }
+void TinyToolScene::MarkUnSaved( ) { m_has_changed = true; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyToolScene::OnTick( TinyGame* game, TinyToolbox& toolbox ) {
-    auto& filesystem = game->GetFilesystem( );
-    auto& assets     = game->GetAssets( );
-    auto& ecs        = game->GetECS( );
-    auto button_size = ( ImGui::GetContentRegionAvail( ).x - ImGui::GetStyle( ).ItemSpacing.x ) * .5f;
-
-    if ( ImGui::Button( "Load", { button_size, 0.f } ) ) {
-        if ( OpenDialog( filesystem ) ) {
-
-            _has_changed = false;
-        }
-    }
-
-    ImGui::SameLine( );
-
-    ImGui::BeginDisabled( !_has_changed );
-    if ( ImGui::Button( "Save", { button_size, 0.f } ) ) {
-		if ( SaveDialog( filesystem ) ) {
-
-		}
-    }
-    ImGui::EndDisabled( );
+    auto& ecs = game->GetECS( );
 
     ImGui::SeparatorText( "Systems" );
 
@@ -124,4 +104,4 @@ void TinyToolScene::DrawGenerals( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolScene::GetHasChanged( ) const { return _has_changed; }
+bool TinyToolScene::GetHasChanged( ) const { return m_has_changed; }

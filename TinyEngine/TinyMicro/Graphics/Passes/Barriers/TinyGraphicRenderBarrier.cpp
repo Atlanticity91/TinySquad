@@ -24,17 +24,17 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicRenderBarrier::TinyGraphicRenderBarrier( )
-	: _barriers{ }
+	: m_barriers{ }
 { }
 
 void TinyGraphicRenderBarrier::Create( const tiny_list<TinyGraphicRenderBarrierBundle>& bundles ) {
 	auto barrier_id = bundles.size( );
 	
-	_barriers = barrier_id;
+	m_barriers = barrier_id;
 
 	while ( barrier_id-- > 0 ) {
 		auto& bundle  = bundles[ barrier_id ];
-		auto& barrier = _barriers[ barrier_id ];
+		auto& barrier = m_barriers[ barrier_id ];
 		auto image_id = bundle.Images.size( );
 
 		barrier.Source   = bundle.Source;
@@ -47,7 +47,7 @@ void TinyGraphicRenderBarrier::Create( const tiny_list<TinyGraphicRenderBarrierB
 }
 
 void TinyGraphicRenderBarrier::Transit( TinyGraphicWorkContext& work_context ) {
-	auto& barrier = _barriers[ work_context.WorkPass ];
+	auto& barrier = m_barriers[ work_context.WorkPass ];
 	auto& list	  = barrier.Barriers[ work_context.WorkID ];
 	
 	vkCmdPipelineBarrier(

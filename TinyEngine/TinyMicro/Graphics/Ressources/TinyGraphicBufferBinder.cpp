@@ -27,21 +27,21 @@ TinyGraphicBufferBinder::TinyGraphicBufferBinder( )
 { }
 
 bool TinyGraphicBufferBinder::Read( 
-	TinyGraphicContext& context, 
+	TinyGraphicWrapper& graphic,
 	const TinyGraphicBufferBind& bind
 ) {
 	auto storage = tiny_cast( nullptr, native_pointer );
 	auto state   = bind.Data && bind.Offset + bind.Size <= bind.Buffer.GetProperties( ).Size;
 
 	if ( state ) {
-		auto* memory = Map( context.Logical, bind, storage );
+		auto* memory = Map( graphic.Logical, bind, storage );
 
 		state = memory != nullptr;
 
 		if ( state ) {
 			Tiny::Memcpy( storage, bind.Data, bind.Size );
 
-			Unmap( context.Logical, memory );
+			Unmap( graphic.Logical, memory );
 		}
 	}
 
@@ -49,21 +49,21 @@ bool TinyGraphicBufferBinder::Read(
 }
 
 bool TinyGraphicBufferBinder::Write(
-	TinyGraphicContext& context,
+	TinyGraphicWrapper& graphic,
 	const TinyGraphicBufferBind& bind
 ) {
 	auto storage = tiny_cast( nullptr, native_pointer );
 	auto state   = bind.Data && bind.Offset + bind.Size <= bind.Buffer.GetProperties( ).Size;
 
 	if ( state ) {
-		auto* memory = Map( context.Logical, bind, storage );
+		auto* memory = Map( graphic.Logical, bind, storage );
 
 		state = memory != nullptr;
 
 		if ( state ) {
 			Tiny::Memcpy( bind.Data, storage, bind.Size );
 
-			Unmap( context.Logical, memory );
+			Unmap( graphic.Logical, memory );
 		}
 	}
 

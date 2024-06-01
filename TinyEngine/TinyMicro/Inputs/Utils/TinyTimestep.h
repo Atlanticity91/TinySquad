@@ -29,8 +29,8 @@ tm_class TinyTimestep final {
 	typedef std::chrono::time_point<time_clock> time_point;
 
 private:
-	time_point _game_start;
-	time_point _game_tick;
+	time_point m_game_start;
+	time_point m_game_tick;
 
 public:
 	TinyTimestep( );

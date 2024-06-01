@@ -24,27 +24,27 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicRenderManager::TinyGraphicRenderManager( )
-	: _bundles{ },
-	_targets{ },
-	_barriers{ },
-	_passes{ },
-	_frames{ }
+	: m_bundles{ },
+	m_targets{ },
+	m_barriers{ },
+	m_passes{ },
+	m_frames{ }
 { }
 
 void TinyGraphicRenderManager::AddBundle(
 	const tiny_string& name, 
 	const TinyGraphicRenderBundle& bundle
 ) {
-	_bundles.emplace( name, bundle );
+	m_bundles.emplace( name, bundle );
 }
 
-bool TinyGraphicRenderManager::Create( TinyGraphicContext& graphic ) {
+bool TinyGraphicRenderManager::Create( TinyGraphicWrapper& graphic ) {
 	CreateOutPass( );
 
 	return  InternalCreate( graphic );
 }
 
-void TinyGraphicRenderManager::ReCreate( TinyGraphicContext& graphic ) {
+void TinyGraphicRenderManager::ReCreate( TinyGraphicWrapper& graphic ) {
 	InternalTerminate( graphic );
 	InternalCreate( graphic );
 }
@@ -53,27 +53,27 @@ bool TinyGraphicRenderManager::Begin(
 	const tiny_hash pass_name, 
 	TinyGraphicWorkContext& work_context 
 ) {
-	auto state = _passes.GetExist( pass_name );
+	auto state = m_passes.GetExist( pass_name );
 
 	if ( state ) {
 		work_context.WorkPass   = 0;
 		work_context.WorkRender = pass_name;
 
-		_barriers.Transit( work_context );
-		_passes.Begin( work_context, _frames );
+		m_barriers.Transit( work_context );
+		m_passes.Begin( work_context, m_frames );
 	}
 
 	return state;
 }
 
 bool TinyGraphicRenderManager::NextSubpass( TinyGraphicWorkContext& work_context ) {
-	auto properties = _passes.GetPass( work_context.WorkRender ).GetProperties( );
+	auto properties = m_passes.GetPass( work_context.WorkRender ).GetProperties( );
 	auto state		= work_context.WorkPass + 1 < properties.Subpass;
 
 	if ( state ) {
 		work_context.WorkPass += 1;
 
-		_barriers.Transit( work_context );
+		m_barriers.Transit( work_context );
 
 		vkCmdNextSubpass( work_context.Queue->CommandBuffer, VK_SUBPASS_CONTENTS_INLINE );
 	}
@@ -84,11 +84,11 @@ bool TinyGraphicRenderManager::NextSubpass( TinyGraphicWorkContext& work_context
 void TinyGraphicRenderManager::End( TinyGraphicWorkContext& work_context ) {
 	work_context.WorkPass += 1;
 
-	_barriers.Transit( work_context );
+	m_barriers.Transit( work_context );
 
 	vkCmdEndRenderPass( work_context.Queue->CommandBuffer );
 	
-	work_context.WorkRender = 0;
+	work_context.WorkRender.undefined( );
 }
 
 void TinyGraphicRenderManager::Clear(
@@ -97,7 +97,7 @@ void TinyGraphicRenderManager::Clear(
 	tiny_init<TinyGraphicClearRegion> attachements
 ) {
 	auto* _attachements = attachements.begin( );
-	auto& bundle		= _bundles[ pass_name ];
+	auto& bundle		= m_bundles[ pass_name ];
 	auto count			= tiny_cast( attachements.size( ), tiny_uint );
 	auto images			= tiny_list<VkClearAttachment>{ count };
 	auto bounds			= tiny_list<VkClearRect>{ count };
@@ -127,7 +127,7 @@ void TinyGraphicRenderManager::Clear(
 	tiny_init<TinyGraphicClearAttachement> attachements
 ) {
 	auto* _attachements = attachements.begin( );
-	auto& bundle		= _bundles[ pass_name ];
+	auto& bundle		= m_bundles[ pass_name ];
 	auto count			= tiny_cast( attachements.size( ), tiny_uint );
 	auto images			= tiny_list<VkClearAttachment>{ count };
 	auto bounds			= tiny_list<VkClearRect>{ count };
@@ -151,7 +151,7 @@ void TinyGraphicRenderManager::Clear(
 	ClearAttachements( work_context, images, bounds );
 }
 
-void TinyGraphicRenderManager::Terminate( TinyGraphicContext& graphic ) {
+void TinyGraphicRenderManager::Terminate( TinyGraphicWrapper& graphic ) {
 	InternalTerminate( graphic );
 }
 
@@ -208,7 +208,7 @@ void TinyGraphicRenderManager::CreateTargetTexture(
 }
 
 bool TinyGraphicRenderManager::CreateTargets(
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	const VkScissor& scissor,
 	const tiny_list<TinyGraphicRenderTargetDescriptor>& targets
 ) {
@@ -231,9 +231,9 @@ bool TinyGraphicRenderManager::CreateTargets(
 					texture = graphic.Swapchain.GetTargetProperties( swap_target++ );
 			}
 
-			state = _targets.Create( graphic, name_str, textures );
+			state = m_targets.Create( graphic, name_str, textures );
 		} else
-			state = _targets.GetExist( name_str );
+			state = m_targets.GetExist( name_str );
 
 		if ( !state )
 			break;
@@ -268,7 +268,7 @@ void TinyGraphicRenderManager::CreateBarrierImage(
 		image.Aspect = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
 	}
 
-	image.Images = _targets.GetImages( target );
+	image.Images = m_targets.GetImages( target );
 }
 
 void TinyGraphicRenderManager::CreateBarriers( 
@@ -312,7 +312,7 @@ TinyGraphicRenderReferences TinyGraphicRenderManager::CreatePassReferences(
 
 		for ( auto& target : pass.Targets ) {
 			auto name_str	 = target.Name.c_str( );
-			auto layout		 = _targets.GetTarget( name_str ).GetLayout( );
+			auto layout		 = m_targets.GetTarget( name_str ).GetLayout( );
 			auto attachement = bundle.Targets.find( 
 				[ target ]( const auto& _target ) {
 					return _target.Name == target.Name;
@@ -367,7 +367,7 @@ tiny_list<VkAttachmentDescription> TinyGraphicRenderManager::CreatePassAttachmen
 			attachement.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
 		}
 
-		attachement.finalLayout = _targets.GetTarget( target_name ).GetLayout( );
+		attachement.finalLayout = m_targets.GetTarget( target_name ).GetLayout( );
 	}
 
 	return attachements;
@@ -477,7 +477,7 @@ tiny_list<VkSubpassDependency> TinyGraphicRenderManager::CreatePassDependencies(
 }
 
 bool TinyGraphicRenderManager::CreatePasse( 
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	const VkViewport& viewport,
 	const VkScissor& scissor,
 	const BundleNode& bundle
@@ -486,7 +486,7 @@ bool TinyGraphicRenderManager::CreatePasse(
 	auto references = CreatePassReferences( bundle.Data );
 	auto name_str = tiny_string{ bundle.Alias };
 	
-	renderpass.Frame		= _frames.GetCount( );
+	renderpass.Frame		= m_frames.GetCount( );
 	renderpass.Viewport		= viewport;
 	renderpass.Scissor		= scissor;
 	renderpass.ClearValues  = CreatePassClears( bundle.Data );
@@ -494,7 +494,7 @@ bool TinyGraphicRenderManager::CreatePasse(
 	renderpass.Subpasses    = CreatePassSubpasses( references );
 	renderpass.Dependencies = CreatePassDependencies( bundle.Data );
 
-	auto state = _passes.Create( graphic.Logical, name_str, renderpass );
+	auto state = m_passes.Create( graphic.Logical, name_str, renderpass );
 	
 	if ( state ) 
 		CreateBarriers( bundle.Data, references );
@@ -503,7 +503,7 @@ bool TinyGraphicRenderManager::CreatePasse(
 }
 
 bool TinyGraphicRenderManager::CreateFrame(
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	const VkScissor& scissor,
 	const BundleNode& bundle
 ) {
@@ -518,20 +518,20 @@ bool TinyGraphicRenderManager::CreateFrame(
 	for ( auto& target : bundle.Data.Targets ) {
 		name_str = target.Name.c_str( );
 
-		auto views	 = _targets.GetViews( name_str );
+		auto views	 = m_targets.GetViews( name_str );
 		auto view_id = views.size( );
 
 		while ( view_id-- > 0 )
 			frame.Targets[ view_id ].emplace_back( views[ view_id ] );
 	}
 
-	return _frames.Create( graphic.Logical, frame );
+	return m_frames.Create( graphic.Logical, frame );
 }
 
-bool TinyGraphicRenderManager::InternalCreate( TinyGraphicContext& graphic ) {
+bool TinyGraphicRenderManager::InternalCreate( TinyGraphicWrapper& graphic ) {
 	auto state = false;
 
-	for ( const auto& bundle : _bundles ) {
+	for ( const auto& bundle : m_bundles ) {
 		auto use_out   = GetUseOut( bundle.Data );
 		auto& viewport = use_out ? graphic.Boundaries.GetSwapViewport( ) : graphic.Boundaries.GetViewport( );
 		auto& scissor  = use_out ? graphic.Boundaries.GetSwapScissor( )  : graphic.Boundaries.GetScissor( );
@@ -565,30 +565,30 @@ void TinyGraphicRenderManager::ClearAttachements(
 	);
 }
 
-void TinyGraphicRenderManager::InternalTerminate( TinyGraphicContext& graphic ) {
-	_frames.Terminate( graphic.Logical );
-	_passes.Terminate( graphic.Logical );
-	_barriers.Terminate( );
-	_targets.Terminate( graphic );
+void TinyGraphicRenderManager::InternalTerminate( TinyGraphicWrapper& graphic ) {
+	m_frames.Terminate( graphic.Logical );
+	m_passes.Terminate( graphic.Logical );
+	m_barriers.Terminate( );
+	m_targets.Terminate( graphic );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 const TinyGraphicRenderManager::BundleMap& TinyGraphicRenderManager::GetBundles( ) const {
-	return _bundles;
+	return m_bundles;
 }
 
 TinyGraphicRenderpass& TinyGraphicRenderManager::GetPass( const tiny_string& pass_name ) {
 	auto hash = tiny_hash{ pass_name };
 
-	return _passes.GetPass( hash );
+	return m_passes.GetPass( hash );
 }
 
 TinyGraphicRenderpass& TinyGraphicRenderManager::GetPass( 
 	const TinyGraphicWorkContext& work_context 
 ) {
-	return _passes.GetPass( work_context.WorkRender );
+	return m_passes.GetPass( work_context.WorkRender );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -603,7 +603,7 @@ bool TinyGraphicRenderManager::GetUseOut( const TinyGraphicRenderBundle& bundle 
 		else {
 			auto find = false;
 
-			for ( auto& bundle : _bundles ) {
+			for ( auto& bundle : m_bundles ) {
 				for ( auto& pass_target : bundle.Data.Targets ) {
 					if ( target.Name != pass_target.Name )
 						continue;

@@ -24,11 +24,11 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicSwapchain::TinyGraphicSwapchain( )
-	: _swap_chain{ VK_NULL_HANDLE },
-	_properties{ }
+	: m_swap_chain{ VK_NULL_HANDLE },
+	m_properties{ }
 { }
 
-bool TinyGraphicSwapchain::Create( TinyGraphicContext& graphic ) {
+bool TinyGraphicSwapchain::Create( TinyGraphicWrapper& graphic ) {
 	auto swapchain_info = VkSwapchainCreateInfoKHR{ VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR };
 	auto& surface		= graphic.Surface;
 	auto capabilities   = surface.GetCapabilities( graphic.Physical );
@@ -39,9 +39,9 @@ bool TinyGraphicSwapchain::Create( TinyGraphicContext& graphic ) {
 	swapchain_info.pNext				 = VK_NULL_HANDLE;
 	swapchain_info.flags				 = VK_NULL_FLAGS;
 	swapchain_info.surface				 = surface;
-	swapchain_info.minImageCount		 = _properties.Capacity;
-	swapchain_info.imageFormat			 = _properties.Format;
-	swapchain_info.imageColorSpace		 = _properties.ColorSpace;
+	swapchain_info.minImageCount		 = m_properties.Capacity;
+	swapchain_info.imageFormat			 = m_properties.Format;
+	swapchain_info.imageColorSpace		 = m_properties.ColorSpace;
 	swapchain_info.imageExtent			 = GetSwapchainExtent( graphic.Boundaries, capabilities );
 	swapchain_info.imageArrayLayers		 = 1;
 	swapchain_info.imageUsage			 = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -50,25 +50,25 @@ bool TinyGraphicSwapchain::Create( TinyGraphicContext& graphic ) {
 	swapchain_info.pQueueFamilyIndices   = swap_queues.data( );
 	swapchain_info.preTransform			 = capabilities.currentTransform;
 	swapchain_info.compositeAlpha		 = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	swapchain_info.presentMode			 = _properties.PresentMode;
+	swapchain_info.presentMode			 = m_properties.PresentMode;
 	swapchain_info.clipped				 = VK_TRUE;
 	swapchain_info.oldSwapchain			 = VK_NULL_HANDLE;
 
-	return vk::Check( vkCreateSwapchainKHR( graphic.Logical, tiny_rvalue( swapchain_info ), vk::GetAllocator( ), tiny_rvalue( _swap_chain ) ) );
+	return vk::Check( vkCreateSwapchainKHR( graphic.Logical, tiny_rvalue( swapchain_info ), vk::GetAllocator( ), tiny_rvalue( m_swap_chain ) ) );
 }
 
 void TinyGraphicSwapchain::Terminate( const TinyGraphicLogical& logical ) {
-	if ( vk::GetIsValid( _swap_chain ) )
-		vkDestroySwapchainKHR( logical, _swap_chain, vk::GetAllocator( ) );
+	if ( vk::GetIsValid( m_swap_chain ) )
+		vkDestroySwapchainKHR( logical, m_swap_chain, vk::GetAllocator( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const VkSwapchainKHR TinyGraphicSwapchain::Get( ) const { return _swap_chain; }
+const VkSwapchainKHR TinyGraphicSwapchain::Get( ) const { return m_swap_chain; }
 
 const TinyGraphicSwapchainProperties& TinyGraphicSwapchain::GetProperties( ) const {
-	return _properties;
+	return m_properties;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,15 +78,15 @@ void TinyGraphicSwapchain::GetSwapchainProperties(
 	const TinyGraphicSurface& surface,
 	const VkSurfaceCapabilitiesKHR& capabilities 
 ) {
-	_properties.Capacity    = capabilities.maxImageCount < TINY_DESIRED_BUFFERING ? capabilities.maxImageCount : TINY_DESIRED_BUFFERING;
-	_properties.PresentMode = VK_PRESENT_MODE_FIFO_KHR;
+	m_properties.Capacity    = capabilities.maxImageCount < TINY_DESIRED_BUFFERING ? capabilities.maxImageCount : TINY_DESIRED_BUFFERING;
+	m_properties.PresentMode = VK_PRESENT_MODE_FIFO_KHR;
 
 	auto formats = surface.GetFormats( );
 
 	for ( auto& format : formats ) {
 		if ( format.format == VK_FORMAT_R8G8B8A8_UNORM ) {
-			_properties.Format	   = format.format;
-			_properties.ColorSpace = format.colorSpace;
+			m_properties.Format	   = format.format;
+			m_properties.ColorSpace = format.colorSpace;
 
 			break;
 		}
@@ -127,5 +127,5 @@ VkExtent2D TinyGraphicSwapchain::GetSwapchainExtent(
 TinyGraphicSwapchain::operator const VkSwapchainKHR ( ) const { return Get( ); }
 
 TinyGraphicSwapchain::operator const VkSwapchainKHR* ( ) const {
-	return tiny_rvalue( _swap_chain );
+	return tiny_rvalue( m_swap_chain );
 }

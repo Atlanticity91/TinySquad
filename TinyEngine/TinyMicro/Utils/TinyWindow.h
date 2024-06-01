@@ -35,14 +35,20 @@ tiny_enum( TinyWindowCallbacks ) {
 
 };
 
+tiny_enum( TinyWindowFlags ) {
+
+	TW_FLAG_MINIMIZED   = TINY_LEFT_SHIFT( 1, 0 ),
+	TW_FLAG_HEADLESS    = TINY_LEFT_SHIFT( 1, 1 ),
+	TW_FLAG_FULL_SCREEN = TINY_LEFT_SHIFT( 1, 2 )
+
+};
+
 tm_class TinyWindow final { 
 
 private:
-	tiny_string _title;
-	GlfwWindow  _handle;
-	bool		_is_minimized;
-	bool		_is_headless;
-	bool		_is_full_screen;
+	tiny_string m_title;
+	GlfwWindow m_handle;
+	tiny_uint m_flags;
 
 public:
 	TinyWindow( tiny_string title, bool is_headless );

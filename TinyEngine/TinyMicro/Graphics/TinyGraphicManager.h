@@ -32,19 +32,19 @@ tm_struct TinyGraphicMSAA {
 tm_class TinyGraphicManager final : tiny_inherit( ITinyManager ) {
 
 private:
-	bool						_need_recreation;
-	TinyGraphicBoundaries		_boundaries;
-	TinyGraphicInstance			_instance;
-	TinyGraphicSurface			_surface;
-	TinyGraphicPhysical			_physical;
-	TinyGraphicLogical			_logical;
-	TinyGraphicQueueManager		_queues;
-	TinyGraphicMemoryManager	_memory;
-	TinyGraphicSwapchainManager	_swapchain;
-	TinyGraphicRenderManager	_passes;
-	TinyGraphicPipelineManager  _pipelines;
-	TinyGraphicShaderCompiler   _compiler;
-	TinyGraphicWorkContext		_work_context;
+	bool m_need_recreation;
+	TinyGraphicBoundaries m_boundaries;
+	TinyGraphicInstance	m_instance;
+	TinyGraphicSurface m_surface;
+	TinyGraphicPhysical m_physical;
+	TinyGraphicLogical m_logical;
+	TinyGraphicQueueManager m_queues;
+	TinyGraphicMemoryManager m_memory;
+	TinyGraphicSwapchainManager	m_swapchain;
+	TinyGraphicRenderManager m_passes;
+	TinyGraphicPipelineManager m_pipelines;
+	TinyGraphicShaderCompiler m_compiler;
+	TinyGraphicWorkContext m_work_context;
 
 public:
 	TinyGraphicManager( TinyGameOrientations orientation );
@@ -57,6 +57,10 @@ public:
 	);
 
 	tiny_implement( bool Initialize( TinyFilesystem& file_system, TinyWindow& window ) );
+
+	tiny_inline void EnableCache( );
+
+	tiny_inline void DisableCache( );
 
 	tiny_inline void AddCompilerMacro(
 		const tiny_string& name, 
@@ -116,7 +120,7 @@ private:
 	void ReCreate( const TinyWindow& window );
 
 public:
-	TinyGraphicContext GetContext( );
+	TinyGraphicWrapper GetWrapper( );
 
 	bool GetNeedRecreation( ) const;
 
@@ -159,6 +163,6 @@ public:
 	tiny_inline const shaderc::CompileOptions& GetCompilerOptions( ) const;
 
 public:
-	operator TinyGraphicContext ( );
+	operator TinyGraphicWrapper ( );
 
 };

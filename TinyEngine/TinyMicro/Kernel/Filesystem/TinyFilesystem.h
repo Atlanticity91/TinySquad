@@ -38,14 +38,14 @@ tiny_enum( TinyPathTypes ) {
 tm_class TinyFilesystem final {
 
 private:
-	std::string		 _developer_name;
-	std::string		 _work_dir;
-	std::string		 _game_dir;
-	std::string		 _save_dir;
-	std::string		 _dev_dir;
-	std::string		 _game;
-	std::string		 _cache;
-	tiny_buffer<256> _dialog_path;
+	std::string m_developer;
+	std::string m_work_dir;
+	std::string m_game_dir;
+	std::string m_save_dir;
+	std::string	m_dev_dir;
+	std::string m_game;
+	std::string	m_cache;
+	tiny_buffer<256> m_dialog_path;
 
 public:
 	TinyFilesystem( const std::string& developer );
@@ -54,6 +54,8 @@ public:
 
 	bool Initialize( const TinyWindow& window );
 	
+	bool SetExecutable( const std::string& developer, const std::string& title );
+
 	std::string CreatePath( 
 		TinyPathTypes path_type,
 		const std::string& name, 
@@ -72,12 +74,6 @@ public:
 
 	bool RemoveDir( const std::string& path );
 
-	bool OpenDialog( 
-		TinyDialogTypes type, 
-		const std::string& filters, 
-		std::string& path
-	);
-
 	TinyPhysicalFile OpenFile( const std::string& path, TinyFileAccesses access );
 
 	TinyPhysicalFile OpenFile( const tiny_string& path, TinyFileAccesses access );
@@ -93,38 +89,33 @@ public:
 	void Terminate( );
 
 public:
-	template<tiny_uint Size>
-		requires ( Size > 0 )
-	bool OpenDialog(
-		TinyDialogTypes type,
-		const std::string& filters,
-		tiny_buffer<Size>& buffer
-	) { 
-		auto* path_str   = buffer.as_chars( );
-		auto path_length = buffer.length( );
-		auto filters_    = tiny_string{ filters };
-		auto dev_dir	 = tiny_string{ _dev_dir };
-		
-		return Tiny::OpenDialog( type, dev_dir, filters_, path_length, path_str );
-	};
+	const std::string& GetDeveloper( ) const;
 
-private:
-	bool GenerateGameDir( const std::string& title );
-
-public:
-	const std::string& GetDeveloperName( ) const;
+	native_string GetDeveloperNative( ) const;
 
 	const std::string& GetWorkingDir( ) const;
 
+	native_string GetWorkingDirNative( ) const;
+
 	const std::string& GetGameDir( ) const;
+
+	native_string GetGameDirNative( ) const;
 
 	const std::string& GetSaveDir( ) const;
 
+	native_string GetSaveDirNative( ) const;
+
 	const std::string& GetDevDir( ) const;
+
+	native_string GetDevDirNative( ) const;
 
 	const std::string& GetConfigPath( ) const;
 
+	native_string GetConfigPathNative( ) const;
+
 	const std::string& GetCachePath( ) const;
+
+	native_string GetCachePathNative( ) const;
 
 	const std::string& GetPath( const TinyPathTypes path_type ) const;
 

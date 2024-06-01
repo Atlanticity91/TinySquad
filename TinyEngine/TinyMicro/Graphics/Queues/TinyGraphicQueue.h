@@ -25,9 +25,9 @@
 tm_class TinyGraphicQueue final {
 
 private:
-	VkPhysicalDeviceQueue	  _physical;
-	VkSharingMode			  _sharing_mode;
-	tiny_list<VkLogicalQueue> _queues;
+	VkPhysicalDeviceQueue m_physical;
+	VkSharingMode m_sharing_mode;
+	tiny_list<VkLogicalQueue> m_queues;
 
 public:
 	TinyGraphicQueue( );

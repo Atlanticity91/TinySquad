@@ -25,11 +25,10 @@
 tm_class TinyVirtualFile final : tiny_inherit( TinyFile ) { 
 
 private:
-	TinyFileAccesses _access;
-
-	tiny_pointer  _memory;
-	tiny_ulong _offset;
-	tiny_ulong _size;
+	TinyFileAccesses m_access;
+	tiny_pointer m_memory;
+	tiny_ulong m_offset;
+	tiny_ulong m_size;
 
 public:
 	TinyVirtualFile( );
@@ -38,11 +37,11 @@ public:
 
 	~TinyVirtualFile( ) = default;
 
-	tiny_implement( bool Seek( TinyFileOrigin origin, tiny_ulong offset ) );
+	tiny_implement( bool Seek( const TinyFileOrigin origin, const tiny_ulong offset ) );
 
-	tiny_implement( tiny_uint Read( tiny_uint length, native_pointer data ) );
+	tiny_implement( tiny_uint Read( const tiny_uint length, native_pointer data ) );
 
-	tiny_implement( tiny_uint Write( tiny_uint length, const native_pointer data ) );
+	tiny_implement( tiny_uint Write( const tiny_uint length, const native_pointer data ) );
 
 	tiny_implement( bool ReadAll( const tiny_ulong length, native_pointer& storage ) );
 

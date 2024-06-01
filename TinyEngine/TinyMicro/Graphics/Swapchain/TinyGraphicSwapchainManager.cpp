@@ -24,18 +24,18 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicSwapchainManager::TinyGraphicSwapchainManager( )
-	: _swapchain{ },
-	_properties{ },
-	_targets{ },
-	_syncs{ }
+	: m_swapchain{ },
+	m_properties{ },
+	m_targets{ },
+	m_syncs{ }
 { }
 
-bool TinyGraphicSwapchainManager::Create( TinyGraphicContext& graphic ) {
+bool TinyGraphicSwapchainManager::Create( TinyGraphicWrapper& graphic ) {
 	return  CreateSwapchain( graphic ) &&
 			CreateSwapchainSyncs( graphic.Logical );
 }
 
-void TinyGraphicSwapchainManager::ReCreate( TinyGraphicContext& graphic ) {
+void TinyGraphicSwapchainManager::ReCreate( TinyGraphicWrapper& graphic ) {
 	TerminateSwapchain( graphic.Logical );
 	CreateSwapchain( graphic );
 }
@@ -44,10 +44,10 @@ bool TinyGraphicSwapchainManager::Acquire(
 	const TinyGraphicLogical& logical, 
 	TinyGraphicWorkContext& work_context 
 ) {
-	work_context.Sync = tiny_rvalue( _syncs[ work_context.WorkID ] );
+	work_context.Sync = tiny_rvalue( m_syncs[ work_context.WorkID ] );
 	
 	return  vk::Check( vkResetFences( logical, 1, work_context.Sync->GetFence( ) ) ) &&
-			vk::Check( vkAcquireNextImageKHR( logical, _swapchain, UINT_MAX, tiny_lvalue( work_context.Sync->GetAcquire( ) ), VK_NULL_HANDLE, tiny_rvalue( work_context.WorkImage ) ) );
+			vk::Check( vkAcquireNextImageKHR( logical, m_swapchain, UINT_MAX, tiny_lvalue( work_context.Sync->GetAcquire( ) ), VK_NULL_HANDLE, tiny_rvalue( work_context.WorkImage ) ) );
 }
 
 bool TinyGraphicSwapchainManager::Present(
@@ -64,7 +64,7 @@ bool TinyGraphicSwapchainManager::Present(
 	present_info.waitSemaphoreCount = 1;
 	present_info.pWaitSemaphores	= work_context.Sync->GetPresent( );
 	present_info.swapchainCount		= 1;
-	present_info.pSwapchains		= _swapchain;
+	present_info.pSwapchains		= m_swapchain;
 	present_info.pImageIndices		= tiny_rvalue( work_context.WorkImage );
 	present_info.pResults			= VK_NULL_HANDLE;
 
@@ -72,7 +72,7 @@ bool TinyGraphicSwapchainManager::Present(
 				 vk::Check( vkQueueWaitIdle( work_context.Queue->Queue ) );
 
 	work_context.Release( queues );
-	work_context.WorkID = ( work_context.WorkID + 1 ) % _swapchain.GetProperties( ).Capacity;
+	work_context.WorkID = ( work_context.WorkID + 1 ) % m_swapchain.GetProperties( ).Capacity;
 
 	return state;
 }
@@ -81,7 +81,7 @@ void TinyGraphicSwapchainManager::Terminate(
 	const TinyGraphicLogical& logical, 
 	const TinyGraphicQueueManager& queues
 ) {
-	for ( auto& sync : _syncs )
+	for ( auto& sync : m_syncs )
 		sync.Terminate( logical );
 
 	TerminateSwapchain( logical );
@@ -94,15 +94,15 @@ bool TinyGraphicSwapchainManager::CreateSwapchainTargets(
 	const TinyGraphicLogical& logical 
 )  {
 	auto swap_images = tiny_list<VkImage>{ };
-	auto state		 = vk::GetSwapchainImages( logical, _swapchain, swap_images );
+	auto state		 = vk::GetSwapchainImages( logical, m_swapchain, swap_images );
 
 	if ( state ) {
-		auto& properties = _swapchain.GetProperties( );
+		auto& properties = m_swapchain.GetProperties( );
 		auto image_id    = tiny_cast( 0, tiny_uint );
 
-		_targets = properties.Capacity;
+		m_targets = properties.Capacity;
 
-		for ( auto& target : _targets ) {
+		for ( auto& target : m_targets ) {
 			state = target.Create( logical, properties, swap_images[ image_id++ ] );
 
 			if ( !state )
@@ -116,12 +116,12 @@ bool TinyGraphicSwapchainManager::CreateSwapchainTargets(
 bool TinyGraphicSwapchainManager::CreateSwapchainSyncs(
 	const TinyGraphicLogical& logical
 ) {
-	auto& properties = _swapchain.GetProperties( );
+	auto& properties = m_swapchain.GetProperties( );
 	auto state		 = false;
 
-	_syncs = properties.Capacity;
+	m_syncs = properties.Capacity;
 
-	for ( auto& sync : _syncs ) {
+	for ( auto& sync : m_syncs ) {
 		state = sync.Create( logical );
 
 		if ( !state )
@@ -131,8 +131,8 @@ bool TinyGraphicSwapchainManager::CreateSwapchainSyncs(
 	return state;
 }
 
-bool TinyGraphicSwapchainManager::CreateSwapchain( TinyGraphicContext& graphic ) {
-	auto state = _swapchain.Create( graphic ) && 
+bool TinyGraphicSwapchainManager::CreateSwapchain( TinyGraphicWrapper& graphic ) {
+	auto state = m_swapchain.Create( graphic ) && 
 				 CreateSwapchainTargets( graphic.Logical );
 
 	if ( state )
@@ -144,36 +144,38 @@ bool TinyGraphicSwapchainManager::CreateSwapchain( TinyGraphicContext& graphic )
 void TinyGraphicSwapchainManager::TerminateSwapchain(
 	const TinyGraphicLogical& logical
 ) {
-	for ( auto& target : _targets )
+	for ( auto& target : m_targets )
 		target.Terminate( logical );
 
-	_swapchain.Terminate( logical );
+	m_swapchain.Terminate( logical );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const TinyGraphicSwapchain& TinyGraphicSwapchainManager::Get( ) const { return _swapchain; }
+const TinyGraphicSwapchain& TinyGraphicSwapchainManager::Get( ) const { 
+	return m_swapchain; 
+}
 
 const TinyGraphicSwapchainTarget& TinyGraphicSwapchainManager::GetTarget( 
 	tiny_uint target
 ) const {
-	return _targets[ target ];
+	return m_targets[ target ];
 }
 
 TinyGraphicTextureProperties TinyGraphicSwapchainManager::GetTargetProperties(
 	tiny_uint target
 ) const {
-	auto properties = _properties;
+	auto properties = m_properties;
 
-	properties.Image = _targets[ target ].GetImage( );
-	properties.View  = _targets[ target ].GetView( );
+	properties.Image = m_targets[ target ].GetImage( );
+	properties.View  = m_targets[ target ].GetView( );
 
 	return properties;
 }
 
 const TinyGraphicSwapchainProperties& TinyGraphicSwapchainManager::GetProperties( ) const { 
-	return _swapchain.GetProperties( );
+	return m_swapchain.GetProperties( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,15 +184,15 @@ const TinyGraphicSwapchainProperties& TinyGraphicSwapchainManager::GetProperties
 void TinyGraphicSwapchainManager::GetProperties( const TinyGraphicBoundaries& boundaries ) {
 	auto dimensions = boundaries.GetSwapScissor( ).extent;
 
-	_properties.Type	= TGT_TYPE_TEXTURE_2D;
-	_properties.Format  = _swapchain.GetProperties( ).Format;
-	_properties.Layout  = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-	_properties.Width   = dimensions.width;
-	_properties.Height  = dimensions.height;
-	_properties.Depth   = 1;
-	_properties.Aspect  = VK_IMAGE_ASPECT_COLOR_BIT;
-	_properties.Levels  = 1;
-	_properties.Samples = VK_SAMPLE_COUNT_1_BIT;
-	_properties.Tiling  = VK_IMAGE_TILING_OPTIMAL;
-	_properties.Usage	= TGT_USAGE_TARGET;
+	m_properties.Type	 = TGT_TYPE_TEXTURE_2D;
+	m_properties.Format  = m_swapchain.GetProperties( ).Format;
+	m_properties.Layout  = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	m_properties.Width   = dimensions.width;
+	m_properties.Height  = dimensions.height;
+	m_properties.Depth   = 1;
+	m_properties.Aspect  = VK_IMAGE_ASPECT_COLOR_BIT;
+	m_properties.Levels  = 1;
+	m_properties.Samples = VK_SAMPLE_COUNT_1_BIT;
+	m_properties.Tiling  = VK_IMAGE_TILING_OPTIMAL;
+	m_properties.Usage	 = TGT_USAGE_TARGET;
 }

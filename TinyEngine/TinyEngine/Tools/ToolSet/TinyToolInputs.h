@@ -22,19 +22,16 @@
 
 #include "TinyToolCommon.h"
 
-te_class TinyToolInputs final 
-	: tiny_inherit( TinyToolCategory ),
-	tiny_inherit( TinyToolDialog )
-{
+te_class TinyToolInputs final : tiny_inherit( TinyToolCategory ) {
 
 private:
-	tiny_buffer<128>	_new_input;
-	TinyInputQuery		_new_query;
-	tiny_hash			_input_remove;
-	tiny_uint			_input_query;
-	tiny_list<native_string> _input_devices;
-	tiny_string_view	_input_states;
-	tiny_string_view	_input_modifier;
+	tiny_buffer<128> m_new_input;
+	TinyInputQuery m_new_query;
+	tiny_hash m_input_remove;
+	tiny_uint m_input_query;
+	tiny_list<native_string> m_input_devices;
+	tiny_string_view m_input_states;
+	tiny_string_view m_input_modifier;
 
 public:
 	TinyToolInputs( );

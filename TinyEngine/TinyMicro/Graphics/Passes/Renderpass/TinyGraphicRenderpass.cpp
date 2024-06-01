@@ -24,8 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicRenderpass::TinyGraphicRenderpass( )
-	: _handle{ VK_NULL_HANDLE },
-	_properties{ }
+	: m_handle{ VK_NULL_HANDLE },
+	m_properties{ }
 { }
 
 bool TinyGraphicRenderpass::Create( 
@@ -45,7 +45,7 @@ bool TinyGraphicRenderpass::Create(
 	pass_info.dependencyCount = bundle.Dependencies.size( );
 	pass_info.pDependencies   = bundle.Dependencies.data( );
 
-	return vk::Check( vkCreateRenderPass( logical, tiny_rvalue( pass_info ), vk::GetAllocator( ), tiny_rvalue( _handle ) ) );
+	return vk::Check( vkCreateRenderPass( logical, tiny_rvalue( pass_info ), vk::GetAllocator( ), tiny_rvalue( m_handle ) ) );
 }
 
 void TinyGraphicRenderpass::SetClearValue( tiny_uint attachement, const tiny_color& color ) {
@@ -82,8 +82,8 @@ void TinyGraphicRenderpass::SetClearValue(
 	tiny_uint attachement,
 	const VkClearValue& clear_value 
 ) {
-	if ( attachement < _properties.ClearValues.size( ) )
-		_properties.ClearValues[ attachement ] = clear_value;
+	if ( attachement < m_properties.ClearValues.size( ) )
+		m_properties.ClearValues[ attachement ] = clear_value;
 }
 
 TinyGraphicRenderpass& TinyGraphicRenderpass::Begin( 
@@ -91,45 +91,45 @@ TinyGraphicRenderpass& TinyGraphicRenderpass::Begin(
 	const TinyGraphicRenderFrameManager& frames 
 ) {
 	auto begin_info  = VkRenderPassBeginInfo{ VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO };
-	auto framebuffer = frames.GetFramebuffer( work_context, _properties.Frame );
+	auto framebuffer = frames.GetFramebuffer( work_context, m_properties.Frame );
 
 	begin_info.pNext		   = VK_NULL_HANDLE;
-	begin_info.renderPass	   = _handle;
+	begin_info.renderPass	   = m_handle;
 	begin_info.framebuffer	   = framebuffer;
-	begin_info.renderArea	   = _properties.Scissor;
-	begin_info.clearValueCount = _properties.ClearValues.size( );
-	begin_info.pClearValues	   = _properties.ClearValues.data( );
+	begin_info.renderArea	   = m_properties.Scissor;
+	begin_info.clearValueCount = m_properties.ClearValues.size( );
+	begin_info.pClearValues	   = m_properties.ClearValues.data( );
 
 	vkCmdBeginRenderPass( work_context.Queue->CommandBuffer, tiny_rvalue( begin_info ), VK_SUBPASS_CONTENTS_INLINE );
-	vkCmdSetViewport( work_context.Queue->CommandBuffer, 0, 1, tiny_rvalue( _properties.Viewport ) );
-	vkCmdSetScissor( work_context.Queue->CommandBuffer, 0, 1, tiny_rvalue( _properties.Scissor ) );
+	vkCmdSetViewport( work_context.Queue->CommandBuffer, 0, 1, tiny_rvalue( m_properties.Viewport ) );
+	vkCmdSetScissor( work_context.Queue->CommandBuffer, 0, 1, tiny_rvalue( m_properties.Scissor ) );
 
 	return tiny_self;
 }
 
 void TinyGraphicRenderpass::Terminate( const TinyGraphicLogical& logical ) {
-	if ( vk::GetIsValid( _handle ) )
-		vkDestroyRenderPass( logical, _handle, vk::GetAllocator( ) );
+	if ( vk::GetIsValid( m_handle ) )
+		vkDestroyRenderPass( logical, m_handle, vk::GetAllocator( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const VkRenderPass TinyGraphicRenderpass::Get( ) const { return _handle; }
+const VkRenderPass TinyGraphicRenderpass::Get( ) const { return m_handle; }
 
 const TinyGraphicRenderpassProperties& TinyGraphicRenderpass::GetProperties( ) const {
-	return _properties;
+	return m_properties;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyGraphicRenderpass::GetProperties( const TinyGraphicRenderpassBundle& bundle ) {
-	_properties.Subpass		= bundle.Subpasses.size( );
-	_properties.Frame		= bundle.Frame;
-	_properties.Scissor		= bundle.Scissor;
-	_properties.Viewport    = bundle.Viewport;
-	_properties.ClearValues = bundle.ClearValues;
+	m_properties.Subpass	 = bundle.Subpasses.size( );
+	m_properties.Frame		 = bundle.Frame;
+	m_properties.Scissor	 = bundle.Scissor;
+	m_properties.Viewport    = bundle.Viewport;
+	m_properties.ClearValues = bundle.ClearValues;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

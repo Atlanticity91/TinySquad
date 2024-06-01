@@ -34,7 +34,7 @@ tm_struct TinyGraphicRenderFrameProperties {
 tm_class TinyGraphicRenderFrame final {
 
 private:
-	tiny_list<VkFramebuffer> _framebuffers;
+	tiny_list<VkFramebuffer> m_framebuffers;
 
 public:
 	TinyGraphicRenderFrame( );

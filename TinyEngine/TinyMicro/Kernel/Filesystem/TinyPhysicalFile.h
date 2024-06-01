@@ -25,18 +25,18 @@
 tm_class TinyPhysicalFile final : tiny_inherit( TinyFile ) {
 
 private:
-	tiny_file _handle;
+	tiny_file m_handle;
 
 public:
 	TinyPhysicalFile( );
 
 	~TinyPhysicalFile( );
 
-	tiny_implement( bool Seek( TinyFileOrigin origin, tiny_ulong offset ) );
+	tiny_implement( bool Seek( const TinyFileOrigin origin, const tiny_ulong offset ) );
 
-	tiny_implement( tiny_uint Read( tiny_uint length, native_pointer data ) );
+	tiny_implement( tiny_uint Read( const tiny_uint length, native_pointer data ) );
 
-	tiny_implement( tiny_uint Write( tiny_uint length, const native_pointer data ) );
+	tiny_implement( tiny_uint Write( const tiny_uint length, const native_pointer data ) );
 
 	tiny_implement( bool ReadAll( const tiny_ulong length, native_pointer& storage ) );
 

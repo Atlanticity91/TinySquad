@@ -23,7 +23,7 @@
 tm_class TinyGraphicRenderTarget final { 
 
 private:
-	tiny_list<TinyGraphicTexture> _textures;
+	tiny_list<TinyGraphicTexture> m_textures;
 
 public:
 	TinyGraphicRenderTarget( );
@@ -31,11 +31,11 @@ public:
 	~TinyGraphicRenderTarget( ) = default;
 
 	bool Create( 
-		TinyGraphicContext& graphic, 
+		TinyGraphicWrapper& graphic,
 		const tiny_list<TinyGraphicTextureProperties>& textures
 	);
 
-	void Terminate( TinyGraphicContext& graphic );
+	void Terminate( TinyGraphicWrapper& graphic );
 
 public:
 	VkImageLayout GetLayout( ) const;

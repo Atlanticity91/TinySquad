@@ -22,13 +22,10 @@
 
 #include "TinyToolContent.h"
 
-te_class TinyToolScene final 
-	: tiny_inherit( TinyToolCategory ),
-	tiny_inherit( TinyToolDialog )
-{
+te_class TinyToolScene final  : tiny_inherit( TinyToolCategory ) {
 
 private:
-	bool _has_changed;
+	bool m_has_changed;
 
 public:
 	TinyToolScene( );

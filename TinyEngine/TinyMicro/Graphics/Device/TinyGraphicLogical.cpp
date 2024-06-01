@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicLogical::TinyGraphicLogical( )
-	: _handle{ VK_NULL_HANDLE }
+	: m_handle{ VK_NULL_HANDLE }
 { }
 
 bool TinyGraphicLogical::Create( const TinyGraphicPhysical& physical ) {
@@ -41,22 +41,22 @@ bool TinyGraphicLogical::Create( const TinyGraphicPhysical& physical ) {
 	device_info.ppEnabledExtensionNames = vk::EXTENSIONS;
 	device_info.pEnabledFeatures		= VK_NULL_HANDLE;
 
-	return vk::Check( vkCreateDevice( physical, tiny_rvalue( device_info ), vk::GetAllocator( ), tiny_rvalue( _handle ) ) );
+	return vk::Check( vkCreateDevice( physical, tiny_rvalue( device_info ), vk::GetAllocator( ), tiny_rvalue( m_handle ) ) );
 }
 
 bool TinyGraphicLogical::Wait( ) {
-	return vk::GetIsValid( _handle ) ? vk::Check( vkDeviceWaitIdle( _handle ) ) : false;
+	return vk::GetIsValid( m_handle ) ? vk::Check( vkDeviceWaitIdle( m_handle ) ) : false;
 }
 
 void TinyGraphicLogical::Terminate( ) {
-	if ( vk::GetIsValid( _handle ) )
-		vkDestroyDevice( _handle, vk::GetAllocator( ) );
+	if ( vk::GetIsValid( m_handle ) )
+		vkDestroyDevice( m_handle, vk::GetAllocator( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-VkDevice TinyGraphicLogical::Get( ) const { return _handle; }
+VkDevice TinyGraphicLogical::Get( ) const { return m_handle; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE GET ===

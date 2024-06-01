@@ -25,7 +25,7 @@
 tm_class TinyGraphicInstance final {
 
 private:
-	VkInstance _instance;
+	VkInstance m_instance;
 
 public:
 	TinyGraphicInstance( );

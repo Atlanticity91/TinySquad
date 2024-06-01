@@ -24,18 +24,18 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicQueue::TinyGraphicQueue( ) 
-	: _physical{ },
-	_sharing_mode{ },
-	_queues{ }
+	: m_physical{ },
+	m_sharing_mode{ },
+	m_queues{ }
 { }
 
 bool TinyGraphicQueue::Create( 
 	const TinyGraphicLogical& logical, 
 	const VkPhysicalDeviceQueue& physical 
 ) {
-	_physical	  = physical;
-	_sharing_mode = physical.Count > 0 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
-	_queues		  = physical.Count;
+	m_physical	   = physical;
+	m_sharing_mode = physical.Count > 0 ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE;
+	m_queues	   = physical.Count;
 
 	return CreateQueues( logical, physical );
 }
@@ -43,7 +43,7 @@ bool TinyGraphicQueue::Create(
 void TinyGraphicQueue::Release( VkLogicalQueue* queue ) { queue->InUse = VK_FALSE; }
 
 void TinyGraphicQueue::Terminate( const TinyGraphicLogical& logical ) {
-	for ( auto& queue : _queues ) {
+	for ( auto& queue : m_queues ) {
 		vk::DestroyCommandBuffer( logical, queue, queue.CommandBuffer );
 
 		if ( vk::GetIsValid( queue.CommandPool ) )
@@ -82,7 +82,7 @@ bool TinyGraphicQueue::CreateQueues(
 	auto queue_id = tiny_cast( 0, tiny_uint );
 	auto state	  = false;
 
-	for ( auto& queue : _queues ) {
+	for ( auto& queue : m_queues ) {
 		queue.InUse		   = VK_FALSE;
 
 		vkGetDeviceQueue( logical, physical.Family, queue_id++, tiny_rvalue( queue.Queue ) );
@@ -100,16 +100,16 @@ bool TinyGraphicQueue::CreateQueues(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const VkPhysicalDeviceQueue& TinyGraphicQueue::GetPhysical( ) const { return _physical; }
+const VkPhysicalDeviceQueue& TinyGraphicQueue::GetPhysical( ) const { return m_physical; }
 
 VkLogicalQueue* TinyGraphicQueue::Acquire( ) {
-	auto queue_id = _queues.find( 
+	auto queue_id = m_queues.find( 
 		[]( const VkLogicalQueue& queue ) {
 			return queue.InUse == VK_FALSE;
 		} 
 	);
 
-	auto* queue = _queues.exist( queue_id ) ? tiny_rvalue( _queues[ queue_id ] ) : nullptr;
+	auto* queue = m_queues.exist( queue_id ) ? tiny_rvalue( m_queues[ queue_id ] ) : nullptr;
 
 	if ( queue )
 		queue->InUse = VK_TRUE;
@@ -118,7 +118,7 @@ VkLogicalQueue* TinyGraphicQueue::Acquire( ) {
 }
 
 const VkLogicalQueue& TinyGraphicQueue::GetQueue( tiny_uint queue_id ) const {
-	return _queues[ queue_id ];
+	return m_queues[ queue_id ];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

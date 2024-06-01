@@ -24,49 +24,49 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAudioVoice::TinyAudioVoice( )
-	: _voice{ nullptr } 
+	: m_voice{ nullptr } 
 { }
 
 bool TinyAudioVoice::Acquire( TinyAudioDevice& device, const TinyCueFormat& format ) {
 	auto master = XAUDIO2_SEND_DESCRIPTOR{ XAUDIO2_NO_FLAG, device };
 	auto sends  = XAUDIO2_VOICE_SENDS{ 1, tiny_rvalue( master ) };
 
-	return !FAILED( device->CreateSourceVoice( tiny_rvalue( _voice ), tiny_rvalue( format ), 0, 2.0f, nullptr, &sends ) );
+	return !FAILED( device->CreateSourceVoice( tiny_rvalue( m_voice ), tiny_rvalue( format ), 0, 2.0f, nullptr, tiny_rvalue( sends ) ) );
 }
 
-void TinyAudioVoice::SetVolume( float volume ) { _voice->SetVolume( volume ); }
+void TinyAudioVoice::SetVolume( float volume ) { m_voice->SetVolume( volume ); }
 
 bool TinyAudioVoice::Submit( const XAUDIO2_BUFFER& autio_buffer ) {
-	return !FAILED( _voice->SubmitSourceBuffer( tiny_rvalue( autio_buffer ), nullptr ) );
+	return !FAILED( m_voice->SubmitSourceBuffer( tiny_rvalue( autio_buffer ), nullptr ) );
 }
 
 bool TinyAudioVoice::Start( ) { 
 	//_voice->SetVolume( 1.f );
 
-	return !FAILED( _voice->Start( ) ); 
+	return !FAILED( m_voice->Start( ) ); 
 }
 
 void TinyAudioVoice::Stop( ) {
-	_voice->Stop( );
-	_voice->FlushSourceBuffers( );
+	m_voice->Stop( );
+	m_voice->FlushSourceBuffers( );
 }
 
 void TinyAudioVoice::Release( ) {
-	if ( _voice ) {
+	if ( m_voice ) {
 		Stop( );
 
-		_voice->DestroyVoice( );
+		m_voice->DestroyVoice( );
 
-		_voice = nullptr;
+		m_voice = nullptr;
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyAudioVoice::GetIsEmpty( ) const { return _voice == nullptr; }
+bool TinyAudioVoice::GetIsEmpty( ) const { return m_voice == nullptr; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-IXAudio2SourceVoice* TinyAudioVoice::operator->( ) { return _voice; }
+IXAudio2SourceVoice* TinyAudioVoice::operator->( ) { return m_voice; }

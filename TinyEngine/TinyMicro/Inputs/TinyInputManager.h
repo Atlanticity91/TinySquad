@@ -25,10 +25,10 @@
 tm_class TinyInputManager final : tiny_inherit( ITinyManager ) {
 
 private:
-	bool				   _is_active;
-	TinyTimestep		   _timestep;
-	TinyInputMap		   _map;
-	TinyInputDeviceManager _devices;
+	bool m_is_active;
+	TinyTimestep m_timestep;
+	TinyInputMap m_map;
+	TinyInputDeviceManager m_devices;
 
 public:
 	TinyInputManager( );

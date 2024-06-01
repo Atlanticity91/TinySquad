@@ -35,11 +35,11 @@ bool TinyConfigContainer::Load( TinyFilesystem& filesystem, TinyConfig*& config 
 	if ( filesystem.GetFileExist( path ) ) {
 		auto file = filesystem.OpenFile( path, TF_ACCESS_BINARY_READ );
 
-		state = _config.Load( file );
+		state = _config.Load( filesystem, file );
 	} else {
 		auto file = filesystem.OpenFile( path, TF_ACCESS_BINARY_WRITE );
 
-		_config.Save( file );
+		_config.Save( filesystem, file );
 	}
 
 	config = tiny_rvalue( _config );

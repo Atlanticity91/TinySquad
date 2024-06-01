@@ -22,19 +22,16 @@
 
 #include <TinyEngine/Tools/Editors/TinyToolLua.h>
 
-te_class TinyToolContent final 
-	: tiny_inherit( TinyToolCategory ),
-	tiny_inherit( TinyToolDialog )
-{
+te_class TinyToolContent final  : tiny_inherit( TinyToolCategory ) {
 
 	typedef native_string ( *AssetTypeToString )( tiny_uint );
 
 private:
-	bool				   _has_changed;
-	tiny_uint			   _type_count;
-	AssetTypeToString	   _type_to_string;
-	tiny_hash			   _to_remove;
-	tiny_buffer<256>	   _import_path;
+	bool _has_changed;
+	tiny_uint _type_count;
+	AssetTypeToString _type_to_string;
+	tiny_hash _to_remove;
+	tiny_buffer<256> _import_path;
 
 public:
 	TinyToolContent( );

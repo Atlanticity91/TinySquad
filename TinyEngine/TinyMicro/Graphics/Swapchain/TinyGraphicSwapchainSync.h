@@ -27,9 +27,9 @@ struct TinyGraphicWorkContext;
 tm_class TinyGraphicSwapchainSync final { 
 
 private:
-	VkSemaphore _acquire;
-	VkSemaphore _present;
-	VkFence		_fence;
+	VkSemaphore m_acquire;
+	VkSemaphore m_present;
+	VkFence m_fence;
 
 public:
 	TinyGraphicSwapchainSync( );

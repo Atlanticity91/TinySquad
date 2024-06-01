@@ -23,7 +23,7 @@
 tm_class TinyGraphicRenderpassManager final {
 
 private:
-	tiny_map<TinyGraphicRenderpass> _passes;
+	tiny_map<TinyGraphicRenderpass> m_passes;
 
 public:
 	TinyGraphicRenderpassManager( );

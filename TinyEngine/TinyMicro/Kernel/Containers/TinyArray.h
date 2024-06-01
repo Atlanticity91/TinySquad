@@ -29,41 +29,44 @@ class tiny_array {
 	using under_layer = std::array<Type, tiny_cast( Capacity, size_t )>;
 
 private:
-	under_layer _data;
+	under_layer m_data;
 
 public:
 	tiny_array( )
-		: _data{ } 
+		: m_data{ }
 	{ };
 
 	tiny_array( tiny_init<Type> elements ) 
-		: _data{ elements }
+		: m_data{ elements }
 	{ };
 
 	~tiny_array( ) = default;
 
 	tiny_array& asign( const tiny_array& other ) {
-		_data = other._data;
+		m_data = other.m_data;
 
 		return tiny_self;
 	};
 
 	tiny_array& sort( std::function<bool( tiny_int, tiny_int )> compare ) {
-		std::sort( _data.begin( ), _data.end( ), compare );
+		auto array_begin = m_data.begin( );
+		auto array_end   = m_data.end( );
+
+		std::sort( array_begin, array_end, compare );
 
 		return tiny_self;
 	};
 
 public:
-	under_layer& get_internal( ) { return _data; };
+	under_layer& get_internal( ) { return m_data; };
 
 	tiny_uint capacity( ) const { return Capacity; };
 
-	native_pointer as_pointer( ) const { return tiny_cast( _data.data( ), native_pointer ); };
+	native_pointer as_pointer( ) const { return tiny_cast( m_data.data( ), native_pointer ); };
 
-	Type* data( ) { return _data.data( ); };
+	Type* data( ) { return m_data.data( ); };
 
-	const Type* data( ) const { return _data.data( ); };
+	const Type* data( ) const { return m_data.data( ); };
 
 	bool exist( tiny_uint element_id ) const { 
 		return element_id < capacity( ); 
@@ -72,7 +75,7 @@ public:
 	tiny_uint find( std::function<bool( const Type& )> search ) const {
 		auto element_id = tiny_cast( 0, tiny_uint );
 
-		for ( const auto& element : _data ) {
+		for ( const auto& element : m_data ) {
 			if ( !search( element ) )
 				element_id += 1;
 			else
@@ -94,17 +97,17 @@ public:
 		return exist( element_id );
 	};
 
-	auto begin( ) noexcept { return _data.begin( ); };
+	auto begin( ) noexcept { return m_data.begin( ); };
 
-	auto end( ) noexcept { return _data.end( ); };
+	auto end( ) noexcept { return m_data.end( ); };
 
-	const auto begin( ) const noexcept { return _data.cbegin( ); };
+	const auto begin( ) const noexcept { return m_data.cbegin( ); };
 
-	const auto end( ) const noexcept { return _data.cend( ); };
+	const auto end( ) const noexcept { return m_data.cend( ); };
 
-	Type& at( tiny_uint element_id ) { return _data[ element_id ]; };
+	Type& at( tiny_uint element_id ) { return m_data[ element_id ]; };
 
-	const Type& at( tiny_uint element_id ) const { return _data[ element_id ]; };
+	const Type& at( tiny_uint element_id ) const { return m_data[ element_id ]; };
 
 public:
 	operator under_layer& ( ) { return get_internal( ); };

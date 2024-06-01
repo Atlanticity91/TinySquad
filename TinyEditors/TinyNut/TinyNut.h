@@ -27,8 +27,8 @@ tn_class TinyNut : tiny_inherit( TinyGame ) {
 	friend class TinyNutWindow;
 
 private:
-	TinyNutContext _context;
-	TinyNutWindow  _window;
+	TinyNutContext m_context;
+	TinyNutWindow  m_window;
 
 public:
 	TinyNut( const tiny_string& title );
@@ -40,7 +40,13 @@ public:
 	tiny_virtual( void OnDragDrop( tiny_int path_count, native_string drop_paths[] ) );
 
 protected:
-	tiny_implement( bool Initialize( TinyEngine& engine ) );
+	tiny_implement( bool Initialize( ) );
+
+	virtual bool ImportGame( 
+		TinyFilesystem& filesystem, 
+		const std::string & game_path, 
+		TinyFile& file 
+	);
 
 	tiny_no_implement( void SetupBundles( TinyGraphicManager& graphics ) );
 

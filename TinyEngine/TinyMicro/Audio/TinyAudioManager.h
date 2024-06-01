@@ -25,8 +25,8 @@
 tm_class TinyAudioManager final : tiny_inherit( ITinyManager ) {
 
 private:
-	TinyAudioDevice _device;
-	TinyAudioPool	_pool;
+	TinyAudioDevice m_device;
+	TinyAudioPool m_pool;
 
 public:
 	TinyAudioManager( );

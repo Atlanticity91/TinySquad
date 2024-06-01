@@ -25,9 +25,9 @@
 te_class TinyToolWorld final : tiny_inherit( TinyToolCategory ) {
 
 private:
-	tiny_buffer<32> _new_entity;
-	tiny_uint		_new_entity_id;
-	tiny_hash		_delete_hash;
+	tiny_buffer<32> m_new_entity;
+	tiny_uint m_new_entity_id;
+	tiny_hash m_delete_hash;
 
 public:
 	TinyToolWorld( );

@@ -31,7 +31,7 @@ TinyGraphicPipeline::TinyGraphicPipeline( )
 { }
 
 bool TinyGraphicPipeline::Create( 
-	TinyGraphicContext& graphic, 
+	TinyGraphicWrapper& graphic,
 	const TinyLimitsStack& limits,
 	const TinyGraphicPipelineSpecification& specification
 ) {
@@ -286,7 +286,7 @@ void TinyGraphicPipeline::Bind(
 		auto* data = descriptors.data( );
 		auto size  = descriptors.size( );
 
-		vkUpdateDescriptorSets( work_context.Logical, size, data, 0, VK_NULL_HANDLE );
+		vkUpdateDescriptorSets( tiny_lvalue( work_context.Logical ), size, data, 0, VK_NULL_HANDLE );
 	}
 }
 
@@ -307,7 +307,7 @@ void TinyGraphicPipeline::Bind(
 		auto* data = descriptors.data( );
 		auto size  = descriptors.size( );
 
-		vkUpdateDescriptorSets( work_context.Logical, size, data, 0, VK_NULL_HANDLE );
+		vkUpdateDescriptorSets( tiny_lvalue( work_context.Logical ), size, data, 0, VK_NULL_HANDLE );
 	}
 }
 
@@ -326,7 +326,7 @@ void TinyGraphicPipeline::Bind(
 	auto* data = descriptors.data( );
 	auto size  = descriptors.size( );
 
-	vkUpdateDescriptorSets( work_context.Logical, count, data, 0, VK_NULL_HANDLE );
+	vkUpdateDescriptorSets( tiny_lvalue( work_context.Logical ), count, data, 0, VK_NULL_HANDLE );
 }
 
 void TinyGraphicPipeline::Bind(
@@ -360,7 +360,7 @@ void TinyGraphicPipeline::Bind(
 	descriptor.pImageInfo		= VK_NULL_HANDLE;
 	descriptor.pBufferInfo		= buffers;
 
-	vkUpdateDescriptorSets( work_context.Logical, 1, tiny_rvalue( descriptor ), 0, VK_NULL_HANDLE );
+	vkUpdateDescriptorSets( tiny_lvalue( work_context.Logical ), 1, tiny_rvalue( descriptor ), 0, VK_NULL_HANDLE );
 }
 
 void TinyGraphicPipeline::Bind(
@@ -394,7 +394,7 @@ void TinyGraphicPipeline::Bind(
 	descriptor.pImageInfo		= samplers;
 	descriptor.pBufferInfo		= VK_NULL_HANDLE;
 
-	vkUpdateDescriptorSets( work_context.Logical, 1, tiny_rvalue( descriptor ), 0, VK_NULL_HANDLE );
+	vkUpdateDescriptorSets( tiny_lvalue( work_context.Logical ), 1, tiny_rvalue( descriptor ), 0, VK_NULL_HANDLE );
 }
 
 void TinyGraphicPipeline::BindVertex(
@@ -518,14 +518,14 @@ void TinyGraphicPipeline::Draw(
 	Draw( work_context, draw_call );
 }
 
-void TinyGraphicPipeline::Terminate( TinyGraphicContext& context ) {
-	_descriptors.Terminate( context.Logical );
+void TinyGraphicPipeline::Terminate( TinyGraphicWrapper& graphic ) {
+	_descriptors.Terminate( graphic.Logical );
 
 	if ( vk::GetIsValid( _layout ) )
-		vkDestroyPipelineLayout( context.Logical, _layout, vk::GetAllocator( ) );
+		vkDestroyPipelineLayout( graphic.Logical, _layout, vk::GetAllocator( ) );
 
 	if ( vk::GetIsValid( _pipeline ) )
-		vkDestroyPipeline( context.Logical, _pipeline, vk::GetAllocator( ) );
+		vkDestroyPipeline( graphic.Logical, _pipeline, vk::GetAllocator( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -673,7 +673,7 @@ void TinyGraphicPipeline::CreateSetBind(
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicPipeline::CreateRenderPipeline(
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	const TinyGraphicPipelineSpecification& specification
 ) {
 	auto pipeline_info	 = VkGraphicsPipelineCreateInfo{ VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
@@ -712,7 +712,7 @@ bool TinyGraphicPipeline::CreateRenderPipeline(
 }
 
 bool TinyGraphicPipeline::CreateComputePipeline(
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	const TinyGraphicPipelineSpecification& specification
 ) {
 	auto pipeline_info   = VkComputePipelineCreateInfo{ VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO };

@@ -24,28 +24,28 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyAudioPool::TinyAudioPool( )
-	: _voices{ } 
+	: m_voices{ } 
 { }
 
 tiny_uint TinyAudioPool::Acquire( TinyAudioDevice& device, const TinyCueFormat& format ) {
 	auto voice_id = MAX_VOICES;
 
-	while ( voice_id-- > 0 && !_voices[ voice_id ].GetIsEmpty( ) );
+	while ( voice_id-- > 0 && !m_voices[ voice_id ].GetIsEmpty( ) );
 
-	if ( voice_id < MAX_VOICES && !_voices[ voice_id ].Acquire( device, format ) )
+	if ( voice_id < MAX_VOICES && !m_voices[ voice_id ].Acquire( device, format ) )
 		voice_id = TINY_UINT_MAX;
 
 	return voice_id;
 }
 
-void TinyAudioPool::Release( tiny_uint voice_id ) { _voices[ voice_id ].Release( ); }
+void TinyAudioPool::Release( tiny_uint voice_id ) { m_voices[ voice_id ].Release( ); }
 
 void TinyAudioPool::Tick( TinyInputManager& inputs ) {
 	auto voice_state = XAUDIO2_VOICE_STATE{ };
 	auto voice_id    = MAX_VOICES;
      
     while ( voice_id-- > 0 ) {
-        auto& voice = _voices[ voice_id ];
+        auto& voice = m_voices[ voice_id ];
 
         if ( voice.GetIsEmpty( ) )
             continue;
@@ -58,7 +58,7 @@ void TinyAudioPool::Tick( TinyInputManager& inputs ) {
 }
 
 void TinyAudioPool::Terminate( ) {
-	for ( auto& voice : _voices ) {
+	for ( auto& voice : m_voices ) {
 		if ( voice.GetIsEmpty( ) )
 			continue;
 
@@ -72,14 +72,14 @@ void TinyAudioPool::Terminate( ) {
 tiny_uint TinyAudioPool::GetCapacity( ) const { return MAX_VOICES; }
 
 bool TinyAudioPool::GetIsValid( tiny_uint voice_id ) const {
-	return voice_id < GetCapacity( ) && !_voices[ voice_id ].GetIsEmpty( );
+	return voice_id < GetCapacity( ) && !m_voices[ voice_id ].GetIsEmpty( );
 }
 
 TinyAudioVoice* TinyAudioPool::GetVoice( tiny_uint voice_id ) {
 	auto voice = tiny_cast( nullptr, TinyAudioVoice* );
 
 	if ( GetIsValid( voice_id ) )
-		voice = tiny_rvalue( _voices[ voice_id ] );
+		voice = tiny_rvalue( m_voices[ voice_id ] );
 
 	return voice;
 }

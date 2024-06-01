@@ -24,68 +24,75 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicManager::TinyGraphicManager( TinyGameOrientations orientation )
-	: _need_recreation{ false },
-	_boundaries{ orientation },
-	_instance{ },
-	_surface{ },
-	_physical{ },
-	_logical{ },
-	_queues{ },
-	_memory{ },
-	_swapchain{ },
-	_passes{ },
-	_pipelines{ },
-	_compiler{ },
-	_work_context{ _logical }
+	: m_need_recreation{ false },
+	m_boundaries{ orientation },
+	m_instance{ },
+	m_surface{ },
+	m_physical{ },
+	m_logical{ },
+	m_queues{ },
+	m_memory{ },
+	m_swapchain{ },
+	m_passes{ },
+	m_pipelines{ },
+	m_compiler{ },
+	m_work_context{ tiny_rvalue( m_logical ) }
 { }
 
 TinyGraphicManager& TinyGraphicManager::AddBundle(
 	const tiny_string& name,
 	const TinyGraphicRenderBundle& bundle
 ) {
-	_passes.AddBundle( name, bundle );
+	m_passes.AddBundle( name, bundle );
 
 	return tiny_self;
 }
 
 bool TinyGraphicManager::Initialize( TinyFilesystem& file_system, TinyWindow& window ) {
-	_boundaries.ReCreate( window );
+	m_boundaries.ReCreate( window );
 
-	auto context = GetContext( );
+	auto wrapper = GetWrapper( );
+	auto title   = window.GetTitle( );
 
-	return  _instance.Create( window.GetTitle( ) )		   &&
-			_surface.Create( window, _instance )		   &&
-			_physical.Initialize( _instance, _surface )	   &&
-			_surface.Initialize( _physical )			   &&
-			_logical.Create( _physical )				   &&
-			_queues.Create( _physical, _logical )		   && 
-			_memory.Create( context )					   &&
-			_swapchain.Create( context )				   &&
-			_passes.Create( context )					   &&
-			_pipelines.Initialize( file_system, _logical ) &&
-			_compiler.Initialize( );
+	return  m_instance.Create( title )						 &&
+			m_surface.Create( window, m_instance )			 &&
+			m_physical.Initialize( m_instance, m_surface )   &&
+			m_surface.Initialize( m_physical )				 &&
+			m_logical.Create( m_physical )					 &&
+			m_queues.Create( m_physical, m_logical )		 &&
+			m_memory.Create( wrapper )						 &&
+			m_swapchain.Create( wrapper )					 &&
+			m_passes.Create( wrapper )						 &&
+			m_pipelines.Initialize( file_system, m_logical ) &&
+			m_compiler.Initialize( );
+}
+
+void TinyGraphicManager::EnableCache( ) {
+}
+
+void TinyGraphicManager::DisableCache( ) {
 }
 
 void TinyGraphicManager::AddCompilerMacro(
 	const tiny_string& name,
 	const tiny_string& value
 ) {
-	_compiler.AddMacro( name, value );
+	m_compiler.AddMacro( name, value );
 }
 
 void TinyGraphicManager::AddCompilerMacro( const TinyGraphicShaderMacro& macro ) {
-	_compiler.AddMacro( macro.Name, macro.Value );
+	m_compiler.AddMacro( macro.Name, macro.Value );
 }
 
 void TinyGraphicManager::AddCompilerMacros( tiny_init<TinyGraphicShaderMacro> macros ) {
-	_compiler.AddMacros( macros );
+	m_compiler.AddMacros( macros );
 }
 
 bool TinyGraphicManager::CompileShader(
 	const TinyGraphicShaderCompilationContext& context,
 	TinyGraphicShaderSpecification& specification
 ) {
-	return _compiler.Compile( context, specification );
+	return m_compiler.Compile( context, specification );
 }
 
 TinyGraphicPipelineSpecification TinyGraphicManager::CreatePipeline(
@@ -93,24 +100,24 @@ TinyGraphicPipelineSpecification TinyGraphicManager::CreatePipeline(
 	const tiny_string& renderpass,
 	tiny_uint subpass
 ) {
-	auto pipeline = _pipelines.Create( type );
+	auto pipeline = m_pipelines.Create( type );
 
 	pipeline.Subpass		 = subpass;
-	pipeline.Pass			 = _passes.GetPass( renderpass );
-	pipeline.DescriptorCount = _swapchain.GetProperties( ).Capacity;
+	pipeline.Pass			 = m_passes.GetPass( renderpass );
+	pipeline.DescriptorCount = m_swapchain.GetProperties( ).Capacity;
 
 	return pipeline;
 }
 
-void TinyGraphicManager::ReCreate( ) { _need_recreation = true; }
+void TinyGraphicManager::ReCreate( ) { m_need_recreation = true; }
 
 void TinyGraphicManager::Acquire( const TinyWindow& window ) {
-	_work_context.Acquire( _queues, VK_QUEUE_TYPE_GRAPHIC );
+	m_work_context.Acquire( m_queues, VK_QUEUE_TYPE_GRAPHIC );
 	
-	if ( _need_recreation )
+	if ( m_need_recreation )
 		ReCreate( window );
 
-	_need_recreation = !_swapchain.Acquire( _logical, _work_context );
+	m_need_recreation = !m_swapchain.Acquire( m_logical, m_work_context );
 }
 
 bool TinyGraphicManager::BeginPass( const tiny_string& pass_name ) {
@@ -122,7 +129,7 @@ bool TinyGraphicManager::BeginPass( const tiny_string& pass_name ) {
 bool TinyGraphicManager::BeginPass( const tiny_hash pass_hash ) {
 	EndPass( );
 
-	return _passes.Begin( pass_hash, _work_context );
+	return m_passes.Begin( pass_hash, m_work_context );
 }
 
 void TinyGraphicManager::Clear(
@@ -130,7 +137,7 @@ void TinyGraphicManager::Clear(
 	TinyGraphicWorkContext& work_context,
 	tiny_init<TinyGraphicClearRegion> attachements
 ) {
-	_passes.Clear( pass_name, work_context, attachements );
+	m_passes.Clear( pass_name, work_context, attachements );
 }
 
 void TinyGraphicManager::Clear(
@@ -138,7 +145,7 @@ void TinyGraphicManager::Clear(
 	TinyGraphicWorkContext& work_context,
 	tiny_init<TinyGraphicClearAttachement> attachements
 ) {
-	_passes.Clear( pass_name, work_context, attachements );
+	m_passes.Clear( pass_name, work_context, attachements );
 }
 
 void TinyGraphicManager::Draw(
@@ -146,140 +153,138 @@ void TinyGraphicManager::Draw(
 	TinyGraphicPipeline& pipeline,
 	tiny_init<TinyGraphicPipelineBindpoint> bindpoints
 ) {
-	auto graphics = GetContext( );
-
-	pipeline.Mount( _work_context );
-	pipeline.Bind( _work_context, bindpoints );
-	pipeline.Draw( _work_context, draw_call );
+	pipeline.Mount( m_work_context );
+	pipeline.Bind( m_work_context, bindpoints );
+	pipeline.Draw( m_work_context, draw_call );
 }
 
 bool TinyGraphicManager::NextSubpass( ) { 
-	auto state = _work_context.WorkRender.is_valid( );
+	auto state = false;
 
-	if ( state )
-		state = _passes.NextSubpass( _work_context );
+	if ( m_work_context.WorkRender.get_is_valid( ) )
+		state = m_passes.NextSubpass( m_work_context );
 
 	return state;
 }
 
 void TinyGraphicManager::EndPass( ) { 
-	if ( _work_context.WorkRender )
-		_passes.End( _work_context ); 
+	if ( m_work_context.WorkRender )
+		m_passes.End( m_work_context );
 }
 
 void TinyGraphicManager::Present( const TinyWindow& window ) {
 	EndPass( );
 	
-	if ( !_need_recreation )
-		_need_recreation = !_swapchain.Present( _logical, _queues, _work_context );
+	if ( !m_need_recreation )
+		m_need_recreation = !m_swapchain.Present( m_logical, m_queues, m_work_context );
 }
 
 void TinyGraphicManager::Terminate( TinyFilesystem& file_system, TinyWindow& window ) {
-	_logical.Wait( );
+	m_logical.Wait( );
 
-	auto context = GetContext( );
+	auto wrapper = GetWrapper( );
 
-	_pipelines.Terminate( file_system, _logical );
-	_passes.Terminate( context );
-	_swapchain.Terminate( _logical, _queues );
-	_memory.Terminate( context );
-	_queues.Terminate( _logical );
-	_logical.Terminate( );
-	_physical.Terminate( );
-	_surface.Terminate( _instance );
-	_instance.Terminate( );
+	m_pipelines.Terminate( file_system, m_logical );
+	m_passes.Terminate( wrapper );
+	m_swapchain.Terminate( m_logical, m_queues );
+	m_memory.Terminate( wrapper );
+	m_queues.Terminate( m_logical );
+	m_logical.Terminate( );
+	m_physical.Terminate( );
+	m_surface.Terminate( m_instance );
+	m_instance.Terminate( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyGraphicManager::ReCreate( const TinyWindow& window ) {
-	_logical.Wait( );
+	m_logical.Wait( );
 
-	auto context = GetContext( );
+	auto context = GetWrapper( );
 
-	_boundaries.ReCreate( window );
-	_swapchain.ReCreate( context );
-	_passes.ReCreate( context );
+	m_boundaries.ReCreate( window );
+	m_swapchain.ReCreate( context );
+	m_passes.ReCreate( context );
 
-	_work_context.WorkID = 0;
+	m_work_context.WorkID = 0;
 
-	_need_recreation = false;
+	m_need_recreation = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicContext TinyGraphicManager::GetContext( ) {
+TinyGraphicWrapper TinyGraphicManager::GetWrapper( ) {
 	return {
-		_boundaries,
-		_instance,
-		_surface,
-		_physical,
-		_logical,
-		_queues,
-		_memory,
-		_swapchain,
-		_passes,
-		_pipelines
+		m_boundaries,
+		m_instance,
+		m_surface,
+		m_physical,
+		m_logical,
+		m_queues,
+		m_memory,
+		m_swapchain,
+		m_passes,
+		m_pipelines
 	};
 }
 
-bool TinyGraphicManager::GetNeedRecreation( ) const { return _need_recreation; }
+bool TinyGraphicManager::GetNeedRecreation( ) const { return m_need_recreation; }
 
-TinyGraphicWorkContext& TinyGraphicManager::GetWorkdContext( ) { return _work_context; }
+TinyGraphicWorkContext& TinyGraphicManager::GetWorkdContext( ) { return m_work_context; }
 
-TinyGraphicBoundaries& TinyGraphicManager::GetBoundaries( ) { return _boundaries; }
+TinyGraphicBoundaries& TinyGraphicManager::GetBoundaries( ) { return m_boundaries; }
 
-TinyGraphicInstance& TinyGraphicManager::GetInstance( ) { return _instance; }
+TinyGraphicInstance& TinyGraphicManager::GetInstance( ) { return m_instance; }
 
-TinyGraphicSurface& TinyGraphicManager::GetSurface( ) { return _surface; }
+TinyGraphicSurface& TinyGraphicManager::GetSurface( ) { return m_surface; }
 
-TinyGraphicPhysical& TinyGraphicManager::GetPhysical( ) { return _physical; }
+TinyGraphicPhysical& TinyGraphicManager::GetPhysical( ) { return m_physical; }
 
-TinyGraphicLogical& TinyGraphicManager::GetLogical( ) { return _logical; }
+TinyGraphicLogical& TinyGraphicManager::GetLogical( ) { return m_logical; }
 
-TinyGraphicQueueManager& TinyGraphicManager::GetQueues( ) { return _queues; }
+TinyGraphicQueueManager& TinyGraphicManager::GetQueues( ) { return m_queues; }
 
-TinyGraphicMemoryManager& TinyGraphicManager::GetMemory( ) { return _memory; }
+TinyGraphicMemoryManager& TinyGraphicManager::GetMemory( ) { return m_memory; }
 
 tiny_uint TinyGraphicManager::GetSwapchainCapacity( ) const { 
-	return _swapchain.GetProperties( ).Capacity;
+	return m_swapchain.GetProperties( ).Capacity;
 }
 
-TinyGraphicSwapchainManager& TinyGraphicManager::GetSwapchain( ) { return _swapchain; }
+TinyGraphicSwapchainManager& TinyGraphicManager::GetSwapchain( ) { return m_swapchain; }
 
-TinyGraphicRenderManager& TinyGraphicManager::GetPasses( ) { return _passes; }
+TinyGraphicRenderManager& TinyGraphicManager::GetPasses( ) { return m_passes; }
 
 const TinyLimitsStack& TinyGraphicManager::GetPipelineLimits( ) const {
-	return _pipelines.GetLimits( );
+	return m_pipelines.GetLimits( );
 }
 
-TinyGraphicPipelineManager& TinyGraphicManager::GetPipelines( ) { return _pipelines; }
+TinyGraphicPipelineManager& TinyGraphicManager::GetPipelines( ) { return m_pipelines; }
 
 tiny_uint TinyGraphicManager::GetMinImageCount( ) const { 
-	return _surface.GetCapabilities( _physical ).minImageCount;
+	return m_surface.GetCapabilities( m_physical ).minImageCount;
 }
 
 tiny_uint TinyGraphicManager::GetImageCount( ) const { 
-	return _swapchain.GetProperties( ).Capacity;
+	return m_swapchain.GetProperties( ).Capacity;
 }
 
 TinyGraphicMSAA TinyGraphicManager::GetMSAA( ) const {
-	return  { VK_SAMPLE_COUNT_1_BIT, _physical.GetSamplesLimit( ) };
+	return  { VK_SAMPLE_COUNT_1_BIT, m_physical.GetSamplesLimit( ) };
 }
 
-VkPipelineCache TinyGraphicManager::GetPipelineCache( ) { return _pipelines.GetCache( ); }
+VkPipelineCache TinyGraphicManager::GetPipelineCache( ) { return m_pipelines.GetCache( ); }
 
 TinyGraphicRenderpass& TinyGraphicManager::GetRenderPass( const tiny_string& pass_name ) {
-	return _passes.GetPass( pass_name );
+	return m_passes.GetPass( pass_name );
 }
 
 const shaderc::CompileOptions& TinyGraphicManager::GetCompilerOptions( ) const {
-	return _compiler.GetCompilerOptions( );
+	return m_compiler.GetCompilerOptions( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicManager::operator TinyGraphicContext ( ) { return GetContext( ); }
+TinyGraphicManager::operator TinyGraphicWrapper ( ) { return GetWrapper( ); }

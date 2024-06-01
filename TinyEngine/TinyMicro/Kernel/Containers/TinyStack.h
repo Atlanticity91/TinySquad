@@ -29,32 +29,32 @@ public:
 	static const tiny_uint Size = Length * tiny_sizeof( Type );
 
 private:
-	tiny_uint				 _cursor;
-	tiny_array<Type, Length> _data;
+	tiny_uint m_cursor;
+	tiny_array<Type, Length> m_data;
 
 public:
 	tiny_stack( )
-		: _cursor{ 0 },
-		_data{ }
+		: m_cursor{ 0 },
+		m_data{ }
 	{ };
 
 	~tiny_stack( ) = default;
 
 	tiny_stack& push( const Type& element ) {
-		if ( _cursor < Length )
-			_data[ _cursor++ ] = element;
+		if ( m_cursor < Length )
+			m_data[ m_cursor++ ] = element;
 
 		return tiny_self;
 	};
 
 	std::optional<Type> pop( ) {
-		if ( _cursor > 0 )
-			return _data[ _cursor-- ];
+		if ( m_cursor > 0 )
+			return m_data[ m_cursor-- ];
 
 		return { };
 	};
 
-	void clear( ) { _cursor = 0; };
+	void clear( ) { m_cursor = 0; };
 
 public:
 	template<typename... Args>
@@ -65,22 +65,22 @@ public:
 	};
 
 public:
-	tiny_uint size( ) const { return _cursor; };
+	tiny_uint size( ) const { return m_cursor; };
 
 	tiny_uint capacity( ) const { return Length; };
 
-	bool is_full( ) const { return _cursor == Length; };
+	bool is_full( ) const { return m_cursor == Length; };
 
-	Type* data( ) { return _data.data( ); };
+	Type* data( ) { return m_data.data( ); };
 
-	const Type* data( ) const { return _data.data( ); };
+	const Type* data( ) const { return m_data.data( ); };
 
-	auto begin( ) noexcept { return _data.begin( ); };
+	auto begin( ) noexcept { return m_data.begin( ); };
 
-	auto end( ) noexcept { return _data.end( ); };
+	auto end( ) noexcept { return m_data.end( ); };
 
-	const auto begin( ) const noexcept { return _data.begin( ); };
+	const auto begin( ) const noexcept { return m_data.begin( ); };
 
-	const auto end( ) const noexcept { return _data.end( ); };
+	const auto end( ) const noexcept { return m_data.end( ); };
 
 };

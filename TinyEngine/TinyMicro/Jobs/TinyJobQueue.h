@@ -29,9 +29,9 @@ tm_class TinyJobQueue final {
 	using JobQueue = tiny_queue<TinyJob, MaxJobs>;
 
 private:
-	mutable std::mutex _mutex_guard;
-	std::condition_variable _condition_guard;
-	tiny_array<JobQueue, TJ_PRIORITY_COUNT> _queues;
+	mutable std::mutex m_mutex_guard;
+	std::condition_variable m_condition_guard;
+	tiny_array<JobQueue, TJ_PRIORITY_COUNT> m_queues;
 
 public:
 	TinyJobQueue( );

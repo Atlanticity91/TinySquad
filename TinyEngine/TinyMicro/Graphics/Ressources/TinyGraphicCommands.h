@@ -25,7 +25,7 @@
 tm_class TinyGraphicCommands final {
 
 private:
-	VkCommandBuffer _secondary;
+	VkCommandBuffer m_secondary;
 
 public:
 	TinyGraphicCommands( ) = default;

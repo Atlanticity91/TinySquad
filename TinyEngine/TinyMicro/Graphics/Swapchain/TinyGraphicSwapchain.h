@@ -25,15 +25,15 @@
 tm_class TinyGraphicSwapchain final {
 
 private:
-	VkSwapchainKHR				   _swap_chain;
-	TinyGraphicSwapchainProperties _properties;
+	VkSwapchainKHR m_swap_chain;
+	TinyGraphicSwapchainProperties m_properties;
 
 public:
 	TinyGraphicSwapchain( );
 
 	~TinyGraphicSwapchain( ) = default;
 
-	bool Create( TinyGraphicContext& graphic );
+	bool Create( TinyGraphicWrapper& graphic );
 
 	void Terminate( const TinyGraphicLogical& logical );
 

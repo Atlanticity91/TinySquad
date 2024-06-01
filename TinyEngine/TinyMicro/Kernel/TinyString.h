@@ -37,8 +37,8 @@ tm_class tiny_string final {
 	using regex_iterator = std::cregex_iterator;
 
 private:
-	char* _handle;
-	tiny_uint	_length;
+	char* m_handle;
+	tiny_uint m_length;
 
 public:
 	tiny_string( );
@@ -128,9 +128,9 @@ public:
 
 	tiny_string& operator=( native_string string );
 
-	tiny_string& operator=( const std::string string );
-
 	tiny_string& operator=( const tiny_string& other );
+
+	tiny_string& operator=( const std::string& string );
 
 	bool operator==( native_string string ) const;
 

@@ -27,11 +27,11 @@ tm_class TinyGraphicPhysical final {
 	using VkPhysicalDeviceQueues = tiny_list<VkPhysicalDeviceQueue>;
 
 private:
-	VkPhysicalDevice						   _handle;
-	VkPhysicalDeviceFeatures2				   _features;
-	VkPhysicalDeviceProperties				   _properties;
-	VkPhysicalDeviceQueues					   _queues;
-	VkPhysicalDeviceDescriptorIndexingFeatures _indexing;
+	VkPhysicalDevice m_handle;
+	VkPhysicalDeviceFeatures2 m_features;
+	VkPhysicalDeviceProperties m_properties;
+	VkPhysicalDeviceQueues m_queues;
+	VkPhysicalDeviceDescriptorIndexingFeatures m_indexing;
 
 public:
 	TinyGraphicPhysical( );

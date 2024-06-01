@@ -50,7 +50,7 @@ bool TinyGame::Start( tiny_int argc, char** argv ) {
 
 		graphics.ReCreate( );
 
-		state = ProcessArguments( argc, argv ) && Initialize( _engine );
+		state = ProcessArguments( argc, argv ) && Initialize( );
 	}
 
 	if ( state )

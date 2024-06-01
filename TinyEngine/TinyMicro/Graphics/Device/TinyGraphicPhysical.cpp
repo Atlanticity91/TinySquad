@@ -24,11 +24,11 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicPhysical::TinyGraphicPhysical( )
-	: _handle{ VK_NULL_HANDLE },
-	_features{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2 },
-	_properties{ },
-	_queues{ },
-	_indexing{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT }
+	: m_handle{ VK_NULL_HANDLE },
+	m_features{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2 },
+	m_properties{ },
+	m_queues{ },
+	m_indexing{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT }
 { }
 
 bool TinyGraphicPhysical::Initialize(
@@ -52,42 +52,42 @@ void TinyGraphicPhysical::Terminate( ) { }
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 void TinyGraphicPhysical::CreateIndexing( ) {
-	_indexing.pNext												 = VK_NULL_HANDLE;
-	_indexing.shaderUniformBufferArrayNonUniformIndexing		 = VK_TRUE;
-	_indexing.shaderSampledImageArrayNonUniformIndexing			 = VK_TRUE;
-	_indexing.shaderStorageBufferArrayNonUniformIndexing		 = VK_TRUE;
-	_indexing.shaderStorageImageArrayNonUniformIndexing			 = VK_TRUE;
-	_indexing.descriptorBindingUniformBufferUpdateAfterBind		 = VK_TRUE;
-	_indexing.descriptorBindingSampledImageUpdateAfterBind		 = VK_TRUE;
-	_indexing.descriptorBindingStorageImageUpdateAfterBind		 = VK_TRUE;
-	_indexing.descriptorBindingStorageBufferUpdateAfterBind		 = VK_TRUE;
-	_indexing.descriptorBindingUniformTexelBufferUpdateAfterBind = VK_TRUE;
-	_indexing.descriptorBindingStorageTexelBufferUpdateAfterBind = VK_TRUE;
-	_indexing.descriptorBindingUpdateUnusedWhilePending			 = VK_TRUE;
-	_indexing.descriptorBindingPartiallyBound					 = VK_TRUE;
-	_indexing.descriptorBindingVariableDescriptorCount			 = VK_TRUE;
-	_indexing.runtimeDescriptorArray							 = VK_TRUE;
+	m_indexing.pNext											  = VK_NULL_HANDLE;
+	m_indexing.shaderUniformBufferArrayNonUniformIndexing		  = VK_TRUE;
+	m_indexing.shaderSampledImageArrayNonUniformIndexing		  = VK_TRUE;
+	m_indexing.shaderStorageBufferArrayNonUniformIndexing		  = VK_TRUE;
+	m_indexing.shaderStorageImageArrayNonUniformIndexing		  = VK_TRUE;
+	m_indexing.descriptorBindingUniformBufferUpdateAfterBind	  = VK_TRUE;
+	m_indexing.descriptorBindingSampledImageUpdateAfterBind		  = VK_TRUE;
+	m_indexing.descriptorBindingStorageImageUpdateAfterBind		  = VK_TRUE;
+	m_indexing.descriptorBindingStorageBufferUpdateAfterBind	  = VK_TRUE;
+	m_indexing.descriptorBindingUniformTexelBufferUpdateAfterBind = VK_TRUE;
+	m_indexing.descriptorBindingStorageTexelBufferUpdateAfterBind = VK_TRUE;
+	m_indexing.descriptorBindingUpdateUnusedWhilePending		  = VK_TRUE;
+	m_indexing.descriptorBindingPartiallyBound					  = VK_TRUE;
+	m_indexing.descriptorBindingVariableDescriptorCount			  = VK_TRUE;
+	m_indexing.runtimeDescriptorArray							  = VK_TRUE;
 
-	_features.pNext = tiny_rvalue( _indexing );
+	m_features.pNext = tiny_rvalue( m_indexing );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicPhysical::GetIsValid( ) const {
-	return  _properties.deviceType   == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
-			_features.features.geometryShader == VK_TRUE					 &&
-			GetHasExtensions( )												 && 
+	return  m_properties.deviceType   == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU &&
+			m_features.features.geometryShader == VK_TRUE					  &&
+			GetHasExtensions( )												  && 
 			GetHasDepth( );
 }
 
-VkPhysicalDevice TinyGraphicPhysical::Get( ) const { return _handle; }
+VkPhysicalDevice TinyGraphicPhysical::Get( ) const { return m_handle; }
 
 
 tiny_string TinyGraphicPhysical::GetVendor( ) const {
 	auto vendor = tiny_string{ "Unspecified" };
 
-	switch ( _properties.vendorID ) {
+	switch ( m_properties.vendorID ) {
 		case 0x1002 : vendor = "AMD"; break;
 		case 0x1010 : vendor = "ImgTec"; break;
 		case 0x10DE : vendor = "NVIDIA"; break;
@@ -102,32 +102,32 @@ tiny_string TinyGraphicPhysical::GetVendor( ) const {
 }
 
 const VkPhysicalDeviceFeatures2* TinyGraphicPhysical::GetFeatures( ) const { 
-	return tiny_rvalue( _features ); 
+	return tiny_rvalue( m_features ); 
 }
 
 const VkPhysicalDeviceFeatures& TinyGraphicPhysical::GetFeatureCore( ) const {
-	return _features.features;
+	return m_features.features;
 }
 
 const VkPhysicalDeviceDescriptorIndexingFeatures& TinyGraphicPhysical::GetFeatureIndexing( 
 ) const {
-	return _indexing;
+	return m_indexing;
 }
 
 const VkPhysicalDeviceProperties& TinyGraphicPhysical::GetProperties( ) const {
-	return _properties; 
+	return m_properties; 
 }
 
 const VkPhysicalDeviceLimits& TinyGraphicPhysical::GetLimits( ) const {
-	return _properties.limits;
+	return m_properties.limits;
 }
 
 const TinyGraphicPhysical::VkPhysicalDeviceQueues& TinyGraphicPhysical::GetQueues( ) const {
-	return _queues; 
+	return m_queues; 
 }
 
 VkSampleCountFlagBits TinyGraphicPhysical::GetSamplesLimit( ) const {
-	return tiny_cast( _properties.limits.framebufferColorSampleCounts & _properties.limits.framebufferDepthSampleCounts, VkSampleCountFlagBits );
+	return tiny_cast( m_properties.limits.framebufferColorSampleCounts & m_properties.limits.framebufferDepthSampleCounts, VkSampleCountFlagBits );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ bool TinyGraphicPhysical::GetHasExtensions( ) const {
 	auto extension_size  = tiny_size_array( vk::EXTENSIONS );
 	auto extensions		 = tiny_list<VkExtensionProperties>{ };
 
-	vk::EnumerateDeviceExtensionProperties( _handle, extensions );
+	vk::EnumerateDeviceExtensionProperties( m_handle, extensions );
 
 	for ( auto extension : vk::EXTENSIONS ) {
 		for ( auto& properties : extensions ) {
@@ -155,7 +155,7 @@ bool TinyGraphicPhysical::GetHasDepth( ) const {
 	for ( auto format : vk::DEPTH_FORMATS ) {
 		auto prop_info = VkFormatProperties{ };
 
-		vkGetPhysicalDeviceFormatProperties( _handle, format, tiny_rvalue( prop_info ) );
+		vkGetPhysicalDeviceFormatProperties( m_handle, format, tiny_rvalue( prop_info ) );
 
 		state =
 			( ( prop_info.linearTilingFeatures  & vk::DEPTH_FLAGS ) == vk::DEPTH_FLAGS ) ||
@@ -174,10 +174,10 @@ bool TinyGraphicPhysical::GetPhysicalDevice( const TinyGraphicInstance& instance
 	vk::EnumeratePhysicalDevices( instance, device_list );
 
 	for ( auto device : device_list ) {
-		_handle = device;
+		m_handle = device;
 
-		vkGetPhysicalDeviceFeatures2( _handle, tiny_rvalue( _features ) );
-		vkGetPhysicalDeviceProperties( _handle, tiny_rvalue( _properties ) );
+		vkGetPhysicalDeviceFeatures2( m_handle, tiny_rvalue( m_features ) );
+		vkGetPhysicalDeviceProperties( m_handle, tiny_rvalue( m_properties ) );
 
 		state = GetIsValid( );
 
@@ -193,21 +193,21 @@ void TinyGraphicPhysical::GetQueuesFamilies( const TinyGraphicSurface& surface )
 	auto famility_id = tiny_cast( 0, tiny_uint );
 	auto max_count   = tiny_size_array( vk::QUEUES_PRIORITIES );
 
-	vk::GetPhysicalDeviceQueueFamilyProperties( _handle, families );
+	vk::GetPhysicalDeviceQueueFamilyProperties( m_handle, families );
 
 	while ( famility_id < families.size( ) ) {
 		auto present_support = VK_FALSE;
 		auto properties		 = families[ famility_id ];
 		
-		vk::Check( vkGetPhysicalDeviceSurfaceSupportKHR( _handle, famility_id, surface, tiny_rvalue( present_support ) ) );
+		vk::Check( vkGetPhysicalDeviceSurfaceSupportKHR( m_handle, famility_id, surface, tiny_rvalue( present_support ) ) );
 
 		auto count = properties.queueCount < max_count ? properties.queueCount : max_count;
 
 		if ( present_support && !( properties.queueFlags & VK_QUEUE_GRAPHICS_BIT ) )
-			_queues.create_back( VK_QUEUE_TYPE_PRESENT, famility_id, count );
+			m_queues.create_back( VK_QUEUE_TYPE_PRESENT, famility_id, count );
 
 		if ( properties.queueFlags & VK_QUEUE_GRAPHICS_BIT )
-			_queues.create_back( VK_QUEUE_TYPE_GRAPHIC, famility_id, count );
+			m_queues.create_back( VK_QUEUE_TYPE_GRAPHIC, famility_id, count );
 
 		if (
 			properties.queueFlags & VK_QUEUE_TRANSFER_BIT			   &&
@@ -215,14 +215,14 @@ void TinyGraphicPhysical::GetQueuesFamilies( const TinyGraphicSurface& surface )
 			!( properties.queueFlags & VK_QUEUE_VIDEO_DECODE_BIT_KHR ) &&
 			!( properties.queueFlags & VK_QUEUE_GRAPHICS_BIT )
 		)
-			_queues.create_back( VK_QUEUE_TYPE_TRANSFER, famility_id, count );
+			m_queues.create_back( VK_QUEUE_TYPE_TRANSFER, famility_id, count );
 
 		if (
 			properties.queueFlags & VK_QUEUE_VIDEO_DECODE_BIT_KHR &&
 			!present_support &&
 			!( properties.queueFlags & VK_QUEUE_GRAPHICS_BIT )
 		)
-			_queues.create_back( VK_QUEUE_TYPE_DECODE, famility_id, count );
+			m_queues.create_back( VK_QUEUE_TYPE_DECODE, famility_id, count );
 
 		famility_id += 1;
 	}

@@ -27,7 +27,7 @@ tm_class TinyAudioPool final {
 	static const tiny_uint MAX_VOICES = 32;
 
 private:
-	tiny_array<TinyAudioVoice, MAX_VOICES> _voices;
+	tiny_array<TinyAudioVoice, MAX_VOICES> m_voices;
 
 public:
 	TinyAudioPool( );

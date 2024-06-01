@@ -25,7 +25,7 @@
 tm_class tiny_uuid final {
 
 private:
-	tiny_ulong _uuid;
+	tiny_ulong m_uuid;
 
 public:
 	tiny_uuid( );

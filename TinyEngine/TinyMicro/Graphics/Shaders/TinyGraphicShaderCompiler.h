@@ -32,9 +32,9 @@ tm_struct TinyGraphicShaderMacro {
 tm_class TinyGraphicShaderCompiler final {
 
 private:
-	shaderc::Compiler		  _compiler;
-	shaderc::CompileOptions	  _options;
-	TinyGraphicShaderIncluder _includer;
+	shaderc::Compiler m_compiler;
+	shaderc::CompileOptions	m_options;
+	TinyGraphicShaderIncluder m_includer;
 
 public:
 	TinyGraphicShaderCompiler( );

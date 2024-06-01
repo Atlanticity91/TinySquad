@@ -25,7 +25,7 @@
 tm_class TinyGraphicRenderBarrierManager final { 
 
 private:
-	tiny_map<TinyGraphicRenderBarrier> _barriers;
+	tiny_map<TinyGraphicRenderBarrier> m_barriers;
 
 public:
 	TinyGraphicRenderBarrierManager( );

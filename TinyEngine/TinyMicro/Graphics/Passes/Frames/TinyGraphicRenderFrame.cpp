@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicRenderFrame::TinyGraphicRenderFrame( )
-	: _framebuffers{ }
+	: m_framebuffers{ }
 { }
 
 bool TinyGraphicRenderFrame::Create( 
@@ -34,19 +34,19 @@ bool TinyGraphicRenderFrame::Create(
 	auto frame_id = properties.Targets.size( );
 	auto state	  = true;
 
-	_framebuffers = frame_id;
+	m_framebuffers = frame_id;
 
 	while ( state && frame_id-- > 0 ) {
 		const auto& targets = properties.Targets[ frame_id ];
 
-		state = InternalCreate( _framebuffers[ frame_id ], logical, properties, targets );
+		state = InternalCreate( m_framebuffers[ frame_id ], logical, properties, targets );
 	}
 
 	return state;
 }
 
 void TinyGraphicRenderFrame::Terminate( const TinyGraphicLogical& logical ) {
-	for ( auto& framebuffer : _framebuffers ) {
+	for ( auto& framebuffer : m_framebuffers ) {
 		if ( vk::GetIsValid( framebuffer ) )
 			vkDestroyFramebuffer( logical, framebuffer, vk::GetAllocator( ) );
 	}
@@ -79,5 +79,5 @@ bool TinyGraphicRenderFrame::InternalCreate(
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 const VkFramebuffer TinyGraphicRenderFrame::Get( tiny_uint framebuffer ) const { 
-	return _framebuffers[ framebuffer ];
+	return m_framebuffers[ framebuffer ];
 }

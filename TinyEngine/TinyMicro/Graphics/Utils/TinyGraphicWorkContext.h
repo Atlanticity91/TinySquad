@@ -29,11 +29,11 @@ tm_struct TinyGraphicWorkContext {
 	tiny_uint WorkPass;
 	tiny_hash WorkRender;
 	VkQueueTypes Type;
+	TinyGraphicLogical* Logical;
 	VkLogicalQueue* Queue;
 	TinyGraphicSwapchainSync* Sync;
-	TinyGraphicLogical& Logical;
 
-	TinyGraphicWorkContext( TinyGraphicLogical& logical );
+	TinyGraphicWorkContext( TinyGraphicLogical* logical );
 
 	void Acquire( TinyGraphicQueueManager& queues, VkQueueTypes type );
 

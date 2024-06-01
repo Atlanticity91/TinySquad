@@ -27,19 +27,19 @@ struct TinyGraphicWorkContext;
 tm_class TinyGraphicSwapchainManager final {
 
 private:
-	TinyGraphicSwapchain				  _swapchain;
-	TinyGraphicTextureProperties		  _properties;
-	tiny_list<TinyGraphicSwapchainTarget> _targets;
-	tiny_list<TinyGraphicSwapchainSync>   _syncs;
+	TinyGraphicSwapchain m_swapchain;
+	TinyGraphicTextureProperties m_properties;
+	tiny_list<TinyGraphicSwapchainTarget> m_targets;
+	tiny_list<TinyGraphicSwapchainSync> m_syncs;
 
 public:
 	TinyGraphicSwapchainManager( );
 
 	~TinyGraphicSwapchainManager( ) = default;
 
-	bool Create( TinyGraphicContext& graphic );
+	bool Create( TinyGraphicWrapper& graphic );
 
-	void ReCreate( TinyGraphicContext& graphic );
+	void ReCreate( TinyGraphicWrapper& graphic );
 	
 	bool Acquire( const TinyGraphicLogical& logical, TinyGraphicWorkContext& work_context );
 
@@ -56,7 +56,7 @@ private:
 
 	bool CreateSwapchainSyncs( const TinyGraphicLogical& logical );
 
-	tiny_inline bool CreateSwapchain( TinyGraphicContext& graphic );
+	tiny_inline bool CreateSwapchain( TinyGraphicWrapper& graphic );
 
 	tiny_inline void TerminateSwapchain( const TinyGraphicLogical& logical );
 

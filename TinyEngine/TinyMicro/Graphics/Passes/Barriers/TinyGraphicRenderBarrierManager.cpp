@@ -24,25 +24,25 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicRenderBarrierManager::TinyGraphicRenderBarrierManager( )
-	: _barriers{ }
+	: m_barriers{ }
 { }
 
 void TinyGraphicRenderBarrierManager::Create( 
 	const tiny_string& pass, 
 	const tiny_list<TinyGraphicRenderBarrierBundle>& bundles
 ) {
-	if ( !_barriers.find( pass ) ) {
+	if ( !m_barriers.find( pass ) ) {
 		auto barrier = TinyGraphicRenderBarrier{ };
 
 		barrier.Create( bundles );
 
-		_barriers.emplace( pass, barrier );
+		m_barriers.emplace( pass, barrier );
 	}
 }
 
 void TinyGraphicRenderBarrierManager::Transit( TinyGraphicWorkContext& work_context ) {
-	if ( _barriers.find( work_context.WorkRender ) )
-		_barriers[ work_context.WorkRender ].Transit( work_context );
+	if ( m_barriers.find( work_context.WorkRender ) )
+		m_barriers[ work_context.WorkRender ].Transit( work_context );
 }
 
-void TinyGraphicRenderBarrierManager::Terminate( ) { _barriers.clear( ); }
+void TinyGraphicRenderBarrierManager::Terminate( ) { m_barriers.clear( ); }

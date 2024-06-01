@@ -53,21 +53,21 @@ public:
 	using under_layer = tiny_list<under_node>;
 
 private:
-	under_layer _data;
+	under_layer m_node_list;
 
 public:
 	tiny_map( )
-		: _data{ }
+		: m_node_list{ }
 	{ };
 
 	tiny_map( tiny_uint capacity )
-		: _data{ capacity } 
+		: m_node_list{ capacity }
 	{ };
 
 	~tiny_map( ) = default;
 
 	tiny_map& clear( ) {
-		_data.clear( );
+		m_node_list.clear( );
 
 		return tiny_self;
 	};
@@ -76,10 +76,10 @@ public:
 		auto element_n  = tiny_map_node{ alias, element };
 		auto element_id = binary_search( element_n.Hash );
 
-		if ( size( ) > 0 && _data[ element_id ].Hash < element_n.Hash )
+		if ( size( ) > 0 && m_node_list[ element_id ].Hash < element_n.Hash )
 			element_id += 1;
 
-		_data.insert( element_id, element_n );
+		m_node_list.insert( element_id, element_n );
 
 		return tiny_self;
 	};
@@ -135,23 +135,23 @@ public:
 
 	tiny_map& erase( tiny_uint element_id ) {
 		if ( get_is_valid( element_id ) )
-			_data.erase( element_id );
+			m_node_list.erase( element_id );
 
 		return tiny_self;
 	};
 
 	tiny_map& asign( const tiny_map& other ) {
-		_data = other._data;
+		m_node_list = other.m_node_list;
 
 		return tiny_self;
 	};
 
 public:
-	under_layer& get_internal( ) { return _data; };
+	under_layer& get_internal( ) { return m_node_list; };
 
-	tiny_uint size( ) const { return _data.size( ); };
+	tiny_uint size( ) const { return m_node_list.size( ); };
 
-	tiny_uint capacity( ) const { return _data.capacity( ); };
+	tiny_uint capacity( ) const { return m_node_list.capacity( ); };
 
 	bool find( tiny_string string ) const {
 		auto hash = tiny_hash{ string };
@@ -172,49 +172,54 @@ public:
 	};
 
 	bool find( tiny_hash hash, tiny_uint& element_id ) const {
+		auto state = false;
+
 		element_id = binary_search( hash );
 
-		return get_is_valid( element_id ) ? _data[ element_id ].Hash == hash : false;
+		if ( get_is_valid( element_id ) )
+			state = ( m_node_list[ element_id ].Hash == hash );
+
+		return state;
 	};
 
 	bool find_key( tiny_uint element_id, tiny_hash& hash ) const { 
-		auto state = element_id < _data.size( );
+		auto state = element_id < m_node_list.size( );
 
 		if ( state )
-			hash = _data[ element_id ].Hash;
+			hash = m_node_list[ element_id ].Hash;
 
 		return state;
 	};
 
 	bool find_key( tiny_uint element_id, std::string& alias ) const {
-		auto state = element_id < _data.size( );
+		auto state = element_id < m_node_list.size( );
 
 		if ( state )
-			alias = _data[ element_id ].Alias;
+			alias = m_node_list[ element_id ].Alias;
 
 		return state;
 	};
 
 	bool find_key( tiny_uint element_id, tiny_string& alias ) const {
-		auto state = element_id < _data.size( );
+		auto state = element_id < m_node_list.size( );
 
 		if ( state )
-			alias = tiny_string{ _data[ element_id ].Alias };
+			alias = tiny_string{ m_node_list[ element_id ].Alias };
 
 		return state;
 	};
 
-	auto begin( ) { return _data.begin( ); };
+	auto begin( ) { return m_node_list.begin( ); };
 
-	auto end( ) { return _data.end( ); };
+	auto end( ) { return m_node_list.end( ); };
 
-	const auto begin( ) const { return _data.begin( ); };
+	const auto begin( ) const { return m_node_list.begin( ); };
 
-	const auto end( ) const { return _data.end( ); };
+	const auto end( ) const { return m_node_list.end( ); };
 
-	Type& last( ) { return _data.last( ).Data; };
+	Type& last( ) { return m_node_list.last( ).Data; };
 
-	const Type& last( ) const { return _data.last( ).Data; };
+	const Type& last( ) const { return m_node_list.last( ).Data; };
 
 	Type& get( tiny_string string ) {
 		auto hash = tiny_hash{ string };
@@ -225,7 +230,7 @@ public:
 	Type& get( tiny_hash hash ) {
 		auto element_id = binary_search( hash );
 
-		return _data[ element_id ].Data;
+		return m_node_list[ element_id ].Data;
 	};
 
 	const Type& get( tiny_string string ) const {
@@ -237,23 +242,23 @@ public:
 	const Type& get( tiny_hash hash ) const {
 		auto element_id = binary_search( hash );
 
-		return _data[ element_id ].Data;
+		return m_node_list[ element_id ].Data;
 	};
 
 	Type& at( tiny_uint element_id ) {
-		return _data[ element_id ].Data;
+		return m_node_list[ element_id ].Data;
 	};
 
 	const Type& at( tiny_uint element_id ) const {
-		return _data[ element_id ].Data;
+		return m_node_list[ element_id ].Data;
 	};
 
 	under_node& node( tiny_uint node ) {
-		return _data[ node ];
+		return m_node_list[ node ];
 	};
 
 	const under_node& node( tiny_uint node ) const { 
-		return _data[ node ];
+		return m_node_list[ node ];
 	};
 
 private:
@@ -266,10 +271,10 @@ private:
 		while ( low < high ) {
 			pivot = low + ( high - low ) / 2;
 
-			if ( _data[ pivot ].Hash == hash )
+			if ( m_node_list[ pivot ].Hash == hash )
 				break;
 
-			if ( _data[ pivot ].Hash < hash )
+			if ( m_node_list[ pivot ].Hash < hash )
 				low = pivot < max ? pivot + 1 : pivot;
 			else
 				high = pivot;
@@ -282,7 +287,7 @@ public:
 	operator under_layer& ( ) { return get_internal( ); };
 
 	tiny_map& operator=( tiny_uint size ) {
-		_data = size;
+		m_node_list = size;
 
 		return tiny_self;
 	};

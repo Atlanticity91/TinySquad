@@ -28,13 +28,13 @@ tm_abstract_class TinyInputDevice {
 	const tiny_uint MetaSize = tiny_sizeof( KeyMeta ) * KeyCount;
 
 protected:
-	KeyMeta _news[ KeyCount ];
-	KeyMeta _olds[ KeyCount ];
+	KeyMeta m_news[ KeyCount ];
+	KeyMeta m_olds[ KeyCount ];
 
 public:
 	TinyInputDevice( )
-		: _news{ },
-		_olds{ } 
+		: m_news{ },
+		m_olds{ } 
 	{ };
 
 	virtual ~TinyInputDevice( ) = default;
@@ -43,7 +43,7 @@ public:
 
 	tiny_abstract( bool Evaluate( const TinyInputQuery& query ) );
 
-	virtual void Tick( ) { Tiny::Memcpy( _news, _olds, MetaSize ); };
+	virtual void Tick( ) { Tiny::Memcpy( m_news, m_olds, MetaSize ); };
 
 public:
 	tiny_abstract( TinyInputValue GetValue( const TinyInputDescriptor& descriptor ) const );

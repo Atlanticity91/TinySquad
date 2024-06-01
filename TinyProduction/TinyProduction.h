@@ -31,11 +31,10 @@ protected:
 	/**
 	 * Initialize function
 	 * @note : Optional override for custom init action.
-	 * @param engine : Current game engine instance.
 	 * @return : Return True for success, if this function return false the
 	 * 			 game will not start cause init failed.
 	 **/
-	virtual bool Initialize( TinyEngine& engine ) override;
+	virtual bool Initialize( ) override;
 
 	/**
 	 * SetupBundles method

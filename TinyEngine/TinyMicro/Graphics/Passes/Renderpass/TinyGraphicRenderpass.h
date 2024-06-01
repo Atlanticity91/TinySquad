@@ -23,8 +23,8 @@
 tm_class TinyGraphicRenderpass final {
 
 private:
-	VkRenderPass					_handle;
-	TinyGraphicRenderpassProperties _properties;
+	VkRenderPass m_handle;
+	TinyGraphicRenderpassProperties m_properties;
 
 public:
 	TinyGraphicRenderpass( );

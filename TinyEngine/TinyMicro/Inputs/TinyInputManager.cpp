@@ -24,73 +24,73 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyInputManager::TinyInputManager( )
-	: _is_active{ true },
-	_timestep{ },
-	_map{ },
-	_devices{ }
+	: m_is_active{ true },
+	m_timestep{ },
+	m_map{ },
+	m_devices{ }
 { }
 
 bool TinyInputManager::Initialize( TinyFilesystem& file_system, TinyWindow& window ) {
-	_timestep.Initialize( );
+	m_timestep.Initialize( );
 
 	return true;
 }
 
-void TinyInputManager::Lock( ) { _is_active = false; }
+void TinyInputManager::Lock( ) { m_is_active = false; }
 
-void TinyInputManager::UnLock( ) { _is_active = true; }
+void TinyInputManager::UnLock( ) { m_is_active = true; }
 
-void TinyInputManager::Toggle( bool state ) { _is_active = state; }
+void TinyInputManager::Toggle( bool state ) { m_is_active = state; }
 
-void TinyInputManager::Clear( ) { _map.Clear( ); }
+void TinyInputManager::Clear( ) { m_map.Clear( ); }
 
 void TinyInputManager::Register(
 	const tiny_string& input_alias, 
 	tiny_init<TinyInputQuery> querys 
 ) {
-	_map.Register( input_alias, querys );
+	m_map.Register( input_alias, querys );
 }
 
 void TinyInputManager::Register( 
 	const tiny_string& input_alias, 
 	const tiny_list<TinyInputQuery>& querys 
 ) {
-	_map.Register( input_alias, querys );
+	m_map.Register( input_alias, querys );
 }
 
 void TinyInputManager::Lock( const tiny_string& input_alias ) {
 	auto input_hash = tiny_hash{ input_alias };
 
-	_map.Lock( input_hash );
+	m_map.Lock( input_hash );
 }
 
 void TinyInputManager::UnLock( const tiny_string& input_alias ) {
 	auto input_hash = tiny_hash{ input_alias };
 
-	_map.UnLock( input_hash );
+	m_map.UnLock( input_hash );
 }
 
 void TinyInputManager::Toggle( const tiny_string& input_alias, bool state ) {
 	auto input_hash = tiny_hash{ input_alias };
 
 	if ( state )
-		_map.UnLock( input_hash );
+		m_map.UnLock( input_hash );
 	else
-		_map.Lock( input_hash );
+		m_map.Lock( input_hash );
 }
 
 void TinyInputManager::Notify( const TinyInputNotification& notification ) {
-	_devices.Notify( notification );
+	m_devices.Notify( notification );
 }
 
 bool TinyInputManager::Evaluate( const tiny_string& input_alias, bool consume ) {
-	auto state = _is_active;
+	auto state = m_is_active;
 
 	if ( state ) {
 		state = false;
 
 		auto input_hash = tiny_hash{ input_alias };
-		auto* queries   = _map.Query( input_hash );
+		auto* queries   = m_map.Query( input_hash );
 
 		if ( 
 			queries != nullptr			&& 
@@ -99,7 +99,7 @@ bool TinyInputManager::Evaluate( const tiny_string& input_alias, bool consume ) 
 			!queries->IsConsumed 
 		) {
 			for ( const auto& query : queries->Values ) {
-				state = _devices.Evaluate( query );
+				state = m_devices.Evaluate( query );
 
 				if ( state ) {
 					queries->IsConsumed = consume;
@@ -113,13 +113,12 @@ bool TinyInputManager::Evaluate( const tiny_string& input_alias, bool consume ) 
 	return state;
 }
 
-
-void TinyInputManager::Erase( const tiny_string& input ) { _map.Erase( input ); }
+void TinyInputManager::Erase( const tiny_string& input ) { m_map.Erase( input ); }
 
 void TinyInputManager::Tick( ) {
-	_timestep.Tick( );
-	_map.Tick( );
-	_devices.Tick( );
+	m_timestep.Tick( );
+	m_map.Tick( );
+	m_devices.Tick( );
 }
 
 void TinyInputManager::Terminate( TinyFilesystem& file_system, TinyWindow& window ) { }
@@ -127,34 +126,34 @@ void TinyInputManager::Terminate( TinyFilesystem& file_system, TinyWindow& windo
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyInputManager::GetIsActive( ) const { return _is_active; }
+bool TinyInputManager::GetIsActive( ) const { return m_is_active; }
 
-const TinyTimestep& TinyInputManager::GetTimestep( ) const { return _timestep; }
+const TinyTimestep& TinyInputManager::GetTimestep( ) const { return m_timestep; }
 
-tiny_map<TinyInputQueries>& TinyInputManager::GetMap( ) { return _map.Get( ); }
+tiny_map<TinyInputQueries>& TinyInputManager::GetMap( ) { return m_map.Get( ); }
 
-const tiny_map<TinyInputQueries>& TinyInputManager::GetMap( ) const { return _map.Get( ); }
+const tiny_map<TinyInputQueries>& TinyInputManager::GetMap( ) const { return m_map.Get( ); }
 
 bool TinyInputManager::Find( tiny_string input_alias ) const {
 	auto input_hash = tiny_hash{ input_alias };
 
-	return _map.Find( input_hash );
+	return m_map.Find( input_hash );
 }
 
-tiny_vec2 TinyInputManager::GetCursor( ) const { return _devices.GetCursor( ); }
+tiny_vec2 TinyInputManager::GetCursor( ) const { return m_devices.GetCursor( ); }
 
-tiny_vec2 TinyInputManager::GetScroll( ) const { return _devices.GetScroll( ); }
+tiny_vec2 TinyInputManager::GetScroll( ) const { return m_devices.GetScroll( ); }
 
 std::optional<TinyInputJoystick> TinyInputManager::Get( ) const { 
-	return _devices.GetJoystick( ); 
+	return m_devices.GetJoystick( ); 
 }
 
 TinyInputValue TinyInputManager::GetValue( const TinyInputDescriptor& descriptor ) const {
-	return _devices.GetValue( descriptor );
+	return m_devices.GetValue( descriptor );
 }
 
 TinyInputValue TinyInputManager::GetValue( TinyInputDevices device, TinyInputKeys key ) const {
-	return _devices.GetValue( device, key );
+	return m_devices.GetValue( device, key );
 }
 
 bool TinyInputManager::GetButton( const TinyInputDescriptor& descriptor ) const {

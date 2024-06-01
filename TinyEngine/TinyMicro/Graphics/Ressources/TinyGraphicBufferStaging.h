@@ -25,40 +25,40 @@
 tm_class TinyGraphicBufferStaging final {
 
 private:
-	TinyGraphicBuffer _buffer;
-	native_pointer		  _access;
+	TinyGraphicBuffer m_buffer;
+	native_pointer m_access;
 
 public:
 	TinyGraphicBufferStaging( );
 
 	~TinyGraphicBufferStaging( ) = default;
 
-	bool Create( TinyGraphicContext& context, tiny_uint length );
+	bool Create( TinyGraphicWrapper& graphic, tiny_uint length );
 
-	bool CreateMap( TinyGraphicContext& context, tiny_uint length );
+	bool CreateMap( TinyGraphicWrapper& graphic, tiny_uint length );
 
-	bool CreateMap( TinyGraphicContext& context, tiny_uint length, const native_pointer data );
+	bool CreateMap( TinyGraphicWrapper& graphic, tiny_uint length, const native_pointer data );
 
-	tiny_inline bool Map( TinyGraphicContext& context, tiny_uint length );
+	tiny_inline bool Map( TinyGraphicWrapper& graphic, tiny_uint length );
 
-	bool Map( TinyGraphicContext& context, tiny_uint offset, tiny_uint length );
+	bool Map( TinyGraphicWrapper& graphic, tiny_uint offset, tiny_uint length );
 
-	void UnMap( TinyGraphicContext& context );
+	void UnMap( TinyGraphicWrapper& graphic );
 
 	tiny_inline bool Map(
-		TinyGraphicContext& context,
+		TinyGraphicWrapper& graphic,
 		tiny_uint length,
 		const native_pointer data
 	);
 
 	bool Map(
-		TinyGraphicContext& context, 
+		TinyGraphicWrapper& graphic,
 		tiny_uint offset, 
 		tiny_uint length,
 		const native_pointer data
 	);
 
-	void Terminate( TinyGraphicContext& context );
+	void Terminate( TinyGraphicWrapper& graphic );
 
 public:
 	bool GetIsValid( ) const;

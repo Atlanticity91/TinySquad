@@ -36,7 +36,7 @@ public:
 	~TinyGraphicPipeline( ) = default;
 
 	bool Create( 
-		TinyGraphicContext& graphic,
+		TinyGraphicWrapper& graphic,
 		const TinyLimitsStack& limits,
 		const TinyGraphicPipelineSpecification& specification
 	);
@@ -264,7 +264,7 @@ public:
 		tiny_list<TinyGraphicPipelineBindpoint> bindpoints
 	);
 
-	void Terminate( TinyGraphicContext& context );
+	void Terminate( TinyGraphicWrapper& graphic );
 
 public:
 	static void CreateBinding( 
@@ -333,12 +333,12 @@ public:
 
 private:
 	bool CreateRenderPipeline( 
-		TinyGraphicContext& graphic,
+		TinyGraphicWrapper& graphic,
 		const TinyGraphicPipelineSpecification& specification
 	);
 
 	bool CreateComputePipeline( 
-		TinyGraphicContext& graphic,
+		TinyGraphicWrapper& graphic,
 		const TinyGraphicPipelineSpecification& specification
 	);
 

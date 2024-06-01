@@ -24,15 +24,15 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicRenderTargetManager::TinyGraphicRenderTargetManager( )
-	: _targets{ }
+	: m_targets{ }
 { }
 
 bool TinyGraphicRenderTargetManager::Create(
-	TinyGraphicContext& graphic,
+	TinyGraphicWrapper& graphic,
 	const tiny_string& name,
 	const tiny_list<TinyGraphicTextureProperties>& textures
 ) {
-	auto state = _targets.find( name );
+	auto state = m_targets.find( name );
 
 	if ( !state ) {
 		auto target = TinyGraphicRenderTarget{ };
@@ -40,31 +40,33 @@ bool TinyGraphicRenderTargetManager::Create(
 		state = target.Create( graphic, textures );
 
 		if ( state )
-			_targets.emplace( name, target );
+			m_targets.emplace( name, target );
 	}
 
 	return state;
 }
 
-void TinyGraphicRenderTargetManager::Terminate( TinyGraphicContext& graphic ) {
-	for ( auto& target : _targets )
+void TinyGraphicRenderTargetManager::Terminate( TinyGraphicWrapper& graphic ) {
+	for ( auto& target : m_targets )
 		target.Data.Terminate( graphic );
-	_targets.clear( );
+	m_targets.clear( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyGraphicRenderTargetManager::GetExist( const tiny_string& name ) const {
-	return _targets.find( name );
+	return m_targets.find( name );
 }
 
-tiny_uint TinyGraphicRenderTargetManager::GetCount( ) const { return _targets.capacity( ); }
+tiny_uint TinyGraphicRenderTargetManager::GetCount( ) const { 
+	return m_targets.capacity( );
+}
 
 const TinyGraphicRenderTarget& TinyGraphicRenderTargetManager::GetTarget( 
 	tiny_uint target
 ) const {
-	return _targets[ target ];
+	return m_targets[ target ];
 }
 
 const TinyGraphicRenderTarget& TinyGraphicRenderTargetManager::GetTarget( 
@@ -72,7 +74,7 @@ const TinyGraphicRenderTarget& TinyGraphicRenderTargetManager::GetTarget(
 ) const {
 	auto hash = tiny_hash{ name };
 
-	return _targets[ hash ];
+	return m_targets[ hash ];
 }
 
 tiny_list<VkImage> TinyGraphicRenderTargetManager::GetImages( 

@@ -24,8 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicSwapchainTarget::TinyGraphicSwapchainTarget( )
-	: _image{ VK_NULL_HANDLE },
-	_view{ VK_NULL_HANDLE }
+	: m_image{ VK_NULL_HANDLE },
+	m_view{ VK_NULL_HANDLE }
 { }
 
 bool TinyGraphicSwapchainTarget::Create( 
@@ -52,19 +52,19 @@ bool TinyGraphicSwapchainTarget::Create(
 
     view_info.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
-    _image = image;
+    m_image = image;
 
-    return vk::Check( vkCreateImageView( logical, tiny_rvalue( view_info ), vk::GetAllocator( ), tiny_rvalue( _view ) ) );
+    return vk::Check( vkCreateImageView( logical, tiny_rvalue( view_info ), vk::GetAllocator( ), tiny_rvalue( m_view ) ) );
 }
 
 void TinyGraphicSwapchainTarget::Terminate( const TinyGraphicLogical& logical ) {
-    if ( vk::GetIsValid( _view ) )
-        vkDestroyImageView( logical, _view, vk::GetAllocator( ) );
+    if ( vk::GetIsValid( m_view ) )
+        vkDestroyImageView( logical, m_view, vk::GetAllocator( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-const VkImage TinyGraphicSwapchainTarget::GetImage( ) const { return _image; }
+const VkImage TinyGraphicSwapchainTarget::GetImage( ) const { return m_image; }
 
-const VkImageView TinyGraphicSwapchainTarget::GetView( ) const { return _view; }
+const VkImageView TinyGraphicSwapchainTarget::GetView( ) const { return m_view; }

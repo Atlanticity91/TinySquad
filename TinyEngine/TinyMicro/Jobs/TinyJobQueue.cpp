@@ -24,31 +24,31 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyJobQueue::TinyJobQueue( ) 
-    : _mutex_guard{ },
-    _condition_guard{ },
-    _queues{ }
+    : m_mutex_guard{ },
+    m_condition_guard{ },
+    m_queues{ }
 { }
 
 void TinyJobQueue::EnQueue( const TinyJob& job ) {
-    _mutex_guard.lock( );
+    m_mutex_guard.lock( );
 
-    auto& queue = _queues[ job.Priority ];
+    auto& queue = m_queues[ job.Priority ];
     
     queue.enqueue( job );
 
-    _mutex_guard.unlock( );
+    m_mutex_guard.unlock( );
 }
 
 void TinyJobQueue::DeQueue( const TinyJobPriorities priority, TinyJob& job ) {
-    _mutex_guard.lock( );
+    m_mutex_guard.lock( );
 
-    auto& queue = _queues[ priority ];
-    auto task   = queue.dequeue( );
+    auto& queue   = m_queues[ priority ];
+    auto task     = queue.dequeue( );
     auto task_job = task.value( );
 
     Tiny::Memcpy( task_job, job );
 
-    _mutex_guard.unlock( );
+   m_mutex_guard.unlock( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,12 +57,12 @@ void TinyJobQueue::DeQueue( const TinyJobPriorities priority, TinyJob& job ) {
 bool TinyJobQueue::GetHasTask( ) const {
     auto task_count = tiny_cast( 0, tiny_uint );
 
-    _mutex_guard.lock( );
+    m_mutex_guard.lock( );
 
-    for ( auto& queue: _queues )
+    for ( auto& queue: m_queues )
         task_count += queue.size( );
 
-    _mutex_guard.unlock( );
+    m_mutex_guard.unlock( );
 
     return task_count > 0;
 }
@@ -73,9 +73,9 @@ bool TinyJobQueue::GetHasJob(
 ) const { 
     auto state = false;
 
-    _mutex_guard.lock( );
+    m_mutex_guard.lock( );
 
-    for ( auto& queue : _queues ) {
+    for ( auto& queue : m_queues ) {
         auto* task = queue.peek( );
 
         state = task != nullptr && task->Filter == filter;
@@ -87,7 +87,7 @@ bool TinyJobQueue::GetHasJob(
         }
     }
 
-    _mutex_guard.unlock( );
+    m_mutex_guard.unlock( );
 
     return state;
 }

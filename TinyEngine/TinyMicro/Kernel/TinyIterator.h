@@ -33,18 +33,18 @@ public:
 	using reference			= Type&;
 
 private:
-	pointer _data;
+	pointer m_data;
 
 public:
 	tiny_iterator( pointer data )
-		: _data{ data } 
+		: m_data{ data }
 	{ };
 
 	~tiny_iterator( ) = default;
 
 public:
 	tiny_iterator& operator++( ) {
-		_data++;
+		m_data++;
 
 		return tiny_self;
 	};
@@ -52,13 +52,13 @@ public:
 	tiny_iterator operator++( int ) {
 		auto tmp = tiny_self;
 
-		_data++;
+		m_data++;
 
 		return tmp;
 	};
 
 	tiny_iterator& operator--( ) {
-		_data--;
+		m_data--;
 
 		return tiny_self;
 	};
@@ -66,37 +66,37 @@ public:
 	tiny_iterator operator--( int ) {
 		auto tmp = tiny_self;
 
-		_data++;
+		m_data++;
 
 		return tmp;
 	};
 
-	reference operator*( ) const { return *_data; };
+	reference operator*( ) const { return tiny_lvalue( m_data ); };
 
-	pointer operator->( ) { return _data; };
+	pointer operator->( ) { return m_data; };
 
 	bool operator<( const tiny_iterator& other ) {
-		return _data < other._data;
+		return m_data < other.m_data;
 	};
 
 	bool operator<=( const tiny_iterator& other ) {
-		return _data <= other._data;
+		return m_data <= other.m_data;
 	};
 
 	bool operator>( const tiny_iterator& other ) {
-		return _data > other._data;
+		return m_data > other.m_data;
 	};
 
 	bool operator>=( const tiny_iterator& other ) {
-		return _data >= other._data;
+		return m_data >= other.m_data;
 	};
 
 	bool operator==( const tiny_iterator& other ) const {
-		return _data == other._data;
+		return m_data == other.m_data;
 	};
 
 	bool operator!=( const tiny_iterator& other ) const {
-		return _data != other._data;
+		return m_data != other.m_data;
 	};
 
 };

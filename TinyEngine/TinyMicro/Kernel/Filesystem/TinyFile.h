@@ -29,13 +29,13 @@ public:
 
 	virtual ~TinyFile( ) = default;
 
-	tiny_inline bool Seek( tiny_ulong offset );
+	tiny_inline bool Seek( const tiny_ulong offset );
 
-	tiny_abstract( bool Seek( TinyFileOrigin origin, tiny_ulong offset ) );
+	tiny_abstract( bool Seek( const TinyFileOrigin origin, const tiny_ulong offset ) );
 
-	tiny_abstract( tiny_uint Read( tiny_uint length, native_pointer data ) );
+	tiny_abstract( tiny_uint Read( const tiny_uint length, native_pointer data ) );
 
-	tiny_abstract( tiny_uint Write( tiny_uint length, const native_pointer data ) );
+	tiny_abstract( tiny_uint Write( const tiny_uint length, const native_pointer data ) );
 
 	tiny_abstract( bool ReadAll( const tiny_ulong length, native_pointer& storage ) );
 
@@ -43,8 +43,40 @@ public:
 	template<typename Type>
 	bool Seek( ) { return Seek( tiny_sizeof( Type ) ); };
 
+	template<>
+	bool Seek<tiny_string>( ) { return Seek<std::string>( ); };
+
+	template<>
+	bool Seek<std::string>( ) {
+		auto length = tiny_cast( 0, tiny_uint );
+		auto state = false;
+
+		if ( Read( length ) > 0 )
+			state = Seek( TF_ORIGIN_CURSOR, length );
+
+		return state;
+	};
+
 	template<typename Type>
-	bool Seek( TinyFileOrigin origin ) { return Seek( origin, tiny_sizeof( Type ) ); };
+	bool Seek( const TinyFileOrigin origin ) { 
+		return Seek( origin, tiny_sizeof( Type ) ); 
+	};
+
+	template<>
+	bool Seek<tiny_string>( const TinyFileOrigin origin ) { 
+		return Seek<std::string>( origin );
+	};
+
+	template<>
+	bool Seek<std::string>( const TinyFileOrigin origin ) {
+		auto length = tiny_cast( 0, tiny_uint );
+		auto state = false;
+
+		if ( Read( length ) > 0 )
+			state = Seek( origin, length );
+
+		return state;
+	};
 
 	template<typename Type>
 		requires ( !tiny_is_pointer( Type ) && !tiny_is( Type, tiny_string ) )

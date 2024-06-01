@@ -24,8 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicSurface::TinyGraphicSurface( )
-	: _handle{ VK_NULL_HANDLE },
-    _formats{ }
+	: m_handle{ VK_NULL_HANDLE },
+    m_formats{ }
 { }
 
 bool TinyGraphicSurface::Create( TinyWindow& window , TinyGraphicInstance& instance ) {
@@ -37,19 +37,19 @@ bool TinyGraphicSurface::Create( TinyWindow& window , TinyGraphicInstance& insta
     surface_info.hwnd      = glfwGetWin32Window( window );
     surface_info.hinstance = GetModuleHandle( nullptr );
 
-    return vk::Check( vkCreateWin32SurfaceKHR( instance, tiny_rvalue( surface_info ), vk::GetAllocator( ), tiny_rvalue( _handle ) ) );
+    return vk::Check( vkCreateWin32SurfaceKHR( instance, tiny_rvalue( surface_info ), vk::GetAllocator( ), tiny_rvalue( m_handle ) ) );
 #   elif TINY_LINUX
 #   elif TINY_APPLE
 #   endif
 }
 
 bool TinyGraphicSurface::Initialize( const TinyGraphicPhysical& physical ) {
-    return vk::GetPhysicalDeviceSurfaceFormats( physical, _handle, _formats );
+    return vk::GetPhysicalDeviceSurfaceFormats( physical, m_handle, m_formats );
 }
 
 void TinyGraphicSurface::Terminate( TinyGraphicInstance& instance ) {
-    if ( vk::GetIsValid( _handle ) )
-        vkDestroySurfaceKHR( instance, _handle, vk::GetAllocator( ) );
+    if ( vk::GetIsValid( m_handle ) )
+        vkDestroySurfaceKHR( instance, m_handle, vk::GetAllocator( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,16 +60,16 @@ const VkSurfaceCapabilitiesKHR TinyGraphicSurface::GetCapabilities(
 ) const {
     auto capabilities = VkSurfaceCapabilitiesKHR{ };
     
-    vk::Check( vkGetPhysicalDeviceSurfaceCapabilitiesKHR( physical, _handle, tiny_rvalue( capabilities ) ) );
+    vk::Check( vkGetPhysicalDeviceSurfaceCapabilitiesKHR( physical, m_handle, tiny_rvalue( capabilities ) ) );
     
     return capabilities;
 }
 
 const TinyGraphicSurface::VkSurfaceFormatList& TinyGraphicSurface::GetFormats( ) const { 
-    return _formats; 
+    return m_formats; 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicSurface::operator VkSurfaceKHR ( ) const { return _handle; }
+TinyGraphicSurface::operator VkSurfaceKHR ( ) const { return m_handle; }

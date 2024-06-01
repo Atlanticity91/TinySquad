@@ -29,9 +29,9 @@ public:
 
 	~TinyGraphicBufferBinder( ) = default;
 
-	bool Read( TinyGraphicContext& context, const TinyGraphicBufferBind& bind );
+	bool Read( TinyGraphicWrapper& graphic, const TinyGraphicBufferBind& bind );
 
-	bool Write( TinyGraphicContext& context, const TinyGraphicBufferBind& bind );
+	bool Write( TinyGraphicWrapper& graphic, const TinyGraphicBufferBind& bind );
 
 private:
 	VkDeviceMemory Map(
@@ -45,24 +45,24 @@ private:
 public:
 	template<typename Type>
 	bool Read( 
-		TinyGraphicContext& context, 
+		TinyGraphicWrapper& graphic,
 		const TinyGraphicBufferBind& bind, 
 		Type& data
 	) {
 		auto* data_ptr = tiny_cast( tiny_rvalue( data ), native_pointer );
 
-		return Read( context, { bind, data_ptr } );
+		return Read( graphic, { bind, data_ptr } );
 	};
 
 	template<typename Type>
 	bool Write(
-		TinyGraphicContext& context, 
+		TinyGraphicWrapper& graphic,
 		const TinyGraphicBufferBind& bind,
 		Type& data
 	) {
 		auto* data_ptr = tiny_cast( tiny_rvalue( data ), native_pointer );
 
-		return Write( context, { bind, data_ptr } );
+		return Write( graphic, { bind, data_ptr } );
 	};
 
 };

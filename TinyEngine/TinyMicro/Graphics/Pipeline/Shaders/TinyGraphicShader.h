@@ -36,11 +36,11 @@ public:
 	~TinyGraphicShader( ) = default;
 
 	bool Create(
-		const TinyGraphicContext& context,
+		const TinyGraphicWrapper& graphic,
 		const TinyGraphicShaderSpecification& specification
 	);
 
-	void Terminate( const TinyGraphicContext& context );
+	void Terminate( const TinyGraphicWrapper& graphic );
 
 public:
 	const VkPipelineShaderStageCreateInfo& Get( );

@@ -25,9 +25,9 @@
 tm_class TinyGraphicBuffer final {
 
 private:
-	VkDescriptorBufferInfo		   _descriptor;
-	TinyGraphicBufferSpecification _properties;
-	TinyGraphicMemory		 	   _memory;
+	VkDescriptorBufferInfo m_descriptor;
+	TinyGraphicBufferSpecification m_properties;
+	TinyGraphicMemory m_memory;
 
 public:
 	TinyGraphicBuffer( );
@@ -35,11 +35,11 @@ public:
 	~TinyGraphicBuffer( ) = default;
 
 	bool Create( 
-		TinyGraphicContext& context,
+		TinyGraphicWrapper& graphic,
 		const TinyGraphicBufferSpecification& properties
 	);
 
-	void Terminate( TinyGraphicContext& context );
+	void Terminate( TinyGraphicWrapper& graphic );
 
 private:
 	bool CreateBuffer( 
@@ -47,7 +47,7 @@ private:
 		const TinyGraphicQueueManager& queues 
 	);
 
-	bool AllocateBuffer( TinyGraphicContext& context );
+	bool AllocateBuffer( TinyGraphicWrapper& graphic );
 
 public:
 	bool GetIsValid( ) const;

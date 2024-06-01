@@ -57,7 +57,7 @@ bool TinySound2D::SetCue( TinyGame* game, const tiny_string& cue_name ) {
 		state = assets.Acquire( game, _cue );
 
 		if ( !state )
-			_cue.Hash = 0;
+			_cue.Hash.undefined( );
 	}
 
 	return state;

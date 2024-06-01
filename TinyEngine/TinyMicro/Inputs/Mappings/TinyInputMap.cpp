@@ -24,10 +24,10 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyInputMap::TinyInputMap( )
-	: _queries{ }
+	: m_queries{ }
 { }
 
-void TinyInputMap::Clear( ) { _queries.clear( ); }
+void TinyInputMap::Clear( ) { m_queries.clear( ); }
 
 void TinyInputMap::Register(
 	const tiny_string& input_alias, 
@@ -36,9 +36,9 @@ void TinyInputMap::Register(
 	auto input_hash = tiny_hash{ input_alias };
 	
 	if ( !Find( input_hash ) )
-		_queries.emplace( input_alias, { true, true, { } } );
+		m_queries.emplace( input_alias, { true, true, { } } );
 	
-	_queries[ input_hash ].Values.emplace_back( querys );
+	m_queries[ input_hash ].Values.emplace_back( querys );
 }
 
 void TinyInputMap::Register( 
@@ -48,9 +48,9 @@ void TinyInputMap::Register(
 	auto input_hash = tiny_hash{ input_alias };
 
 	if ( !Find( input_hash ) )
-		_queries.emplace( input_alias, { true, true, { } } );
+		m_queries.emplace( input_alias, { true, true, { } } );
 
-	_queries[ input_hash ].Values.emplace_back( querys );
+	m_queries[ input_hash ].Values.emplace_back( querys );
 }
 
 void TinyInputMap::Lock( tiny_hash input_hash ) { 
@@ -68,25 +68,30 @@ void TinyInputMap::UnLock( tiny_hash input_hash ) {
 }
 
 void TinyInputMap::Erase( const tiny_string& input ) {
-	_queries.erase( input );
+	m_queries.erase( input );
 }
 
 void TinyInputMap::Tick( ) {
-	for ( auto& query : _queries )
+	for ( auto& query : m_queries )
 		query.Data.IsConsumed = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_map<TinyInputQueries>& TinyInputMap::Get( ) { return _queries; }
+tiny_map<TinyInputQueries>& TinyInputMap::Get( ) { return m_queries; }
 
-const tiny_map<TinyInputQueries>& TinyInputMap::Get( ) const { return _queries; }
+const tiny_map<TinyInputQueries>& TinyInputMap::Get( ) const { return m_queries; }
 
 bool TinyInputMap::Find( tiny_hash input_hash ) const { 
-	return _queries.find( input_hash ); 
+	return m_queries.find( input_hash );
 }
 
 TinyInputQueries* TinyInputMap::Query( tiny_hash input_hash ) {
-	return Find( input_hash ) ? &_queries[ input_hash ] : nullptr;
+	auto* queries = tiny_cast( nullptr, TinyInputQueries* );
+
+	if ( Find( input_hash ) )
+		queries = tiny_rvalue( m_queries[ input_hash ] );
+
+	return queries;
 }

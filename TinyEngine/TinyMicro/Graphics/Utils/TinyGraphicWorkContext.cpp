@@ -23,15 +23,15 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyGraphicWorkContext::TinyGraphicWorkContext( TinyGraphicLogical& logical )
+TinyGraphicWorkContext::TinyGraphicWorkContext( TinyGraphicLogical* logical )
 	: WorkID{ 0 },
 	WorkImage{ 0 },
 	WorkPass{ 0 },
 	WorkRender{ },
 	Type{ VK_QUEUE_TYPE_UNDEFINED },
+	Logical{ logical },
 	Queue{ nullptr },
-	Sync{ nullptr },
-	Logical{ logical }
+	Sync{ nullptr }
 { }
 
 void TinyGraphicWorkContext::Acquire( 
@@ -74,7 +74,7 @@ void TinyGraphicWorkContext::Submit(
 		submit_info.pSignalSemaphores    = Sync->GetPresent( );
 
 		vk::Check( vkQueueSubmit( Queue->Queue, 1, tiny_rvalue( submit_info ), tiny_lvalue( Sync->GetFence( ) ) ) );
-		vk::Check( vkWaitForFences( Logical, 1, Sync->GetFence( ), VK_TRUE, UINT_MAX ) );	
+		vk::Check( vkWaitForFences( tiny_lvalue( Logical ), 1, Sync->GetFence( ), VK_TRUE, UINT_MAX ) );	
 	}
 }
 

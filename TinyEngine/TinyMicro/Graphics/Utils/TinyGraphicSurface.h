@@ -27,8 +27,8 @@ tm_class TinyGraphicSurface final {
 	using VkSurfaceFormatList = tiny_list<VkSurfaceFormatKHR>;
 
 private:
-	VkSurfaceKHR		_handle;
-	VkSurfaceFormatList	_formats;
+	VkSurfaceKHR m_handle;
+	VkSurfaceFormatList	m_formats;
 
 public:
 	TinyGraphicSurface( );

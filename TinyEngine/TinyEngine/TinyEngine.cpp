@@ -121,6 +121,7 @@ void TinyEngine::PostTick( TinyGame* game ) {
 void TinyEngine::Terminate( TinyGame* game ) {
 	auto& scripts = _assets.GetScripts( );
 
+	_is_running = false;
 	_toolbox.Terminate( game );
 	_provider.Terminate( _filesystem );
 	_addons.Terminate( game );
@@ -190,11 +191,18 @@ void TinyEngine::JobWorkerRun(
 	auto* game_		  = tiny_cast( game, TinyGame* );
 	auto job		  = TinyJob{ };
 
-	while ( game_->GetIsRunning( ) ) {
-		auto lock = std::unique_lock{ thread_guard };
+	while ( true ) {
+		thread_guard.lock( );
+		
+		if ( !game_->GetIsRunning( ) )
+			return;
+
+		thread_guard.unlock( );
 
 		if ( queues.GetHasJob( filter, priority ) || queues.GetHasJob( TJ_FILTER_NONE, priority ) ) {
 			queues.DeQueue( priority, job );
+
+			thread_guard.lock( );
 
 			auto result = std::invoke( job.Task, job.Data, game );
 
@@ -202,6 +210,8 @@ void TinyEngine::JobWorkerRun(
 				std::invoke( job.Success, job.Data, game );
 			else if ( !result && job.Failure )
 				std::invoke( job.Failure, job.Data, game );
+
+			thread_guard.unlock( );
 		} else
 			tiny_sleep_for( 250 );
 	}

@@ -36,10 +36,10 @@ TinyGraphicShader::TinyGraphicShader( const TinyGraphicShader& other )
 }
 
 bool TinyGraphicShader::Create(
-    const TinyGraphicContext& context, 
+    const TinyGraphicWrapper& graphic,
     const TinyGraphicShaderSpecification& specification
 ) {
-    auto state = GetShaderModule( context.Logical, specification );
+    auto state = GetShaderModule( graphic.Logical, specification );
 
     if ( state )
         GetProperties( specification );
@@ -47,9 +47,9 @@ bool TinyGraphicShader::Create(
     return state;
 }
 
-void TinyGraphicShader::Terminate( const TinyGraphicContext& context ) {
+void TinyGraphicShader::Terminate( const TinyGraphicWrapper& graphic ) {
     if ( vk::GetIsValid( _pipeline_stage.module ) ) 
-        vkDestroyShaderModule( context.Logical, _pipeline_stage.module, vk::GetAllocator( ) );
+        vkDestroyShaderModule( graphic.Logical, _pipeline_stage.module, vk::GetAllocator( ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

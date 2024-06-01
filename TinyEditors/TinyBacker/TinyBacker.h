@@ -32,8 +32,10 @@ struct TinyBackerArchive {
 class TinyBacker final : tiny_inherit( TinyNut ) {
 
 private:
-	TinyImGui::DropdownContext _dropdown;
-	TinyBackerArchive _archive;
+	TinyImGui::DropdownContext m_dropdown;
+	TinyBackerArchive m_archive;
+	tiny_hash m_delete_entry;
+	std::string m_import_path;
 
 public:
 	TinyBacker( );
@@ -51,6 +53,8 @@ private:
 	void LoadContent( );
 
 	void ImportAsset( );
+
+	tiny_inline bool ImportAsset( const std::string& path );
 
 	void DrawEntry( tiny_uint entry_id, tiny_map_node<TinyArchiveEntryBuilder>& entry_node );
 

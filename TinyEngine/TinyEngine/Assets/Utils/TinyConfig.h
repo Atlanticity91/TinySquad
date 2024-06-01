@@ -38,9 +38,9 @@ public:
 
 	void AddArchive( const std::string& archive );
 
-	bool Load( TinyFile& file );
+	bool Load( TinyFilesystem& filesystem, TinyFile& file );
 
-	void Save( TinyFile& file );
+	void Save( TinyFilesystem& filesystem, TinyFile& file );
 
 public:
 	const TinyAppConfig& GetAppConfig( ) const;

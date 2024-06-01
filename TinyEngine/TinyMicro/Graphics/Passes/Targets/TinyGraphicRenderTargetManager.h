@@ -23,7 +23,7 @@
 tm_class TinyGraphicRenderTargetManager final {
 
 private:
-	tiny_map<TinyGraphicRenderTarget> _targets;
+	tiny_map<TinyGraphicRenderTarget> m_targets;
 
 public:
 	TinyGraphicRenderTargetManager( );
@@ -31,12 +31,12 @@ public:
 	~TinyGraphicRenderTargetManager( ) = default;
 
 	bool Create(
-		TinyGraphicContext& graphic,
+		TinyGraphicWrapper& graphic,
 		const tiny_string& name,
 		const tiny_list<TinyGraphicTextureProperties>& textures
 	);
 
-	void Terminate( TinyGraphicContext& graphic );
+	void Terminate( TinyGraphicWrapper& graphic );
 
 public:
 	bool GetExist( const tiny_string& name ) const;

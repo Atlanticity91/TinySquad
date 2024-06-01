@@ -25,8 +25,9 @@
 tm_class TinyGraphicPipelineManager final {
 
 private:
-	VkPipelineCache			  _cache;
-	TinyLimitsStack			  _limits;
+	bool m_use_cache;
+	VkPipelineCache	m_cache;
+	TinyLimitsStack	m_limits;
 
 public:
 	TinyGraphicPipelineManager( );
@@ -35,7 +36,11 @@ public:
 
 	bool Initialize( TinyFilesystem& filesystem, TinyGraphicLogical& logical );
 
-	TinyGraphicPipelineSpecification Create( TinyGraphicPipelineTypes type );
+	void EnableCache( );
+
+	void DisableCache( );
+
+	TinyGraphicPipelineSpecification Create( const TinyGraphicPipelineTypes type );
 
 	void Terminate( TinyFilesystem& filesystem, TinyGraphicLogical& logical );
 
@@ -55,6 +60,8 @@ private:
 	TinyGraphicPipelineSpecification CreatePipelineCompute( );
 
 public:
+	bool GetUseCache( ) const;
+
 	const VkPipelineCache& GetCache( ) const;
 
 	const TinyLimitsStack& GetLimits( ) const;

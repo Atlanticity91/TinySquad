@@ -146,10 +146,9 @@ protected:
 	/**
 	 * Initialize function
 	 * @note : Initialize current game instance.
-	 * @param engine : Current Engine instance.
 	 * @return : bool
 	 **/
-	tiny_virtualv( true, bool Initialize( TinyEngine& engine ) );
+	tiny_virtualv( true, bool Initialize( ) );
 	
 	/**
 	 * LoadInterop method

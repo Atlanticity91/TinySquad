@@ -45,11 +45,11 @@ tm_struct TinyInputJoystick {
 tm_class TinyInputDeviceJoystick final {
 
 private:
-	bool				  _is_present;
-	tiny_uint			  _joystick;
-	tiny_vec2			  _deadzones;
-	TinyInputJoystickMeta _news;
-	TinyInputJoystickMeta _olds;
+	bool m_is_present;
+	tiny_uint m_joystick;
+	tiny_vec2 m_deadzones;
+	TinyInputJoystickMeta m_news;
+	TinyInputJoystickMeta m_olds;
 
 public:
 	TinyInputDeviceJoystick( );
