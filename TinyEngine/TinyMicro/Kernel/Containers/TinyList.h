@@ -41,15 +41,15 @@ public:
 		m_data.resize( capacity > 0 ? capacity : 1 );
 	};
 
-	tiny_list( tiny_init<Type> elements )
-		: m_data{ elements }
-	{ };
-
 	tiny_list( const Type& element )
 		: tiny_list{ }
 	{
 		emplace_back( element );
 	};
+
+	tiny_list( tiny_init<Type> elements )
+		: m_data{ elements } 
+	{ };
 
 	tiny_list( const tiny_uint capacity, const Type& def_value )
 		: m_data{ }
@@ -103,18 +103,42 @@ public:
 		return insert( capacity, element );
 	};
 
-	tiny_list& emplace_back( tiny_init<Type> elements ) {
-		auto list_end = m_data.end( );
+	tiny_list& append_front( tiny_init<Type> elements ) {
+		auto first_element = elements.begin( );
+		auto last_element  = elements.end( );
+		auto list_start	   = m_data.begin( );
 
-		m_data.insert( list_end, elements.begin( ), elements.end( ) );
+		m_data.insert( list_start, first_element, last_element );
 
 		return tiny_self;
 	};
 
-	tiny_list& emplace_back( const tiny_list<Type>& elements ) {
-		auto list_end = m_data.end( );
+	tiny_list& append_front( const tiny_list<Type>& elements ) {
+		auto first_element = elements.begin( );
+		auto last_element  = elements.end( );
+		auto list_start	   = m_data.begin( );
 
-		m_data.insert( list_end, elements.begin( ), elements.end( ) );
+		m_data.insert( list_start, first_element, last_element );
+
+		return tiny_self;
+	};
+
+	tiny_list& append_back( tiny_init<Type> elements ) {
+		auto first_element = elements.begin( );
+		auto last_element  = elements.end( );
+		auto list_end	   = m_data.end( );
+
+		m_data.insert( list_end, first_element, last_element );
+
+		return tiny_self;
+	};
+
+	tiny_list& append_back( const tiny_list<Type>& elements ) {
+		auto first_element = elements.begin( );
+		auto last_element  = elements.end( );
+		auto list_end	   = m_data.end( );
+
+		m_data.insert( list_end, first_element, last_element );
 
 		return tiny_self;
 	};
@@ -126,10 +150,16 @@ public:
 		return tiny_self;
 	};
 
-	tiny_list& duplicate_last( ) { return duplicate( size( ) - 1 ); };
+	tiny_list& duplicate_last( ) { 
+		auto last_id = size( ) - 1;
+
+		return duplicate( last_id ); 
+	};
 	
 	tiny_list& swap( const tiny_uint src_id, const tiny_uint dst_id ) {
-		if ( src_id != dst_id && src_id < size( ) && dst_id < size( ) ) {
+		auto list_size = size( );
+
+		if ( src_id != dst_id && src_id < list_size && dst_id < list_size ) {
 			auto element = m_data[ src_id ];
 
 			m_data[ src_id ] = m_data[ dst_id ];
@@ -189,7 +219,11 @@ public:
 
 	std::optional<Type> pop_front( ) { return erase( 0 ); };
 
-	std::optional<Type> pop_back( ) { return erase( size( ) - 1 ); };
+	std::optional<Type> pop_back( ) { 
+		auto last_id = size( ) - 1;
+
+		return erase( last_id );
+	};
 
 	tiny_list& asign( const tiny_list& other ) { 
 		m_data = other.m_data;
@@ -208,10 +242,10 @@ public:
 
 public:
 	template<typename... Args>
-	tiny_list& create( tiny_uint element_id, Args&&... args) {
+	tiny_list& create_front( Args&&... args ) {
 		auto element = Type{ std::forward<Args>( args )... };
 
-		return insert( element_id, element );
+		return emplace_front( element );
 	};
 
 	template<typename... Args>
@@ -222,10 +256,10 @@ public:
 	};
 
 	template<typename... Args>
-	tiny_list& create_front( tiny_uint element_id, Args&&... args ) {
+	tiny_list& create_at( tiny_uint element_id, Args&&... args ) {
 		auto element = Type{ std::forward<Args>( args )... };
 
-		return emplace_front( element );
+		return insert( element_id, element );
 	};
 
 public:

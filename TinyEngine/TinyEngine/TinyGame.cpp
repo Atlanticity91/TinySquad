@@ -105,6 +105,8 @@ void TinyGame::Close( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+void TinyGame::DisableGameFolder( ) { m_engine.DisableGameFolder( ); }
+
 bool TinyGame::ProcessArguments( tiny_int argc, char** argv ) { return true; }
 
 void TinyGame::SetupBundles2D( TinyGraphicManager& graphics ) {

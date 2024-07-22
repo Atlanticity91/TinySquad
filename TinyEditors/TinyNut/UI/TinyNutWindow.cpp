@@ -221,7 +221,8 @@ void TinyNutWindow::DrawMenubar( TinyNut* nut_game, bool is_maximized ) {
 		}
 	};
 
-	if ( TinyNutUI::BeginMenubar( bounding ) ) 
+
+	if ( TinyNutUI::BeginMenubar( bounding ) )
 		nut_game->TickMenubar( );
 
 	TinyNutUI::EndMenubar( );

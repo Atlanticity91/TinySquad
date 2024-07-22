@@ -31,7 +31,9 @@ TinyNut::TinyNut( const tiny_string& title, bool enable_dockspace )
 	: TinyGame{ "TinySquadStudio", title, TGO_PAYSAGE_16x9, true },
 	m_context{ },
 	m_window{ title, enable_dockspace }
-{ }
+{ 
+	DisableGameFolder( );
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PROTECTED ===

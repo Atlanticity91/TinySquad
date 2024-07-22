@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyMicro/Kernel/Filesystem/TinyFilesystem.h>
+#include "TinyMath.h"
 
 #define tiny_range_b(  min, max ) tiny_range<tiny_byte, min, max>
 #define tiny_range_ub( min, max ) tiny_range<tiny_ubyte, min, max>

@@ -25,17 +25,27 @@
 struct TinyBackerArchive { 
 
 	TinyAssetHeader Header{ };
-	TinyArchiveBuilder Archive{ };
+	tiny_buffer<32> Author{ };
+	tiny_map<TinyArchiveEntryBuilder> Entries{ };
+
+};
+
+struct TinyBackerFailSpecification {
+
+	std::string Path{ };
+	std::string Cause{ };
 
 };
 
 class TinyBacker final : tiny_inherit( TinyNut ) {
 
 private:
-	TinyImGui::DropdownContext m_dropdown;
+	TinyImGui::DropdownContext m_history;
 	TinyBackerArchive m_archive;
 	tiny_hash m_delete_entry;
 	std::string m_import_path;
+
+	tiny_list<TinyBackerFailSpecification> m_import_fails;
 
 public:
 	TinyBacker( );
@@ -50,8 +60,6 @@ protected:
 	tiny_implement( void TickUI( ) );
 
 private:
-	void LoadContent( );
-
 	void ImportAsset( );
 
 	tiny_inline bool ImportAsset( const std::string& path );
@@ -61,6 +69,12 @@ private:
 	void DrawContent( );
 
 	void DrawPopups( );
+
+	void CreateArchive( );
+
+	void LoadArchive( const std::string& path );
+
+	void SaveArchive( const std::string& path );
 
 private:
 	native_string TypeToStr( const tiny_uint type ) const;

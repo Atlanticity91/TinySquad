@@ -111,7 +111,13 @@ bool TinyWindow::GetIsFullScreen( ) const { return ( m_flags & TW_FLAG_FULL_SCRE
 
 const GlfwWindow& TinyWindow::GetHandle( ) const { return m_handle; }
 
+#ifdef TINY_WIN
 HWND TinyWindow::GetWin32Handle( ) const { return glfwGetWin32Window( m_handle ); }
+#	elif TINY_LINUX
+Window TinyWindow::GetLinuxHandle( ) const { return glfwGetX11Window( m_handle ); }
+#	elif TINY_APPLE
+id TinyWindow::GetOsXHandle( ) const { return glfwGetCocoaWindow( m_handle ); }
+#endif
 
 bool TinyWindow::GetShouldRun( ) const { return !glfwWindowShouldClose( m_handle ); }
 
@@ -142,7 +148,13 @@ TinyWindow::operator bool ( ) const { return GetShouldRun( ); }
 
 TinyWindow::operator GLFWwindow* ( ) const { return GetHandle( ); }
 
+#ifdef TINY_WIN
 TinyWindow::operator HWND ( ) const { return GetWin32Handle( ); }
+#	elif TINY_LINUX
+TinyWindow::operator Window const{ return GetLinuxHandle( ); }
+#	elif TINY_APPLE
+TinyWindow::operator id ( ) const { return GetOsXHandle( ); }
+#endif
 
 TinyWindow::operator tiny_vec2 ( ) const { return GetDimensions_v( ); }
 

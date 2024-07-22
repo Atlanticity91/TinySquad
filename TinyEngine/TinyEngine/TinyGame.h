@@ -145,6 +145,13 @@ public:
 
 protected:
 	/**
+	 * DisableGameFolder method
+	 * @note : Disable the creation and access to default game folder over the api,
+	 *		   most use are for Nut Tool.
+	 **/
+	void DisableGameFolder( );
+
+	/**
 	 * ProcessArguments function
 	 * @note : Process passed argument.
 	 * @param argc : Current argument count.

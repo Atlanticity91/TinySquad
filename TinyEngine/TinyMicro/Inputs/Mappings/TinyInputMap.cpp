@@ -38,7 +38,7 @@ void TinyInputMap::Register(
 	if ( !Find( input_hash ) )
 		m_queries.emplace( input_alias, { true, true, { } } );
 	
-	m_queries[ input_hash ].Values.emplace_back( querys );
+	m_queries[ input_hash ].Values.append_back( querys );
 }
 
 void TinyInputMap::Register( 
@@ -50,7 +50,7 @@ void TinyInputMap::Register(
 	if ( !Find( input_hash ) )
 		m_queries.emplace( input_alias, { true, true, { } } );
 
-	m_queries[ input_hash ].Values.emplace_back( querys );
+	m_queries[ input_hash ].Values.append_back( querys );
 }
 
 void TinyInputMap::Lock( tiny_hash input_hash ) { 

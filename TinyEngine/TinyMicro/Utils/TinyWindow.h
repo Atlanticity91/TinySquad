@@ -82,7 +82,13 @@ public:
 
 	const GlfwWindow& GetHandle( ) const;
 
+#	ifdef TINY_WIN
 	HWND GetWin32Handle( ) const;
+#	elif TINY_LINUX
+	Window GetLinuxHandle( ) const;
+#	elif TINY_APPLE
+	id TinyWindow::GetOsXHandle( ) const;
+#	endif
 
 	bool GetShouldRun( ) const;
 
@@ -96,8 +102,13 @@ public:
 
 public:
 	operator GLFWwindow* ( ) const;
-
+#	ifdef TINY_WIN
 	operator HWND ( ) const;
+#	elif TINY_LINUX
+	operator Window const;
+#	elif TINY_APPLE
+	operator id ( ) const;
+#	endif
 
 	operator bool( ) const;
 

@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyMath.h"
+#include "Maths/TinyRandom.h"
 
 template<typename Type>
 class tiny_iterator final {

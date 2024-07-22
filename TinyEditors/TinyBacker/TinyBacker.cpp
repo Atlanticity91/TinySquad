@@ -25,20 +25,19 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyBacker::TinyBacker( )
     : TinyNut{ "Tiny Backer" },
-    m_dropdown{ "..." },
+    m_history{ "..." },
     m_archive{ },
     m_delete_entry{ },
-    m_import_path{ }
-{
-    DisableCache( );
-}
+    m_import_path{ },
+    m_import_fails{ }
+{ }
 
 void TinyBacker::OnDragDrop( tiny_int path_count, native_string drop_paths[] ) {
     while ( path_count-- > 0 ) {
         m_import_path = drop_paths[ path_count ];
 
         if ( !ImportAsset( m_import_path ) )
-            return;
+            m_import_fails.create_back( m_import_path, "Undefined" );
     }
 }
 
@@ -78,37 +77,14 @@ void TinyBacker::TickMenubar( ) {
 void TinyBacker::TickUI( ) {
     TinyImGui::BeginVars( );
     
-    auto& fs = GetFilesystem( );
-    fs.SetExecutable( "", "" );
-
-
-    //TinyImGui::Dropdown( "Pack", );
-    TinyImGui::InputBegin( "Pack" );
-
-    /*
-    auto list = tiny_list<native_string>{ };
+    if ( TinyImGui::Dropdown( "Pack", m_history ) ) {
+        if ( m_history.Index == 0 )
+            CreateArchive( );
+        else
+            LoadArchive( { m_history.Values[ m_history.Index ] } );
+    }
     
-    TINY_IMGUI_SCOPE_ID(
-        if ( ImGui::Combo( "", tiny_rvalue( _history_id ), list.data( ), (int)list.size( ) ) ) {
-            if ( _history_id == 0 ) {
-                auto& filesystem = GetFilesystem( );
-                auto path = filesystem.GetDevDir( );
-
-                if ( filesystem.OpenDialog( TD_TYPE_OPEM_FILE, "", path ) ) {
-                    auto path_str = path.c_str( );
-
-                    _history_id = _history.size( );
-                    _history.emplace_back( path_str );
-
-                    LoadContent( );
-                }
-            }
-        }
-    );
-    */
-    TinyImGui::InputEnd( );
-    
-    TinyImGui::TextVar( "Author", "%s", m_archive.Archive.Author );
+    TinyImGui::InputText( "Author", m_archive.Author );
     TinyImGui::TextVar( 
         "Version", "%d.%d.%d", 
         Tiny::GetVersionMajor( m_archive.Header.Version ),
@@ -124,8 +100,13 @@ void TinyBacker::TickUI( ) {
 
     ImGui::SeparatorText( "Content" );
 
-    if ( ImGui::Button( "Import" ) )
+    if ( TinyImGui::ButtonIcon( TF_ICON_DOWNLOAD, "Import" ) )
         ImportAsset( );
+
+    ImGui::SameLine( );
+
+    if ( TinyImGui::ButtonIcon( TF_ICON_SAVE, "Save" ) )
+        SaveArchive( { m_history.Values[ m_history.Index ] } );
 
     DrawContent( );
     DrawPopups( );
@@ -134,8 +115,6 @@ void TinyBacker::TickUI( ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-void TinyBacker::LoadContent( ) { }
-
 void TinyBacker::ImportAsset( ) {
     auto& filesystem  = GetFilesystem( );
     auto file_dialog  = TinyFileDialog{ };
@@ -150,11 +129,7 @@ void TinyBacker::ImportAsset( ) {
     if ( Tiny::OpenDialog( file_dialog, file_length, file_string ) ) {
         auto asset_path = file_buffer.as_string( );
 
-        if ( ImportAsset( asset_path ) ) {
-
-
-            //_archive.Archive.Entries.emplace( "", { } );
-        }
+        ImportAsset( asset_path );
     }
 }
 
@@ -163,7 +138,9 @@ bool TinyBacker::ImportAsset( const std::string& path ) {
     auto path_   = tiny_string{ path };
     auto state   = assets.Import( this, path_ );
 
-    if ( !state )
+    if ( state ) {
+        // m_archive.Archive.Entries.emplace( "", { } );
+    } else
         ImGui::OpenPopup( "Import Fail" );
 
     return state;
@@ -194,11 +171,13 @@ void TinyBacker::DrawEntry(
 
     ImGui::TableNextColumn( );
 
-    /*
     TINY_IMGUI_SCOPE_ID(
-        ImGui::Checkbox( "", tiny_rvalue( entry.IsCompressed ) );
+        auto is_compressed = entry.Compresed > 0;
+        
+        ImGui::BeginDisabled( );
+        ImGui::Checkbox( "", tiny_rvalue( is_compressed ) );
+        ImGui::EndDisabled( );
     );
-    */
 
     {
         ImGui::TableNextColumn( );
@@ -215,7 +194,7 @@ void TinyBacker::DrawContent( ) {
     const auto char_size = ImGui::CalcTextSize( "#" ).x;
 
     if ( m_delete_entry.get_is_valid( ) ) {
-        m_archive.Archive.Entries.erase( m_delete_entry );
+        m_archive.Entries.erase( m_delete_entry );
 
         m_delete_entry.undefined( );
     }
@@ -230,7 +209,7 @@ void TinyBacker::DrawContent( ) {
 
         auto entry_id = tiny_cast( 0, tiny_uint );
 
-        for ( auto& entry : m_archive.Archive.Entries )
+        for ( auto& entry : m_archive.Entries )
             DrawEntry( entry_id++, entry );
         
         ImGui::EndTable( );
@@ -241,7 +220,6 @@ void TinyBacker::DrawPopups( ) {
     if ( ImGui::BeginPopupModal( "Import Fail", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) ) {
         auto& window = GetNutWindow( );
         auto* icon   = window.GetIcon( "Logo" );
-        auto* path   = m_import_path.c_str( );
 
         ImGui::Image( icon->Icon.Descriptor, { 48.f, 48.f } );
 
@@ -249,14 +227,68 @@ void TinyBacker::DrawPopups( ) {
         TinyImGui::ShiftCursorX( 20.f );
 
         ImGui::BeginGroup( );
-        ImGui::Text( "Failed to import asset :" );
-        ImGui::Text( path );
+
+        for ( auto& fail : m_import_fails ) {
+            auto* fail_cause = fail.Cause.c_str( );
+            auto* fail_path  = fail.Path.c_str( );
+
+            ImGui::SeparatorText( fail_path );
+           
+            ImGui::Text( "Importation failed cause(s) : " );
+            ImGui::Text( fail_cause );
+
+            ImGui::Separator( );
+        }
+
         ImGui::EndGroup( );
 
-        if ( ImGui::Button( "Close" ) ) 
+        if ( ImGui::Button( "Close" ) ) {
             ImGui::CloseCurrentPopup( );
 
+            m_import_fails.clear( );
+        }
+
         ImGui::EndPopup( );
+    }
+}
+
+void TinyBacker::CreateArchive( ) {
+    m_archive.Header = TinyAssetHeader{ };
+    m_archive.Author = "";
+    m_archive.Entries.clear( );
+}
+
+void TinyBacker::LoadArchive( const std::string& path ) {
+    if ( !path.empty( ) ) {
+        auto& filesystem = GetFilesystem( );
+        auto file        = filesystem.OpenFile( path, TF_ACCESS_BINARY_READ );
+
+        if ( true )
+            SaveArchive( "" );
+
+        if ( file.GetIsValid( ) ) {
+
+        }
+    }
+}
+
+void TinyBacker::SaveArchive( const std::string& path ) {
+    if ( !path.empty( ) ) {
+        auto& filesystem = GetFilesystem( );
+        auto& assets     = GetAssets( );
+
+        if ( path == "..." ) {
+            if ( Tiny::OpenDialog( { }, 0, nullptr ) ) {
+
+            } else
+                return;
+        }
+
+        auto file = filesystem.OpenFile( path, TF_ACCESS_BINARY_WRITE );
+
+        if ( file.GetIsValid( ) ) {
+            assets.Export( file, {} );
+        }
     }
 }
 

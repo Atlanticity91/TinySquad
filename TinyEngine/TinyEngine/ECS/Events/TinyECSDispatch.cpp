@@ -33,7 +33,7 @@ void TinyECSDispatch::Register( tiny_uint type, native_pointer callback ) {
 
 void TinyECSDispatch::Register( tiny_uint type, tiny_init<native_pointer> callbacks ) {
 	if ( type >= m_callbacks.size( ) )
-		m_callbacks.create( type );
+		m_callbacks.create_back( type );
 
-	m_callbacks[ type ].emplace_back( callbacks );
+	m_callbacks[ type ].append_back( callbacks );
 }

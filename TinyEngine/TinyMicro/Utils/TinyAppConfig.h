@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyRemap.h"
+#include <TinyMicro/Kernel/TinySingleton.h>
 
 tm_struct TinyAppIcon {
 

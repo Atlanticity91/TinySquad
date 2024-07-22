@@ -24,7 +24,8 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyFilesystem::TinyFilesystem( const std::string& developer )
-	: m_developer{ developer },
+	: m_is_folder_disabled{ false },
+	m_developer{ developer },
 	m_work_dir{ },
 	m_game_dir{ },
 	m_save_dir{ },
@@ -34,10 +35,12 @@ TinyFilesystem::TinyFilesystem( const std::string& developer )
 	m_dialog_path{ }
 { }
 
+void TinyFilesystem::DisableGameFolder( ) { m_is_folder_disabled = true; }
+
 bool TinyFilesystem::Initialize( const TinyWindow& window ) {
 	auto title = window.GetTitle( ).as_string( );
 	
-	return SetExecutable( m_developer, title );
+	return !m_is_folder_disabled ? SetExecutable( m_developer, title ) : true;
 }
 
 bool TinyFilesystem::SetExecutable( 
@@ -46,34 +49,28 @@ bool TinyFilesystem::SetExecutable(
 ) {
 	auto state = false;
 
-#	ifndef TINY_DEV_ONLY
+	m_work_dir = Tiny::GetWorkingDir( );
 	m_game_dir = Tiny::GetDocumentDir( ) + developer + "\\" + title + "\\";
 
+#	ifndef TINY_DEV_ONLY
 	if ( GetDirExist( m_game_dir ) || CreateDir( m_game_dir ) ) {
 		m_work_dir = Tiny::GetWorkingDir( );
 		m_save_dir = m_game_dir + "Saves\\";
 		m_dev_dir  = m_game_dir + "Dev\\";
-		m_game	   = m_game_dir + title + "." + TINY_GAME_EXT; // TODO : _work_dir => _game_dir
+		m_game	   = m_game_dir + title + "." + TINY_GAME_EXT;
 		m_cache    = m_game_dir + title + "." + TINY_CACHE_EXT;
-
-		state = GetDirExist( m_save_dir );
-
-		if ( !state )
-			state = CreateDir( m_save_dir );
 	}
 #	else
-	m_work_dir = Tiny::GetWorkingDir( );
-	m_game_dir = m_work_dir;
-	m_save_dir = m_work_dir + "Saves\\";
-	m_dev_dir  = m_work_dir + "Dev\\";
+	m_save_dir = m_game_dir + "Saves\\";
+	m_dev_dir  = m_game_dir + "Dev\\";
 	m_game	   = m_work_dir + title + "." + TINY_GAME_EXT;
-	m_cache    = m_work_dir + title + "." + TINY_CACHE_EXT;
+	m_cache    = m_game_dir + title + "." + TINY_CACHE_EXT;
+#	endif
 
 	state = GetDirExist( m_save_dir );
 
 	if ( !state )
 		state = CreateDir( m_save_dir );
-#	endif
 
 	return state;
 }
@@ -197,6 +194,8 @@ void TinyFilesystem::Terminate( ) { }
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+bool TinyFilesystem::GetIsFolderDisabled( ) const { return m_is_folder_disabled; }
+
 const std::string& TinyFilesystem::GetDeveloper( ) const { return m_developer; }
 
 native_string TinyFilesystem::GetDeveloperNative( ) const { return m_developer.c_str( ); }

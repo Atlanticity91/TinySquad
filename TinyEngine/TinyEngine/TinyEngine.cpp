@@ -47,6 +47,12 @@ TinyEngine::TinyEngine(
 	m_toolbox{ }
 { }
 
+void TinyEngine::DisableGameFolder( ) {
+	m_filesystem.DisableGameFolder( );
+	
+	DisableCache( );
+}
+
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 	auto* game_config = tiny_cast( nullptr, TinyConfig* );
 	
@@ -147,8 +153,8 @@ void TinyEngine::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
 	auto state = m_jobs.Initialize( game, TinyEngine::JobWorkerRun ) &&
-				m_filesystem.Initialize( m_window )					 &&
-				m_assets.Initialize( game, game_config );
+				 m_filesystem.Initialize( m_window )				 &&
+				 m_assets.Initialize( game, game_config );
 
 	if ( state ) {
 		auto& scripts = m_assets.GetScripts( );

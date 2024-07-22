@@ -37,14 +37,23 @@ bool TinyConfigContainer::Load( TinyFilesystem& filesystem, TinyConfig*& config 
 
 		state = m_config.Load( filesystem, file );
 	} else {
-		auto file = filesystem.OpenFile( path, TF_ACCESS_BINARY_WRITE );
+		if ( !filesystem.GetIsFolderDisabled( ) ) {
+			auto file = filesystem.OpenFile( path, TF_ACCESS_BINARY_WRITE );
 
-		m_config.Save( filesystem, file );
+			m_config.Save( filesystem, file );
+		} else
+			GenerateConfig( );
 	}
 
 	config = tiny_rvalue( m_config );
 
 	return state;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PRIVATE ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyConfigContainer::GenerateConfig( ) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

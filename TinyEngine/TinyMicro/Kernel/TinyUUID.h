@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "TinyHash.h"
+#include "Maths/TinyHash.h"
 
 tm_class tiny_uuid final {
 

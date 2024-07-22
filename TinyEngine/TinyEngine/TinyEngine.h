@@ -70,6 +70,13 @@ public:
 	~TinyEngine( ) = default;
 
 	/**
+	 * DisableGameFolder method
+	 * @note : Disable the creation and access to default game folder over the api,
+	 *		   most use are for Nut Tool.
+	 **/
+	void DisableGameFolder( );
+
+	/**
 	 * Initialize function
 	 * @note : Initialize current engine instance.
 	 * @param game : Pointer to current game class instance.

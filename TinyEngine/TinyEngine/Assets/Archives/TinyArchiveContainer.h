@@ -25,10 +25,11 @@
 te_struct TinyArchiveEntry {
 
 	tiny_hash Archive{ };
-	tiny_uint Type    = 0;
-	tiny_ulong Offset = 0;
-	tiny_ulong Size   = 0;
-	
+	tiny_uint Type		  = 0;
+	tiny_ulong Offset	  = 0;
+	tiny_ulong Size		  = 0;
+	tiny_ulong Compressed = 0;
+
 };
 
 te_class TinyArchiveContainer final : tiny_inherit( TinyAssetContainer<TinyArchive> ) {

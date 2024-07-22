@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 22/04/2024
+ * @creation : 25/06/2024
  * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -20,22 +20,24 @@
 
 #pragma once
 
-#include <TinyEngine/Assets/Utils/TinyConfigContainer.h>
+#include "Filesystem/TinyFilesystem.h"
 
-te_struct TinyArchiveEntryBuilder {
+template<typename Type>
+class TinySingleton {
 
-	std::string Path	 = "";
-	tiny_date Date{ };
-	tiny_uint Type		 = 0;
-	tiny_ulong Offset	 = 0;
-	tiny_ulong Size		 = 0;
-	tiny_ulong Compresed = 0;
+public:
+	TinySingleton( ) = default;
 
-};
+	TinySingleton( const TinySingleton& ) = delete;
 
-te_struct TinyArchiveBuilder {
+public:
+	static Type& GetInstance( ) {
+		static Type instance{ };
 
-	std::string Author = "";
-	tiny_map<TinyArchiveEntryBuilder> Entries{ };
+		return instance;
+	};
+
+public:
+	TinySingleton& operator=( const TinySingleton& ) = delete;
 
 };

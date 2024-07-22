@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "Platform/TinyPlatform.h"
+#include <TinyMicro/Kernel/Platform/TinyPlatform.h>
 
 tm_class tiny_hash final {
 

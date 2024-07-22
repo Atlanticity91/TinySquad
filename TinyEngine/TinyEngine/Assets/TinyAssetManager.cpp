@@ -150,6 +150,7 @@ bool TinyAssetManager::Export( TinyFile& file, const TinyArchiveBuilder& archive
 			file.Write( entry_data.Type );
 			file.Write( entry_data.Offset );
 			file.Write( entry_data.Size );
+			file.Write( entry_data.Compresed );
 		}
 	}
 

@@ -38,6 +38,7 @@ tiny_enum( TinyPathTypes ) {
 tm_class TinyFilesystem final {
 
 private:
+	bool m_is_folder_disabled;
 	std::string m_developer;
 	std::string m_work_dir;
 	std::string m_game_dir;
@@ -51,6 +52,8 @@ public:
 	TinyFilesystem( const std::string& developer );
 
 	~TinyFilesystem( ) = default;
+
+	void DisableGameFolder( );
 
 	bool Initialize( const TinyWindow& window );
 	
@@ -89,6 +92,8 @@ public:
 	void Terminate( );
 
 public:
+	bool GetIsFolderDisabled( ) const;
+
 	const std::string& GetDeveloper( ) const;
 
 	native_string GetDeveloperNative( ) const;

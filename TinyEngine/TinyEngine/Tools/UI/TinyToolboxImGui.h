@@ -150,6 +150,10 @@ namespace TinyImGui {
 
 	tiny_dll bool Button( const tiny_string& label, const ImVec2& size );
 
+	tiny_dll bool ButtonIcon( native_string icon, const tiny_string& label );
+
+	tiny_dll bool ButtonIcon( native_string icon, const tiny_string& label, const ImVec2& size );
+
 	tiny_dll bool RightButton( const tiny_string& label );
 
 	tiny_dll ImVec2 ButtonSpanLeft( tiny_uint button_count );
@@ -288,6 +292,15 @@ namespace TinyImGui {
 	tiny_dll bool InputText( tiny_uint length, char* buffer );
 
 	template<tiny_uint Length>
+		requires ( Length > 0 )
+	bool InputText( const tiny_string& label, tiny_buffer<Length>& buffer ) {
+		auto* buffer_chars = buffer.as_chars( );
+
+		return InputText( label, Length, buffer_chars );
+	};
+
+	template<tiny_uint Length>
+		requires ( Length > 0 )
 	bool InputText( tiny_buffer<Length>& buffer ) {
 		auto* buffer_chars = buffer.as_chars( );
 

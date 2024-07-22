@@ -54,6 +54,9 @@ public:
 
 	tiny_no_implement( void Terminate( TinyGame* game ) );
 
+private:
+	void GenerateConfig( );
+
 public:
 	tiny_no_implement( void GetAssetList( tiny_list<tiny_string>&list ) const );
 

@@ -30,7 +30,7 @@ TinyGraphicPipelineManager::TinyGraphicPipelineManager( )
 { }
 
 bool TinyGraphicPipelineManager::Initialize( 
-	TinyFilesystem& filesystem, 
+	TinyFilesystem& filesystem,
 	TinyGraphicLogical& logical
 ) {
 	auto state = CreateCache( filesystem, logical );
@@ -63,7 +63,7 @@ TinyGraphicPipelineSpecification TinyGraphicPipelineManager::Create(
 }
 
 void TinyGraphicPipelineManager::Terminate(
-	TinyFilesystem& filesystem, 
+	TinyFilesystem& filesystem,
 	TinyGraphicLogical& logical
 ) {
 	if ( vk::GetIsValid( m_cache ) ) {
@@ -96,7 +96,7 @@ tiny_list<tiny_ubyte> TinyGraphicPipelineManager::LoadCache( TinyFilesystem& fil
 }
 
 void TinyGraphicPipelineManager::WriteCache( 
-	TinyFilesystem& filesystem, 
+	TinyFilesystem& filesystem,
 	TinyGraphicLogical& logical
 ) {
 	auto cache_data = tiny_list<tiny_ubyte>{ };
@@ -111,7 +111,7 @@ void TinyGraphicPipelineManager::WriteCache(
 }
 
 bool TinyGraphicPipelineManager::CreateCache( 
-	TinyFilesystem& filesystem, 
+	TinyFilesystem& filesystem,
 	TinyGraphicLogical& logical 
 ) {
 	auto cache_data = LoadCache( filesystem );

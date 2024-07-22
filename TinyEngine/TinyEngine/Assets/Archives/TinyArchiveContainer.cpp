@@ -43,9 +43,10 @@ bool TinyArchiveContainer::Create(
 		for ( auto& entry : builder_->Entries ) {
 			auto& entry_data = entry.Data;
 			
-			archive_entry.Type   = entry_data.Type;
-			archive_entry.Offset = entry_data.Offset;
-			archive_entry.Size   = entry_data.Size;
+			archive_entry.Type		 = entry_data.Type;
+			archive_entry.Offset	 = entry_data.Offset;
+			archive_entry.Size		 = entry_data.Size;
+			archive_entry.Compressed = entry_data.Compresed;
 
 			m_entries.emplace( entry.Alias, archive_entry );
 		}
@@ -74,6 +75,7 @@ bool TinyArchiveContainer::Load(
 		file.Read( entry_data.Type );
 		file.Read( entry_data.Offset );
 		file.Read( entry_data.Size );
+		file.Read( entry_data.Compresed );
 
 		builder.Entries.emplace( entry_name, entry_data );
 	}

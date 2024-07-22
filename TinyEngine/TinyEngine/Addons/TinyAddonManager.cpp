@@ -28,13 +28,16 @@ TinyAddonManager::TinyAddonManager( )
 
 bool TinyAddonManager::Initialize( TinyGame* game ) {
 	auto& filesystem = game->GetFilesystem( );
+	auto state		 = true;
 
-	auto dir = filesystem.GetGameDir( ) + "Addons\\";
+	if ( !filesystem.GetIsFolderDisabled( ) ) {
+		auto dir = filesystem.GetGameDir( ) + "Addons\\";
 
-	if ( !filesystem.GetDirExist( dir ) )
-		filesystem.CreateDir( dir );
+		if ( !filesystem.GetDirExist( dir ) )
+			state = filesystem.CreateDir( dir );
+	}
 
-	return true;
+	return state;
 }
 
 void TinyAddonManager::PreTick( TinyGame* game ) {

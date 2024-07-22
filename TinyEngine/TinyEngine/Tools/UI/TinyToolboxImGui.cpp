@@ -278,6 +278,24 @@ namespace TinyImGui {
         return state;
     }
 
+    bool ButtonIcon( native_string icon, const tiny_string& label ) {
+        return ButtonIcon( icon, label, { 0.f, 0.f } );
+    }
+    
+    bool ButtonIcon( native_string icon, const tiny_string& label, const ImVec2& size ) {
+        TINY_IMGUI_SCOPE_ID(
+            auto label_ = std::string{ icon };
+
+            label_ += " ";
+            label_ += label.as_string( );
+
+            auto* label_str = label_.c_str( );
+            auto state = ImGui::Button( label_str, size );
+            );
+
+        return state;
+    }
+
     bool RightButton( const tiny_string& label ) {
         auto offset = CalcTextSize( "############" ).x;
         auto cursor = ImGui::GetCursorPosX( ) + ImGui::GetContentRegionAvail( ).x;

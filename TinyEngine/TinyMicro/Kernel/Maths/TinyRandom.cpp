@@ -10,7 +10,7 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 22/04/2024
+ * @creation : 25/06/2024
  * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
@@ -18,24 +18,15 @@
  *
  ******************************************************************************************/
 
-#pragma once
+#include <TinyMicro/__tiny_micro_pch.h>
 
-#include <TinyEngine/Assets/Utils/TinyConfigContainer.h>
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyRandom::Setup( ) {
+	auto seed = time( NULL );
+	
+	SetSeed( seed );
+}
 
-te_struct TinyArchiveEntryBuilder {
-
-	std::string Path	 = "";
-	tiny_date Date{ };
-	tiny_uint Type		 = 0;
-	tiny_ulong Offset	 = 0;
-	tiny_ulong Size		 = 0;
-	tiny_ulong Compresed = 0;
-
-};
-
-te_struct TinyArchiveBuilder {
-
-	std::string Author = "";
-	tiny_map<TinyArchiveEntryBuilder> Entries{ };
-
-};
+void TinyRandom::SetSeed( const tiny_ulong seed ) { srand( seed ); }
