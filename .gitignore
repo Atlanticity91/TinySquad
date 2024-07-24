@@ -399,6 +399,7 @@ FodyWeavers.xsd
 *.sln.iml
 *.vcxproj
 *.vcxproj.filters
+*.csproj
 *.sln
 *.idb
 *.exp
@@ -414,4 +415,7 @@ FodyWeavers.xsd
 /bin/Thirdparty/Yaml.lib
 /bin/Thirdparty/Lz4.lib
 /bin/Thirdparty/TinyNut.lib
+/bin/Thirdparty/Coral.lib
+/bin/Thirdparty/Spdlog.lib
 /bin/TinyNut.dll
+/bin/net8.0/

@@ -33,7 +33,8 @@ project "TinyThirdparty"
         "Yaml",
         "GLFW",
         "ImGui",
-        "Coral"
+        "Coral",
+        "Spdlog"
     }
 
     targetdir "%{wks.location}/bin/"

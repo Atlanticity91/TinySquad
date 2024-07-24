@@ -33,6 +33,7 @@
 #include <TinyThirdparty/glm/gtx/matrix_decompose.hpp>
 #include <TinyThirdparty/glm/gtx/transform.hpp>
 #include <TinyThirdparty/glm/gtx/quaternion.hpp>
+#include <TinyThirdparty/glm/gtx/string_cast.hpp>
 
 #define TINY_GLM_REG( TYPE, QUERY ) typedef glm::TYPE tiny_##QUERY
 
@@ -48,6 +49,21 @@ TINY_GLM_REG( quat, quat );
 
 #define TINY_PI ( 3.1415926535897932384626433832795 )
 #define TINY_PIF tiny_cast( TINY_PI, float )
+
+template<typename OStream, glm::length_t L, typename T, glm::qualifier Q>
+inline OStream& operator<<( OStream& os, const glm::vec<L, T, Q>& vector ) {
+	return os << glm::to_string( vector );
+}
+
+template<typename OStream, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
+inline OStream& operator<<( OStream& os, const glm::mat<C, R, T, Q>& matrix ) {
+	return os << glm::to_string( matrix );
+}
+
+template<typename OStream, typename T, glm::qualifier Q>
+inline OStream& operator<<( OStream& os, glm::qua<T, Q> quaternion ) {
+	return os << glm::to_string( quaternion );
+}
 
 namespace TinyMath { 
 

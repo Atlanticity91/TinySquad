@@ -49,7 +49,8 @@ project "TinyEngine"
             "%{wks.location}/bin/Thirdparty/Lua.lib",
             "%{wks.location}/bin/Thirdparty/Yaml.lib",
             "%{wks.location}/bin/Thirdparty/ImGui.lib",
-            "%{wks.location}/bin/Thirdparty/Coral.lib"
+            "%{wks.location}/bin/Thirdparty/Coral.lib",
+            "%{wks.location}/bin/Thirdparty/Spdlog.lib"
         }
         libdirs { 
             "%{wks.location}/bin/",

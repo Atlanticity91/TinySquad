@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyMicro/Kernel/TinySingleton.h>
+#include "TinyLogger.h"
 
 tm_struct TinyAppIcon {
 

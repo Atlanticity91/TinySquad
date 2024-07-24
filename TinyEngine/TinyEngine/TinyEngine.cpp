@@ -54,6 +54,10 @@ void TinyEngine::DisableGameFolder( ) {
 }
 
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
+	TinyLogger::Initialize( m_filesystem );
+
+	TINY_LOG_CORE_TRACE( "Engine Start" );
+
 	auto* game_config = tiny_cast( nullptr, TinyConfig* );
 	
 	if ( 
@@ -146,6 +150,8 @@ void TinyEngine::Terminate( TinyGame* game ) {
 	m_window.Terminate( );
 	m_filesystem.Terminate( );
 	m_jobs.Terminate( );
+
+	TINY_LOG_CORE_TRACE( "Engine Stop" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

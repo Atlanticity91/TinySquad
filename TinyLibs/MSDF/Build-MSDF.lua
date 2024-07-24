@@ -13,6 +13,7 @@ project "MSDF"
 		"%{wks.location}/TinyLibs/",
 		"%{wks.location}/TinyLibs/FreeType/"
 	}
+	
 	externalincludedirs { 
 		"%{wks.location}/TinyLibs/",
 		"%{wks.location}/TinyLibs/FreeType/"
