@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include "Sharp/TinySharpManager.h"
+
 #include "Interop/TinyLuaEntity.h"
 
 #define TinyLuaGameVar "TinyGame"

@@ -23,18 +23,28 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyToolWindow::TinyToolWindow( const tiny_string& name )
-	: _is_visible{ true },
-	_name{ name }
+TinyToolWindow::TinyToolWindow( const tiny_string& name, bool is_visible )
+	: m_is_visible{ is_visible },
+	m_name{ name }
 { }
 
-void TinyToolWindow::Show( ) { _is_visible = true; }
+void TinyToolWindow::Show( ) { m_is_visible = true; }
 
-void TinyToolWindow::Hide( ) { _is_visible = false; }
+void TinyToolWindow::Hide( ) { m_is_visible = false; }
+
+void TinyToolWindow::Tick( TinyGame* game, TinyToolbox& toolbox ) {
+	auto* name = m_name.as_string( );
+
+	if ( ImGui::Begin( name, tiny_rvalue( m_is_visible ) ) ) {
+		OnRender( game, toolbox );
+
+		ImGui::End( );
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyToolWindow::GetIsVisible( ) const { return _is_visible; }
+bool TinyToolWindow::GetIsVisible( ) const { return m_is_visible; }
 
-const tiny_string& TinyToolWindow::GetName( ) const { return _name; }
+const tiny_string& TinyToolWindow::GetName( ) const { return m_name; }

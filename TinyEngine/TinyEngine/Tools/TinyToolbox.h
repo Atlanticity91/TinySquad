@@ -102,8 +102,8 @@ public:
 public:
 	template<typename Window>
 		requires tiny_is_child_of( Window, TinyToolWindow )
-	void Create( TinyGame* game ) {
-		m_windows.Create<Window>( game, tiny_self );
+	void Create( TinyGame* game, bool is_visible = true ) {
+		m_windows.Create<Window>( game, tiny_self, is_visible );
 	};
 
 private:

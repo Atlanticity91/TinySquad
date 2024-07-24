@@ -1,0 +1,87 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net8.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <IntermediateOutputPath>..\..\bin-int\TinySharp\Debug\</IntermediateOutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>CS8500</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <IntermediateOutputPath>..\..\bin-int\TinySharp\Release\</IntermediateOutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>CS8500</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Dist|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <IntermediateOutputPath>..\..\bin-int\TinySharp\Dist\</IntermediateOutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>CS8500</NoWarn>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Dist|AnyCPU' ">
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Addons\TinyAddon.cs" />
+    <Compile Include="Coral\AssemblyLoader.cs" />
+    <Compile Include="Coral\ExtensionMethods.cs" />
+    <Compile Include="Coral\GarbageCollector.cs" />
+    <Compile Include="Coral\InternalCalls.cs" />
+    <Compile Include="Coral\InteropTypes.cs" />
+    <Compile Include="Coral\ManagedHost.cs" />
+    <Compile Include="Coral\ManagedObject.cs" />
+    <Compile Include="Coral\Marshalling.cs" />
+    <Compile Include="Coral\TypeInterface.cs" />
+    <Compile Include="Coral\TypeNotFoundException.cs" />
+    <Compile Include="Coral\UniqueList.cs" />
+    <Compile Include="Engine\TinyColor.cs" />
+    <Compile Include="Engine\TinyEntity.cs" />
+    <Compile Include="Engine\TinyHash.cs" />
+    <Compile Include="Engine\TinyMath.cs" />
+    <Compile Include="Engine\TinyMatrix3x3.cs" />
+    <Compile Include="Engine\TinyMatrix4x4.cs" />
+    <Compile Include="Engine\TinyPoint.cs" />
+    <Compile Include="Engine\TinyRandom.cs" />
+    <Compile Include="Engine\TinyUUID.cs" />
+    <Compile Include="Engine\TinyVector2.cs" />
+    <Compile Include="Engine\TinyVector3.cs" />
+    <Compile Include="Engine\TinyVector4.cs" />
+    <Compile Include="Framework\TinyAnimation2D.cs" />
+    <Compile Include="Framework\TinyCamera.cs" />
+    <Compile Include="Framework\TinyController.cs" />
+    <Compile Include="Framework\TinyLight2D.cs" />
+    <Compile Include="Framework\TinyParticle2D.cs" />
+    <Compile Include="Framework\TinyScript.cs" />
+    <Compile Include="Framework\TinySkin2D.cs" />
+    <Compile Include="Framework\TinySound2D.cs" />
+    <Compile Include="Framework\TinyTransform2D.cs" />
+  </ItemGroup>
+</Project>

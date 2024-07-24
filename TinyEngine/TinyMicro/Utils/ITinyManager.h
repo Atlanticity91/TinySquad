@@ -24,8 +24,8 @@
 
 tm_interface ITinyManager {
 
-	tiny_abstract( bool Initialize( TinyFilesystem& file_system, TinyWindow& window ) );
+	tiny_abstract( bool Initialize( TinyFilesystem& filesystem, TinyWindow& window ) );
 
-	tiny_abstract( void Terminate( TinyFilesystem& file_system, TinyWindow& window ) );
+	tiny_abstract( void Terminate( TinyFilesystem& filesystem, TinyWindow& window ) );
 
 };

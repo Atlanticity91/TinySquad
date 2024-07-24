@@ -32,7 +32,8 @@ project "TinyThirdparty"
         "Lua",
         "Yaml",
         "GLFW",
-        "ImGui"
+        "ImGui",
+        "Coral"
     }
 
     targetdir "%{wks.location}/bin/"

@@ -25,7 +25,7 @@
 te_class TinyToolWindowManager final {
 
 private:
-	tiny_map<TinyToolWindow*> _windows;
+	tiny_map<TinyToolWindow*> m_windows;
 
 public:
 	TinyToolWindowManager( );
@@ -43,14 +43,14 @@ public:
 public:
 	template<typename Window>
 		requires tiny_is_child_of( Window, TinyToolWindow )
-	void Create( TinyGame* game, TinyToolbox& toolbox ) {
-		auto* window = new Window{ };
+	void Create( TinyGame* game, TinyToolbox& toolbox, bool is_visible ) {
+		auto* window = new Window{ is_visible };
 
 		if ( window ) {
 			auto name = window->GetName( );
 
-			if ( !_windows.find( name ) )
-				_windows.emplace( name, window );
+			if ( !m_windows.find( name ) )
+				m_windows.emplace( name, window );
 		}
 	};
 

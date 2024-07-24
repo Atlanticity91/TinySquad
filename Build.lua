@@ -13,6 +13,8 @@ group "Tiny Engine"
    include "TinyEngine/Build-Engine.lua"
 group "Tiny Editors"
    include "TinyEditors/Build-Editors.lua"
+group "Tiny Sharp"
+   include "TinySharp/Build-Sharp.lua"
 group ""
 
 include "TinyProduction/Build-Production.lua"

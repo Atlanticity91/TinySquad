@@ -24,7 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyToolWindowManager::TinyToolWindowManager( )
-	: _windows{ }
+	: m_windows{ }
 { }
 
 void TinyToolWindowManager::Show( const tiny_string& name ) {
@@ -49,20 +49,20 @@ void TinyToolWindowManager::Delete(
 	auto window_id = tiny_cast( 0, tiny_uint );
 	auto* window   = tiny_cast( nullptr, TinyToolWindow* );
 
-	if ( _windows.find( name, window_id ) ) {
-		window = _windows.at( window_id );
+	if ( m_windows.find( name, window_id ) ) {
+		window = m_windows.at( window_id );
 
 		window->Delete( game, toolbox );
 
-		_windows.erase( window_id );
+		m_windows.erase( window_id );
 	}
 }
 
 void TinyToolWindowManager::Tick( TinyGame* game, TinyToolbox& toolbox ) { 
-	for ( auto& pair : _windows ) {
+	for ( auto& pair : m_windows ) {
 		auto& window = pair.Data;
 
-		if ( window->GetIsVisible( ) )
+		if ( window->GetShouldRender( ) )
 			window->Tick( game, toolbox );
 	}
 }
@@ -74,8 +74,8 @@ TinyToolWindow* TinyToolWindowManager::Get( const tiny_string& name ) const {
 	auto window_id = tiny_cast( 0, tiny_uint );
 	auto* window   = tiny_cast( nullptr, TinyToolWindow* );
 
-	if ( _windows.find( name, window_id ) )
-		window = _windows.at( window_id );
+	if ( m_windows.find( name, window_id ) )
+		window = m_windows.at( window_id );
 
 	return window;
 }

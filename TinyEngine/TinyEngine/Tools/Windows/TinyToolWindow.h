@@ -25,11 +25,11 @@
 te_class TinyToolWindow {
 
 protected:
-	bool		_is_visible;
-	tiny_string _name;
+	bool m_is_visible;
+	tiny_string m_name;
 
 public:
-	TinyToolWindow( const tiny_string& name );
+	TinyToolWindow( const tiny_string& name, bool is_visible );
 
 	virtual ~TinyToolWindow( ) = default;
 
@@ -39,12 +39,17 @@ public:
 
 	void Hide( );
 
-	tiny_virtual( void Tick( TinyGame* game, TinyToolbox& toolbox ) );
+	virtual void Tick( TinyGame* game, TinyToolbox& toolbox );
 
 	tiny_virtual( void Delete( TinyGame* game, TinyToolbox& toolbox ) );
 
+protected:
+	tiny_abstract( void OnRender( TinyGame* game, TinyToolbox& toolbox ) );
+
 public:
 	bool GetIsVisible( ) const;
+
+	tiny_virtualv( true, bool GetShouldRender( ) const );
 
 	const tiny_string& GetName( ) const;
 
