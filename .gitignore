@@ -419,3 +419,4 @@ FodyWeavers.xsd
 /bin/Thirdparty/Spdlog.lib
 /bin/TinyNut.dll
 /bin/net8.0/
+/TinySharp/TinySharp/obj/
