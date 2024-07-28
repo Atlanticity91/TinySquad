@@ -52,20 +52,25 @@ bool TinyFilesystem::SetExecutable(
 	m_work_dir = Tiny::GetWorkingDir( );
 	m_game_dir = Tiny::GetDocumentDir( ) + developer + "\\" + title + "\\";
 
-#	ifndef TINY_DEV_ONLY
+#	ifdef TINY_DEV_ONLY
 	if ( GetDirExist( m_game_dir ) || CreateDir( m_game_dir ) ) {
 		m_work_dir = Tiny::GetWorkingDir( );
-		m_save_dir = m_game_dir + "Saves\\";
-		m_dev_dir  = m_game_dir + "Dev\\";
-		m_game	   = m_game_dir + title + "." + TINY_GAME_EXT;
-		m_cache    = m_game_dir + title + "." + TINY_CACHE_EXT;
+		m_save_dir = m_work_dir + "Saves\\";
+		m_dev_dir  = m_work_dir + "Dev\\";
+		m_log_dir  = m_work_dir + "Logs\\";
+		m_game	   = m_work_dir + title + "." + TINY_GAME_EXT;
+		m_cache    = m_work_dir + title + "." + TINY_CACHE_EXT;
 	}
 #	else
 	m_save_dir = m_game_dir + "Saves\\";
 	m_dev_dir  = m_game_dir + "Dev\\";
+	m_log_dir  = m_game_dir + "Logs\\";
 	m_game	   = m_work_dir + title + "." + TINY_GAME_EXT;
 	m_cache    = m_game_dir + title + "." + TINY_CACHE_EXT;
 #	endif
+
+	if ( !GetDirExist( m_log_dir ) )
+		CreateDir( m_log_dir );
 
 	state = GetDirExist( m_save_dir );
 
@@ -215,6 +220,10 @@ native_string TinyFilesystem::GetSaveDirNative( ) const { return m_save_dir.c_st
 const std::string& TinyFilesystem::GetDevDir( ) const { return m_dev_dir; }
 
 native_string TinyFilesystem::GetDevDirNative( ) const { return m_dev_dir.c_str( ); }
+
+const std::string& TinyFilesystem::GetLogDir( ) const { return m_log_dir; }
+
+native_string TinyFilesystem::GetLogDirNative( ) const { return m_log_dir.c_str( ); }
 
 const std::string& TinyFilesystem::GetConfigPath( ) const { return m_game; }
 

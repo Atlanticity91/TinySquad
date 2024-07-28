@@ -54,32 +54,43 @@ void TinyEngine::DisableGameFolder( ) {
 }
 
 bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
-	TinyLogger::Initialize( m_filesystem );
+	auto state = m_filesystem.Initialize( m_window );
 
-	TINY_LOG_CORE_TRACE( "Engine Start" );
+	if ( state ) {
+		TinyLogger::Initialize( m_filesystem );
 
-	auto* game_config = tiny_cast( nullptr, TinyConfig* );
-	
-	if ( 
-		PreInit( game, game_config )			 &&
-		Init( game, tiny_lvalue( game_config ) ) &&
-		PostInit( game )						 && 
-		ProcessArgs( game, argc, argv )
-	) {
-		if ( !m_window.GetIsHeadless( ) ) {
-			m_inputs.Register(
-				"Show Dev",
-				{
-					{ TinyInputKey( KEY_F1 ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
-					{ TinyInputKey( KEY_GRAVE_ACCENT ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
-				}
-			);
+		TINY_LOG_CORE_INFO( "TinyEngine::Initialize" );
+
+		auto* game_config = tiny_cast( nullptr, TinyConfig* );
+
+		state = PreInit( game, game_config )			 &&
+				Init( game, tiny_lvalue( game_config ) ) &&
+				PostInit( game )						 &&
+				ProcessArgs( game, argc, argv );
+
+		if ( state ) {
+			TINY_LOG_CORE_TRACE( "--- Window ---" );
+			TINY_LOG_CORE_TRACE( "\tTitle : {0}", m_window.GetTitle( ).as_string( ) );
+			TINY_LOG_CORE_TRACE( "\tWidth : {0:d}", m_window.GetDimensions_p( ).x );
+			TINY_LOG_CORE_TRACE( "\tHeight : {0:d}", m_window.GetDimensions_p( ).y );
+			TINY_LOG_CORE_TRACE( "\tIs Headless : {0:d}", m_window.GetIsHeadless( ) );
+			TINY_LOG_CORE_TRACE( "\tIs Full Screen : {0:d}", m_window.GetIsFullScreen( ) );
+
+			if ( !m_window.GetIsHeadless( ) ) {
+				m_inputs.Register(
+					"Show Dev",
+					{
+						{ TinyInputKey( KEY_F1 ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
+						{ TinyInputKey( KEY_GRAVE_ACCENT ), TI_STATE_PRESSED, TI_MODIFIER_UNDEFINED },
+					}
+				);
+			}
 		}
-
-		m_is_running = true;
 	}
 
-	return m_is_running;
+	m_is_running = state;
+
+	return state;
 }
 
 void TinyEngine::Minimize( ) { m_window.Minimize( ); }
@@ -151,7 +162,7 @@ void TinyEngine::Terminate( TinyGame* game ) {
 	m_filesystem.Terminate( );
 	m_jobs.Terminate( );
 
-	TINY_LOG_CORE_TRACE( "Engine Stop" );
+	TINY_LOG_CORE_INFO( "TinyEngine::Terminate" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +170,6 @@ void TinyEngine::Terminate( TinyGame* game ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyEngine::PreInit( TinyGame* game, TinyConfig*& game_config ) {
 	auto state = m_jobs.Initialize( game, TinyEngine::JobWorkerRun ) &&
-				 m_filesystem.Initialize( m_window )				 &&
 				 m_assets.Initialize( game, game_config );
 
 	if ( state ) {

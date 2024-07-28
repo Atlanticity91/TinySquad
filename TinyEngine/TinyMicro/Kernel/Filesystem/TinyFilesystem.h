@@ -22,6 +22,10 @@
 
 #include "TinyPathInformation.h"
 
+#define TINY_OPEN_FILE( NAME, FILESYSTEM, PATH, ACCESS )\
+	auto __##NAME = FILESYSTEM##.OpenFile( PATH, ACCESS );\
+	auto* NAME = tiny_cast( tiny_rvalue( __##NAME ), TinyFile* )
+
 class TinyWindow;
 
 tiny_enum( TinyPathTypes ) { 
@@ -30,6 +34,7 @@ tiny_enum( TinyPathTypes ) {
 	TP_TYPE_GAME,
 	TP_TYPE_SAVE,
 	TP_TYPE_DEV,
+	TP_TYPE_LOG,
 
 	TP_TYPE_COUNT
 
@@ -44,6 +49,7 @@ private:
 	std::string m_game_dir;
 	std::string m_save_dir;
 	std::string	m_dev_dir;
+	std::string m_log_dir;
 	std::string m_game;
 	std::string	m_cache;
 	tiny_buffer<256> m_dialog_path;
@@ -113,6 +119,10 @@ public:
 	const std::string& GetDevDir( ) const;
 
 	native_string GetDevDirNative( ) const;
+
+	const std::string& GetLogDir( ) const;
+
+	native_string GetLogDirNative( ) const;
 
 	const std::string& GetConfigPath( ) const;
 

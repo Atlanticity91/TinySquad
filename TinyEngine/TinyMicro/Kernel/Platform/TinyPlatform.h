@@ -117,4 +117,6 @@ namespace Tiny {
 
 	tm_dll tiny_date GetDate( );
 
+	tm_dll std::string GetDateAsString( );
+
 };

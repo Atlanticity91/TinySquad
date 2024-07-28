@@ -65,7 +65,7 @@ extern "C" {
 #include <xhash>
 
 #include <TinyThirdparty/Vulkan/Vulkan.h>
-#include <TinyThirdparty/Spdlog/Spdlog.h>
+#include <TinyThirdparty/Spdlog/TinySpdlog.h>
 
 #ifdef _WIN64
 

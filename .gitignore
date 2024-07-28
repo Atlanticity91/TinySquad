@@ -404,6 +404,7 @@ FodyWeavers.xsd
 *.idb
 *.exp
 *.exe
+*.log
 /bin/*.lib
 /bin/TinyEngine.dll
 /bin/Thirdparty/GLFW.lib
@@ -420,3 +421,5 @@ FodyWeavers.xsd
 /bin/TinyNut.dll
 /bin/net8.0/
 /TinySharp/TinySharp/obj/
+/bin/Game Title.tinycache
+/bin/Game Title.tinygame

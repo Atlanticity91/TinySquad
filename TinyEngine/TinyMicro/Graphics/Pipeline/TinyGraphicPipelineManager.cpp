@@ -24,16 +24,16 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyGraphicPipelineManager::TinyGraphicPipelineManager( )
-	: m_use_cache{ true },
-	m_cache{ VK_NULL_HANDLE },
+	: m_cache{ },
 	m_limits{ }
 { }
 
 bool TinyGraphicPipelineManager::Initialize( 
 	TinyFilesystem& filesystem,
+	TinyGraphicPhysical& physical,
 	TinyGraphicLogical& logical
 ) {
-	auto state = CreateCache( filesystem, logical );
+	auto state = m_cache.Create( filesystem, physical, logical );
 
 	if ( state )
 		CreateDescriptorLimits( );
@@ -42,9 +42,9 @@ bool TinyGraphicPipelineManager::Initialize(
 }
 
 
-void TinyGraphicPipelineManager::EnableCache( ) { m_use_cache = true; }
+void TinyGraphicPipelineManager::EnableCache( ) { m_cache.Enable( ); }
 
-void TinyGraphicPipelineManager::DisableCache( ) { m_use_cache = false; }
+void TinyGraphicPipelineManager::DisableCache( ) { m_cache.Disable( ); }
 
 TinyGraphicPipelineSpecification TinyGraphicPipelineManager::Create(
 	const TinyGraphicPipelineTypes type 
@@ -64,67 +64,15 @@ TinyGraphicPipelineSpecification TinyGraphicPipelineManager::Create(
 
 void TinyGraphicPipelineManager::Terminate(
 	TinyFilesystem& filesystem,
+	TinyGraphicPhysical& physical,
 	TinyGraphicLogical& logical
 ) {
-	if ( vk::GetIsValid( m_cache ) ) {
-		if ( m_use_cache )
-			WriteCache( filesystem, logical );
-
-		vkDestroyPipelineCache( logical, m_cache, vk::GetAllocator( ) );
-	}
+	m_cache.Terminate( filesystem, physical, logical );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-tiny_list<tiny_ubyte> TinyGraphicPipelineManager::LoadCache( TinyFilesystem& filesystem ) {
-	auto cache_data = tiny_list<tiny_ubyte>{ };
-	auto cache_path = filesystem.GetCachePath( );
-
-	if ( m_use_cache && filesystem.GetFileExist( cache_path ) ) {
-		auto file = filesystem.OpenFile( cache_path, TF_ACCESS_BINARY_READ );
-		auto length = tiny_cast( file.GetSize( ), tiny_uint );
-
-		cache_data = length;
-
-		auto* data = tiny_cast( cache_data.data( ), native_pointer );
-
-		file.ReadAll( length, data );
-	}
-
-	return cache_data;
-}
-
-void TinyGraphicPipelineManager::WriteCache( 
-	TinyFilesystem& filesystem,
-	TinyGraphicLogical& logical
-) {
-	auto cache_data = tiny_list<tiny_ubyte>{ };
-	auto cache_path = filesystem.GetCachePath( );
-
-	if ( vk::GetPipelineCache( logical, m_cache, cache_data ) ) {
-		auto* data  = tiny_cast( cache_data.data( ), const native_pointer );
-		auto length = tiny_cast( cache_data.size( ), tiny_uint );
-
-		filesystem.Dump( cache_path, length, data );
-	}
-}
-
-bool TinyGraphicPipelineManager::CreateCache( 
-	TinyFilesystem& filesystem,
-	TinyGraphicLogical& logical 
-) {
-	auto cache_data = LoadCache( filesystem );
-	auto cache_info = VkPipelineCacheCreateInfo{ VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO };
-
-	cache_info.pNext		   = VK_NULL_HANDLE;
-	cache_info.flags		   = VK_NULL_FLAGS;
-	cache_info.initialDataSize = cache_data.size( );
-	cache_info.pInitialData	   = cache_data.data( );
-
-	return vk::Check( vkCreatePipelineCache( logical, tiny_rvalue( cache_info ), vk::GetAllocator( ), tiny_rvalue( m_cache ) ) );
-}
-
 void TinyGraphicPipelineManager::CreateDescriptorLimits( ) {
 	const tiny_uint MAX_DESCRIPTOR = 128;
 
@@ -189,7 +137,7 @@ TinyGraphicPipelineSpecification TinyGraphicPipelineManager::CreatePipelineCompu
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyGraphicPipelineManager::GetUseCache( ) const { return m_use_cache; }
+bool TinyGraphicPipelineManager::GetUseCache( ) const { return m_cache.GetUseCache( ); }
 
 const VkPipelineCache& TinyGraphicPipelineManager::GetCache( ) const { return m_cache; }
 

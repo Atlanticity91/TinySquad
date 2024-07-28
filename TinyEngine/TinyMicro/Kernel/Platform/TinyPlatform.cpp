@@ -39,6 +39,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 namespace Tiny {
 
+	char tiny_date_buffer[ 20 ] = "";
+
 	bool Initialize( ) {
 		auto state = false;
 
@@ -113,6 +115,18 @@ namespace Tiny {
 	#	endif
 
 		return date; 
+	}
+
+	std::string GetDateAsString( ) { 
+		auto date = GetDate( );
+
+		sprintf(
+			tiny_date_buffer, 
+			"%04d-%02d-%02d-%02d-%02d-%02d",
+			date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second 
+		);
+
+		return { tiny_date_buffer };
 	}
 
 };

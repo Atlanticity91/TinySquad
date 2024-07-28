@@ -54,16 +54,16 @@ bool TinyGraphicManager::Initialize( TinyFilesystem& file_system, TinyWindow& wi
 	auto wrapper = GetWrapper( );
 	auto title   = window.GetTitle( );
 
-	return  m_instance.Create( title )						 &&
-			m_surface.Create( window, m_instance )			 &&
-			m_physical.Initialize( m_instance, m_surface )   &&
-			m_surface.Initialize( m_physical )				 &&
-			m_logical.Create( m_physical )					 &&
-			m_queues.Create( m_physical, m_logical )		 &&
-			m_memory.Create( wrapper )						 &&
-			m_swapchain.Create( wrapper )					 &&
-			m_passes.Create( wrapper )						 &&
-			m_pipelines.Initialize( file_system, m_logical ) &&
+	return  m_instance.Create( title )									 &&
+			m_surface.Create( window, m_instance )						 &&
+			m_physical.Initialize( m_instance, m_surface )				 &&
+			m_surface.Initialize( m_physical )							 &&
+			m_logical.Create( m_physical )								 &&
+			m_queues.Create( m_physical, m_logical )					 &&
+			m_memory.Create( wrapper )									 &&
+			m_swapchain.Create( wrapper )								 &&
+			m_passes.Create( wrapper )									 &&
+			m_pipelines.Initialize( file_system, m_physical, m_logical ) &&
 			m_compiler.Initialize( );
 }
 
@@ -182,7 +182,7 @@ void TinyGraphicManager::Terminate( TinyFilesystem& file_system, TinyWindow& win
 
 	auto wrapper = GetWrapper( );
 
-	m_pipelines.Terminate( file_system, m_logical );
+	m_pipelines.Terminate( file_system, m_physical, m_logical );
 	m_passes.Terminate( wrapper );
 	m_swapchain.Terminate( m_logical, m_queues );
 	m_memory.Terminate( wrapper );

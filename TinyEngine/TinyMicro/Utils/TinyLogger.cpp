@@ -23,6 +23,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+TinyLogger::TinyLogger( )
+	: m_core{ },
+	m_client{ } 
+{ }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PUBLIC STATIC ===
+////////////////////////////////////////////////////////////////////////////////////////////
 void TinyLogger::Initialize( TinyFilesystem& filesystem ) { 
 	GetInstance( ).Init( filesystem );
 }
@@ -30,15 +38,11 @@ void TinyLogger::Initialize( TinyFilesystem& filesystem ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PRIVATE ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyLogger::TinyLogger( ) 
-	: m_core{ },
-	m_client{ }
-{ }
-
 void TinyLogger::Init( TinyFilesystem& filesystem ) {
-	auto sinks = std::vector<spdlog::sink_ptr>{
+	auto log_path = filesystem.GetLogDir( ) + "TinyLog-" + Tiny::GetDateAsString( ) + ".log";
+	auto sinks	  = std::vector<spdlog::sink_ptr>{
 		std::make_shared<spdlog::sinks::stdout_color_sink_mt>( ),
-		std::make_shared<spdlog::sinks::basic_file_sink_mt>( "TinySquad.log", true )
+		std::make_shared<spdlog::sinks::basic_file_sink_mt>( log_path, true )
 	};
 
 	sinks[ 0 ]->set_pattern( "%^[%T] %n: %v%$" );

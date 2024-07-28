@@ -51,22 +51,22 @@ bool TinyVirtualFile::Seek( const TinyFileOrigin origin, const tiny_ulong offset
 	return state;
 }
 
-tiny_uint TinyVirtualFile::Read( const tiny_uint length, native_pointer data ) {
+tiny_ulong TinyVirtualFile::Read( const tiny_ulong length, native_pointer data ) {
 	TINY_ASSERT( length > 0, "You can't read 0 bytes from file" );
 	TINY_ASSERT( data != nullptr, "You can't read bytes to an undefined data buffer" );
 
-	auto size = tiny_cast( 0, tiny_uint );
+	auto size = tiny_cast( 0, tiny_ulong );
 
 	if ( GetCan( TF_ACCESS_READ ) ) { }
 
 	return size;
 }
 
-tiny_uint TinyVirtualFile::Write( const tiny_uint length, const native_pointer data ) {
+tiny_ulong TinyVirtualFile::Write( const tiny_ulong length, const native_pointer data ) {
 	TINY_ASSERT( length > 0, "You can't write 0 bytes from file" );
 	TINY_ASSERT( data != nullptr, "You can't write bytes from an undefined data buffer" );
 
-	auto size = tiny_cast( 0, tiny_uint );
+	auto size = tiny_cast( 0, tiny_ulong );
 
 	return size;
 }

@@ -68,33 +68,33 @@ namespace Tiny {
 		return state;
 	}
 	
-	tiny_uint FileRead(
+	tiny_ulong FileRead(
 		tiny_file& file,
 		const tiny_ulong length,
 		native_pointer data
 	) {
-		auto read_bytes = tiny_cast( 0, tiny_uint );
+		auto read_bytes = tiny_cast( 0, tiny_ulong );
 
 		if ( GetFileIsValid( file ) ) {
 	#		ifdef TINY_WIN
-			read_bytes = tiny_cast( fread_s( data, length, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_uint );
+			read_bytes = tiny_cast( fread_s( data, length, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_ulong );
 	#		else
-			read_bytes = tiny_cast( fread( data, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_uint );
+			read_bytes = tiny_cast( fread( data, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_ulong );
 	#		endif
 		}
 
 		return read_bytes;
 	}
 	
-	tiny_uint FileWrite(
+	tiny_ulong FileWrite(
 		tiny_file& file,
-		const tiny_uint length,
+		const tiny_ulong length,
 		const native_pointer data
 	) {
-		auto write_bytes = tiny_cast( 0, tiny_uint );
+		auto write_bytes = tiny_cast( 0, tiny_ulong );
 
 		if ( GetFileIsValid( file ) )
-			write_bytes = tiny_cast( fwrite( data, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_uint );
+			write_bytes = tiny_cast( fwrite( data, tiny_sizeof( tiny_ubyte ), length, file.Handle ), tiny_ulong );
 
 		return write_bytes;
 	}

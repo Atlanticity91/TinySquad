@@ -5,7 +5,7 @@ project "TinyEngine"
     cppdialect "C++20"
     staticruntime "off"
 
-    defines { "_CRT_SECURE_NO_WARNINGS", "TE_BUILD" }
+    defines { "_CRT_SECURE_NO_WARNINGS", "TE_BUILD", "TINY_DEV_ONLY" }
 
     files { "**.h", "**.cpp", "**.hpp", "**.c" }
 
@@ -49,8 +49,7 @@ project "TinyEngine"
             "%{wks.location}/bin/Thirdparty/Lua.lib",
             "%{wks.location}/bin/Thirdparty/Yaml.lib",
             "%{wks.location}/bin/Thirdparty/ImGui.lib",
-            "%{wks.location}/bin/Thirdparty/Coral.lib",
-            "%{wks.location}/bin/Thirdparty/Spdlog.lib"
+            "%{wks.location}/bin/Thirdparty/Coral.lib"
         }
         libdirs { 
             "%{wks.location}/bin/",

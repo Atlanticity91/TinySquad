@@ -57,15 +57,15 @@ namespace Tiny {
 
 	tm_dll bool FileSeek( tiny_file& file, TinyFileOrigin origin, tiny_ulong offset );
 
-	tm_dll tiny_uint FileRead( 
+	tm_dll tiny_ulong FileRead(
 		tiny_file& file, 
 		const tiny_ulong length,
 		native_pointer data 
 	);
 
-	tm_dll tiny_uint FileWrite( 
+	tm_dll tiny_ulong FileWrite(
 		tiny_file& file, 
-		const tiny_uint length, 
+		const tiny_ulong length,
 		const native_pointer data 
 	);
 

@@ -39,9 +39,9 @@ public:
 
 	tiny_implement( bool Seek( const TinyFileOrigin origin, const tiny_ulong offset ) );
 
-	tiny_implement( tiny_uint Read( const tiny_uint length, native_pointer data ) );
+	tiny_implement( tiny_ulong Read( const tiny_ulong length, native_pointer data ) );
 
-	tiny_implement( tiny_uint Write( const tiny_uint length, const native_pointer data ) );
+	tiny_implement( tiny_ulong Write( const tiny_ulong length, const native_pointer data ) );
 
 	tiny_implement( bool ReadAll( const tiny_ulong length, native_pointer& storage ) );
 

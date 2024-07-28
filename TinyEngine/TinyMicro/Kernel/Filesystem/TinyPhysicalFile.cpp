@@ -37,11 +37,11 @@ bool TinyPhysicalFile::Seek( const TinyFileOrigin origin, const tiny_ulong offse
 	return Tiny::FileSeek( m_handle, origin, offset );
 }
 
-tiny_uint TinyPhysicalFile::Read( const tiny_uint length, native_pointer data ) {
+tiny_ulong TinyPhysicalFile::Read( const tiny_ulong length, native_pointer data ) {
 	TINY_ASSERT( length > 0, "You can't read 0 bytes from file" );
 	TINY_ASSERT( data != nullptr, "You can't read bytes to an undefined data buffer" );
 
-	auto count = tiny_cast( 0, tiny_uint );
+	auto count = tiny_cast( 0, tiny_ulong );
 
 	if ( GetCan( TF_ACCESS_READ ) )
 		count = Tiny::FileRead( m_handle, length, data );
@@ -49,11 +49,11 @@ tiny_uint TinyPhysicalFile::Read( const tiny_uint length, native_pointer data ) 
 	return count;
 }
 
-tiny_uint TinyPhysicalFile::Write( const tiny_uint length, const native_pointer data ) {
+tiny_ulong TinyPhysicalFile::Write( const tiny_ulong length, const native_pointer data ) {
 	TINY_ASSERT( length > 0, "You can't write 0 bytes from file" );
 	TINY_ASSERT( data != nullptr, "You can't write bytes from an undefined data buffer" );
 
-	auto count = tiny_cast( 0, tiny_uint );
+	auto count = tiny_cast( 0, tiny_ulong );
 
 	if ( GetCan( TF_ACCESS_WRITE ) )
 		count = Tiny::FileWrite( m_handle, length, data );
