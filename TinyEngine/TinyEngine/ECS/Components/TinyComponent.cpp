@@ -55,10 +55,16 @@ void TinyComponent::Toggle( TinyGame* game ) {
 		Enable( game );
 }
 
-void TinyComponent::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
+void TinyComponent::TickWidget( 
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
 	TinyImGui::Checkbox( "Is Active", m_is_active );
 
 	ImGui::Separator( );
+
+	OnTickWidget( graphics, inputs, game );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

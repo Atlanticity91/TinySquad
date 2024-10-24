@@ -91,12 +91,17 @@ void TinySound2D::Stop( TinyGame* game ) {
 	audio.Release( m_handle );
 }
 
-void TinySound2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinySound2D::OnTickWidget(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
 	auto& audio = game->GetAudio( );
 
-	TinyComponent::DisplayWidget( game, toolbox );
-
-	toolbox.DisplayAsset( game, "Cue", m_cue );
+	TinyImGui::Asset( game, "Cue", m_cue );
 
 	if ( TinyImGui::InputSlider( "Volume", m_volume, .0f, 224.f ) )
 		audio.SetVolume( m_handle, m_volume );

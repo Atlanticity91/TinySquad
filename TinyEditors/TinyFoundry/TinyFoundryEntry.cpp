@@ -18,7 +18,7 @@
  *
  ******************************************************************************************/
 
-#include <TinyEditor/__tiny_edittor_pch.h>
+#include <TinyFoundry/__tiny_foundry_pch.h>
 
 /**
  *
@@ -31,4 +31,4 @@
  * _gb : Giga-Bytes
  *
  **/
-TINY_GAME_ENTRY_IMP( TinyEditor, 256_mb )
+TINY_GAME_ENTRY_IMP( TinyFoundry, 256_mb )

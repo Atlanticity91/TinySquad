@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 29/03/2024
- * @version  : 2024.2.7
+ * @creation : 29/07/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -20,31 +20,3 @@
 
 #pragma once
 
-#include "TinyNutUI.h"
-
-tn_class TinyNutContext final {
-
-public:
-	TinyNutContext( );
-
-	~TinyNutContext( ) = default;
-
-	bool Create( TinyNut* nut_game );
-
-	void Prepare( TinyNut* nut_game );
-
-	void Flush( TinyNut* nut_game );
-
-	void Terminate( TinyNut* nut_game );
-
-private:
-	bool CreateImGuiPools( TinyGraphicManager& graphics );
-
-	bool CreateImGuiContext( TinyWindow& window, TinyGraphicManager& graphics );
-
-	void SetTheme( );
-
-public:
-	ImGuiContext* GetContext( TinyNut* nut_game );
-
-};

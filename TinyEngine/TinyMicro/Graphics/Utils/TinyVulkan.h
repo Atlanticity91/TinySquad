@@ -120,6 +120,8 @@ namespace vk {
 	template<typename Type>
 	bool GetIsValid( Type handle ) { return handle != VK_NULL_HANDLE; };
 
+	tm_dll tiny_string GetResultString( VkResult result );
+
 	tm_dll bool Check( VkResult result );
 
 	tm_dll VkAllocationCallbacks* GetAllocator( );

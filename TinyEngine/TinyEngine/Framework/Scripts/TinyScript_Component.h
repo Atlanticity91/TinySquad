@@ -76,7 +76,12 @@ public:
 
 	TinyScript& SetPostTick( const tiny_string& function );
 
-	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
+protected:
+	tiny_implement( void OnTickWidget(
+		TinyGraphicManager& graphics,
+		TinyInputManager& inputs,
+		TinyGame* game
+	) );
 
 private:
 	void DisplayMeta( TinyGame* game, native_string label, TinyScriptMetadata& metadata );

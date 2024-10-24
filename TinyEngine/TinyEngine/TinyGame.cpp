@@ -202,7 +202,7 @@ TinyAddonManager& TinyGame::GetAddons( ) { return m_engine.GetAddons( ); }
 
 TinyGameStateManager& TinyGame::GetGameStates( ) { return m_engine.GetGameStates( ); }
 
-TinyToolbox& TinyGame::GetToolbox( ) { return m_engine.GetToolbox( ); }
+TinyDebugManager& TinyGame::GetDebug( ) { return m_engine.GetDebug( ); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	OPERATOR ===

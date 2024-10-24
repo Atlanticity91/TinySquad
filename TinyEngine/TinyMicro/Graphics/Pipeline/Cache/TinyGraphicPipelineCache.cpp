@@ -54,7 +54,7 @@ bool TinyGraphicPipelineCache::Create(
 	
 	state = vk::Check( vkCreatePipelineCache( logical, tiny_rvalue( cache_info ), vk::GetAllocator( ), tiny_rvalue( m_cache ) ) );
 
-	if ( state && cache_data.GetIsValid( ) )
+	if ( cache_data.GetIsValid( ) )
 		tiny_deallocate( cache_data );
 
 	return state;

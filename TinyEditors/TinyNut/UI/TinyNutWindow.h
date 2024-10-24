@@ -20,27 +20,27 @@
 
 #pragma once
 
-#include "TinyNutContext.h"
+#include "TinyNutUI.h"
 
 #define _RegisterIcon( GAME, NAME, EMBEDDED, CALLBACK )\
 	RegisterIcon( GAME, NAME, tiny_sizeof( EMBEDDED ), EMBEDDED, CALLBACK )
 
-tn_class TinyNutWindow final {
+tn_class TinyNutWindow final : tiny_inherit( TinyImGuiWindow ) {
 
 	using Icon_t = TinyNutUI::Icon;
 
 protected:
-	bool			 _is_over;
-	bool			 _has_dockspace;
-	tiny_string		 _name;
-	tiny_map<Icon_t> _icons;
+	bool			 m_is_over;
+	bool			 m_has_dockspace;
+	tiny_string		 m_name;
+	tiny_map<Icon_t> m_icons;
 
 public:
 	TinyNutWindow( const tiny_string& name, bool enable_dockspace );
 
 	virtual ~TinyNutWindow( ) = default;
 
-	void Create( TinyNut* nut_game );
+	void OnCreate( native_pointer user_data );
 
 	void RegisterIcon(
 		TinyNut* nut_game,
@@ -50,7 +50,11 @@ public:
 		const Icon_t::Callback_t& callback
 	);
 	
-	void Tick( TinyNut* nut_game );
+	tiny_implement( void Tick(
+		TinyGraphicManager& graphics,
+		TinyInputManager& inputs,
+		native_pointer user_data
+	) );
 
 	void Terminate( TinyNut* nut_game );
 
@@ -80,8 +84,6 @@ private:
 	void DrawTitlebar( TinyNut* nut_game, bool is_maximized );
 
 	bool Prepare( TinyNut* nut_game, TinyWindow& window );
-
-	void DockSpace( );
 
 private:
 	static void Minimize( TinyNut* nut_game );

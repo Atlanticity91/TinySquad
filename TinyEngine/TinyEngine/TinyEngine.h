@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "Tools/TinyToolbox.h"
+#include "Debug/TinyDebugManager.h"
 
 te_class TinyEngine final {
 
@@ -47,7 +47,7 @@ private:
 	TinyAddonManager m_addons;
 	TinyProviderManager m_provider;
 	TinyGameStateManager m_states;
-	TinyToolbox	m_toolbox;
+	TinyDebugManager m_debug;
 
 public:
 	/**
@@ -383,10 +383,10 @@ public:
 	TinyGameStateManager& GetGameStates( );
 
 	/**
-	 * GetToolbox function
+	 * GetDebug function
 	 * @note : Get current toolbox instance.
-	 * @return : TinyToolbox
+	 * @return : TinyDebugManager
 	 **/
-	TinyToolbox& GetToolbox( );
+	TinyDebugManager& GetDebug( );
 
 };

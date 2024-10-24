@@ -29,8 +29,8 @@ TinyNut::TinyNut( const tiny_string& title )
 
 TinyNut::TinyNut( const tiny_string& title, bool enable_dockspace )
 	: TinyGame{ "TinySquadStudio", title, TGO_PAYSAGE_16x9, true },
-	m_context{ },
-	m_window{ title, enable_dockspace }
+	m_has_dockspace{ enable_dockspace },
+	m_name{ title }
 { 
 	DisableGameFolder( );
 }
@@ -39,34 +39,25 @@ TinyNut::TinyNut( const tiny_string& title, bool enable_dockspace )
 // === PROTECTED ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool TinyNut::Initialize( ) {
-	auto state = false;
-	
-	if ( m_context.Create( this ) ) {
-		auto& game_window = GetWindow( );
-		auto& filesystem  = GetFilesystem( );
-		auto file_dialog  = TinyFileDialog{ };
-		auto file_buffer  = tiny_buffer<256>{ };
-		auto* file_string = file_buffer.as_chars( );
-		auto file_length  = file_buffer.length( );
+	auto& game_window = GetWindow( );
+	auto& imgui		  = GetImGui( );
 
-		game_window.SetCallback( TWC_DRAG_AND_DROP, TinyNut::DragDropCallback );
+	game_window.SetCallback( TWC_DRAG_AND_DROP, TinyNut::DragDropCallback );
 
-		file_dialog.Name	= "Load Game";
-		file_dialog.Path	= filesystem.GetDevDirNative( );
-		file_dialog.Filters = "Tiny Game File (*.tinygame)\0*.tinygame\0";
+	imgui.DeleteWindow( "TinyImGuizmo", this );
+	imgui.DeleteWindow( "TinyDebug", this );
 
-		if ( Tiny::OpenDialog( file_dialog, file_length, file_string ) ) {
-			auto game_path = file_buffer.as_string( );
-			auto game_file = filesystem.OpenFile( game_path, TF_ACCESS_READ );
+	imgui.Create<TinyNutWindow>( this, m_name, m_has_dockspace );
 
-			state = ImportGame( filesystem, file_string, game_file );
+	//RegisterTool<TinyNutToolAnimation2D>( this );
+	//RegisterTool<TinyNutToolAudio>( this );
+	//RegisterTool<TinyNutToolLua>( this );
+	//RegisterTool<TinyNutToolMaterial>( this );
+	RegisterTool<TinyNutToolTexture2D>( );
+	//RegisterTool<TinyNutToolTexture3D>( this );
+	//RegisterTool<TinyNutToolShader>( this );
 
-			if ( state )
-				m_window.Create( this );
-		}
-	}
-
-	return state;
+	return ImportGameDialog( );
 }
 
 bool TinyNut::ImportGame(
@@ -80,8 +71,8 @@ bool TinyNut::ImportGame(
 	game_file.Read( header );
 
 	if ( header.GetIsAsset( TA_TYPE_CONFIG ) ) {
-		auto game_path_info = filesystem.GetInformation( game_path );
 		auto game_developper = std::string{ };
+		auto game_path_info  = filesystem.GetInformation( game_path );
 
 		game_file.Read( game_developper );
 
@@ -91,15 +82,34 @@ bool TinyNut::ImportGame(
 	return state;
 }
 
-void TinyNut::Tick( ) {
-	m_context.Prepare( this );
-	m_window.Tick( this );
-	m_context.Flush( this );
+bool TinyNut::ImportGameDialog( ) {
+	auto& filesystem  = GetFilesystem( );
+	auto file_dialog  = TinyFileDialog{ };
+	auto file_buffer  = tiny_buffer<256>{ };
+	auto* file_string = file_buffer.as_chars( );
+	auto file_length  = file_buffer.length( );
+	auto state		  = false;
+
+	file_dialog.Name	= "Load Game";
+	file_dialog.Path	= filesystem.GetDevDirNative( );
+	file_dialog.Filters = "Tiny Game File (*.tinygame)\0*.tinygame\0";
+
+	if ( Tiny::OpenDialog( file_dialog, file_length, file_string ) ) {
+		auto game_path = file_buffer.as_string( );
+		auto game_file = filesystem.OpenFile( game_path, TF_ACCESS_READ );
+
+		state = ImportGame( filesystem, file_string, game_file );
+	}
+
+	return state;
 }
 
 void TinyNut::Terminate( ) {
-	m_window.Terminate( this );
-	m_context.Terminate( this );
+	auto& imgui  = GetImGui( );
+	auto* window = imgui.GetWindowAs<TinyNutWindow>( 0 );
+
+	if ( window != nullptr )
+		window->Terminate( this );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,8 +127,16 @@ void TinyNut::DragDropCallback(
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-// === PUBLIC GET ===
+// === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyNutContext& TinyNut::GetNutContext( ) { return m_context; }
+TinyImGuiManager& TinyNut::GetImGui( ) {
+	auto& debug = GetDebug( );
+	
+	return debug.GetImGui( );
+}
 
-TinyNutWindow& TinyNut::GetNutWindow( ) { return m_window; }
+TinyNutWindow& TinyNut::GetNutWindow( ) {
+	auto& imgui = GetImGui( );
+	
+	return tiny_lvalue( imgui.GetWindowAs<TinyNutWindow>( "TinyNutWindow" ) );
+}

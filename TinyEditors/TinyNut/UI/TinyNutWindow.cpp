@@ -25,13 +25,16 @@
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyNutWindow::TinyNutWindow( const tiny_string& name, bool enable_dockspace )
-	: _is_over{ false },
-	_has_dockspace{ enable_dockspace },
-	_name{ name },
-	_icons{ }
+	: TinyImGuiWindow{ "TinyNutWindow" },
+	m_is_over{ false },
+	m_has_dockspace{ enable_dockspace },
+	m_name{ name },
+	m_icons{ }
 { }
 
-void TinyNutWindow::Create( TinyNut* nut_game ) {
+void TinyNutWindow::OnCreate( native_pointer user_data ) {
+	auto* nut_game = tiny_cast( user_data, TinyNut* );
+
 	_RegisterIcon( nut_game, "Logo"	   , TinyWindowIcon, []( auto* ) { }		   );
 	_RegisterIcon( nut_game, "Minimize", TinyWindowMinimizeIcon, TinyNutWindow::Minimize );
 	_RegisterIcon( nut_game, "Restore" , TinyWindowRestoreIcon , TinyNutWindow::Restore  );
@@ -48,21 +51,26 @@ void TinyNutWindow::RegisterIcon(
 	const tiny_ubyte* image,
 	const Icon_t::Callback_t& callback
 ) {
-	if ( !name.get_is_empty( ) && !_icons.find( name ) ) {
-		auto icon_ = TinyNutUI::CreateImage( nut_game, length, image );
+	if ( !name.get_is_empty( ) && !m_icons.find( name ) ) {
+		auto icon = TinyNutUI::CreateImage( nut_game, length, image );
 
-		_icons.emplace( name, { icon_, callback } );
+		m_icons.emplace( name, { icon, callback } );
 	}
 }
 
-void TinyNutWindow::Tick( TinyNut* nut_game ) {
-	auto& window = nut_game->GetWindow( );
-
-	ImGui::SetCurrentContext( nut_game->GetToolbox( ).GetContext( ) );
+void TinyNutWindow::Tick(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	native_pointer user_data
+) {
+	auto* nut_game = tiny_cast( user_data, TinyNut* );
+	auto& window   = nut_game->GetWindow( );
+	auto& debug	   = nut_game->GetDebug( );
+	auto& imgui	   = debug.GetImGui( );
 
 	if ( Prepare( nut_game, window ) ) {
-		if ( _has_dockspace )
-			DockSpace( );
+		if ( m_has_dockspace )
+			imgui.DockSpace( "TinyDockspace" );
 
 		nut_game->TickUI( );
 	}
@@ -71,7 +79,7 @@ void TinyNutWindow::Tick( TinyNut* nut_game ) {
 }
 
 void  TinyNutWindow::Terminate( TinyNut* nut_game ) {
-	for ( auto& icon : _icons )
+	for ( auto& icon : m_icons )
 		TinyNutUI::DeleteImage( nut_game, icon.Data.Icon );
 }
 
@@ -181,7 +189,7 @@ void TinyNutWindow::DrawTitlebarBorder(
 		title_min.y + height
 	};
 
-	draw_list->AddRectFilled( title_min, title_max, TinyImGui::Theme::Titlebar );
+	draw_list->AddRectFilled( title_min, title_max, TinyImGuiTheme::Titlebar );
 }
 
 void TinyNutWindow::DrawTitlebarLogo( bool is_maximized, const ImVec2& padding ) {
@@ -201,7 +209,7 @@ void TinyNutWindow::DrawTitlebarLogo( bool is_maximized, const ImVec2& padding )
 		logo_min.y + logo_size 
 	};
 
-	draw_list->AddImage( _icons[ "Logo" ], logo_min, logo_max );
+	draw_list->AddImage( m_icons[ "Logo" ], logo_min, logo_max );
 }
 
 void TinyNutWindow::DrawMenubar( TinyNut* nut_game, bool is_maximized ) {
@@ -230,13 +238,13 @@ void TinyNutWindow::DrawMenubar( TinyNut* nut_game, bool is_maximized ) {
 	ImGui::EndGroup( );
 
 	if ( ImGui::IsItemHovered( ) )
-		_is_over = false;
+		m_is_over = false;
 
 	ImGui::ResumeLayout( );
 }
 
 void TinyNutWindow::DrawTitlebarText( const ImVec2& padding ) {
-	auto* name_str = _name.get( );
+	auto* name_str = m_name.get( );
 	auto cursor	   = ImGui::GetCursorPos( );
 	auto size	   = ImGui::CalcTextSize( name_str );
 
@@ -251,10 +259,10 @@ void TinyNutWindow::DrawTitlebarIcon(
 	const tiny_string& name
 ) {
 	auto* name_str = name.get( );
-	auto col_n	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text,  .9f );
-	auto col_h	   = TinyImGui::ColorWithMultipliedValue( TinyImGui::Theme::Text, 1.2f );
-	auto col_p	   = TinyImGui::Theme::TextDarker;
-	auto& icon	   = _icons[ name ];
+	auto col_n	   = TinyImGui::ColorWithMultipliedValue( TinyImGuiTheme::Text,  .9f );
+	auto col_h	   = TinyImGui::ColorWithMultipliedValue( TinyImGuiTheme::Text, 1.2f );
+	auto col_p	   = TinyImGuiTheme::TextDarker;
+	auto& icon	   = m_icons[ name ];
 	auto size	   = ImVec2{ 14.f, 14.f };
 
 	ImGui::SetCursorPos( position );
@@ -284,13 +292,13 @@ void TinyNutWindow::DrawTitlebar( TinyNut* nut_game, bool is_maximized ) {
 	ImGui::SetCursorPos( cursor );
 	ImGui::InvisibleButton( "##__TinyTitleDragZone", { width, height } );
 
-	_is_over = ImGui::IsItemHovered( );
+	m_is_over = ImGui::IsItemHovered( );
 
 	if ( is_maximized ) {
 		auto mouse_y = ImGui::GetMousePos( ).y - ImGui::GetCursorScreenPos( ).y;
 		
 		if ( mouse_y >= 0.f && mouse_y <= 5.f )
-			_is_over = true;
+			m_is_over = true;
 	}
 
 	DrawMenubar( nut_game, is_maximized );
@@ -313,7 +321,7 @@ bool TinyNutWindow::Prepare( TinyNut* nut_game, TinyWindow& window ) {
 		ImGuiWindowFlags
 	);
 	auto is_maximized = window.GetIsMaximized( );
-	auto* name_str	  = _name.get( );
+	auto* name_str	  = m_name.get( );
 	auto* viewport	  = ImGui::GetMainViewport( );
 
 	ImGui::SetNextWindowPos( viewport->Pos );
@@ -324,7 +332,7 @@ bool TinyNutWindow::Prepare( TinyNut* nut_game, TinyWindow& window ) {
 	ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding, is_maximized ? ImVec2{ 6.f, 6.f } : ImVec2{ 2.f, 2.f } );
 	ImGui::PushStyleVar( ImGuiStyleVar_WindowBorderSize, 3.f );
 
-	ImGui::PushStyleColor( ImGuiCol_MenuBarBg, (ImU32)TinyImGui::Theme::Titlebar );
+	ImGui::PushStyleColor( ImGuiCol_MenuBarBg, tiny_cast( TinyImGuiTheme::Titlebar, ImU32 ) );
 
 	auto state = ImGui::Begin( name_str, nullptr, window_flags );
 
@@ -339,12 +347,6 @@ bool TinyNutWindow::Prepare( TinyNut* nut_game, TinyWindow& window ) {
 	}
 
 	return state;
-}
-
-void TinyNutWindow::DockSpace( ) {
-	auto dockspace_id = ImGui::GetID( "TinyNutDockspace" );
-	
-	ImGui::DockSpace( dockspace_id );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -374,16 +376,16 @@ bool TinyNutWindow::TitlebarHit( GLFWwindow* window ) {
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-bool TinyNutWindow::GetIsTitlevarHovered( ) const { return _is_over; }
+bool TinyNutWindow::GetIsTitlevarHovered( ) const { return m_is_over; }
 
-bool TinyNutWindow::GetHasDockspace( ) const { return _has_dockspace; }
+bool TinyNutWindow::GetHasDockspace( ) const { return m_has_dockspace; }
 
 const TinyNutWindow::Icon_t* TinyNutWindow::GetIcon( const tiny_string& alias ) const {
 	auto icon_id = tiny_cast( 0, tiny_uint );
 	auto* icon   = tiny_cast( nullptr, const TinyNutWindow::Icon_t* );
 
-	if ( _icons.find( alias, icon_id ) )
-		icon = tiny_rvalue( _icons.at( icon_id ) );
+	if ( m_icons.find( alias, icon_id ) )
+		icon = tiny_rvalue( m_icons.at( icon_id ) );
 
 	return icon;
 }

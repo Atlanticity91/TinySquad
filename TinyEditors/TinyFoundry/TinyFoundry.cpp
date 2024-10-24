@@ -33,3 +33,10 @@ TinyFoundry::TinyFoundry( )
 void TinyFoundry::TickMenubar( ) { }
 
 void TinyFoundry::TickUI( ) { }
+
+void TinyFoundry::Tick( ) {
+    auto& graphics = GetGraphics( );
+
+    graphics.BeginPass( TINY_OUTPASS_HASH );
+    graphics.NextSubpass( );
+}

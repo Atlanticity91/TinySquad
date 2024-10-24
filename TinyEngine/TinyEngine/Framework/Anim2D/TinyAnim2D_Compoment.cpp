@@ -121,10 +121,15 @@ void TinyAnim2D::Tick(
 
 void TinyAnim2D::Delete( TinyGame* game ) { }
 
-void TinyAnim2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
-	TinyComponent::DisplayWidget( game, toolbox );
-
-	toolbox.DisplayAsset( game, "Collection", m_collection );
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyAnim2D::OnTickWidget(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
+	TinyImGui::Asset( game, "Collection", m_collection );
 
 	auto& assets	 = game->GetAssets( );
 	auto* collection = assets.GetAssetAs<TinyAnimation2D>( m_collection );

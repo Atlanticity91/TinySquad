@@ -1,5 +1,7 @@
 @echo off
 
+set scriptpath=%~dp0
+
 pushd ..
 cls
 

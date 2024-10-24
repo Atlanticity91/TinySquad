@@ -170,9 +170,14 @@ void TinyTransform2D::Delete( TinyGame* game ) {
 		skin->Disable( game );
 }
 
-void TinyTransform2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
-	TinyComponent::DisplayWidget( game, toolbox );
-
+////////////////////////////////////////////////////////////////////////////////////////////
+//		=== PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyTransform2D::OnTickWidget(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
 	TinyImGui::InputVec2( "Location", m_location );
 	TinyImGui::InputScalar( "Layer", m_layer );
 	TinyImGui::InputScalar( "Rotation", m_rotation );

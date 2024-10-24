@@ -38,6 +38,12 @@ bool TinyController::Create( TinyGame* game ) {
 void TinyController::Delete( TinyGame* game ) {
 }
 
-void TinyController::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
-	TinyComponent::DisplayWidget( game, toolbox );
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyController::OnTickWidget(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
 }

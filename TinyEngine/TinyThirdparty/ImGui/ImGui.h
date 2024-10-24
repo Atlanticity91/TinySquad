@@ -18,6 +18,8 @@
  *
  ******************************************************************************************/
 
-#pragma once 
+#pragma once
 
 #include "ImGuizmo.h"
+
+#define ImTextureNull nullptr

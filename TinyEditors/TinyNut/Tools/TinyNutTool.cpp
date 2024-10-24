@@ -10,8 +10,8 @@
  *	                 |___/
  *
  * @author   : ALVES Quentin
- * @creation : 29/03/2024
- * @version  : 2024.2.7
+ * @creation : 18/08/2024
+ * @version  : 2024.2.8
  * @licence  : MIT
  * @project  : Micro library use for C++ basic game dev, produce for
  *			   Tiny Squad team use originaly.
@@ -23,47 +23,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyNutContext::TinyNutContext( )
+TinyNutTool::TinyNutTool( const tiny_string& name )
+	: TinyImGuiWindow{ name, false }
 { }
 
-bool TinyNutContext::Create( TinyNut* nut_game ) { return true; }
-
-void TinyNutContext::Prepare( TinyNut* nut_game ) {
-	auto& graphics = nut_game->GetGraphics( );
-    auto& toolbox  = nut_game->GetToolbox( );
-    auto* context  = toolbox.GetContext( );
-
-	graphics.BeginPass( TINY_OUTPASS_HASH );
-    graphics.NextSubpass( );
-
-    ImGui::SetCurrentContext( context );
-
-    ImGui_ImplVulkan_NewFrame( );
-    ImGui_ImplGlfw_NewFrame( );
-
-    ImGui::NewFrame( );
-}
-
-void TinyNutContext::Flush( TinyNut* nut_game ) {
-	auto& graphics     = nut_game->GetGraphics( );
-    auto& work_context = graphics.GetWorkdContext( );
-
-    ImGui::Render( );
-
-    auto* draw_data = ImGui::GetDrawData( );
-
-    ImGui_ImplVulkan_RenderDrawData( draw_data, work_context.Queue->CommandBuffer );
-}
-
-void TinyNutContext::Terminate( TinyNut* nut_game ) { 
-    ImGui::SetCurrentContext( nullptr );
-}
+////////////////////////////////////////////////////////////////////////////////////////////
+// === PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // === PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-ImGuiContext* TinyNutContext::GetContext( TinyNut* nut_game ) {
-    auto& toolbox = nut_game->GetToolbox( );
-
-    return toolbox.GetContext( );
-}

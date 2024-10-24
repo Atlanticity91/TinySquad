@@ -64,7 +64,12 @@ public:
 
 	tiny_implement( void Delete( TinyGame* game ) );
 
-	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
+protected:
+	tiny_implement( void OnTickWidget(
+		TinyGraphicManager& graphics,
+		TinyInputManager& inputs,
+		TinyGame* game
+	) );
 
 private:
 	void SetFrame( 

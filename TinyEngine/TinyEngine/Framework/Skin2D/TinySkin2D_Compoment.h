@@ -49,10 +49,14 @@ public:
 
 	tiny_implement( void Delete( TinyGame* game ) );
 
-	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
-
 protected:
 	tiny_implement( void OnEnable( TinyGame* game ) );
+
+	tiny_implement( void OnTickWidget(
+		TinyGraphicManager& graphics,
+		TinyInputManager& inputs,
+		TinyGame* game
+	) );
 
 public:
 	TINY_COMP_NAME( TinySkin2D );

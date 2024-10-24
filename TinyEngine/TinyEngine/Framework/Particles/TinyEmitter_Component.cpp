@@ -38,6 +38,12 @@ bool TinyEmitter::Create( TinyGame* game ) {
 void TinyEmitter::Delete( TinyGame* game ) {
 }
 
-void TinyEmitter::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
-	TinyComponent::DisplayWidget( game, toolbox );
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyEmitter::OnTickWidget(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
 }

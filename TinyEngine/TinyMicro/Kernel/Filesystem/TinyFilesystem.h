@@ -22,6 +22,8 @@
 
 #include "TinyPathInformation.h"
 
+// TODO : MOVE FILESYSTEM TO STATIC CLASS
+
 #define TINY_OPEN_FILE( NAME, FILESYSTEM, PATH, ACCESS )\
 	auto __##NAME = FILESYSTEM##.OpenFile( PATH, ACCESS );\
 	auto* NAME = tiny_cast( tiny_rvalue( __##NAME ), TinyFile* )

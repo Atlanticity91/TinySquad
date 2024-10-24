@@ -44,7 +44,7 @@ TinyEngine::TinyEngine(
 	m_addons{ },
 	m_provider{ },
 	m_states{ },
-	m_toolbox{ }
+	m_debug{ }
 { }
 
 void TinyEngine::DisableGameFolder( ) {
@@ -59,7 +59,7 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 	if ( state ) {
 		TinyLogger::Initialize( m_filesystem );
 
-		TINY_LOG_CORE_INFO( "TinyEngine::Initialize" );
+		TINY_LOG_INFO( "TinyEngine::Initialize" );
 
 		auto* game_config = tiny_cast( nullptr, TinyConfig* );
 
@@ -69,12 +69,12 @@ bool TinyEngine::Initialize( TinyGame* game, tiny_int argc, char** argv ) {
 				ProcessArgs( game, argc, argv );
 
 		if ( state ) {
-			TINY_LOG_CORE_TRACE( "--- Window ---" );
-			TINY_LOG_CORE_TRACE( "\tTitle : {0}", m_window.GetTitle( ).as_string( ) );
-			TINY_LOG_CORE_TRACE( "\tWidth : {0:d}", m_window.GetDimensions_p( ).x );
-			TINY_LOG_CORE_TRACE( "\tHeight : {0:d}", m_window.GetDimensions_p( ).y );
-			TINY_LOG_CORE_TRACE( "\tIs Headless : {0:d}", m_window.GetIsHeadless( ) );
-			TINY_LOG_CORE_TRACE( "\tIs Full Screen : {0:d}", m_window.GetIsFullScreen( ) );
+			TINY_LOG_TRACE( "--- Window ---" );
+			TINY_LOG_TRACE( "\tTitle : {0}", m_window.GetTitle( ).as_string( ) );
+			TINY_LOG_TRACE( "\tWidth : {0:d}", m_window.GetDimensions_p( ).x );
+			TINY_LOG_TRACE( "\tHeight : {0:d}", m_window.GetDimensions_p( ).y );
+			TINY_LOG_TRACE( "\tIs Headless : {0:d}", m_window.GetIsHeadless( ) );
+			TINY_LOG_TRACE( "\tIs Full Screen : {0:d}", m_window.GetIsFullScreen( ) );
 
 			if ( !m_window.GetIsHeadless( ) ) {
 				m_inputs.Register(
@@ -138,7 +138,7 @@ void TinyEngine::PostTick( TinyGame* game ) {
 	m_audio.Tick( m_inputs );
 	m_jobs.Wait( );
 	m_renderer.Compose( game );
-	m_toolbox.Tick( game );
+	m_debug.Tick( m_graphics, m_inputs, game );
 	m_graphics.Present( m_window );
 	m_inputs.Tick( );
 }
@@ -147,7 +147,7 @@ void TinyEngine::Terminate( TinyGame* game ) {
 	auto& scripts = m_assets.GetScripts( );
 
 	m_is_running = false;
-	m_toolbox.Terminate( game );
+	m_debug.Terminate( m_graphics, game );
 	m_provider.Terminate( m_filesystem );
 	m_addons.Terminate( game );
 	
@@ -162,7 +162,7 @@ void TinyEngine::Terminate( TinyGame* game ) {
 	m_filesystem.Terminate( );
 	m_jobs.Terminate( );
 
-	TINY_LOG_CORE_INFO( "TinyEngine::Terminate" );
+	TINY_LOG_INFO( "TinyEngine::Terminate" );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ bool TinyEngine::PostInit( TinyGame* game ) {
 
 	return  m_renderer.Initialize( m_graphics, m_filesystem ) &&
 			m_provider.Initialize( m_filesystem )			  &&
-			m_toolbox.Initialize( game );
+			m_debug.Initialize( m_window, m_graphics, game );
 }
 
 bool TinyEngine::ProcessArgs( TinyGame* game, tiny_int argc, char** argv ) { return true; }
@@ -371,4 +371,4 @@ TinyAddonManager& TinyEngine::GetAddons( ) { return m_addons; }
 
 TinyGameStateManager& TinyEngine::GetGameStates( ) { return m_states; }
 
-TinyToolbox& TinyEngine::GetToolbox( ) { return m_toolbox; }
+TinyDebugManager& TinyEngine::GetDebug( ) { return m_debug; }

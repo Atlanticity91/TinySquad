@@ -34,7 +34,7 @@
 
 class TinyECS;
 
-te_abstract_class TinyComponent { 
+te_abstract_class TinyComponent : tiny_inherit( TinyDebugWidget ) {
 
 protected:
 	bool m_is_active;
@@ -57,12 +57,22 @@ public:
 
 	tiny_virtual( void Delete( TinyGame* game ) );
 
-	virtual void DisplayWidget( TinyGame* game, TinyToolbox& toolbox );
+	tiny_implement( void TickWidget(
+		TinyGraphicManager& graphics,
+		TinyInputManager& inputs,
+		TinyGame* game
+	) );
 
 protected:
 	tiny_virtual( void OnEnable( TinyGame* game ) );
 
 	tiny_virtual( void OnDisable( TinyGame* game ) );
+
+	tiny_virtual( void OnTickWidget(
+		TinyGraphicManager& graphics,
+		TinyInputManager& inputs,
+		TinyGame* game
+	) );
 
 public:
 	tiny_abstract( tiny_string GetName( ) const );

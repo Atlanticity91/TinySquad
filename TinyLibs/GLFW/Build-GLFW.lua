@@ -36,6 +36,7 @@ project "GLFW"
 			"_CRT_SECURE_NO_WARNINGS",
 			"_GLFW_WIN32" 
 		}
+		flags { "MultiProcessorCompile" }
 
 		files {
 			"win32_init.c",

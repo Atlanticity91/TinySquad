@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <TinyEngine/Utils/TinyNativeRegister.h>
+#include <TinyEngine/Debug/TinyDebugWidget.h>
 
 #define TINY_ASSET_MAGIC "TMA"
 #define TINY_ASSET_EXT "tinyasset"

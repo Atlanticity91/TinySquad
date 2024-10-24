@@ -85,9 +85,14 @@ TinyScript& TinyScript::SetPostTick( const tiny_string& function ) {
 	return tiny_self;
 }
 
-void TinyScript::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
-	TinyComponent::DisplayWidget( game, toolbox );
-
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void  TinyScript::OnTickWidget(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
 	TinyImGui::EndVars( );
 
 	DisplayMeta( game, "Pre Tick", m_pre_tick );
@@ -126,10 +131,9 @@ void TinyScript::DisplayMeta(
 				m_is_active = m_is_active && functions.Index > 0;
 			}
 		} else {
-			auto& toolbox = game->GetToolbox( );
-			auto& lua	  = game->GetScripts( );
+			auto& lua = game->GetScripts( );
 
-			toolbox.DisplayAsset( game, "Module", metadata.Asset );
+			TinyImGui::Asset( game, "Module", metadata.Asset );
 
 			auto asset_state = metadata.Asset.GetIsValid( );
 

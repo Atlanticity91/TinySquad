@@ -48,7 +48,12 @@ public:
 
 	void Stop( TinyGame* game );
 
-	tiny_implement( void DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) );
+protected:
+	tiny_implement( void OnTickWidget(
+		TinyGraphicManager & graphics,
+		TinyInputManager & inputs,
+		TinyGame * game
+	) );
 
 public:
 	TINY_COMP_NAME( TinySound2D );

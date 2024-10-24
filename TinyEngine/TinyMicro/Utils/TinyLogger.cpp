@@ -24,8 +24,7 @@
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyLogger::TinyLogger( )
-	: m_core{ },
-	m_client{ } 
+	: m_logger{ }
 { }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,24 +43,19 @@ void TinyLogger::Init( TinyFilesystem& filesystem ) {
 		std::make_shared<spdlog::sinks::stdout_color_sink_mt>( ),
 		std::make_shared<spdlog::sinks::basic_file_sink_mt>( log_path, true )
 	};
+	
+	sinks[ 0 ]->set_pattern( "%^[ %T ] %n: %v%$" );
+	sinks[ 1 ]->set_pattern( "[ %T ][ %l ] %n: %v" );
 
-	sinks[ 0 ]->set_pattern( "%^[%T] %n: %v%$" );
-	sinks[ 1 ]->set_pattern( "[%T] [%l] %n: %v" );
+	m_logger = std::make_shared<spdlog::logger>( "DEV", begin( sinks ), end( sinks ) );
+	
+	m_logger->set_level( spdlog::level::trace );
+	m_logger->flush_on( spdlog::level::trace );
 
-	m_core = std::make_shared<spdlog::logger>( "DEV", begin( sinks ), end( sinks ) );
-	spdlog::register_logger( m_core );
-	m_core->set_level( spdlog::level::trace );
-	m_core->flush_on( spdlog::level::trace );
-
-	m_client = std::make_shared<spdlog::logger>( "CLIENT", begin( sinks ), end( sinks ) );
-	spdlog::register_logger( m_client );
-	m_client->set_level( spdlog::level::trace );
-	m_client->flush_on( spdlog::level::trace );
+	spdlog::register_logger( m_logger );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC GET ===
 ////////////////////////////////////////////////////////////////////////////////////////////
-TinyLogger::logger_t TinyLogger::GetCore( ) { return m_core; }
-
-TinyLogger::logger_t TinyLogger::GetClient( ) { return m_client; }
+TinyLogger::logger_t TinyLogger::Get( ) { return m_logger; }

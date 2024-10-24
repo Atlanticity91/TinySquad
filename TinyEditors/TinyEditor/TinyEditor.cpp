@@ -24,7 +24,7 @@
 // === PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
 TinyEditor::TinyEditor( )
-	: TinyNut{ "Tiny Editor" },
+	: TinyNut{ "Tiny Editor", true },
 	_project{ }
 { }
 

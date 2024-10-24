@@ -71,17 +71,28 @@ void TinySkin2D::Delete( TinyGame* game ) {
 		ecs.Remove( game, m_owner, "TinyAnim2D" );
 }
 
-void TinySkin2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
-	TinyComponent::DisplayWidget( game, toolbox );
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinySkin2D::OnEnable( TinyGame* game ) {
+	auto& ecs = game->GetECS( );
 
-	toolbox.DisplayAsset( game, "Material", m_material );
-	toolbox.DisplayAsset( game, "Texture", m_texture );
+	if ( !ecs.GetHasComponent( m_owner, "TinyTransform2D" ) )
+		m_is_active = false;
+}
 
+void TinySkin2D::OnTickWidget(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
+	TinyImGui::Asset( game, "Material", m_material );
+	TinyImGui::Asset( game, "Texture", m_texture );
 	TinyImGui::InputColor( "Color", m_color );
 	TinyImGui::EndVars( );
 
 	ImGui::PushStyleVar( ImGuiStyleVar_FramePadding, { 3.5f, 3.5f } );
-	
+
 	if ( ImGui::TreeNodeEx( "Sprite", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAllColumns | ImGuiTreeNodeFlags_SpanAllColumns ) ) {
 		ImGui::Separator( );
 
@@ -90,17 +101,10 @@ void TinySkin2D::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) {
 		TinyImGui::InputScalar( "Row", m_sprite.y );
 
 		ImGui::TreePop( );
-	} else 
+	} else
 		TinyImGui::BeginVars( );
 
 	ImGui::PopStyleVar( );
-}
-
-void TinySkin2D::OnEnable( TinyGame* game ) {
-	auto& ecs = game->GetECS( );
-
-	if ( !ecs.GetHasComponent( m_owner, "TinyTransform2D" ) )
-		m_is_active = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

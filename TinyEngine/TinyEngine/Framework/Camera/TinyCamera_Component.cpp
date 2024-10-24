@@ -39,21 +39,6 @@ bool TinyCamera::Create( TinyGame* game ) { return true; }
 
 void TinyCamera::Delete( TinyGame* game ) { }
 
-void TinyCamera::DisplayWidget( TinyGame* game, TinyToolbox& toolbox ) { 
-	TinyComponent::DisplayWidget( game, toolbox );
-
-	auto& ecs = game->GetECS( );
-
-	if ( TinyImGui::Checkbox( "Use Local", m_use_local ) ) {
-		if ( !m_use_local )
-			m_use_local = ecs.GetHasComponent<TinyTransform2D>( m_owner );
-	}
-
-	TinyImGui::InputVec3( "Location", m_location );
-	TinyImGui::InputVec3( "Rotation", m_rotation );
-	TinyImGui::InputVec3( "Scale", m_scale );
-}
-
 tiny_mat4 TinyCamera::Calculate( TinyECS& ecs ) {
 	if ( !m_use_local ) { }
 
@@ -69,6 +54,26 @@ tiny_mat4 TinyCamera::Calculate( TinyECS& ecs ) {
 	view *= glm::scale( m_scale );
 
 	return view;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//		===	PROTECTED ===
+////////////////////////////////////////////////////////////////////////////////////////////
+void TinyCamera::OnTickWidget(
+	TinyGraphicManager& graphics,
+	TinyInputManager& inputs,
+	TinyGame* game
+) {
+	auto& ecs = game->GetECS( );
+
+	if ( TinyImGui::Checkbox( "Use Local", m_use_local ) ) {
+		if ( !m_use_local )
+			m_use_local = ecs.GetHasComponent<TinyTransform2D>( m_owner );
+	}
+
+	TinyImGui::InputVec3( "Location", m_location );
+	TinyImGui::InputVec3( "Rotation", m_rotation );
+	TinyImGui::InputVec3( "Scale", m_scale );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

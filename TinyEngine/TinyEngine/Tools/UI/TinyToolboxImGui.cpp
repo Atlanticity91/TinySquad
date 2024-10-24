@@ -1435,7 +1435,7 @@ namespace TinyImGui {
     }
 
     void DestroyTextureID( ImTextureID& texture_id ) {
-        if ( texture_id ) {
+        if ( texture_id != nullptr ) {
             ImGui_ImplVulkan_RemoveTexture( tiny_cast( texture_id, VkDescriptorSet ) );
 
             texture_id = nullptr;

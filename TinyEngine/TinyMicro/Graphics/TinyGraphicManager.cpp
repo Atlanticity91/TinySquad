@@ -208,6 +208,8 @@ void TinyGraphicManager::ReCreate( const TinyWindow& window ) {
 	m_work_context.WorkID = 0;
 
 	m_need_recreation = false;
+
+	m_logical.Wait( );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

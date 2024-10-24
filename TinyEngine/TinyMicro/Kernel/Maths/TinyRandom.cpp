@@ -29,4 +29,6 @@ void TinyRandom::Setup( ) {
 	SetSeed( seed );
 }
 
-void TinyRandom::SetSeed( const tiny_ulong seed ) { srand( seed ); }
+void TinyRandom::SetSeed( const tiny_ulong seed ) { 
+	srand( tiny_cast( seed, tiny_uint ) ); 
+}

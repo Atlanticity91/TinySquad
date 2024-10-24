@@ -29,53 +29,6 @@ VkAllocationStas vk_allocation_stats = { 0, 0, 0, 0 };
 VkDebugReportCallbackEXT vk_debug = VK_NULL_HANDLE;
 #	endif
 
-tiny_string vkGetResultString( VkResult result ) {
-    auto text = tiny_string{ };
-
-    switch ( result ) {
-        case  VK_NOT_READY: text = "VK_NOT_READY A fence or query has not yet completed";
-        case  VK_TIMEOUT: text = "VK_TIMEOUT A wait operation has not completed in the specified time";
-        case  VK_EVENT_SET: text = "VK_EVENT_SET An event is signaled";
-        case  VK_EVENT_RESET: text = "VK_EVENT_RESET An event is unsignaled";
-        case  VK_INCOMPLETE: text = "VK_INCOMPLETE A return array was too small for the result";
-        case  VK_SUBOPTIMAL_KHR: text = "VK_SUBOPTIMAL_KHR A swapchain no longer matches the surface properties exactly, but can still be used to present to the surface successfully.";
-        case  VK_THREAD_IDLE_KHR: text = "VK_THREAD_IDLE_KHR A deferred operation is not complete but there is currently no work for this thread to do at the time of this call.";
-        case  VK_THREAD_DONE_KHR: text = "VK_THREAD_DONE_KHR A deferred operation is not complete but there is no work remaining to assign to additional threads.";
-        case  VK_OPERATION_DEFERRED_KHR: text = "VK_OPERATION_DEFERRED_KHR A deferred operation was requested and at least some of the work was deferred.";
-        case  VK_OPERATION_NOT_DEFERRED_KHR: text = "VK_OPERATION_NOT_DEFERRED_KHR A deferred operation was requested and no operations were deferred.";
-        case  VK_PIPELINE_COMPILE_REQUIRED_EXT: text = "VK_PIPELINE_COMPILE_REQUIRED_EXT A requested pipeline creation would have required compilation, but the application requested compilation to not be performed.";
-
-        // Error codes
-        case  VK_ERROR_OUT_OF_HOST_MEMORY:  text = "VK_ERROR_OUT_OF_HOST_MEMORY A host memory allocation has failed.";
-        case  VK_ERROR_OUT_OF_DEVICE_MEMORY: text = "VK_ERROR_OUT_OF_DEVICE_MEMORY A device memory allocation has failed.";
-        case  VK_ERROR_INITIALIZATION_FAILED: text = "VK_ERROR_INITIALIZATION_FAILED Initialization of an object could not be completed for implementation-specific reasons.";
-        case  VK_ERROR_DEVICE_LOST: text = "VK_ERROR_DEVICE_LOST The logical or physical device has been lost. See Lost Device";
-        case  VK_ERROR_MEMORY_MAP_FAILED: text = "VK_ERROR_MEMORY_MAP_FAILED Mapping of a memory object has failed.";
-        case  VK_ERROR_LAYER_NOT_PRESENT: text = "VK_ERROR_LAYER_NOT_PRESENT A requested layer is not present or could not be loaded.";
-        case  VK_ERROR_EXTENSION_NOT_PRESENT: text = "VK_ERROR_EXTENSION_NOT_PRESENT A requested extension is not supported.";
-        case  VK_ERROR_FEATURE_NOT_PRESENT: text = "VK_ERROR_FEATURE_NOT_PRESENT A requested feature is not supported.";
-        case  VK_ERROR_INCOMPATIBLE_DRIVER: text = "VK_ERROR_INCOMPATIBLE_DRIVER The requested version of Vulkan is not supported by the driver or is otherwise incompatible for implementation-specific reasons.";
-        case  VK_ERROR_TOO_MANY_OBJECTS: text = "VK_ERROR_TOO_MANY_OBJECTS Too many objects of the type have already been created.";
-        case  VK_ERROR_FORMAT_NOT_SUPPORTED: text = "VK_ERROR_FORMAT_NOT_SUPPORTED A requested format is not supported on this device.";
-        case  VK_ERROR_FRAGMENTED_POOL: text = "VK_ERROR_FRAGMENTED_POOL A pool allocation has failed due to fragmentation of the pool’s memory. This must only be returned if no attempt to allocate host or device memory was made to accommodate the new allocation. This should be returned in preference to VK_ERROR_OUT_OF_POOL_MEMORY, but only if the implementation is certain that the pool allocation failure was due to fragmentation.";
-        case  VK_ERROR_SURFACE_LOST_KHR: text = "VK_ERROR_SURFACE_LOST_KHR A surface is no longer available.";
-        case  VK_ERROR_NATIVE_WINDOW_IN_USE_KHR: text = "VK_ERROR_NATIVE_WINDOW_IN_USE_KHR The requested window is already in use by Vulkan or another API in a manner which prevents it from being used again.";
-        case  VK_ERROR_OUT_OF_DATE_KHR: text = "VK_ERROR_OUT_OF_DATE_KHR A surface has changed in such a way that it is no longer compatible with the swapchain, and further presentation requests using the swapchain will fail. Applications must query the new surface properties and recreate their swapchain if they wish to continue presenting to the surface.";
-        case  VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:  text = "VK_ERROR_INCOMPATIBLE_DISPLAY_KHR The display used by a swapchain does not use the same presentable image layout, or is incompatible in a way that prevents sharing an image.";
-        case  VK_ERROR_INVALID_SHADER_NV: text = "VK_ERROR_INVALID_SHADER_NV One or more shaders failed to compile or link. More details are reported back to the application via VK_EXT_debug_report if enabled.";
-        case  VK_ERROR_OUT_OF_POOL_MEMORY: text = "VK_ERROR_OUT_OF_POOL_MEMORY A pool memory allocation has failed. This must only be returned if no attempt to allocate host or device memory was made to accommodate the new allocation. If the failure was definitely due to fragmentation of the pool, VK_ERROR_FRAGMENTED_POOL should be returned instead.";
-        case  VK_ERROR_INVALID_EXTERNAL_HANDLE: text = "VK_ERROR_INVALID_EXTERNAL_HANDLE An external handle is not a valid handle of the specified type.";
-        case  VK_ERROR_FRAGMENTATION:  text = "VK_ERROR_FRAGMENTATION A descriptor pool creation has failed due to fragmentation.";
-        case  VK_ERROR_INVALID_DEVICE_ADDRESS_EXT: text = "VK_ERROR_INVALID_DEVICE_ADDRESS_EXT A buffer creation failed because the requested address is not available.";
-        case  VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT: text = "VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT An operation on a swapchain created with VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT failed as it did not have exlusive full-screen access. This may occur due to implementation-dependent reasons, outside of the application’s control.";
-        case  VK_ERROR_UNKNOWN: text = "VK_ERROR_UNKNOWN An unknown error has occurred; either the application has provided invalid input, or an implementation failure has occurred.";
-
-        default: break;
-    }
-
-    return text;
-}
-
 tiny_string vkGetScopeString( VkSystemAllocationScope scope ) {
     auto text = tiny_string{ "" };
 
@@ -195,6 +148,53 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
 ////////////////////////////////////////////////////////////////////////////////////////////
 //		===	PUBLIC ===
 ////////////////////////////////////////////////////////////////////////////////////////////
+tiny_string vk::GetResultString( VkResult result ) {
+    auto text = tiny_string{ };
+
+    switch ( result ) {
+        case  VK_NOT_READY: text = "VK_NOT_READY A fence or query has not yet completed";
+        case  VK_TIMEOUT: text = "VK_TIMEOUT A wait operation has not completed in the specified time";
+        case  VK_EVENT_SET: text = "VK_EVENT_SET An event is signaled";
+        case  VK_EVENT_RESET: text = "VK_EVENT_RESET An event is unsignaled";
+        case  VK_INCOMPLETE: text = "VK_INCOMPLETE A return array was too small for the result";
+        case  VK_SUBOPTIMAL_KHR: text = "VK_SUBOPTIMAL_KHR A swapchain no longer matches the surface properties exactly, but can still be used to present to the surface successfully.";
+        case  VK_THREAD_IDLE_KHR: text = "VK_THREAD_IDLE_KHR A deferred operation is not complete but there is currently no work for this thread to do at the time of this call.";
+        case  VK_THREAD_DONE_KHR: text = "VK_THREAD_DONE_KHR A deferred operation is not complete but there is no work remaining to assign to additional threads.";
+        case  VK_OPERATION_DEFERRED_KHR: text = "VK_OPERATION_DEFERRED_KHR A deferred operation was requested and at least some of the work was deferred.";
+        case  VK_OPERATION_NOT_DEFERRED_KHR: text = "VK_OPERATION_NOT_DEFERRED_KHR A deferred operation was requested and no operations were deferred.";
+        case  VK_PIPELINE_COMPILE_REQUIRED_EXT: text = "VK_PIPELINE_COMPILE_REQUIRED_EXT A requested pipeline creation would have required compilation, but the application requested compilation to not be performed.";
+
+        // Error codes
+        case  VK_ERROR_OUT_OF_HOST_MEMORY:  text = "VK_ERROR_OUT_OF_HOST_MEMORY A host memory allocation has failed.";
+        case  VK_ERROR_OUT_OF_DEVICE_MEMORY: text = "VK_ERROR_OUT_OF_DEVICE_MEMORY A device memory allocation has failed.";
+        case  VK_ERROR_INITIALIZATION_FAILED: text = "VK_ERROR_INITIALIZATION_FAILED Initialization of an object could not be completed for implementation-specific reasons.";
+        case  VK_ERROR_DEVICE_LOST: text = "VK_ERROR_DEVICE_LOST The logical or physical device has been lost. See Lost Device";
+        case  VK_ERROR_MEMORY_MAP_FAILED: text = "VK_ERROR_MEMORY_MAP_FAILED Mapping of a memory object has failed.";
+        case  VK_ERROR_LAYER_NOT_PRESENT: text = "VK_ERROR_LAYER_NOT_PRESENT A requested layer is not present or could not be loaded.";
+        case  VK_ERROR_EXTENSION_NOT_PRESENT: text = "VK_ERROR_EXTENSION_NOT_PRESENT A requested extension is not supported.";
+        case  VK_ERROR_FEATURE_NOT_PRESENT: text = "VK_ERROR_FEATURE_NOT_PRESENT A requested feature is not supported.";
+        case  VK_ERROR_INCOMPATIBLE_DRIVER: text = "VK_ERROR_INCOMPATIBLE_DRIVER The requested version of Vulkan is not supported by the driver or is otherwise incompatible for implementation-specific reasons.";
+        case  VK_ERROR_TOO_MANY_OBJECTS: text = "VK_ERROR_TOO_MANY_OBJECTS Too many objects of the type have already been created.";
+        case  VK_ERROR_FORMAT_NOT_SUPPORTED: text = "VK_ERROR_FORMAT_NOT_SUPPORTED A requested format is not supported on this device.";
+        case  VK_ERROR_FRAGMENTED_POOL: text = "VK_ERROR_FRAGMENTED_POOL A pool allocation has failed due to fragmentation of the pool’s memory. This must only be returned if no attempt to allocate host or device memory was made to accommodate the new allocation. This should be returned in preference to VK_ERROR_OUT_OF_POOL_MEMORY, but only if the implementation is certain that the pool allocation failure was due to fragmentation.";
+        case  VK_ERROR_SURFACE_LOST_KHR: text = "VK_ERROR_SURFACE_LOST_KHR A surface is no longer available.";
+        case  VK_ERROR_NATIVE_WINDOW_IN_USE_KHR: text = "VK_ERROR_NATIVE_WINDOW_IN_USE_KHR The requested window is already in use by Vulkan or another API in a manner which prevents it from being used again.";
+        case  VK_ERROR_OUT_OF_DATE_KHR: text = "VK_ERROR_OUT_OF_DATE_KHR A surface has changed in such a way that it is no longer compatible with the swapchain, and further presentation requests using the swapchain will fail. Applications must query the new surface properties and recreate their swapchain if they wish to continue presenting to the surface.";
+        case  VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:  text = "VK_ERROR_INCOMPATIBLE_DISPLAY_KHR The display used by a swapchain does not use the same presentable image layout, or is incompatible in a way that prevents sharing an image.";
+        case  VK_ERROR_INVALID_SHADER_NV: text = "VK_ERROR_INVALID_SHADER_NV One or more shaders failed to compile or link. More details are reported back to the application via VK_EXT_debug_report if enabled.";
+        case  VK_ERROR_OUT_OF_POOL_MEMORY: text = "VK_ERROR_OUT_OF_POOL_MEMORY A pool memory allocation has failed. This must only be returned if no attempt to allocate host or device memory was made to accommodate the new allocation. If the failure was definitely due to fragmentation of the pool, VK_ERROR_FRAGMENTED_POOL should be returned instead.";
+        case  VK_ERROR_INVALID_EXTERNAL_HANDLE: text = "VK_ERROR_INVALID_EXTERNAL_HANDLE An external handle is not a valid handle of the specified type.";
+        case  VK_ERROR_FRAGMENTATION:  text = "VK_ERROR_FRAGMENTATION A descriptor pool creation has failed due to fragmentation.";
+        case  VK_ERROR_INVALID_DEVICE_ADDRESS_EXT: text = "VK_ERROR_INVALID_DEVICE_ADDRESS_EXT A buffer creation failed because the requested address is not available.";
+        case  VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT: text = "VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT An operation on a swapchain created with VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT failed as it did not have exlusive full-screen access. This may occur due to implementation-dependent reasons, outside of the application’s control.";
+        case  VK_ERROR_UNKNOWN: text = "VK_ERROR_UNKNOWN An unknown error has occurred; either the application has provided invalid input, or an implementation failure has occurred.";
+
+        default: break;
+    }
+
+    return text;
+}
+
 bool vk::Check( VkResult result ) {
     auto state = false;
 
@@ -245,7 +245,7 @@ bool vk::Check( VkResult result ) {
     }
 
 #   ifdef TINY_DEBUG
-    auto vk_string = vkGetResultString( result );
+    auto vk_string = vk::GetResultString( result );
 
     if ( vk_string.length( ) > 0 )
         printf( state ? "[ VK ] %s.\n" : "[ VK - ERROR ] %s.\n", vk_string.get( ) );

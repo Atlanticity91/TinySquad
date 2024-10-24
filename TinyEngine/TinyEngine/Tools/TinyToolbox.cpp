@@ -58,95 +58,6 @@ bool TinyToolbox::Initialize( TinyGame* game ) {
 
 void TinyToolbox::Clear( ) { m_tools.Clear( ); }
 
-bool TinyToolbox::LoadFont(
-    TinyFilesystem& filesystem,
-    TinyGraphicManager& graphics,
-    const TinyToolboxFont& font 
-) {
-    auto state = filesystem.GetFileExist( font.Path );
-
-    if ( state ) {
-        auto& io    = ImGui::GetIO( );
-        auto* path  = font.Path.get( );
-        auto* _font = io.Fonts->AddFontFromFileTTF( path, font.Size );
-
-        if ( _font ) {
-            m_fonts.emplace( font.Alias, _font );
-
-            state = io.Fonts->Build( );
-        }
-    }
-
-    return state;
-}
-
-bool TinyToolbox::LoadFonts(
-    TinyFilesystem& filesystem,
-    TinyGraphicManager& graphics,
-    tiny_init<TinyToolboxFont> fonts
-) {
-    auto state = fonts.size( ) > 0;
-
-    if ( state ) {
-        for ( auto& font : fonts ) {
-            state = LoadFont( filesystem, graphics, font );
-
-            if ( !state ) break;
-        }
-    }
-
-    return state;
-}
-
-bool TinyToolbox::AddFont(
-    const tiny_string& alias,
-    tiny_int length,
-    const tiny_uint* data,
-    float size
-) {
-    auto& io = ImGui::GetIO( );
-    auto* font = io.Fonts->AddFontFromMemoryCompressedTTF( tiny_cast( data, native_pointer ), length, size );
-
-    if ( font )
-        m_fonts.emplace( alias, font );
-
-    return io.Fonts->Build( );
-}
-
-bool TinyToolbox::CreateFont(
-    const tiny_string& name,
-    float size,
-    tiny_init<TinyToolboxFontEmbedded> fonts
-) {
-    auto state = fonts.size( );
-
-    if ( state ) {
-        auto config = ImFontConfig{ };
-        auto& io    = ImGui::GetIO( );
-
-        config.MergeMode = true;
-
-        for ( auto& font : fonts ) {
-            ImWchar icons_ranges[] = { font.Min, font.Max, 0 };
-            
-            io.Fonts->AddFontFromMemoryCompressedTTF( font.Glyphs, font.Length, size, tiny_rvalue( config ), icons_ranges );
-        }
-
-        state = io.Fonts->Build( );
-
-        if ( state )
-            m_fonts.emplace( name, ImGui::GetFont( ) );
-    }
-
-    return state;
-}
-
-void TinyToolbox::SetFont( const tiny_string& name ) {
-    auto* font = m_fonts.get( name );
-
-    if ( font )
-        ImGui::SetCurrentFont( font );
-}
 
 void TinyToolbox::EnableNavigation( ) {
     auto& io = ImGui::GetIO( );
@@ -387,19 +298,7 @@ void TinyToolbox::CreateImGuiTheme( ) {
 }
 
 bool TinyToolbox::CreateImGuiFont( ) {
-    auto state = AddFont( "Caskaydia", TinyCaskaydia_length, TinyCaskaydia_data, 16.f );
-
-    if ( state ) {
-        state = CreateFont(
-            "Caskaydia",
-            16.f,
-            {
-                { TinyFontAwesome_900_length, tiny_cast( TinyFontAwesome_900_data, tiny_uint* ), TF_ICON_MIN, TF_ICON_MAX }
-            }
-        );
-    }
-
-    return state;
+    return true;
 }
 
 void TinyToolbox::CreateSpriteShaders( 

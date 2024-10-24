@@ -27,6 +27,7 @@ project "ImGui"
 	filter "system:windows"
 		systemversion "latest"
 		defines { "WINDOWS" }
+		flags { "MultiProcessorCompile" }
 
 	filter "configurations:Debug"
 		defines { "DEBUG" }

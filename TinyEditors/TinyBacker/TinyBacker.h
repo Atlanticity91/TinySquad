@@ -58,6 +58,8 @@ protected:
 	tiny_implement( void TickMenubar( ) );
 
 	tiny_implement( void TickUI( ) );
+	
+	tiny_implement( void Tick( ) );
 
 private:
 	void ImportAsset( );

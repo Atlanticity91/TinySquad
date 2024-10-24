@@ -344,11 +344,11 @@ public:
 	tiny_inline TinyGameStateManager& GetGameStates( );
 
 	/**
-	 * GetToolbox function
+	 * GetDebug function
 	 * @note : Get current toolbox instance.
-	 * @return : TinyToolbox
+	 * @return : TinyDebugManager
 	 **/
-	tiny_inline TinyToolbox& GetToolbox( );
+	tiny_inline TinyDebugManager& GetDebug( );
 
 public:
 	/**

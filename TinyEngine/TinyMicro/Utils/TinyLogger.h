@@ -22,30 +22,14 @@
 
 #include <TinyMicro/Kernel/TinySingleton.h>
 
-#define __TINY_LOG( TARGET, MODE, ... )\
-	TinyLogger::GetInstance( ).Get##TARGET##( )->##MODE##( __VA_ARGS__ )
+#define __TINY_LOG( MODE, ... )\
+	if ( TinyLogger::GetInstance( ).Get( ) )\
+		TinyLogger::GetInstance( ).Get( )->##MODE##( __VA_ARGS__ )
 
-#ifndef TINY_LOG_PRINT
-#	define TINY_LOG_CORE_TRACE( ... ) __TINY_LOG( Core, trace, __VA_ARGS__ )
-#	define TINY_LOG_CORE_INFO( ... ) __TINY_LOG( Core, info, __VA_ARGS__ )
-#	define TINY_LOG_CORE_WARN( ... ) __TINY_LOG( Core, warn, __VA_ARGS__ )
-#	define TINY_LOG_CORE_ERRR( ... ) __TINY_LOG( Core, error, __VA_ARGS__ )
-
-#	define TINY_LOG_CLIENT_TRACE( ... ) __TINY_LOG( Client, trace, __VA_ARGS__ )
-#	define TINY_LOG_CLIENT_INFO( ... ) __TINY_LOG( Client, info, __VA_ARGS__ )
-#	define TINY_LOG_CLIENT_WARN( ... ) __TINY_LOG( Client, warn, __VA_ARGS__ )
-#	define TINY_LOG_CLIENT_ERRR( ... ) __TINY_LOG( Client, error, __VA_ARGS__ )
-#else
-#	define TINY_LOG_CORE_TRACE( ... ) printf( __VA_ARGS__ )
-#	define TINY_LOG_CORE_INFO( ... ) printf( __VA_ARGS__ )
-#	define TINY_LOG_CORE_WARN( ... ) printf( __VA_ARGS__ )
-#	define TINY_LOG_CORE_ERRR( ... ) printf( __VA_ARGS__ )
-
-#	define TINY_LOG_CLIENT_TRACE( ... ) printf( __VA_ARGS__ )
-#	define TINY_LOG_CLIENT_INFO( ... ) printf( __VA_ARGS__ )
-#	define TINY_LOG_CLIENT_WARN( ... ) printf( __VA_ARGS__ )
-#	define TINY_LOG_CLIENT_ERRR( ... ) printf( __VA_ARGS__ )
-#endif
+#define TINY_LOG_TRACE( ... ) __TINY_LOG( trace,__VA_ARGS__ )
+#define TINY_LOG_INFO( ... ) __TINY_LOG( info, __VA_ARGS__ )
+#define TINY_LOG_WARN( ... ) __TINY_LOG( warn, __VA_ARGS__ )
+#define TINY_LOG_ERRR( ... ) __TINY_LOG( error, __VA_ARGS__ )
 
 tiny_enum( TinyLoggerLevels ) { 
 
@@ -61,8 +45,7 @@ tm_class TinyLogger final : tiny_inherit( TinySingleton<TinyLogger> ) {
 	using logger_t = std::shared_ptr<spdlog::logger>;
 
 private:
-	logger_t m_core;
-	logger_t m_client;
+	logger_t m_logger;
 
 public:
 	TinyLogger( );
@@ -76,8 +59,6 @@ private:
 	void Init( TinyFilesystem& filesystem );
 
 public:
-	logger_t GetCore( );
-
-	logger_t GetClient( );
+	logger_t Get( );
 
 };

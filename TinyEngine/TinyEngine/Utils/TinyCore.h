@@ -20,9 +20,8 @@
 
 #pragma once
 
-#include <TinyMicro/Jobs/TinyJobManager.h>
+#include <TinyMicro/ImGui/TinyImGuiManager.h>
 #include <TinyThirdparty/MSDF/MSDF.h>
-#include <TinyThirdparty/ImGui/ImGui.h>
 #include <TinyThirdparty/Lua/Lua.h>
 #include <TinyThirdparty/STB/STB.h>
 #include <TinyThirdparty/Yaml/Yaml.h>

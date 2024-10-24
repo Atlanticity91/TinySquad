@@ -36,6 +36,7 @@ project "Coral"
 
 	filter { "system:windows" }
 		defines { "CORAL_WINDOWS" }
+        flags { "MultiProcessorCompile" }
 
 	filter { "system:linux" }
 		defines { "CORAL_LINUX" }

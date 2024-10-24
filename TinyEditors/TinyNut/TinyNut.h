@@ -22,13 +22,29 @@
 
 #include "UI/TinyNutWindow.h"
 
+template<typename Tool, typename... Args>
+concept tiny_tool_has_open =
+	tiny_is_child_of( Tool, TinyNutTool ) &&
+	requires( Tool t, TinyNut* nut_game, Args&... args ) 
+{
+		{ t.Open( nut_game, args... ) } -> std::same_as<bool>;
+};
+
+template<typename Tool, typename... Args>
+concept tiny_tool_has_close =
+	tiny_is_child_of( Tool, TinyNutTool ) &&
+	requires( Tool t, TinyNut * nut_game, Args&... args ) 
+{
+		{ t.Close( nut_game, args... ) } -> std::same_as<bool>;
+};
+
 tn_class TinyNut : tiny_inherit( TinyGame ) {
 
 	friend class TinyNutWindow;
 
 private:
-	TinyNutContext m_context;
-	TinyNutWindow  m_window;
+	bool m_has_dockspace;
+	tiny_string m_name;
 
 public:
 	TinyNut( const tiny_string& title );
@@ -39,14 +55,46 @@ public:
 
 	tiny_virtual( void OnDragDrop( tiny_int path_count, native_string drop_paths[] ) );
 
+public:
+	template<typename Tool, typename... Args>
+		requires ( tiny_is_child_of( Tool, TinyNutTool ) )
+	void RegisterTool( ) { 
+		auto& imgui = GetImGui( );
+
+		imgui.Create<Tool>( this );
+	};
+
+	template<typename Tool, typename... Args>
+		requires ( tiny_tool_has_open<Tool, Args...> )
+	bool Open( const tiny_string& name, Args&... args ) {
+		auto* tool = GetTool<Tool>( name );
+		auto state = false;
+
+		if ( tool != nullptr )
+			state = tool->Open( this, args... );
+
+		return state;
+	};
+
+	template<typename Tool, typename... Args>
+		requires ( tiny_tool_has_close<Tool, Args...> )
+	void Close( const tiny_string& name, Args&... args ) {
+		auto* tool = GetTool<Tool>( name );
+
+		if ( tool != nullptr )
+			tool->Close( this, args... );
+	};
+
 protected:
 	tiny_implement( bool Initialize( ) );
 
 	virtual bool ImportGame( 
 		TinyFilesystem& filesystem, 
-		const std::string & game_path, 
+		const std::string& game_path, 
 		TinyFile& file 
 	);
+
+	bool ImportGameDialog( );
 
 	tiny_no_implement( void SetupBundles( TinyGraphicManager& graphics ) );
 
@@ -60,8 +108,6 @@ protected:
 
 	tiny_abstract( void TickUI( ) );
 
-	tiny_implement( void Tick( ) );
-
 	tiny_implement( void Terminate( ) );
 
 private:
@@ -72,8 +118,17 @@ private:
 	);
 
 public:
-	TinyNutContext& GetNutContext( );
+	tiny_inline TinyImGuiManager& GetImGui( );
 
 	TinyNutWindow& GetNutWindow( );
+
+public:
+	template<typename Tool>
+		requires ( tiny_is_child_of( Tool, TinyNutTool ) )
+	Tool* GetTool( const tiny_string& name ) {
+		auto& imgui = GetImGui( );
+
+		return imgui.GetWindowAs<Tool>( name );
+	};
 
 };

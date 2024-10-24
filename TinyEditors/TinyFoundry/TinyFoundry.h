@@ -34,4 +34,6 @@ protected:
 
 	tiny_implement( void TickUI( ) );
 
+	tiny_implement( void Tick( ) );
+
 };

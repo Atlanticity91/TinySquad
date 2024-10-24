@@ -39,6 +39,7 @@ project "TinyFoundry"
     filter "system:windows"
         systemversion "latest"
         defines { "WINDOWS" }
+        flags { "MultiProcessorCompile" }
         links {
             vulkan.."/Lib/SPIRV.lib",
             vulkan.."/Lib/vulkan-1.lib",
