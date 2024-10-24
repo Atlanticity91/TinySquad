@@ -1,0 +1,12 @@
+[submodule "Thirdparty/MicroProvider"]
+	path = Thirdparty/MicroProvider
+	url = https://github.com/Atlanticity91/MicroProvider
+[submodule "Thirdparty/MircoFramework"]
+	path = Thirdparty/MircoFramework
+	url = https://github.com/Atlanticity91/MicroFramework
+[submodule "Thirdparty/MicroSharp"]
+	path = Thirdparty/MicroSharp
+	url = https://github.com/Atlanticity91/MicroSharp
+[submodule "Thirdparty/MicroLua"]
+	path = Thirdparty/MicroLua
+	url = https://github.com/Atlanticity91/MicroLua
